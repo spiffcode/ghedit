@@ -296,3 +296,4 @@ define(["require", "exports", 'vs/base/common/types'], function (require, export
     }
     exports.getOrDefault = getOrDefault;
 });
+//# sourceMappingURL=objects.js.map

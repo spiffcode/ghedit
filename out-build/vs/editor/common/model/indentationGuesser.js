@@ -134,3 +134,4 @@ define(["require", "exports"], function (require, exports) {
     }
     exports.guessIndentation = guessIndentation;
 });
+//# sourceMappingURL=indentationGuesser.js.map

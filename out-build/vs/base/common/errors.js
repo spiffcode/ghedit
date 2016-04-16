@@ -323,3 +323,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
     }
     exports.create = create;
 });
+//# sourceMappingURL=errors.js.map

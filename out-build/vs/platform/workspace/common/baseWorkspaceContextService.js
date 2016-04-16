@@ -47,3 +47,4 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/paths', './w
     }());
     exports.BaseWorkspaceContextService = BaseWorkspaceContextService;
 });
+//# sourceMappingURL=baseWorkspaceContextService.js.map

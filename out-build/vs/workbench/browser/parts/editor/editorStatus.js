@@ -781,3 +781,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
     }(actions_1.Action));
     exports.ChangeEncodingAction = ChangeEncodingAction;
 });
+//# sourceMappingURL=editorStatus.js.map

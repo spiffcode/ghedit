@@ -356,3 +356,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.WhitespaceComputer = WhitespaceComputer;
 });
+//# sourceMappingURL=whitespaceComputer.js.map

@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IRequestService = instantiation_1.createDecorator('requestService');
 });
+//# sourceMappingURL=request.js.map

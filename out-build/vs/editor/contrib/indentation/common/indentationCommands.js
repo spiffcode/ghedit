@@ -56,3 +56,4 @@ define(["require", "exports", 'vs/editor/common/core/range'], function (require,
     }());
     exports.IndentationToTabsCommand = IndentationToTabsCommand;
 });
+//# sourceMappingURL=indentationCommands.js.map

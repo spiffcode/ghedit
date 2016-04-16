@@ -700,3 +700,4 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
     }
     exports.parse = parse;
 });
+//# sourceMappingURL=json.js.map

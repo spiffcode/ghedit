@@ -23,3 +23,4 @@ define(["require", "exports", './contextMenuHandler', './contextView'], function
     }());
     exports.ContextMenuService = ContextMenuService;
 });
+//# sourceMappingURL=contextMenuService.js.map

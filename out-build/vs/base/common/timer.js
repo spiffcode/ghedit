@@ -214,3 +214,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/errors'
     }
     exports.getTimeKeeper = getTimeKeeper;
 });
+//# sourceMappingURL=timer.js.map

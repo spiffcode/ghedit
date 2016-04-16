@@ -267,3 +267,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/event', 'v
     }(lifecycle_1.Disposable));
     exports.TextAreaHandler = TextAreaHandler;
 });
+//# sourceMappingURL=textAreaHandler.js.map

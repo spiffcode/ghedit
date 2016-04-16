@@ -19,3 +19,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     var Position = exports.Position;
     exports.IPartService = instantiation_1.createDecorator('partService');
 });
+//# sourceMappingURL=partService.js.map

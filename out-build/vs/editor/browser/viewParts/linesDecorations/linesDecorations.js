@@ -125,3 +125,4 @@ define(["require", "exports", 'vs/editor/browser/viewParts/glyphMargin/glyphMarg
     }(glyphMargin_1.DedupOverlay));
     exports.LinesDecorationsOverlay = LinesDecorationsOverlay;
 });
+//# sourceMappingURL=linesDecorations.js.map

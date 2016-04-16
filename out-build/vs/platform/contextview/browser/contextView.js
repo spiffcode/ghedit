@@ -7,3 +7,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.IContextViewService = instantiation_1.createDecorator('contextViewService');
     exports.IContextMenuService = instantiation_1.createDecorator('contextMenuService');
 });
+//# sourceMappingURL=contextView.js.map

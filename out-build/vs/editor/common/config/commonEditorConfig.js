@@ -773,3 +773,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/base/common/
     }
     configurationRegistry.registerConfiguration(editorConfiguration);
 });
+//# sourceMappingURL=commonEditorConfig.js.map

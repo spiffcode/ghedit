@@ -186,3 +186,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
     }(eventEmitter_1.EventEmitter));
     exports.ContextView = ContextView;
 });
+//# sourceMappingURL=contextview.js.map

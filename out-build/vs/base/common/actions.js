@@ -277,3 +277,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/event
     }(eventEmitter_1.EventEmitter));
     exports.ActionRunner = ActionRunner;
 });
+//# sourceMappingURL=actions.js.map

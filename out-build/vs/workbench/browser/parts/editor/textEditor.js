@@ -242,3 +242,4 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/editor/browser/widge
     }(baseEditor_1.BaseEditor));
     exports.BaseTextEditor = BaseTextEditor;
 });
+//# sourceMappingURL=textEditor.js.map

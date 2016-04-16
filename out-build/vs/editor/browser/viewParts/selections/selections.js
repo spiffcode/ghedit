@@ -342,3 +342,4 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
     }(dynamicViewOverlay_1.DynamicViewOverlay));
     exports.SelectionsOverlay = SelectionsOverlay;
 });
+//# sourceMappingURL=selections.js.map

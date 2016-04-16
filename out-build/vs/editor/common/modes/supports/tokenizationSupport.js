@@ -253,3 +253,4 @@ define(["require", "exports", 'vs/editor/common/modes/lineStream', 'vs/editor/co
     }());
     exports.TokenizationSupport = TokenizationSupport;
 });
+//# sourceMappingURL=tokenizationSupport.js.map

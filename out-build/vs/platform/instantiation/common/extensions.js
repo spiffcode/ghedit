@@ -15,3 +15,4 @@ define(["require", "exports", './descriptors'], function (require, exports, desc
     }
     exports.getServices = getServices;
 });
+//# sourceMappingURL=extensions.js.map

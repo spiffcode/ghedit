@@ -34,3 +34,4 @@ define(["require", "exports", 'vs/base/browser/builder'], function (require, exp
     }());
     exports.DelayedDragHandler = DelayedDragHandler;
 });
+//# sourceMappingURL=dnd.js.map

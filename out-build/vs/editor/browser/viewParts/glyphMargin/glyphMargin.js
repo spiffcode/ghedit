@@ -189,3 +189,4 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
     }(DedupOverlay));
     exports.GlyphMarginOverlay = GlyphMarginOverlay;
 });
+//# sourceMappingURL=glyphMargin.js.map

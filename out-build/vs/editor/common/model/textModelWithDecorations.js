@@ -558,3 +558,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/htmlConte
         return new ModelDecorationOverviewRulerOptions(options, legacyShowInOverviewRuler);
     }
 });
+//# sourceMappingURL=textModelWithDecorations.js.map

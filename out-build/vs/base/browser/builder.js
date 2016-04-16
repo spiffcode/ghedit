@@ -1655,3 +1655,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
     exports.$.Build = exports.Build;
     exports.$.Binding = exports.Binding;
 });
+//# sourceMappingURL=builder.js.map

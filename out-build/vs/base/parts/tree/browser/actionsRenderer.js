@@ -94,3 +94,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
     }(TreeDefaults.LegacyRenderer));
     exports.ActionsRenderer = ActionsRenderer;
 });
+//# sourceMappingURL=actionsRenderer.js.map

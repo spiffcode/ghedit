@@ -79,3 +79,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/core/e
     }
     exports.trimTrailingWhitespace = trimTrailingWhitespace;
 });
+//# sourceMappingURL=trimTrailingWhitespaceCommand.js.map

@@ -222,3 +222,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/error
     }());
     exports.TextFileService = TextFileService;
 });
+//# sourceMappingURL=textFileServices.js.map

@@ -137,3 +137,4 @@ define(["require", "exports"], function (require, exports) {
     }
     exports.stateExists = stateExists;
 });
+//# sourceMappingURL=monarchCommon.js.map

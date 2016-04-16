@@ -133,3 +133,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
         });
     }
 });
+//# sourceMappingURL=main.js.map

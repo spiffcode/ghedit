@@ -152,3 +152,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/filte
     }
     exports.filterSuggestions = filterSuggestions;
 });
+//# sourceMappingURL=suggestSupport.js.map

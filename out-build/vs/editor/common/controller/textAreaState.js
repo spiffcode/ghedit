@@ -324,3 +324,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/core/r
     }(TextAreaState));
     exports.NVDAFullTextAreaState = NVDAFullTextAreaState;
 });
+//# sourceMappingURL=textAreaState.js.map

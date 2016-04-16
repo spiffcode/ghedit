@@ -35,3 +35,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.EditorSimpleWorker = EditorSimpleWorker;
 });
+//# sourceMappingURL=editorSimpleWorkerCommon.js.map

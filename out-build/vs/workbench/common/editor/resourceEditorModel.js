@@ -34,3 +34,4 @@ define(["require", "exports", 'vs/workbench/common/editor/textEditorModel', 'vs/
     }(textEditorModel_1.BaseTextEditorModel));
     exports.ResourceEditorModel = ResourceEditorModel;
 });
+//# sourceMappingURL=resourceEditorModel.js.map

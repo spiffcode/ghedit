@@ -645,3 +645,4 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/editor/common/modes/
     }
     exports.compile = compile;
 });
+//# sourceMappingURL=monarchCompile.js.map

@@ -184,3 +184,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/e
     }());
     exports.ViewModelDecorations = ViewModelDecorations;
 });
+//# sourceMappingURL=viewModelDecorations.js.map

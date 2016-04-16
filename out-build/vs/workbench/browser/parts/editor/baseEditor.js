@@ -461,3 +461,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     }(actions_1.Action));
     exports.EditorInputAction = EditorInputAction;
 });
+//# sourceMappingURL=baseEditor.js.map

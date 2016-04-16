@@ -366,3 +366,4 @@ define(["require", "exports", 'vs/base/common/keyCodes', 'vs/platform/editor/com
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_A
     });
 });
+//# sourceMappingURL=config.js.map

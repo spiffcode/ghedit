@@ -304,3 +304,4 @@ define(["require", "exports", 'vs/base/common/assert', 'vs/base/common/types', '
     }(FileStat));
     exports.NewStatPlaceholder = NewStatPlaceholder;
 });
+//# sourceMappingURL=explorerViewModel.js.map

@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     "use strict";
     exports.IPanelService = instantiation_1.createDecorator('panelService');
 });
+//# sourceMappingURL=panelService.js.map

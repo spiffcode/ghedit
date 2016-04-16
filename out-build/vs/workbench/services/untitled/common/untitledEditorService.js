@@ -82,3 +82,4 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/platform/instantiation/c
     }());
     exports.UntitledEditorService = UntitledEditorService;
 });
+//# sourceMappingURL=untitledEditorService.js.map

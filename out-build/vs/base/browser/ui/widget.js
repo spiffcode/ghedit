@@ -48,3 +48,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/mouse
     }(lifecycle_1.Disposable));
     exports.Widget = Widget;
 });
+//# sourceMappingURL=widget.js.map

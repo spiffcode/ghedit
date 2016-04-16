@@ -71,3 +71,4 @@ define(["require", "exports", 'vs/base/common/lifecycle'], function (require, ex
     }(lifecycle_1.Disposable));
     exports.DelegateScrollable = DelegateScrollable;
 });
+//# sourceMappingURL=scrollable.js.map

@@ -317,3 +317,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/styleMutat
     }(viewPart_1.ViewPart));
     exports.ViewContentWidgets = ViewContentWidgets;
 });
+//# sourceMappingURL=contentWidgets.js.map

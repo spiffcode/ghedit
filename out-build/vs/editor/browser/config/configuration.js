@@ -294,3 +294,4 @@ define(["require", "exports", 'vs/base/common/event', 'vs/base/common/lifecycle'
     }(commonEditorConfig_1.CommonEditorConfiguration));
     exports.Configuration = Configuration;
 });
+//# sourceMappingURL=configuration.js.map

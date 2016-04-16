@@ -82,3 +82,4 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base',
     }());
     exports.BaseRequestService = BaseRequestService;
 });
+//# sourceMappingURL=baseRequestService.js.map

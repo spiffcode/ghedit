@@ -28,3 +28,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/css!./octicons/octic
     }());
     exports.OcticonLabel = OcticonLabel;
 });
+//# sourceMappingURL=octiconLabel.js.map

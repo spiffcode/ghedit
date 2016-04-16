@@ -349,3 +349,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/errors'
     }());
     exports.DefaultAccessibilityProvider = DefaultAccessibilityProvider;
 });
+//# sourceMappingURL=treeDefaults.js.map

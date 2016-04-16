@@ -92,3 +92,4 @@ define(["require", "exports"], function (require, exports) {
     exports.DRAG_OVER_ACCEPT_BUBBLE_UP_COPY = { accept: true, bubble: DragOverBubble.BUBBLE_UP, effect: DragOverEffect.COPY };
     exports.DRAG_OVER_ACCEPT_BUBBLE_DOWN_COPY = { accept: true, bubble: DragOverBubble.BUBBLE_DOWN, effect: DragOverEffect.COPY };
 });
+//# sourceMappingURL=tree.js.map

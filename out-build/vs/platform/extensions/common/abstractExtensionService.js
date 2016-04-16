@@ -162,3 +162,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/comm
     }());
     exports.AbstractExtensionService = AbstractExtensionService;
 });
+//# sourceMappingURL=abstractExtensionService.js.map

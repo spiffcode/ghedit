@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IExtensionService = instantiation_1.createDecorator('extensionService');
 });
+//# sourceMappingURL=extensions.js.map

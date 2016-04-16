@@ -678,3 +678,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/str
     }());
     exports.RawText = RawText;
 });
+//# sourceMappingURL=textModel.js.map

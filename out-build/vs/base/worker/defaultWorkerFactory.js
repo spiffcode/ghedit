@@ -106,3 +106,4 @@ define(["require", "exports", 'vs/base/common/flags', 'vs/base/common/lifecycle'
     }());
     exports.DefaultWorkerFactory = DefaultWorkerFactory;
 });
+//# sourceMappingURL=defaultWorkerFactory.js.map

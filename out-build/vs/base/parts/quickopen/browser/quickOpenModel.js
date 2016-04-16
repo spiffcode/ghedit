@@ -620,3 +620,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }());
     exports.QuickOpenModel = QuickOpenModel;
 });
+//# sourceMappingURL=quickOpenModel.js.map

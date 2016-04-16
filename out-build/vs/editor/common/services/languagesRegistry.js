@@ -206,3 +206,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
     }());
     exports.LanguagesRegistry = LanguagesRegistry;
 });
+//# sourceMappingURL=languagesRegistry.js.map

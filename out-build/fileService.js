@@ -149,3 +149,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }());
     exports.FileService = FileService;
 });
+//# sourceMappingURL=fileService.js.map

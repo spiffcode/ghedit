@@ -348,3 +348,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.LineStream = LineStream;
 });
+//# sourceMappingURL=lineStream.js.map

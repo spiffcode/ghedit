@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IModeService = instantiation_1.createDecorator('modeService');
 });
+//# sourceMappingURL=modeService.js.map

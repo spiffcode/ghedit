@@ -499,3 +499,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     }());
     exports.ModelServiceWorkerHelper = ModelServiceWorkerHelper;
 });
+//# sourceMappingURL=modelServiceImpl.js.map

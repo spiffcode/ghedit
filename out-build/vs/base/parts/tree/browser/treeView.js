@@ -1335,3 +1335,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
     }(treeViewModel_1.HeightMap));
     exports.TreeView = TreeView;
 });
+//# sourceMappingURL=treeView.js.map

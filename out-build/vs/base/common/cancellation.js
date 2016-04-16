@@ -87,3 +87,4 @@ define(["require", "exports", 'vs/base/common/event'], function (require, export
     }());
     exports.CancellationTokenSource = CancellationTokenSource;
 });
+//# sourceMappingURL=cancellation.js.map

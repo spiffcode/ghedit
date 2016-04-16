@@ -96,3 +96,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/c
     }());
     exports.ViewModelCursors = ViewModelCursors;
 });
+//# sourceMappingURL=viewModelCursors.js.map

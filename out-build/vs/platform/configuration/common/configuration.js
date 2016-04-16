@@ -37,3 +37,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     }
     exports.extractSetting = extractSetting;
 });
+//# sourceMappingURL=configuration.js.map

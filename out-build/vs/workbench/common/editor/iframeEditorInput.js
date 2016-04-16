@@ -74,3 +74,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/common/
     }(editor_1.EditorInput));
     exports.IFrameEditorInput = IFrameEditorInput;
 });
+//# sourceMappingURL=iframeEditorInput.js.map

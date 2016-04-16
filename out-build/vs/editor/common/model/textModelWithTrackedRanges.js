@@ -287,3 +287,4 @@ define(["require", "exports", 'vs/editor/common/core/idGenerator', 'vs/editor/co
     }(textModelWithMarkers_1.TextModelWithMarkers));
     exports.TextModelWithTrackedRanges = TextModelWithTrackedRanges;
 });
+//# sourceMappingURL=textModelWithTrackedRanges.js.map

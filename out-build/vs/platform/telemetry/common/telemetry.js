@@ -68,3 +68,4 @@ define(["require", "exports", 'vs/platform/platform', 'vs/base/common/winjs.base
     }
     exports.anonymize = anonymize;
 });
+//# sourceMappingURL=telemetry.js.map

@@ -92,3 +92,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/e
     }(range_1.Range));
     exports.Selection = Selection;
 });
+//# sourceMappingURL=selection.js.map

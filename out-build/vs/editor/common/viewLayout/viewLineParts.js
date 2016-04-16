@@ -342,3 +342,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/core/a
     }());
     exports.LineDecorationsNormalizer = LineDecorationsNormalizer;
 });
+//# sourceMappingURL=viewLineParts.js.map

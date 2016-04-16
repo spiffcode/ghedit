@@ -105,3 +105,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/colle
     }
     exports.triggerAndDisposeAction = triggerAndDisposeAction;
 });
+//# sourceMappingURL=actionRegistry.js.map

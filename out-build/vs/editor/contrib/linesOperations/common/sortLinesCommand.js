@@ -51,3 +51,4 @@ define(["require", "exports", 'vs/editor/common/core/editOperation', 'vs/editor/
     }
     exports.sortLines = sortLines;
 });
+//# sourceMappingURL=sortLinesCommand.js.map

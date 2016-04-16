@@ -39,3 +39,4 @@ define(["require", "exports"], function (require, exports) {
     }(Selection));
     exports.StructuredSelection = StructuredSelection;
 });
+//# sourceMappingURL=selection.js.map

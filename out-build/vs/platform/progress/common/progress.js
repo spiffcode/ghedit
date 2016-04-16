@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IProgressService = instantiation_1.createDecorator('progressService');
 });
+//# sourceMappingURL=progress.js.map

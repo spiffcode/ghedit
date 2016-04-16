@@ -118,3 +118,4 @@ define(["require", "exports", 'vs/base/common/keyCodes', 'vs/base/common/platfor
     };
     platform_1.Registry.add(exports.Extensions.EditorModes, exports.KeybindingsRegistry);
 });
+//# sourceMappingURL=keybindingsRegistry.js.map

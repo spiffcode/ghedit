@@ -142,3 +142,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
     }());
     exports.StandardMouseWheelEvent = StandardMouseWheelEvent;
 });
+//# sourceMappingURL=mouseEvent.js.map

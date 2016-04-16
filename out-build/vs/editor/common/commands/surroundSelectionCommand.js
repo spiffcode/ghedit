@@ -24,3 +24,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/c
     }());
     exports.SurroundSelectionCommand = SurroundSelectionCommand;
 });
+//# sourceMappingURL=surroundSelectionCommand.js.map

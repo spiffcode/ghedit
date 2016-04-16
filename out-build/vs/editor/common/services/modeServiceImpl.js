@@ -491,3 +491,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     }());
     exports.ModeServiceWorkerHelper = ModeServiceWorkerHelper;
 });
+//# sourceMappingURL=modeServiceImpl.js.map

@@ -189,3 +189,4 @@ define(["require", "exports", 'vs/base/common/callbackList'], function (require,
     }());
     exports.EventBufferer = EventBufferer;
 });
+//# sourceMappingURL=event.js.map

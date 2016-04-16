@@ -68,3 +68,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/base/browser/dom', '
     }());
     exports.HighlightedLabel = HighlightedLabel;
 });
+//# sourceMappingURL=highlightedLabel.js.map

@@ -161,3 +161,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/async
     }(editor_1.EditorInput));
     exports.ResourceEditorInput = ResourceEditorInput;
 });
+//# sourceMappingURL=resourceEditorInput.js.map

@@ -74,3 +74,4 @@ define(["require", "exports", 'vs/editor/common/modes/nullMode', 'vs/editor/comm
     }());
     exports.RichEditSupport = RichEditSupport;
 });
+//# sourceMappingURL=richEditSupport.js.map

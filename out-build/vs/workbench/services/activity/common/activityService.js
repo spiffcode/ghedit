@@ -58,3 +58,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.ProgressBadge = ProgressBadge;
     exports.IActivityService = instantiation_1.createDecorator('activityService');
 });
+//# sourceMappingURL=activityService.js.map

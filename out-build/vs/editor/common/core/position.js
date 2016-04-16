@@ -84,3 +84,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.Position = Position;
 });
+//# sourceMappingURL=position.js.map

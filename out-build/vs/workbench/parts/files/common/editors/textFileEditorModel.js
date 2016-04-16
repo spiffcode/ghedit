@@ -634,3 +634,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     exports.TextFileEditorModelCache = TextFileEditorModelCache;
     exports.CACHE = new TextFileEditorModelCache();
 });
+//# sourceMappingURL=textFileEditorModel.js.map

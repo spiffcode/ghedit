@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IViewletService = instantiation_1.createDecorator('viewletService');
 });
+//# sourceMappingURL=viewletService.js.map

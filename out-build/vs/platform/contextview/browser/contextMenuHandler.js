@@ -102,3 +102,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/common/lifecyc
     }());
     exports.ContextMenuHandler = ContextMenuHandler;
 });
+//# sourceMappingURL=contextMenuHandler.js.map

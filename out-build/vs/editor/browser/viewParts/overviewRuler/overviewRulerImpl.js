@@ -382,3 +382,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/styleM
     }());
     exports.OverviewRulerImpl = OverviewRulerImpl;
 });
+//# sourceMappingURL=overviewRulerImpl.js.map

@@ -229,3 +229,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     }());
     exports.CompositeRegistry = CompositeRegistry;
 });
+//# sourceMappingURL=composite.js.map

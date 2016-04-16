@@ -372,3 +372,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }(textFileServices_1.TextFileService));
     exports.TextFileService = TextFileService;
 });
+//# sourceMappingURL=bogusTextFileServices.js.map

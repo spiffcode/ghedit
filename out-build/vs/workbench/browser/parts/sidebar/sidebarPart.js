@@ -87,3 +87,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_0
     }), nls.localize('viewCategory', "View"));
 });
+//# sourceMappingURL=sidebarPart.js.map

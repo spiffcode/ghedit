@@ -67,3 +67,4 @@ define([
 ], function () {
     'use strict';
 });
+//# sourceMappingURL=workbench.main.js.map

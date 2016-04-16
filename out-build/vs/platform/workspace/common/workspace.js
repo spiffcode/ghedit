@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IWorkspaceContextService = instantiation_1.createDecorator('contextService');
 });
+//# sourceMappingURL=workspace.js.map

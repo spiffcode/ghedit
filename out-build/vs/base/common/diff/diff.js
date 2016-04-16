@@ -691,3 +691,4 @@ define(["require", "exports", 'vs/base/common/diff/diffChange'], function (requi
     }());
     exports.LcsDiff = LcsDiff;
 });
+//# sourceMappingURL=diff.js.map

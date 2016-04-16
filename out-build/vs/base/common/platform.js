@@ -94,3 +94,4 @@ define(["require", "exports"], function (require, exports) {
     exports.setInterval = _globals.setInterval.bind(_globals);
     exports.clearInterval = _globals.clearInterval.bind(_globals);
 });
+//# sourceMappingURL=platform.js.map

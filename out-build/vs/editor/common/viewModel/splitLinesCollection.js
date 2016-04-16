@@ -551,3 +551,4 @@ define(["require", "exports", 'vs/editor/common/core/position', 'vs/editor/commo
     }());
     exports.SplitLinesCollection = SplitLinesCollection;
 });
+//# sourceMappingURL=splitLinesCollection.js.map

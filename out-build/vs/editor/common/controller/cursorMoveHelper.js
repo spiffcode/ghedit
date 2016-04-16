@@ -199,3 +199,4 @@ define(["require", "exports", 'vs/editor/common/core/selection'], function (requ
     }());
     exports.CursorMoveHelper = CursorMoveHelper;
 });
+//# sourceMappingURL=cursorMoveHelper.js.map

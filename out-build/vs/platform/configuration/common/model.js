@@ -200,3 +200,4 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/platform/platform', 
         }
     }
 });
+//# sourceMappingURL=model.js.map

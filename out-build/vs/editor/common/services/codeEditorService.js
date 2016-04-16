@@ -7,3 +7,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.ID_CODE_EDITOR_SERVICE = 'codeEditorService';
     exports.ICodeEditorService = instantiation_1.createDecorator(exports.ID_CODE_EDITOR_SERVICE);
 });
+//# sourceMappingURL=codeEditorService.js.map

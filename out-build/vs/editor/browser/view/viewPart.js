@@ -24,3 +24,4 @@ define(["require", "exports", 'vs/editor/common/viewModel/viewEventHandler'], fu
     }(viewEventHandler_1.ViewEventHandler));
     exports.ViewPart = ViewPart;
 });
+//# sourceMappingURL=viewPart.js.map

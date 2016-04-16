@@ -144,3 +144,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/types', '
     }());
     exports.WorkbenchMessageService = WorkbenchMessageService;
 });
+//# sourceMappingURL=messageService.js.map

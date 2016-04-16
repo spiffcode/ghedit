@@ -228,3 +228,4 @@ define(["require", "exports", 'vs/base/common/events'], function (require, expor
     }(ResourceEvent));
     exports.UntitledEditorEvent = UntitledEditorEvent;
 });
+//# sourceMappingURL=events.js.map

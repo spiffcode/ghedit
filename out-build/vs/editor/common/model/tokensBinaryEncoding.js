@@ -142,3 +142,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/strings',
     }
     exports.findIndexInSegmentsArray = findIndexInSegmentsArray;
 });
+//# sourceMappingURL=tokensBinaryEncoding.js.map

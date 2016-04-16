@@ -168,3 +168,4 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base
     }(eventEmitter_1.EventEmitter));
     exports.ConfigurationService = ConfigurationService;
 });
+//# sourceMappingURL=configurationService.js.map

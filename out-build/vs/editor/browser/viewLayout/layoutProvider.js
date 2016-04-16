@@ -208,3 +208,4 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/editor/common
     }(viewEventHandler_1.ViewEventHandler));
     exports.LayoutProvider = LayoutProvider;
 });
+//# sourceMappingURL=layoutProvider.js.map

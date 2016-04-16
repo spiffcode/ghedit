@@ -89,3 +89,4 @@ define(["require", "exports", 'vs/base/common/types', 'vs/base/common/platform']
     }
     exports.supportsExecCommand = supportsExecCommand;
 });
+//# sourceMappingURL=browser.js.map

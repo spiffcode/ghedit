@@ -458,3 +458,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
         return tree.reveal(element, relativeTop);
     }
 });
+//# sourceMappingURL=viewlet.js.map

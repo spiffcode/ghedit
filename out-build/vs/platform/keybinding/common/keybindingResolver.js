@@ -288,3 +288,4 @@ define(["require", "exports", 'vs/base/common/keyCodes', 'vs/base/common/platfor
     }());
     exports.IOSupport = IOSupport;
 });
+//# sourceMappingURL=keybindingResolver.js.map

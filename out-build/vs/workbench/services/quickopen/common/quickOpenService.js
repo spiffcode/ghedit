@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IQuickOpenService = instantiation_1.createDecorator('quickOpenService');
 });
+//# sourceMappingURL=quickOpenService.js.map

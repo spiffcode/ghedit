@@ -43,3 +43,4 @@ define(["require", "exports", 'vs/editor/common/core/range'], function (require,
     }());
     exports.EditOperation = EditOperation;
 });
+//# sourceMappingURL=editOperation.js.map

@@ -44,3 +44,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.HandlerDispatcher = HandlerDispatcher;
 });
+//# sourceMappingURL=handlerDispatcher.js.map

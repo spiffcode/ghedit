@@ -1083,3 +1083,4 @@ define(["require", "exports", 'vs/base/common/assert', 'vs/base/common/errors', 
     }(Events.EventEmitter));
     exports.TreeModel = TreeModel;
 });
+//# sourceMappingURL=treeModel.js.map

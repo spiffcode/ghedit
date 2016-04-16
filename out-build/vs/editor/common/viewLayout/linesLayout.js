@@ -187,3 +187,4 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/editor/common
     }());
     exports.LinesLayout = LinesLayout;
 });
+//# sourceMappingURL=linesLayout.js.map

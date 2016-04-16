@@ -286,3 +286,4 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/
         'default': {}
     });
 });
+//# sourceMappingURL=jsonContributionRegistry.js.map

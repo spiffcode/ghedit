@@ -89,3 +89,4 @@ define(["require", "exports", 'vs/editor/common/editorCommon'], function (requir
     }());
     exports.RangeUtil = RangeUtil;
 });
+//# sourceMappingURL=rangeUtil.js.map

@@ -361,3 +361,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/event
     }
     exports.asFileEditorInput = asFileEditorInput;
 });
+//# sourceMappingURL=editor.js.map

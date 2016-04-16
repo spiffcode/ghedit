@@ -254,3 +254,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/editor/common/edito
     }(viewPart_1.ViewPart));
     exports.ViewCursors = ViewCursors;
 });
+//# sourceMappingURL=viewCursors.js.map

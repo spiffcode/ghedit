@@ -52,3 +52,4 @@ define(["require", "exports", 'vs/editor/common/modes/supports'], function (requ
     }());
     exports.CharacterPairSupport = CharacterPairSupport;
 });
+//# sourceMappingURL=characterPair.js.map

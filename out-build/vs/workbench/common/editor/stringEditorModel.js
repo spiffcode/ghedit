@@ -104,3 +104,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/common/
     }(textEditorModel_1.BaseTextEditorModel));
     exports.StringEditorModel = StringEditorModel;
 });
+//# sourceMappingURL=stringEditorModel.js.map

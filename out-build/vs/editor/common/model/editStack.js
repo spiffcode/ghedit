@@ -102,3 +102,4 @@ define(["require", "exports", 'vs/base/common/errors'], function (require, expor
     }());
     exports.EditStack = EditStack;
 });
+//# sourceMappingURL=editStack.js.map

@@ -132,3 +132,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/modes/
     }());
     exports.Brackets = Brackets;
 });
+//# sourceMappingURL=electricCharacter.js.map

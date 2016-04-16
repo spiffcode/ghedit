@@ -117,3 +117,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/contro
     }());
     exports.ShiftCommand = ShiftCommand;
 });
+//# sourceMappingURL=shiftCommand.js.map

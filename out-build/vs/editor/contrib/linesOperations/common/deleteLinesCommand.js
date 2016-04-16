@@ -45,3 +45,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/c
     }());
     exports.DeleteLinesCommand = DeleteLinesCommand;
 });
+//# sourceMappingURL=deleteLinesCommand.js.map

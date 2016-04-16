@@ -56,3 +56,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/platform/telemetry/co
     }());
     exports.RemoteTelemetryService = RemoteTelemetryService;
 });
+//# sourceMappingURL=remoteTelemetryService.js.map

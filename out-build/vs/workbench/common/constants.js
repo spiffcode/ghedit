@@ -19,3 +19,4 @@ define(["require", "exports"], function (require, exports) {
         STATUSBAR_PART: 'workbench.parts.statusbar'
     };
 });
+//# sourceMappingURL=constants.js.map

@@ -18,3 +18,4 @@ define(["require", "exports", 'vs/editor/common/viewModel/viewEventHandler'], fu
     }(viewEventHandler_1.ViewEventHandler));
     exports.DynamicViewOverlay = DynamicViewOverlay;
 });
+//# sourceMappingURL=dynamicViewOverlay.js.map

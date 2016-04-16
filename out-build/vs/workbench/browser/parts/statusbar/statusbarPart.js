@@ -198,3 +198,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
         return StatusBarEntryItem;
     }());
 });
+//# sourceMappingURL=statusbarPart.js.map

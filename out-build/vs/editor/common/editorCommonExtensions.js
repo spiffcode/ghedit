@@ -201,3 +201,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/uri', 'vs
         };
     }
 });
+//# sourceMappingURL=editorCommonExtensions.js.map

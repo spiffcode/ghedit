@@ -1368,3 +1368,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/eventEmitt
         return r;
     }
 });
+//# sourceMappingURL=diffEditorWidget.js.map

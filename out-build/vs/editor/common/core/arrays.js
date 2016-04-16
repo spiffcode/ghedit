@@ -37,3 +37,4 @@ define(["require", "exports"], function (require, exports) {
         Arrays.findIndexInSegmentsArray = findIndexInSegmentsArray;
     })(Arrays = exports.Arrays || (exports.Arrays = {}));
 });
+//# sourceMappingURL=arrays.js.map

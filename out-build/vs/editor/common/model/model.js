@@ -93,3 +93,4 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/editor/common/editorComm
     }(editableTextModel_1.EditableTextModel));
     exports.Model = Model;
 });
+//# sourceMappingURL=model.js.map

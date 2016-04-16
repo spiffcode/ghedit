@@ -223,3 +223,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenGlobalKeybindingsAction, OpenGlobalKeybindingsAction.ID, OpenGlobalKeybindingsAction.LABEL), category);
     actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenWorkspaceSettingsAction, OpenWorkspaceSettingsAction.ID, OpenWorkspaceSettingsAction.LABEL), category);
 });
+//# sourceMappingURL=openSettings.js.map

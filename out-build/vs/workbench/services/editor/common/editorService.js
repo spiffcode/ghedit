@@ -11,3 +11,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     var EditorArrangement = exports.EditorArrangement;
     exports.IWorkbenchEditorService = instantiation_1.createDecorator('editorService');
 });
+//# sourceMappingURL=editorService.js.map

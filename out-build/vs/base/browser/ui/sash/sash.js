@@ -175,3 +175,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/build
     }(eventEmitter_1.EventEmitter));
     exports.Sash = Sash;
 });
+//# sourceMappingURL=sash.js.map

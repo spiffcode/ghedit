@@ -126,3 +126,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.OverviewRulerZone = OverviewRulerZone;
 });
+//# sourceMappingURL=editorBrowser.js.map

@@ -40,3 +40,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/types',
         return arg1.fsPath;
     }
 });
+//# sourceMappingURL=labels.js.map

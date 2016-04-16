@@ -131,3 +131,4 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls', 'vs/base/common/
         }
     }
 });
+//# sourceMappingURL=editor.contribution.js.map

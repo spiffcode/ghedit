@@ -136,3 +136,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
     }(eventEmitter_1.EventEmitter));
     exports.EditorScrollable = EditorScrollable;
 });
+//# sourceMappingURL=editorScrollable.js.map

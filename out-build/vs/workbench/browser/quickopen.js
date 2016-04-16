@@ -292,3 +292,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }(QuickOpenHandler));
     exports.CommandQuickOpenHandler = CommandQuickOpenHandler;
 });
+//# sourceMappingURL=quickopen.js.map

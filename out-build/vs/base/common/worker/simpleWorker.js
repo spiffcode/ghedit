@@ -272,3 +272,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/lifecycle
     }
     exports.create = create;
 });
+//# sourceMappingURL=simpleWorker.js.map

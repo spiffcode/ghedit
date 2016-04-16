@@ -11,3 +11,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     })(exports.MarkerType || (exports.MarkerType = {}));
     var MarkerType = exports.MarkerType;
 });
+//# sourceMappingURL=markers.js.map

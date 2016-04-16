@@ -10,3 +10,4 @@ define(["require", "exports"], function (require, exports) {
     })(exports.Mode || (exports.Mode = {}));
     var Mode = exports.Mode;
 });
+//# sourceMappingURL=quickOpen.js.map

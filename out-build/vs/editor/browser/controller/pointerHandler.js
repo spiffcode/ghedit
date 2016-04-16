@@ -223,3 +223,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/mouseEvent
     }());
     exports.PointerHandler = PointerHandler;
 });
+//# sourceMappingURL=pointerHandler.js.map

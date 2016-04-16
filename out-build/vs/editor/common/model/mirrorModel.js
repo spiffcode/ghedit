@@ -379,3 +379,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/editor/common/edit
     }(AbstractMirrorModel));
     exports.MirrorModel = MirrorModel;
 });
+//# sourceMappingURL=mirrorModel.js.map

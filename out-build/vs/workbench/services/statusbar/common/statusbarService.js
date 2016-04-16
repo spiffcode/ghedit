@@ -11,3 +11,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     })(exports.StatusbarAlignment || (exports.StatusbarAlignment = {}));
     var StatusbarAlignment = exports.StatusbarAlignment;
 });
+//# sourceMappingURL=statusbarService.js.map

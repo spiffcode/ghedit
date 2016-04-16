@@ -35,3 +35,4 @@ define(["require", "exports", 'vs/editor/common/modes/supports'], function (requ
     }());
     exports.DeclarationSupport = DeclarationSupport;
 });
+//# sourceMappingURL=declarationSupport.js.map

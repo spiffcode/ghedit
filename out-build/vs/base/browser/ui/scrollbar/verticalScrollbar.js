@@ -64,3 +64,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/ui/scr
     }(abstractScrollbar_1.AbstractScrollbar));
     exports.VerticalScrollbar = VerticalScrollbar;
 });
+//# sourceMappingURL=verticalScrollbar.js.map

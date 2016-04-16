@@ -384,3 +384,4 @@ define(["require", "exports", 'vs/editor/common/viewLayout/whitespaceComputer'],
     }());
     exports.VerticalObjects = VerticalObjects;
 });
+//# sourceMappingURL=verticalObjects.js.map

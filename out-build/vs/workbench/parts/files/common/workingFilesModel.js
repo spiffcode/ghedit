@@ -399,3 +399,4 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
     }());
     exports.WorkingFileEntry = WorkingFileEntry;
 });
+//# sourceMappingURL=workingFilesModel.js.map

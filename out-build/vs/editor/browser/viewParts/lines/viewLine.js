@@ -282,3 +282,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/styleM
         return new ViewLine(context);
     }
 });
+//# sourceMappingURL=viewLine.js.map

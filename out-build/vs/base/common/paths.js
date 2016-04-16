@@ -275,3 +275,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/strings
     }
     exports.isAbsolute = isAbsolute;
 });
+//# sourceMappingURL=paths.js.map

@@ -241,3 +241,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/base/common/paths'],
         return null;
     }
 });
+//# sourceMappingURL=glob.js.map

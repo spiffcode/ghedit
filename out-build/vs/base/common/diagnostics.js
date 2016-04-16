@@ -76,3 +76,4 @@ define(["require", "exports", 'vs/base/common/platform'], function (require, exp
     }
     exports.register = register;
 });
+//# sourceMappingURL=diagnostics.js.map

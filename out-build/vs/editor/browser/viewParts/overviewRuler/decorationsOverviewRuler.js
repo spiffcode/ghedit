@@ -149,3 +149,4 @@ define(["require", "exports", 'vs/platform/theme/common/themes', 'vs/editor/comm
     }(viewPart_1.ViewPart));
     exports.DecorationsOverviewRuler = DecorationsOverviewRuler;
 });
+//# sourceMappingURL=decorationsOverviewRuler.js.map

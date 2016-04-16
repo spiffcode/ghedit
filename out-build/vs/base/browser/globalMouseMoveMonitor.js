@@ -91,3 +91,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/dom',
     }(lifecycle_1.Disposable));
     exports.GlobalMouseMoveMonitor = GlobalMouseMoveMonitor;
 });
+//# sourceMappingURL=globalMouseMoveMonitor.js.map

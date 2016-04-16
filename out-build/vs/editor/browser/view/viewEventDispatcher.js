@@ -78,3 +78,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter'], function (require,
     }());
     exports.ViewEventDispatcher = ViewEventDispatcher;
 });
+//# sourceMappingURL=viewEventDispatcher.js.map

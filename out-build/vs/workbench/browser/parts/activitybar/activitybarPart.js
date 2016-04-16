@@ -216,3 +216,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
         return ViewletActivityAction;
     }(activityAction_1.ActivityAction));
 });
+//# sourceMappingURL=activitybarPart.js.map

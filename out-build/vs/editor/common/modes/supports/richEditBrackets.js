@@ -115,3 +115,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/core/r
     }());
     exports.BracketsUtils = BracketsUtils;
 });
+//# sourceMappingURL=richEditBrackets.js.map

@@ -372,3 +372,4 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/events', '
         }
     };
 });
+//# sourceMappingURL=files.js.map

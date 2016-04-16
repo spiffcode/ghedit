@@ -69,3 +69,4 @@ define(["require", "exports", './types'], function (require, exports, types_1) {
     }());
     exports.Disposable = Disposable;
 });
+//# sourceMappingURL=lifecycle.js.map

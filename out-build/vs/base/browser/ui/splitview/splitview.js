@@ -660,3 +660,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/eventE
     }());
     exports.SplitView = SplitView;
 });
+//# sourceMappingURL=splitview.js.map

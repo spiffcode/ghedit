@@ -432,3 +432,4 @@ define(["require", "exports", 'vs/editor/browser/view/viewPart', 'vs/base/browse
         return ViewLayerRenderer;
     }());
 });
+//# sourceMappingURL=viewLayer.js.map

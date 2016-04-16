@@ -182,3 +182,4 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/lifecycle
     }());
     exports.Gesture = Gesture;
 });
+//# sourceMappingURL=touch.js.map

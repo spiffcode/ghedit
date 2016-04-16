@@ -170,3 +170,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/editor/
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(DetectIndentation, DetectIndentation.ID, nls.localize('detectIndentation', "Detect Indentation from Content")));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ToggleRenderWhitespaceAction, ToggleRenderWhitespaceAction.ID, nls.localize('toggleRenderWhitespace', "Toggle Render Whitespace")));
 });
+//# sourceMappingURL=indentation.js.map

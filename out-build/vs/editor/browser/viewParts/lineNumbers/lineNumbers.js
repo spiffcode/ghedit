@@ -120,3 +120,4 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/editor/browser/view
     }(dynamicViewOverlay_1.DynamicViewOverlay));
     exports.LineNumbersOverlay = LineNumbersOverlay;
 });
+//# sourceMappingURL=lineNumbers.js.map

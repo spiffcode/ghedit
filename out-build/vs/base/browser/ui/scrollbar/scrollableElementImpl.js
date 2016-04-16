@@ -300,3 +300,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/platform', 
     }(widget_1.Widget));
     exports.ScrollableElement = ScrollableElement;
 });
+//# sourceMappingURL=scrollableElementImpl.js.map

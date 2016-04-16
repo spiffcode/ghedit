@@ -195,3 +195,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/core/m
     }());
     exports.SnippetsRegistry = SnippetsRegistry;
 });
+//# sourceMappingURL=supports.js.map

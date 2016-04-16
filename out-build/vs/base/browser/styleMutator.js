@@ -281,3 +281,4 @@ define(["require", "exports", 'vs/base/browser/dom'], function (require, exports
         }
     })();
 });
+//# sourceMappingURL=styleMutator.js.map

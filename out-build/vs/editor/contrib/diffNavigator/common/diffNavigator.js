@@ -180,3 +180,4 @@ define(["require", "exports", 'vs/base/common/assert', 'vs/base/common/eventEmit
     }(eventEmitter_1.EventEmitter));
     exports.DiffNavigator = DiffNavigator;
 });
+//# sourceMappingURL=diffNavigator.js.map

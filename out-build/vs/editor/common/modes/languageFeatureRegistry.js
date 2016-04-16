@@ -156,3 +156,4 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/event', '
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = LanguageFeatureRegistry;
 });
+//# sourceMappingURL=languageFeatureRegistry.js.map

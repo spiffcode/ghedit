@@ -247,3 +247,4 @@ define(["require", "exports", 'vs/base/parts/tree/browser/treeDefaults', 'vs/bas
     }(Events.EventEmitter));
     exports.Tree = Tree;
 });
+//# sourceMappingURL=treeImpl.js.map

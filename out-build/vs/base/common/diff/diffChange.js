@@ -54,3 +54,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.DiffChange = DiffChange;
 });
+//# sourceMappingURL=diffChange.js.map

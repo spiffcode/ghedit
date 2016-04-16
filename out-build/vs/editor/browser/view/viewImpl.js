@@ -785,3 +785,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/eventEmit
         }
     }
 });
+//# sourceMappingURL=viewImpl.js.map

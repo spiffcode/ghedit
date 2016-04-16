@@ -291,3 +291,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/platfor
     }(files_2.FileEditorInput));
     exports.FileEditorInput = FileEditorInput;
 });
+//# sourceMappingURL=fileEditorInput.js.map

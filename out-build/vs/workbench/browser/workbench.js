@@ -579,3 +579,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
     }());
     exports.Workbench = Workbench;
 });
+//# sourceMappingURL=workbench.js.map

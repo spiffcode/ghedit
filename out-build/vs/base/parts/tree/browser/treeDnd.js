@@ -56,3 +56,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.DesktopDragAndDropData = DesktopDragAndDropData;
 });
+//# sourceMappingURL=treeDnd.js.map

@@ -70,3 +70,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
     }());
     exports.WindowService = WindowService;
 });
+//# sourceMappingURL=windowService.js.map

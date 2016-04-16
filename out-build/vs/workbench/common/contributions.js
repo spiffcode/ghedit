@@ -31,3 +31,4 @@ define(["require", "exports", 'vs/platform/platform'], function (require, export
     }(platform_1.BaseRegistry));
     platform_1.Registry.add(Extensions.Workbench, new WorkbenchContributionsRegistry());
 });
+//# sourceMappingURL=contributions.js.map

@@ -9,3 +9,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     exports.IMessageService = instantiation_1.createDecorator('messageService');
     exports.Severity = severity_1.default;
 });
+//# sourceMappingURL=message.js.map

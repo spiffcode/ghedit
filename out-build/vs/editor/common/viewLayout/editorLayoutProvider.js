@@ -88,3 +88,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.EditorLayoutProvider = EditorLayoutProvider;
 });
+//# sourceMappingURL=editorLayoutProvider.js.map

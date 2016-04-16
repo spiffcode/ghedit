@@ -841,3 +841,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
     }
     exports.removeTabIndexAndUpdateFocus = removeTabIndexAndUpdateFocus;
 });
+//# sourceMappingURL=dom.js.map

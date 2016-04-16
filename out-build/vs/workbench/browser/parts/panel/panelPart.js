@@ -103,3 +103,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     var actionRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(TogglePanelAction, TogglePanelAction.ID, TogglePanelAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_J }), nls.localize('view', "View"));
 });
+//# sourceMappingURL=panelPart.js.map

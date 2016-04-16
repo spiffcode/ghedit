@@ -28,3 +28,4 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/editor/common
     }());
     exports.IdentityFilteredLineTokens = IdentityFilteredLineTokens;
 });
+//# sourceMappingURL=filteredLineTokens.js.map

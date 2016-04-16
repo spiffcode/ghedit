@@ -106,3 +106,4 @@ define(["require", "exports", 'vs/workbench/common/editor/stringEditorModel', 'v
     }(stringEditorModel_1.StringEditorModel));
     exports.UntitledEditorModel = UntitledEditorModel;
 });
+//# sourceMappingURL=untitledEditorModel.js.map

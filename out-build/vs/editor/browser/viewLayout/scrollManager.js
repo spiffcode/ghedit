@@ -109,3 +109,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/dom',
     }());
     exports.ScrollManager = ScrollManager;
 });
+//# sourceMappingURL=scrollManager.js.map

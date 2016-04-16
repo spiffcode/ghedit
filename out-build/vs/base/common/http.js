@@ -32,3 +32,4 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
     }
     exports.getErrorStatusDescription = getErrorStatusDescription;
 });
+//# sourceMappingURL=http.js.map

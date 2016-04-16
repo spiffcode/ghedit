@@ -397,3 +397,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/lif
     }(eventEmitter_1.EventEmitter));
     exports.ViewModel = ViewModel;
 });
+//# sourceMappingURL=viewModel.js.map

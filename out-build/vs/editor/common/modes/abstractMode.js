@@ -232,3 +232,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/win
         return event;
     }
 });
+//# sourceMappingURL=abstractMode.js.map

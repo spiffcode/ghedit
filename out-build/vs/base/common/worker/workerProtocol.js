@@ -54,3 +54,4 @@ define(["require", "exports", 'vs/base/common/winjs.base'], function (require, e
     }());
     exports.RemoteCom = RemoteCom;
 });
+//# sourceMappingURL=workerProtocol.js.map

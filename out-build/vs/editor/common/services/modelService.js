@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IModelService = instantiation_1.createDecorator('modelService');
 });
+//# sourceMappingURL=modelService.js.map

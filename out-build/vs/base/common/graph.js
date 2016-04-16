@@ -86,3 +86,4 @@ define(["require", "exports", 'vs/base/common/types', 'vs/base/common/collection
     }());
     exports.Graph = Graph;
 });
+//# sourceMappingURL=graph.js.map

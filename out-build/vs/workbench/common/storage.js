@@ -214,3 +214,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/typ
     exports.InMemoryLocalStorage = InMemoryLocalStorage;
     exports.inMemoryLocalStorageInstance = new InMemoryLocalStorage();
 });
+//# sourceMappingURL=storage.js.map

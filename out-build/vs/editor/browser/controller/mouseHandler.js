@@ -425,3 +425,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/platfo
         return MouseDownState;
     }());
 });
+//# sourceMappingURL=mouseHandler.js.map

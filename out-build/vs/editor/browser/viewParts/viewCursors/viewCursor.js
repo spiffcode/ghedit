@@ -123,3 +123,4 @@ define(["require", "exports", 'vs/base/browser/styleMutator', 'vs/editor/common/
     }());
     exports.ViewCursor = ViewCursor;
 });
+//# sourceMappingURL=viewCursor.js.map

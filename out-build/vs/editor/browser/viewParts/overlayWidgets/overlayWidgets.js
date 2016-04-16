@@ -116,3 +116,4 @@ define(["require", "exports", 'vs/base/browser/styleMutator', 'vs/editor/browser
     }(viewPart_1.ViewPart));
     exports.ViewOverlayWidgets = ViewOverlayWidgets;
 });
+//# sourceMappingURL=overlayWidgets.js.map

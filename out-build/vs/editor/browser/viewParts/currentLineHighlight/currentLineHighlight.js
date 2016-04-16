@@ -115,3 +115,4 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
     }(dynamicViewOverlay_1.DynamicViewOverlay));
     exports.CurrentLineHighlightOverlay = CurrentLineHighlightOverlay;
 });
+//# sourceMappingURL=currentLineHighlight.js.map

@@ -842,3 +842,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
     }(part_1.Part));
     exports.EditorPart = EditorPart;
 });
+//# sourceMappingURL=editorPart.js.map

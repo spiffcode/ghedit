@@ -142,3 +142,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/mime', 'vs/base/common/p
     }());
     exports.ResourceViewer = ResourceViewer;
 });
+//# sourceMappingURL=resourceViewer.js.map

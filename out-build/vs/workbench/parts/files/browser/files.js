@@ -27,3 +27,4 @@ define(["require", "exports", 'vs/workbench/browser/parts/editor/baseEditor'], f
     }(baseEditor_1.EditorDescriptor));
     exports.FileEditorDescriptor = FileEditorDescriptor;
 });
+//# sourceMappingURL=files.js.map

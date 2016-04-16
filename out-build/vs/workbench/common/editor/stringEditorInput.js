@@ -139,3 +139,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/mime'
     }(editor_1.EditorInput));
     exports.StringEditorInput = StringEditorInput;
 });
+//# sourceMappingURL=stringEditorInput.js.map

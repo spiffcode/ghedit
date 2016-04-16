@@ -53,3 +53,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/platform/pla
         mimetypes: ['text/plain']
     });
 });
+//# sourceMappingURL=modesRegistry.js.map

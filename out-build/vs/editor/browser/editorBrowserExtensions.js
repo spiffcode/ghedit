@@ -44,3 +44,4 @@ define(["require", "exports", 'vs/platform/platform'], function (require, export
     }());
     platform_1.Registry.add(Extensions.EditorContributions, new EditorContributionRegistry());
 });
+//# sourceMappingURL=editorBrowserExtensions.js.map

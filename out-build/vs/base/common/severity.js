@@ -50,3 +50,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/strings'], function (req
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Severity;
 });
+//# sourceMappingURL=severity.js.map

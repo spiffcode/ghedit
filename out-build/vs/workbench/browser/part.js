@@ -166,3 +166,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/workbench/common/co
     }());
     exports.PartLayout = PartLayout;
 });
+//# sourceMappingURL=part.js.map

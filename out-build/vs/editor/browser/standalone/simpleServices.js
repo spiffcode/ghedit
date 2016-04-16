@@ -256,3 +256,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/eventEmit
     }(configurationService_1.ConfigurationService));
     exports.SimpleConfigurationService = SimpleConfigurationService;
 });
+//# sourceMappingURL=simpleServices.js.map

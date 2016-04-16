@@ -301,3 +301,4 @@ define(["require", "exports", 'vs/base/common/strings'], function (require, expo
     }
     exports.matchesFuzzy = matchesFuzzy;
 });
+//# sourceMappingURL=filters.js.map

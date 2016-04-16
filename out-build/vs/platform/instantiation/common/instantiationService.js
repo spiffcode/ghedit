@@ -291,3 +291,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/error
         return InstantiationService;
     }());
 });
+//# sourceMappingURL=instantiationService.js.map

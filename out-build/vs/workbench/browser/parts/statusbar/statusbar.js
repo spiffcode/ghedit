@@ -35,3 +35,4 @@ define(["require", "exports", 'vs/platform/platform', 'vs/workbench/services/sta
     };
     platform_1.Registry.add(exports.Extensions.Statusbar, new StatusbarRegistry());
 });
+//# sourceMappingURL=statusbar.js.map

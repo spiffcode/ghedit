@@ -146,3 +146,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     }(textEditor_1.BaseTextEditor));
     exports.StringEditor = StringEditor;
 });
+//# sourceMappingURL=stringEditor.js.map

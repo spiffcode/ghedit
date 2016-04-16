@@ -283,3 +283,4 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/network',
     }(MarkerService));
     exports.MainProcessMarkerService = MainProcessMarkerService;
 });
+//# sourceMappingURL=markerService.js.map

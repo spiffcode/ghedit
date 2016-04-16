@@ -31,3 +31,4 @@ define(["require", "exports", 'vs/base/common/platform'], function (require, exp
     }());
     exports.StopWatch = StopWatch;
 });
+//# sourceMappingURL=stopwatch.js.map

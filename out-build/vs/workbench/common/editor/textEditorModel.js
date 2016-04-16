@@ -130,3 +130,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/editor/common/edi
     }(editor_1.EditorModel));
     exports.BaseTextEditorModel = BaseTextEditorModel;
 });
+//# sourceMappingURL=textEditorModel.js.map

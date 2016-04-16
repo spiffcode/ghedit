@@ -615,3 +615,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/model/
         return modeTransitions;
     }
 });
+//# sourceMappingURL=modelLine.js.map

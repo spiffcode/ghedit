@@ -53,3 +53,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/editor
     }());
     exports.EditorState = EditorState;
 });
+//# sourceMappingURL=editorState.js.map

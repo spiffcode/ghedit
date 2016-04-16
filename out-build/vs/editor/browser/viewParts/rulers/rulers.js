@@ -68,3 +68,4 @@ define(["require", "exports", 'vs/base/browser/styleMutator', 'vs/editor/browser
     }(viewPart_1.ViewPart));
     exports.Rulers = Rulers;
 });
+//# sourceMappingURL=rulers.js.map

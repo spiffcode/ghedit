@@ -43,3 +43,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/ui/act
     }(eventEmitter_1.EventEmitter));
     exports.Menu = Menu;
 });
+//# sourceMappingURL=menu.js.map

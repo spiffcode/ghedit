@@ -49,3 +49,4 @@ define(["require", "exports", 'vs/base/common/events', 'vs/platform/instantiatio
     })(exports.StorageScope || (exports.StorageScope = {}));
     var StorageScope = exports.StorageScope;
 });
+//# sourceMappingURL=storage.js.map

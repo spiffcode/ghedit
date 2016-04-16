@@ -48,3 +48,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/workbench/commo
     }(eventEmitter_1.EventEmitter));
     exports.WorkbenchComponent = WorkbenchComponent;
 });
+//# sourceMappingURL=component.js.map

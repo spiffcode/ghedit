@@ -298,3 +298,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri',
     }(WorkbenchEditorService));
     exports.DelegatingWorkbenchEditorService = DelegatingWorkbenchEditorService;
 });
+//# sourceMappingURL=editorService.js.map

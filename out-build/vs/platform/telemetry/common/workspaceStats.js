@@ -103,3 +103,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/error
     }());
     exports.WorkspaceStats = WorkspaceStats;
 });
+//# sourceMappingURL=workspaceStats.js.map

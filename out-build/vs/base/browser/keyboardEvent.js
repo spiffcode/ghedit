@@ -228,3 +228,4 @@ define(["require", "exports", 'vs/base/common/keyCodes', 'vs/base/common/platfor
     }());
     exports.StandardKeyboardEvent = StandardKeyboardEvent;
 });
+//# sourceMappingURL=keyboardEvent.js.map

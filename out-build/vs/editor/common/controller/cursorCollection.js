@@ -310,3 +310,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/editor/common/control
     }());
     exports.CursorCollection = CursorCollection;
 });
+//# sourceMappingURL=cursorCollection.js.map

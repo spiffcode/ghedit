@@ -16,3 +16,4 @@ define(["require", "exports"], function (require, exports) {
         Schemas.file = 'file';
     })(Schemas = exports.Schemas || (exports.Schemas = {}));
 });
+//# sourceMappingURL=network.js.map

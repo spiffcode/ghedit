@@ -148,3 +148,4 @@ define(["require", "exports", 'vs/editor/common/core/idGenerator', 'vs/editor/co
     }(textModelWithTokens_1.TextModelWithTokens));
     exports.TextModelWithMarkers = TextModelWithMarkers;
 });
+//# sourceMappingURL=textModelWithMarkers.js.map

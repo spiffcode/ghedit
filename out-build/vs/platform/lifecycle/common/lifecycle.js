@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.ILifecycleService = instantiation_1.createDecorator('lifecycleService');
 });
+//# sourceMappingURL=lifecycle.js.map

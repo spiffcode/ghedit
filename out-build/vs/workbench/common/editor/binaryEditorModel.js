@@ -35,3 +35,4 @@ define(["require", "exports", 'vs/workbench/common/editor'], function (require, 
     }(editor_1.EditorModel));
     exports.BinaryEditorModel = BinaryEditorModel;
 });
+//# sourceMappingURL=binaryEditorModel.js.map

@@ -177,3 +177,4 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/types', 'v
     }
     exports.suggestFilename = suggestFilename;
 });
+//# sourceMappingURL=mime.js.map

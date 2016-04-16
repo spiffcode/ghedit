@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IEventService = instantiation_1.createDecorator('eventService');
 });
+//# sourceMappingURL=event.js.map

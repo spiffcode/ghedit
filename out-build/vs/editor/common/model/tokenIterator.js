@@ -118,3 +118,4 @@ define(["require", "exports", 'vs/editor/common/model/tokensBinaryEncoding'], fu
     }());
     exports.TokenIterator = TokenIterator;
 });
+//# sourceMappingURL=tokenIterator.js.map

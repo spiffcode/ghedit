@@ -448,3 +448,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/common/platfor
         }
     }
 });
+//# sourceMappingURL=abstractScrollbar.js.map

@@ -335,3 +335,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
     }());
     exports.WorkbenchShell = WorkbenchShell;
 });
+//# sourceMappingURL=shell.js.map

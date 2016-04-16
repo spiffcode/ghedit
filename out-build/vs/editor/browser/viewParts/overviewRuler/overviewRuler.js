@@ -54,3 +54,4 @@ define(["require", "exports", 'vs/editor/common/viewModel/viewEventHandler', 'vs
     }(viewEventHandler_1.ViewEventHandler));
     exports.OverviewRuler = OverviewRuler;
 });
+//# sourceMappingURL=overviewRuler.js.map

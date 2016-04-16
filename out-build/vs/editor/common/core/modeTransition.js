@@ -24,3 +24,4 @@ define(["require", "exports", 'vs/editor/common/core/arrays'], function (require
     }());
     exports.ModeTransition = ModeTransition;
 });
+//# sourceMappingURL=modeTransition.js.map

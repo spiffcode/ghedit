@@ -176,3 +176,4 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
     }(dynamicViewOverlay_1.DynamicViewOverlay));
     exports.DecorationsOverlay = DecorationsOverlay;
 });
+//# sourceMappingURL=decorations.js.map

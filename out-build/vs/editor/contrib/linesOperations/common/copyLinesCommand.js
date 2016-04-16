@@ -58,3 +58,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/c
     }());
     exports.CopyLinesCommand = CopyLinesCommand;
 });
+//# sourceMappingURL=copyLinesCommand.js.map

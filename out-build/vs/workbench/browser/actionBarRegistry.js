@@ -273,3 +273,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
     }());
     platform_1.Registry.add(exports.Extensions.Actionbar, new ActionBarRegistry());
 });
+//# sourceMappingURL=actionBarRegistry.js.map

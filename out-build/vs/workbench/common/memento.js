@@ -101,3 +101,4 @@ define(["require", "exports", 'vs/base/common/types', 'vs/platform/storage/commo
         return ScopedMemento;
     }());
 });
+//# sourceMappingURL=memento.js.map

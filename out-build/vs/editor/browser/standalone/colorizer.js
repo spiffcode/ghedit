@@ -99,3 +99,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/winjs.base
         };
     }
 });
+//# sourceMappingURL=colorizer.js.map

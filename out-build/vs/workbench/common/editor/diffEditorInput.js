@@ -160,3 +160,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }
     exports.toDiffLabel = toDiffLabel;
 });
+//# sourceMappingURL=diffEditorInput.js.map

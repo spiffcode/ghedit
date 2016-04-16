@@ -248,3 +248,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/browser/styleMut
     }(viewPart_1.ViewPart));
     exports.ViewZones = ViewZones;
 });
+//# sourceMappingURL=viewZones.js.map

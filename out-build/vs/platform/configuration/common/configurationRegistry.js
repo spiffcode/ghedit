@@ -84,3 +84,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/platform/pla
         }
     });
 });
+//# sourceMappingURL=configurationRegistry.js.map

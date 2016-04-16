@@ -230,3 +230,4 @@ define(["require", "exports", 'vs/editor/common/core/position'], function (requi
     }());
     exports.Range = Range;
 });
+//# sourceMappingURL=range.js.map

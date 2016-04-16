@@ -71,3 +71,4 @@ define(["require", "exports", 'vs/platform/platform', 'vs/workbench/browser/comp
     };
     platform_1.Registry.add(exports.Extensions.Panels, new PanelRegistry());
 });
+//# sourceMappingURL=panel.js.map

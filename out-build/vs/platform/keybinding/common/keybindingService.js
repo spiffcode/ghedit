@@ -223,3 +223,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.IKeybindingService = instantiation_1.createDecorator('keybindingService');
     exports.SET_CONTEXT_COMMAND_ID = 'setContext';
 });
+//# sourceMappingURL=keybindingService.js.map

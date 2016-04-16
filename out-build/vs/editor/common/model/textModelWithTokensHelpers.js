@@ -127,3 +127,4 @@ define(["require", "exports", 'vs/editor/common/modes/nullMode', 'vs/editor/comm
     }());
     exports.WordHelper = WordHelper;
 });
+//# sourceMappingURL=textModelWithTokensHelpers.js.map

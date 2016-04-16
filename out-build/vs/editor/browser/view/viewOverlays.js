@@ -227,3 +227,4 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/styleM
     }(ViewOverlays));
     exports.MarginViewOverlays = MarginViewOverlays;
 });
+//# sourceMappingURL=viewOverlays.js.map

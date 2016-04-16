@@ -167,3 +167,4 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/editor/common/edit
         return DescentEnablementState;
     }(CachingEnablementState));
 });
+//# sourceMappingURL=editorActionEnablement.js.map

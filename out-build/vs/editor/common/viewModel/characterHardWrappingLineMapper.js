@@ -236,3 +236,4 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/editor/common/editor
     }());
     exports.CharacterHardWrappingLineMapping = CharacterHardWrappingLineMapping;
 });
+//# sourceMappingURL=characterHardWrappingLineMapper.js.map

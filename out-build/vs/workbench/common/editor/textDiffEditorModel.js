@@ -63,3 +63,4 @@ define(["require", "exports", 'vs/workbench/common/editor/diffEditorModel'], fun
     }(diffEditorModel_1.DiffEditorModel));
     exports.TextDiffEditorModel = TextDiffEditorModel;
 });
+//# sourceMappingURL=textDiffEditorModel.js.map

@@ -629,3 +629,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/bro
     }(BaseActionItem));
     exports.SelectActionItem = SelectActionItem;
 });
+//# sourceMappingURL=actionbar.js.map

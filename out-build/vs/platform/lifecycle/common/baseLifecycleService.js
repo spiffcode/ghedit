@@ -34,3 +34,4 @@ define(["require", "exports", 'vs/base/common/event', './lifecycle'], function (
     }());
     exports.BaseLifecycleService = BaseLifecycleService;
 });
+//# sourceMappingURL=baseLifecycleService.js.map

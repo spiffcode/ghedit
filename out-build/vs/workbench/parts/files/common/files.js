@@ -188,3 +188,4 @@ define(["require", "exports", 'vs/base/common/events', 'vs/base/common/mime', 'v
     var AutoSaveMode = exports.AutoSaveMode;
     exports.ITextFileService = instantiation_1.createDecorator(exports.TEXT_FILE_SERVICE_ID);
 });
+//# sourceMappingURL=files.js.map

@@ -302,3 +302,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/marked/mark
         }
     }
 });
+//# sourceMappingURL=htmlContentRenderer.js.map

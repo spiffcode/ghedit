@@ -305,3 +305,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/platform'
     }(BaseHistoryService));
     exports.HistoryService = HistoryService;
 });
+//# sourceMappingURL=history.js.map

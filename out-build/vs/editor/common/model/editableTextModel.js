@@ -487,3 +487,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/e
     }(textModelWithDecorations_1.TextModelWithDecorations));
     exports.EditableTextModel = EditableTextModel;
 });
+//# sourceMappingURL=editableTextModel.js.map

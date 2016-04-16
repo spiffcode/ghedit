@@ -79,3 +79,4 @@ define(["require", "exports", 'vs/editor/common/core/selection'], function (requ
     }(ReplaceCommand));
     exports.ReplaceCommandThatPreservesSelection = ReplaceCommandThatPreservesSelection;
 });
+//# sourceMappingURL=replaceCommand.js.map

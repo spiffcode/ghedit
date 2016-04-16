@@ -39,3 +39,4 @@ define(["require", "exports", 'vs/base/common/uri'], function (require, exports,
         }
     }
 });
+//# sourceMappingURL=marshalling.js.map

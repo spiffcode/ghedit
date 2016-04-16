@@ -57,3 +57,4 @@ define(["require", "exports"], function (require, exports) {
         DISPOSE: 'dispose',
     };
 });
+//# sourceMappingURL=events.js.map

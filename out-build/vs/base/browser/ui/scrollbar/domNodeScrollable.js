@@ -62,3 +62,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/touch', 'v
     }(lifecycle_1.Disposable));
     exports.DomNodeScrollable = DomNodeScrollable;
 });
+//# sourceMappingURL=domNodeScrollable.js.map

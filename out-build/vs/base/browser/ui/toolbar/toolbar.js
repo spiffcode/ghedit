@@ -172,3 +172,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
     }(actionbar_1.BaseActionItem));
     exports.DropdownMenuActionItem = DropdownMenuActionItem;
 });
+//# sourceMappingURL=toolbar.js.map

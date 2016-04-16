@@ -12,3 +12,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     };
     exports.IResourceService = instantiation_1.createDecorator('resourceService');
 });
+//# sourceMappingURL=resourceService.js.map

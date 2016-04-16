@@ -149,3 +149,4 @@ define(["require", "exports", 'vs/base/common/errors'], function (require, expor
     exports.createAsyncDescriptor6 = _createAsyncDescriptor;
     exports.createAsyncDescriptor7 = _createAsyncDescriptor;
 });
+//# sourceMappingURL=descriptors.js.map

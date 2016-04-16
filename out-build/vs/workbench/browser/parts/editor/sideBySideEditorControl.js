@@ -1230,3 +1230,4 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/workbench/br
     }(eventEmitter_1.EventEmitter));
     exports.SideBySideEditorControl = SideBySideEditorControl;
 });
+//# sourceMappingURL=sideBySideEditorControl.js.map

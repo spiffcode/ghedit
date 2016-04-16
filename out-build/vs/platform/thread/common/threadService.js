@@ -61,3 +61,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', './thread'], function
     }
     exports.AllWorkersAttr = AllWorkersAttr;
 });
+//# sourceMappingURL=threadService.js.map

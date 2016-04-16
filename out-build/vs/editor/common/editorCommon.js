@@ -510,3 +510,4 @@ define(["require", "exports", 'vs/editor/common/core/arrays'], function (require
     }());
     exports.LineVisibleRanges = LineVisibleRanges;
 });
+//# sourceMappingURL=editorCommon.js.map

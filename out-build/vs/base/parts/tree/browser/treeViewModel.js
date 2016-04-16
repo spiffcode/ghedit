@@ -196,3 +196,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/ite
     }(eventEmitter_1.EventEmitter));
     exports.HeightMap = HeightMap;
 });
+//# sourceMappingURL=treeViewModel.js.map

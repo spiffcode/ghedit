@@ -77,3 +77,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     })(exports.ThreadAffinity || (exports.ThreadAffinity = {}));
     var ThreadAffinity = exports.ThreadAffinity;
 });
+//# sourceMappingURL=thread.js.map

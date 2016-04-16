@@ -60,3 +60,4 @@ define(["require", "exports", 'vs/base/common/types', 'vs/base/common/assert'], 
     }());
     exports.BaseRegistry = BaseRegistry;
 });
+//# sourceMappingURL=platform.js.map

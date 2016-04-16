@@ -147,3 +147,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/thread/c
         };
     }
 });
+//# sourceMappingURL=abstractThreadService.js.map

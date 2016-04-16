@@ -406,3 +406,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/browser/browser',
     }(viewLayer_1.ViewLayer));
     exports.ViewLines = ViewLines;
 });
+//# sourceMappingURL=viewLines.js.map

@@ -70,3 +70,4 @@ define(["require", "exports", 'vs/base/common/lifecycle'], function (require, ex
     }(lifecycle_1.Disposable));
     exports.ElementSizeObserver = ElementSizeObserver;
 });
+//# sourceMappingURL=elementSizeObserver.js.map

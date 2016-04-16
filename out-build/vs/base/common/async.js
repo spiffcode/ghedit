@@ -504,3 +504,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/winjs.bas
     }
     exports.ninvoke = ninvoke;
 });
+//# sourceMappingURL=async.js.map

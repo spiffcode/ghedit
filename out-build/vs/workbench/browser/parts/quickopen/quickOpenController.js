@@ -782,3 +782,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
         return PickOpenItem;
     }(quickOpenModel_1.QuickOpenEntryItem));
 });
+//# sourceMappingURL=quickOpenController.js.map

@@ -160,3 +160,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/brow
     }(actionbar_1.BaseActionItem));
     exports.ActivityActionItem = ActivityActionItem;
 });
+//# sourceMappingURL=activityAction.js.map

@@ -56,3 +56,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/common/
     }(editor_1.EditorModel));
     exports.DiffEditorModel = DiffEditorModel;
 });
+//# sourceMappingURL=diffEditorModel.js.map

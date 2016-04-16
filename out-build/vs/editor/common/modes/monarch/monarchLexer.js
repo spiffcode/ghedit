@@ -388,3 +388,4 @@ define(["require", "exports", 'vs/editor/common/modes/abstractState', 'vs/editor
     }
     exports.createTokenizationSupport = createTokenizationSupport;
 });
+//# sourceMappingURL=monarchLexer.js.map

@@ -303,3 +303,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
     }());
     exports.MessageList = MessageList;
 });
+//# sourceMappingURL=messageList.js.map

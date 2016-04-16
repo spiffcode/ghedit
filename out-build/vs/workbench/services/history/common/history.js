@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IHistoryService = instantiation_1.createDecorator('historyService');
 });
+//# sourceMappingURL=history.js.map

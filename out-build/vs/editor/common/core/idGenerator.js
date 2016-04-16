@@ -16,3 +16,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.IdGenerator = IdGenerator;
 });
+//# sourceMappingURL=idGenerator.js.map

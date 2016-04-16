@@ -211,3 +211,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/common/winjs.b
     }(eventEmitter_1.EventEmitter));
     exports.DropdownGroup = DropdownGroup;
 });
+//# sourceMappingURL=dropdown.js.map

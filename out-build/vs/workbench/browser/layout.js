@@ -405,3 +405,4 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/workbench/common/ev
     }());
     exports.WorkbenchLayout = WorkbenchLayout;
 });
+//# sourceMappingURL=layout.js.map

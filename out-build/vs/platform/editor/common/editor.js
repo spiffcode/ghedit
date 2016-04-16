@@ -19,3 +19,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     var Position = exports.Position;
     exports.POSITIONS = [Position.LEFT, Position.CENTER, Position.RIGHT];
 });
+//# sourceMappingURL=editor.js.map

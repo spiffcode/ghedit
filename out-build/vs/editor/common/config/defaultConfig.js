@@ -77,3 +77,4 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
     }());
     exports.DefaultConfig = new ConfigClass();
 });
+//# sourceMappingURL=defaultConfig.js.map

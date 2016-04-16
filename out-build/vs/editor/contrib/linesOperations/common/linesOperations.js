@@ -265,3 +265,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Enter
     }));
 });
+//# sourceMappingURL=linesOperations.js.map

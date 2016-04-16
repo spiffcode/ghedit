@@ -187,3 +187,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
     }(baseEditor_1.BaseEditor));
     exports.BinaryResourceDiffEditor = BinaryResourceDiffEditor;
 });
+//# sourceMappingURL=binaryDiffEditor.js.map

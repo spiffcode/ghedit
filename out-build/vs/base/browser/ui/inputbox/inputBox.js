@@ -305,3 +305,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/browser', 'vs/base/brow
     }(widget_1.Widget));
     exports.InputBox = InputBox;
 });
+//# sourceMappingURL=inputBox.js.map

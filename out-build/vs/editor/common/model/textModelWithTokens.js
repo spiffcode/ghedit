@@ -979,3 +979,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/
     var getType = TokensBinaryEncoding.getType;
     var getStartIndex = TokensBinaryEncoding.getStartIndex;
 });
+//# sourceMappingURL=textModelWithTokens.js.map

@@ -387,3 +387,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/
     }(part_1.Part));
     exports.CompositePart = CompositePart;
 });
+//# sourceMappingURL=compositePart.js.map

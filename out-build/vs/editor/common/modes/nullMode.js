@@ -103,3 +103,4 @@ define(["require", "exports", 'vs/editor/common/config/defaultConfig'], function
     }
     exports.nullTokenize = nullTokenize;
 });
+//# sourceMappingURL=nullMode.js.map

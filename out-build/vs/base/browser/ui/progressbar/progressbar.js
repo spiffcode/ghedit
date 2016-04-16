@@ -183,3 +183,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/asser
     }());
     exports.ProgressBar = ProgressBar;
 });
+//# sourceMappingURL=progressbar.js.map

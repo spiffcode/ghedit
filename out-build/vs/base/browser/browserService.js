@@ -39,3 +39,4 @@ define(["require", "exports", 'vs/base/browser/browser'], function (require, exp
     }
     exports.getService = getService;
 });
+//# sourceMappingURL=browserService.js.map

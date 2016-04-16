@@ -619,3 +619,4 @@ define(["require", "exports", 'vs/editor/common/core/position', 'vs/editor/commo
     }());
     exports.MouseTargetFactory = MouseTargetFactory;
 });
+//# sourceMappingURL=mouseTarget.js.map

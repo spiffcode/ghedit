@@ -252,3 +252,4 @@ define(["require", "exports", 'vs/editor/common/core/position', 'vs/editor/commo
     }());
     exports.ViewController = ViewController;
 });
+//# sourceMappingURL=viewController.js.map

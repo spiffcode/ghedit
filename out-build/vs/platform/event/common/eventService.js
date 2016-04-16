@@ -20,3 +20,4 @@ define(["require", "exports", 'vs/base/common/eventEmitter', './event'], functio
     }(eventEmitter_1.EventEmitter));
     exports.EventService = EventService;
 });
+//# sourceMappingURL=eventService.js.map

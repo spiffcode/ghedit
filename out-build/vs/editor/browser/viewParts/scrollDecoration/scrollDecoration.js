@@ -63,3 +63,4 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/styleMutat
     }(viewPart_1.ViewPart));
     exports.ScrollDecorationViewPart = ScrollDecorationViewPart;
 });
+//# sourceMappingURL=scrollDecoration.js.map

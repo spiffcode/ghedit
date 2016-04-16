@@ -204,3 +204,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
     }(ScopedService));
     exports.WorkbenchProgressService = WorkbenchProgressService;
 });
+//# sourceMappingURL=progressService.js.map

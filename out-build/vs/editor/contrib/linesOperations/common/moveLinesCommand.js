@@ -73,3 +73,4 @@ define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/c
     }());
     exports.MoveLinesCommand = MoveLinesCommand;
 });
+//# sourceMappingURL=moveLinesCommand.js.map

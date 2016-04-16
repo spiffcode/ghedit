@@ -6,3 +6,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     'use strict';
     exports.IThemeService = instantiation_1.createDecorator('themeService');
 });
+//# sourceMappingURL=themeService.js.map

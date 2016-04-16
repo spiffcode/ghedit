@@ -25,3 +25,4 @@ define(["require", "exports", 'vs/editor/common/modes/languageFeatureRegistry'],
     exports.FormatRegistry = new languageFeatureRegistry_1.default('formattingSupport');
     exports.FormatOnTypeRegistry = new languageFeatureRegistry_1.default('formattingSupport');
 });
+//# sourceMappingURL=modes.js.map

@@ -338,3 +338,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     schemaRegistry.registerSchema(schemaId, schema);
     schemaRegistry.addSchemaFileAssociation('/package.json', schemaId);
 });
+//# sourceMappingURL=extensionsRegistry.js.map

@@ -182,3 +182,4 @@ define(["require", "exports", 'vs/editor/common/editorCommon'], function (requir
     }());
     exports.ViewEventHandler = ViewEventHandler;
 });
+//# sourceMappingURL=viewEventHandler.js.map

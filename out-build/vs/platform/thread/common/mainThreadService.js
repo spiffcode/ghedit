@@ -236,3 +236,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/worke
     }(abstractThreadService.AbstractThreadService));
     exports.MainThreadService = MainThreadService;
 });
+//# sourceMappingURL=mainThreadService.js.map

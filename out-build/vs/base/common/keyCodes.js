@@ -883,3 +883,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform'], function (re
             }];
     }
 });
+//# sourceMappingURL=keyCodes.js.map

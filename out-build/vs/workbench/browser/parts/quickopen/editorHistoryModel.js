@@ -173,3 +173,4 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/
     }(quickOpenModel_1.QuickOpenModel));
     exports.EditorHistoryModel = EditorHistoryModel;
 });
+//# sourceMappingURL=editorHistoryModel.js.map

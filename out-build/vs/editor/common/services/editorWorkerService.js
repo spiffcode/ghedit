@@ -7,3 +7,4 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.ID_EDITOR_WORKER_SERVICE = 'editorWorkerService';
     exports.IEditorWorkerService = instantiation_1.createDecorator(exports.ID_EDITOR_WORKER_SERVICE);
 });
+//# sourceMappingURL=editorWorkerService.js.map

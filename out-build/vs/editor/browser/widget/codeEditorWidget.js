@@ -455,3 +455,4 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/browser/browser'
     }());
     exports.CommandRunner = CommandRunner;
 });
+//# sourceMappingURL=codeEditorWidget.js.map

@@ -271,3 +271,4 @@ define(["require", "exports", 'vs/base/common/event', 'vs/base/common/lifecycle'
     }(viewEventHandler_1.ViewEventHandler));
     exports.KeyboardHandler = KeyboardHandler;
 });
+//# sourceMappingURL=keyboardHandler.js.map

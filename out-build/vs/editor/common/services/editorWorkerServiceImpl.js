@@ -230,3 +230,4 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/lifecycle'
         return EditorWorkerClient;
     }(lifecycle_1.Disposable));
 });
+//# sourceMappingURL=editorWorkerServiceImpl.js.map

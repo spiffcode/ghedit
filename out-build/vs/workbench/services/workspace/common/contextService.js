@@ -27,3 +27,4 @@ define(["require", "exports", 'vs/workbench/common/events', 'vs/platform/instant
     }(baseWorkspaceContextService_1.BaseWorkspaceContextService));
     exports.WorkspaceContextService = WorkspaceContextService;
 });
+//# sourceMappingURL=contextService.js.map

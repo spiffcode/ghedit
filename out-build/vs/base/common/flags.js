@@ -22,3 +22,4 @@ define(["require", "exports", 'vs/base/common/platform'], function (require, exp
     }
     exports.workersCount = workersCount;
 });
+//# sourceMappingURL=flags.js.map

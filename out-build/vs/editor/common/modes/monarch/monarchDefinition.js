@@ -33,3 +33,4 @@ define(["require", "exports", 'vs/editor/common/modes/supports/suggestSupport'],
     }
     exports.createSuggestSupport = createSuggestSupport;
 });
+//# sourceMappingURL=monarchDefinition.js.map

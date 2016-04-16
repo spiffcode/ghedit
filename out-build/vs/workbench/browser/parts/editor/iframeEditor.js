@@ -243,3 +243,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
     }(baseEditor_1.BaseEditor));
     exports.IFrameEditor = IFrameEditor;
 });
+//# sourceMappingURL=iframeEditor.js.map

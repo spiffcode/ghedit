@@ -1237,3 +1237,4 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     }(eventEmitter_1.EventEmitter));
     exports.Cursor = Cursor;
 });
+//# sourceMappingURL=cursor.js.map

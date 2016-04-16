@@ -68,3 +68,4 @@ define(["require", "exports", 'vs/base/common/glob'], function (require, exports
     }
     exports.score = score;
 });
+//# sourceMappingURL=languageSelector.js.map
