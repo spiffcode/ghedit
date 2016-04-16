@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "diagnostics": true,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "classic",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "outDir": "../out-build"
+    },
+    "exclude": [
+        "node_modules",
+        "vs"
+    ]
+}
