@@ -1,4 +1,4 @@
-# ghcode
+# GH Code
 
 #### INSTALLING
 
