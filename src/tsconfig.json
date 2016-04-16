@@ -9,7 +9,8 @@
         "moduleResolution": "classic",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outDir": "../out-build"
+        "outDir": "../out-build",
+        "allowJs": true
     },
     "exclude": [
         "node_modules",
