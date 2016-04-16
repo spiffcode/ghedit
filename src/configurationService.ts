@@ -58,7 +58,7 @@ export class ConfigurationService extends CommonConfigurationService {
 
 	protected resolveContent(resource: uri): TPromise<IContent> {
 		return new TPromise<IContent>((c, e) => {
-			console.log('fs.readFile unimplemented');
+			console.log('fs.readFile(\"' + resource.toString(true) + '\") unimplemented');
 			e('configurationService.resolveContent not implemented');
 			/* TODO:
 			fs.readFile(resource.fsPath, (error, contents) => {
@@ -77,7 +77,7 @@ export class ConfigurationService extends CommonConfigurationService {
 
 	protected resolveStat(resource: uri): TPromise<IStat> {
 		return new TPromise<IStat>((c, e) => {
-			console.log('extfs.readdir unimplemented');
+			console.log('extfs.readdir(\"' + resource.toString(true) + '\") unimplemented');
 			e('configurationService.resolveStat not implemented');
 			/* TODO:
 			extfs.readdir(resource.fsPath, (error, children) => {
