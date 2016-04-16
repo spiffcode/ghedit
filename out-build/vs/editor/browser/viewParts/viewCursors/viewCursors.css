@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.monaco-editor .cursors-layer {
+	position: absolute;
+	top: 0;
+}
+
+.monaco-editor .cursors-layer > .cursor {
+	position: absolute;
+	cursor: text;
+}
+.monaco-editor .cursors-layer > .cursor.secondary {
+	opacity: 0.6;
+}
+
+/* -- line-style -- */
+.monaco-editor .cursors-layer.cursor-line-style > .cursor {
+	width: 2px;
+}
+.monaco-editor .cursors-layer.cursor-line-style > .cursor.secondary {
+	width: 1px;
+}
+
+/* -- block-style -- */
+.monaco-editor .cursors-layer.cursor-block-style > .cursor {
+	width: 1ch;
+}
+
+/* -- under-line-style -- */
+.monaco-editor .cursors-layer.cursor-underline-style > .cursor {
+	width: 1ch;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	background: transparent !important;
+	box-sizing: border-box;
+}

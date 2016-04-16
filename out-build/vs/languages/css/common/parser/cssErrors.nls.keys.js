@@ -1,0 +1,33 @@
+/*---------------------------------------------------------
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ *--------------------------------------------------------*/
+define([], [
+	'expected.number',
+	'expected.condt',
+	'expected.ruleorselector',
+	'expected.dot',
+	'expected.colon',
+	'expected.semicolon',
+	'expected.term',
+	'expected.expression',
+	'expected.operator',
+	'expected.ident',
+	'expected.percentage',
+	'expected.uriorstring',
+	'expected.uri',
+	'expected.varname',
+	'expected.varvalue',
+	'expected.propvalue',
+	'expected.lcurly',
+	'expected.rcurly',
+	'expected.lsquare',
+	'expected.rsquare',
+	'expected.lparen',
+	'expected.rparent',
+	'expected.comma',
+	'expected.pagedirordecl',
+	'unknown.atrule',
+	'unknown.keyword',
+	'expected.selector',
+	'expected.stringliteral'
+]);

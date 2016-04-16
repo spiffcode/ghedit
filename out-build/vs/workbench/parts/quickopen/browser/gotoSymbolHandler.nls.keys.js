@@ -1,0 +1,32 @@
+/*---------------------------------------------------------
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ *--------------------------------------------------------*/
+define([], [
+	'gotoSymbol',
+	'symbols',
+	'method',
+	'function',
+	'_constructor',
+	'variable',
+	'class',
+	'interface',
+	'namespace',
+	'package',
+	'modules',
+	'property',
+	'enum',
+	'string',
+	'rule',
+	'file',
+	'array',
+	'number',
+	'boolean',
+	'object',
+	'key',
+	'entryAriaLabel',
+	'noSymbolsMatching',
+	'noSymbolsFound',
+	'gotoSymbolHandlerAriaLabel',
+	'cannotRunGotoSymbolInFile',
+	'cannotRunGotoSymbol'
+]);

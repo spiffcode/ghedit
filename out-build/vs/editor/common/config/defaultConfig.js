@@ -1,0 +1,79 @@
+define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
+    /*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+    'use strict';
+    exports.USUAL_WORD_SEPARATORS = '`~!@#$%^&*()-=+[{]}\\|;:\'",.<>/?';
+    exports.DEFAULT_INDENTATION = {
+        tabSize: 4,
+        insertSpaces: true,
+        detectIndentation: true
+    };
+    var ConfigClass = (function () {
+        function ConfigClass() {
+            this.editor = {
+                experimentalScreenReader: true,
+                rulers: [],
+                wordSeparators: exports.USUAL_WORD_SEPARATORS,
+                selectionClipboard: true,
+                ariaLabel: nls.localize('editorViewAccessibleLabel', "Editor content"),
+                lineNumbers: true,
+                selectOnLineNumbers: true,
+                lineNumbersMinChars: 5,
+                glyphMargin: false,
+                lineDecorationsWidth: 10,
+                revealHorizontalRightPadding: 30,
+                roundedSelection: true,
+                theme: 'vs',
+                readOnly: false,
+                scrollbar: {
+                    verticalScrollbarSize: 14,
+                    horizontal: 'auto',
+                    useShadows: true,
+                    verticalHasArrows: false,
+                    horizontalHasArrows: false
+                },
+                overviewRulerLanes: 2,
+                cursorBlinking: 'blink',
+                cursorStyle: 'line',
+                fontLigatures: false,
+                hideCursorInOverviewRuler: false,
+                scrollBeyondLastLine: true,
+                automaticLayout: false,
+                wrappingColumn: 300,
+                wrappingIndent: 'same',
+                wordWrapBreakBeforeCharacters: '([{‘“〈《「『【〔（［｛｢£¥＄￡￥+＋',
+                wordWrapBreakAfterCharacters: ' \t})]?|&,;¢°′″‰℃、。｡､￠，．：；？！％・･ゝゞヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻ｧｨｩｪｫｬｭｮｯｰ’”〉》」』】〕）］｝｣',
+                wordWrapBreakObtrusiveCharacters: '.',
+                tabFocusMode: false,
+                // stopLineTokenizationAfter
+                // stopRenderingLineAfter
+                longLineBoundary: 300,
+                forcedTokenizationBoundary: 1000,
+                // Features
+                hover: true,
+                contextmenu: true,
+                mouseWheelScrollSensitivity: 1,
+                quickSuggestions: true,
+                quickSuggestionsDelay: 10,
+                iconsInSuggestions: true,
+                autoClosingBrackets: true,
+                formatOnType: false,
+                suggestOnTriggerCharacters: true,
+                acceptSuggestionOnEnter: true,
+                selectionHighlight: true,
+                outlineMarkers: false,
+                referenceInfos: true,
+                folding: true,
+                renderWhitespace: false,
+                indentGuides: false,
+                fontFamily: '',
+                fontSize: 0,
+                lineHeight: 0
+            };
+        }
+        return ConfigClass;
+    }());
+    exports.DefaultConfig = new ConfigClass();
+});
