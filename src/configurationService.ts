@@ -5,6 +5,9 @@
 
 'use strict';
 
+// This is a port of vs/workbench/services/configuration/node/configurationServices with
+// Node dependencies removed/replaced.
+
 import {TPromise} from 'vs/base/common/winjs.base';
 import uri from 'vs/base/common/uri';
 // TODO: import strings = require('vs/base/common/strings');
