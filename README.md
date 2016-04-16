@@ -23,7 +23,6 @@
     
     # Requires TypeScript to be installed.
     tsc
-    cp workbench.main.js ../out-build
 
 #### RUNNING
 
@@ -31,6 +30,5 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* Have build copy workbench.main.js to build dir.
 * Move index.html to src and have build copy it to build dir.
 * Run from build dir.
