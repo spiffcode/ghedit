@@ -4,24 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// This is a port of vs/editor/workbench/services/files/electron-browser with Electron
-// and Node dependencies removed/replaced.
+// This is a port of vs/editor/workbench/services/files/electron-browser/fileService.ts with
+// Electron and Node dependencies removed/replaced.
 
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
 import paths = require('vs/base/common/paths');
 // TODO: import encoding = require('vs/base/node/encoding');
-// TODO: import errors = require('vs/base/common/errors');
+import errors = require('vs/base/common/errors');
 import strings = require('vs/base/common/strings');
 import uri from 'vs/base/common/uri';
 import timer = require('vs/base/common/timer');
 import {IFileService, IFilesConfiguration, IResolveFileOptions, IFileStat, IContent, IImportResult, IResolveContentOptions, IUpdateContentOptions} from 'vs/platform/files/common/files';
-// TODO: import {FileService as NodeFileService, IFileServiceOptions, IEncodingOverride} from 'vs/workbench/services/files/node/fileService';
+import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride} from 'githubFileService';
 import {IConfigurationService, IConfigurationServiceEvent, ConfigurationServiceEventTypes} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 
 // TODO: import {shell} from 'electron';
+
+// TODO: Use vs/base/node/encoding replacement.
+const encoding = {
+	 UTF8: 'utf8'
+};
 
 export class FileService implements IFileService {
 
@@ -39,13 +44,11 @@ export class FileService implements IFileService {
 		const configuration = this.configurationService.getConfiguration<IFilesConfiguration>();
 
 		// adjust encodings (TODO@Ben knowledge on settings location ('.vscode') is hardcoded)
-		/* TODO:
 		let encodingOverride: IEncodingOverride[] = [];
 		encodingOverride.push({ resource: uri.file(this.contextService.getConfiguration().env.appSettingsHome), encoding: encoding.UTF8 });
 		if (this.contextService.getWorkspace()) {
 			encodingOverride.push({ resource: uri.file(paths.join(this.contextService.getWorkspace().resource.fsPath, '.vscode')), encoding: encoding.UTF8 });
 		}
-		*/
 
 		let watcherIgnoredPatterns: string[] = [];
 		if (configuration.files && configuration.files.watcherExclude) {
@@ -53,7 +56,6 @@ export class FileService implements IFileService {
 		}
 
 		// build config
-		/* TODO:
 		let fileServiceConfig: IFileServiceOptions = {
 			errorLogger: (msg: string) => errors.onUnexpectedError(msg),
 			encoding: configuration.files && configuration.files.encoding,
@@ -61,13 +63,10 @@ export class FileService implements IFileService {
 			watcherIgnoredPatterns: watcherIgnoredPatterns,
 			verboseLogging: this.contextService.getConfiguration().env.verboseLogging
 		};
-		*/
 
 		// create service
-		/* TODO:
 		let workspace = this.contextService.getWorkspace();
-		this.raw = new NodeFileService(workspace ? workspace.resource.fsPath : void 0, this.eventService, fileServiceConfig);
-		*/
+		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService);
 
 		// Listeners
 		this.registerListeners();

@@ -150,7 +150,7 @@
 
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO:
-			args.config = '{ "userEnv": { }, "appSettingsPath": "/" }';
+			args.config = '{ "userEnv": { }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
 			var configuration = JSON.parse(args['config']);
 			var enableDeveloperTools = !configuration.isBuilt || !!configuration.extensionDevelopmentPath;
 
@@ -190,7 +190,8 @@
 			createScript(rootUrl + '/vs/loader.js', function() {
 				var nlsConfig;
 				try {
-					var config = process.env['VSCODE_NLS_CONFIG'];
+					// TODO: var config = process.env['VSCODE_NLS_CONFIG'];
+					var config = null;
 					if (config) {
 						nlsConfig = JSON.parse(config);
 					}
