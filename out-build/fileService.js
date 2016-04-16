@@ -1,10 +1,14 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/timer', 'vs/platform/files/common/files', 'vs/platform/configuration/common/configuration'], function (require, exports, nls, winjs_base_1, paths, strings, timer, files_1, configuration_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/timer', 'vs/platform/files/common/files', 'githubFileService', 'vs/platform/configuration/common/configuration'], function (require, exports, nls, winjs_base_1, paths, errors, strings, uri_1, timer, files_1, githubFileService_1, configuration_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     // TODO: import {shell} from 'electron';
+    // TODO: Use vs/base/node/encoding replacement.
+    var encoding = {
+        UTF8: 'utf8'
+    };
     var FileService = (function () {
         function FileService(configurationService, eventService, contextService) {
             this.configurationService = configurationService;
@@ -13,32 +17,26 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             this.serviceId = files_1.IFileService;
             var configuration = this.configurationService.getConfiguration();
             // adjust encodings (TODO@Ben knowledge on settings location ('.vscode') is hardcoded)
-            /* TODO:
-            let encodingOverride: IEncodingOverride[] = [];
-            encodingOverride.push({ resource: uri.file(this.contextService.getConfiguration().env.appSettingsHome), encoding: encoding.UTF8 });
+            var encodingOverride = [];
+            encodingOverride.push({ resource: uri_1.default.file(this.contextService.getConfiguration().env.appSettingsHome), encoding: encoding.UTF8 });
             if (this.contextService.getWorkspace()) {
-                encodingOverride.push({ resource: uri.file(paths.join(this.contextService.getWorkspace().resource.fsPath, '.vscode')), encoding: encoding.UTF8 });
+                encodingOverride.push({ resource: uri_1.default.file(paths.join(this.contextService.getWorkspace().resource.fsPath, '.vscode')), encoding: encoding.UTF8 });
             }
-            */
             var watcherIgnoredPatterns = [];
             if (configuration.files && configuration.files.watcherExclude) {
                 watcherIgnoredPatterns = Object.keys(configuration.files.watcherExclude).filter(function (k) { return !!configuration.files.watcherExclude[k]; });
             }
             // build config
-            /* TODO:
-            let fileServiceConfig: IFileServiceOptions = {
-                errorLogger: (msg: string) => errors.onUnexpectedError(msg),
+            var fileServiceConfig = {
+                errorLogger: function (msg) { return errors.onUnexpectedError(msg); },
                 encoding: configuration.files && configuration.files.encoding,
                 encodingOverride: encodingOverride,
                 watcherIgnoredPatterns: watcherIgnoredPatterns,
                 verboseLogging: this.contextService.getConfiguration().env.verboseLogging
             };
-            */
             // create service
-            /* TODO:
-            let workspace = this.contextService.getWorkspace();
-            this.raw = new NodeFileService(workspace ? workspace.resource.fsPath : void 0, this.eventService, fileServiceConfig);
-            */
+            var workspace = this.contextService.getWorkspace();
+            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService);
             // Listeners
             this.registerListeners();
         }
