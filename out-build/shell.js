@@ -21,6 +21,7 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             this.contextService = services.contextService;
             this.eventService = services.eventService;
             this.configurationService = services.configurationService;
+            this.githubService = services.githubService;
             this.toUnbind = [];
             this.previousErrorTime = 0;
         }
@@ -137,7 +138,7 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             // TODO: 		this.messageService = new MessageService(this.contextService, this.windowService, this.telemetryService, this.keybindingService);
             this.messageService = new messageService_1.WorkbenchMessageService(this.telemetryService, this.keybindingService);
             this.keybindingService.setMessageService(this.messageService);
-            var fileService = new fileService_1.FileService(this.configurationService, this.eventService, this.contextService);
+            var fileService = new fileService_1.FileService(this.configurationService, this.eventService, this.contextService, this.githubService);
             this.contextViewService = new contextViewService_1.ContextViewService(this.container, this.telemetryService, this.messageService);
             // TODO: 		let lifecycleService = new LifecycleService(this.messageService, this.windowService);
             var lifecycleService = new baseLifecycleService_1.BaseLifecycleService();

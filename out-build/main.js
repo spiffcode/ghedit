@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/base/common/strings', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'configurationService'], function (require, exports, winjs, shell_1, errors, platform, paths, timer, uri_1, strings, eventService_1, contextService_1, configurationService_1) {
     'use strict';
+    var github = require('github');
     // TODO: import path = require('path');
     var path = {
         normalize: function (_path) {
@@ -20,14 +21,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
         realpathSync: function (_path) {
             console.log('fs.realpathSync(\'' + _path + '\')');
             return _path;
-        },
-        statSync: function (_path) {
-            console.log('fs.statSync(\'' + _path + '\')');
-            return {
-                ino: 1,
-                birthtime: new Date(),
-                mtime: new Date(),
-            };
         }
     };
     // TODO: import gracefulFs = require('graceful-fs');
@@ -56,8 +49,19 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
         if (environment.enablePerformance) {
             timer.ENABLE_TIMER = true;
         }
+        var options = {};
+        if (environment.userEnv['githubToken']) {
+            options['token'] = environment.userEnv['githubToken'];
+        }
+        else if (environment.userEnv['githubUsername'] && environment.userEnv['githubPassword']) {
+            options['username'] = environment.userEnv['githubUsername'];
+            options['password'] = environment.userEnv['githubPassword'];
+        }
+        environment.githubService = new github(options);
         // Open workbench
-        return openWorkbench(getWorkspace(environment), shellConfiguration, shellOptions);
+        return getWorkspace(environment).then(function (workspace) {
+            return openWorkbench(workspace, shellConfiguration, shellOptions, environment.githubService);
+        });
     }
     exports.startup = startup;
     function toInputs(paths) {
@@ -90,17 +94,24 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
         }
         var workspaceResource = uri_1.default.file(realWorkspacePath);
         var folderName = path.basename(realWorkspacePath) || realWorkspacePath;
-        var folderStat = fs.statSync(realWorkspacePath);
-        var workspace = {
-            'resource': workspaceResource,
-            'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
-            'name': folderName,
-            'uid': platform.isLinux ? folderStat.ino : folderStat.birthtime.getTime(),
-            'mtime': folderStat.mtime.getTime()
-        };
-        return workspace;
+        // Make async call to github to check for folder.
+        var repo = environment.githubService.getRepo(environment.workspacePath);
+        return new winjs.TPromise(function (c, e) {
+            repo.contents('master', '', function (err, contents) {
+                err ? e(err) : c(contents);
+            });
+        }).then(function (contents) {
+            var workspace = {
+                'resource': workspaceResource,
+                'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
+                'name': folderName,
+            };
+            return workspace;
+        }, function (error) {
+            console.log('unable to repo.contents ' + environment.workspacePath);
+        });
     }
-    function openWorkbench(workspace, configuration, options) {
+    function openWorkbench(workspace, configuration, options, githubService) {
         var eventService = new eventService_1.EventService();
         var contextService = new contextService_1.WorkspaceContextService(eventService, workspace, configuration, options);
         var configurationService = new configurationService_1.ConfigurationService(contextService, eventService);
@@ -115,7 +126,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
                 var shell = new shell_1.WorkbenchShell(document.body, workspace, {
                     configurationService: configurationService,
                     eventService: eventService,
-                    contextService: contextService
+                    contextService: contextService,
+                    githubService: githubService
                 }, configuration, options);
                 shell.open();
                 shell.joinCreation().then(function () {

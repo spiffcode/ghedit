@@ -37,8 +37,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/objec
             })).then(function () { return contents; });
         };
         ConfigurationService.prototype.resolveContent = function (resource) {
+            console.log('configurationService.resolveContent fs.readFile(\"' + resource.toString(true) + '\") unimplemented');
             return new winjs_base_1.TPromise(function (c, e) {
-                console.log('fs.readFile(\"' + resource.toString(true) + '\") unimplemented');
                 e('configurationService.resolveContent not implemented');
                 /* TODO:
                 fs.readFile(resource.fsPath, (error, contents) => {
@@ -55,8 +55,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/objec
             });
         };
         ConfigurationService.prototype.resolveStat = function (resource) {
+            console.log('configurationService.resolveStat extfs.readdir(\"' + resource.toString(true) + '\") unimplemented');
             return new winjs_base_1.TPromise(function (c, e) {
-                console.log('extfs.readdir(\"' + resource.toString(true) + '\") unimplemented');
                 e('configurationService.resolveStat not implemented');
                 /* TODO:
                 extfs.readdir(resource.fsPath, (error, children) => {

@@ -39,7 +39,7 @@ define([
     'vs/workbench/parts/search/browser/search.contribution',
     // TODO:	'vs/workbench/parts/git/electron-browser/git.contribution',
     'vs/workbench/parts/git/browser/gitQuickOpen',
-    'vs/workbench/parts/git/browser/gitActions.contribution',
+    // TODO:	'vs/workbench/parts/git/browser/gitActions.contribution',
     // TODO:	'vs/workbench/parts/debug/electron-browser/debug.contribution',
     'vs/workbench/parts/errorList/browser/errorList.contribution',
     'vs/workbench/parts/html/browser/html.contribution',

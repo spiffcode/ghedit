@@ -2,46 +2,35 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/winjs.base', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri'], function (require, exports, files, arrays, winjs_base_1, objects, async_1, uri_1) {
+define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri'], function (require, exports, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1) {
     'use strict';
-    /* TODO:
-    function etag(stat: fs.Stats): string;
-    function etag(size: number, mtime: number): string;
-    function etag(arg1: any, arg2?: any): string {
-        let size: number;
-        let mtime: number;
+    // TODO: Use vs/base/node/encoding replacement.
+    var encoding = {
+        UTF8: 'utf8',
+        UTF8_with_bom: 'utf8bom'
+    };
+    function etag(arg1, arg2) {
+        var size;
+        var mtime;
         if (typeof arg2 === 'number') {
             size = arg1;
             mtime = arg2;
-        } else {
-            size = (<fs.Stats>arg1).size;
-            mtime = (<fs.Stats>arg1).mtime.getTime();
         }
-    
-        return '"' + crypto.createHash('sha1').update(String(size) + String(mtime)).digest('hex') + '"';
+        else {
+            throw new Error('etag(fs.Stat) not implemented');
+        }
+        // TODO: non-Node crypto
+        return '"' + String(size) + String(mtime) + '"';
     }
-    */
     var FileService = (function () {
         // TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
-        function FileService(basePath, options, eventEmitter) {
+        function FileService(basePath, options, eventEmitter, githubService) {
             this.eventEmitter = eventEmitter;
+            this.githubService = githubService;
             this.serviceId = files.IFileService;
-            /* TODO:
             this.basePath = basePath ? paths.normalize(basePath) : void 0;
-    
-            if (this.basePath && this.basePath.indexOf('\\\\') === 0 && strings.endsWith(this.basePath, paths.sep)) {
-                // for some weird reason, node adds a trailing slash to UNC paths
-                // we never ever want trailing slashes as our base path unless
-                // someone opens root ("/").
-                // See also https://github.com/nodejs/io.js/issues/1765
-                this.basePath = strings.rtrim(this.basePath, paths.sep);
-            }
-    
-            if (this.basePath && !paths.isAbsolute(basePath)) {
-                throw new Error('basePath has to be an absolute path');
-            }
-    
             this.options = options || Object.create(null);
+            /* TODO:
             this.tmpPath = this.options.tmpDir || os.tmpdir();
     
             if (this.options && !this.options.errorLogger) {
@@ -80,13 +69,21 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             return this.resolve(resource, options);
         };
         FileService.prototype.resolveContent = function (resource, options) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.resolveContent not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+            var preferredEncoding;
+            if (options && options.encoding) {
+                preferredEncoding = options.encoding; // give passed in encoding highest priority
+            }
+            else if (this.options.encoding === encoding.UTF8_with_bom) {
+                preferredEncoding = encoding.UTF8; // if we did not detect UTF 8 BOM before, this can only be UTF 8 then
+            }
+            return this.resolveFileContent(resource, options && options.etag, preferredEncoding).then(function (content) {
+                // set our knowledge about the mime on the content obj
+                // TODO:			content.mime = detected.mimes.join(', ');
+                return content;
             });
             /* TODO:
             let absolutePath = this.toAbsolutePath(resource);
-    
+            
             // 1.) detect mimes
             return nfcall(mime.detectMimesFromFile, absolutePath).then((detected: mime.IMimeAndEncoding) => {
                 let isText = detected.mimes.indexOf(baseMime.MIME_BINARY) === -1;
@@ -299,7 +296,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                 // 2.) make sure target is deleted before we move/copy unless this is a case rename of the same file
                 let deleteTargetPromise = TPromise.as(null);
                 if (exists && !isCaseRename) {
-                    if (basePaths.isEqualOrParent(sourcePath, targetPath)) {
+                    if (paths.isEqualOrParent(sourcePath, targetPath)) {
                         return TPromise.wrapError(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in.")); // catch this corner case!
                     }
     
@@ -360,96 +357,124 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
         };
         // Helpers
         FileService.prototype.toAbsolutePath = function (arg1) {
-            console.log('githubFileService.toAbsolutePath not implemented (' + arg1.toString(true) + ')');
-            return null;
-            /* TODO:
-            let resource: uri;
-            if (arg1 instanceof uri) {
-                resource = <uri>arg1;
-            } else {
-                resource = (<files.IFileStat>arg1).resource;
+            var resource;
+            if (arg1 instanceof uri_1.default) {
+                resource = arg1;
             }
-    
-            assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
-    
+            else {
+                resource = arg1.resource;
+            }
             return paths.normalize(resource.fsPath);
-            */
         };
+        FileService.prototype.toRepository = function (resource) {
+            var path = resource.path;
+            if (path[0] == '/')
+                path = path.slice(1);
+            var splitPath = path.split('/');
+            if (splitPath.length < 2) {
+                console.log('invalid repository: ' + resource.toString(true));
+                return null;
+            }
+            return this.githubService.getRepo(splitPath[0], splitPath[1]);
+        };
+        FileService.prototype.toRepoPath = function (resource) {
+            var path = resource.path;
+            if (path[0] == '/')
+                path = path.slice(1);
+            var splitPath = path.split('/');
+            if (splitPath.length < 2) {
+                console.log('invalid repository: ' + resource.toString(true));
+                return null;
+            }
+            if (splitPath.length == 2)
+                return '';
+            splitPath.shift();
+            splitPath.shift();
+            return splitPath.join('/');
+        };
+        // TODO: options
         FileService.prototype.resolve = function (resource, options) {
             if (options === void 0) { options = Object.create(null); }
-            return this.toStatResolver(resource)
-                .then(function (model) { return model.resolve(options); });
-        };
-        FileService.prototype.toStatResolver = function (resource) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.toStatResolver not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+            var repo = this.toRepository(resource);
+            var path = this.toRepoPath(resource);
+            return new winjs_base_1.TPromise(function (c, e) {
+                repo.contents('master', path, function (err, contents) {
+                    err ? e(err) : c(contents);
+                });
+            }).then(function (contents) {
+                if (!Array.isArray(contents)) {
+                    // TODO: switch on contents.type (file | symlink | submodule)
+                    return {
+                        resource: uri_1.default.file(paths.join(resource.path, contents.path)),
+                        isDirectory: false,
+                        hasChildren: false,
+                        name: contents.name,
+                        mtime: contents.updated_at,
+                        etag: contents.sha,
+                        size: contents.size,
+                        mime: baseMime.guessMimeTypes(contents.name).join(', '),
+                        content: contents.content
+                    };
+                }
+                // TODO: recurse subdirs
+                var stats = [];
+                for (var i = 0; i < contents.length; i++) {
+                    var content = contents[i];
+                    stats.push({
+                        resource: uri_1.default.file(paths.join(resource.path, content.path)),
+                        isDirectory: content.type == "dir",
+                        hasChildren: content.type == "dir",
+                        name: content.name,
+                        mtime: content.updated_at,
+                        etag: content.sha,
+                        size: content.size,
+                        mime: baseMime.guessMimeTypes(content.name).join(', ')
+                    });
+                }
+                return {
+                    resource: resource,
+                    isDirectory: true,
+                    hasChildren: true,
+                    name: path,
+                    mtime: 0,
+                    etag: '',
+                    children: stats,
+                    mime: undefined
+                };
+            }, function (error) {
+                console.log('unable to repo.contents ' + resource.toString(true));
             });
-            /* TODO:
-            let absolutePath = this.toAbsolutePath(resource);
-    
-            return pfs.stat(absolutePath).then((stat: fs.Stats) => {
-                return new StatResolver(resource, stat.isDirectory(), stat.mtime.getTime(), stat.size, this.options.verboseLogging);
-            });
-            */
         };
         FileService.prototype.resolveFileContent = function (resource, etag, enc) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.resolveFileContent not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-            });
-            /* TODO:
-            let absolutePath = this.toAbsolutePath(resource);
-    
+            var absolutePath = this.toAbsolutePath(resource);
             // 1.) stat
-            return this.resolve(resource).then((model) => {
-    
+            return this.resolve(resource).then(function (model) {
                 // Return early if file not modified since
                 if (etag && etag === model.etag) {
-                    return TPromise.wrapError(<files.IFileOperationResult>{
+                    return winjs_base_1.TPromise.wrapError({
                         fileOperationResult: files.FileOperationResult.FILE_NOT_MODIFIED_SINCE
                     });
                 }
-    
                 // Return early if file is too large to load
                 if (types.isNumber(model.size) && model.size > files.MAX_FILE_SIZE) {
-                    return TPromise.wrapError(<files.IFileOperationResult>{
+                    return winjs_base_1.TPromise.wrapError({
                         fileOperationResult: files.FileOperationResult.FILE_TOO_LARGE
                     });
                 }
-    
                 // 2.) read contents
-                return new TPromise<files.IContent>((c, e) => {
-                    let done = false;
-                    let chunks: NodeBuffer[] = [];
-                    let fileEncoding = this.getEncoding(model.resource, enc);
-    
-                    const reader = fs.createReadStream(absolutePath).pipe(encoding.decodeStream(fileEncoding)); // decode takes care of stripping any BOMs from the file content
-    
-                    reader.on('data', (buf) => {
-                        chunks.push(buf);
-                    });
-    
-                    reader.on('error', (error) => {
-                        if (!done) {
-                            done = true;
-                            e(error);
-                        }
-                    });
-    
-                    reader.on('end', () => {
-                        let content: files.IContent = <any>model;
-                        content.value = chunks.join('');
-                        content.encoding = fileEncoding; // make sure to store the encoding in the model to restore it later when writing
-    
-                        if (!done) {
-                            done = true;
-                            c(content);
-                        }
-                    });
+                return new winjs_base_1.TPromise(function (c, e) {
+                    var content = {
+                        resource: model.resource,
+                        name: model.name,
+                        mtime: model.mtime,
+                        etag: model.etag,
+                        mime: model.mime,
+                        value: atob(model.content),
+                        encoding: encoding.UTF8 // TODO:
+                    };
+                    c(content);
                 });
             });
-            */
         };
         FileService.prototype.getEncoding = function (resource, preferredEncoding) {
             var fileEncoding;
@@ -485,7 +510,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
         };
         FileService.prototype.checkFile = function (absolutePath, options) {
             return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.resolveFileContent not implemented (' + absolutePath + ')',
+                message: 'githubFileService.checkFile not implemented (' + absolutePath + ')',
                 fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
             });
             /* TODO:
@@ -609,152 +634,166 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
         return FileService;
     }());
     exports.FileService = FileService;
-    var StatResolver = (function () {
-        function StatResolver(resource, isDirectory, mtime, size, verboseLogging) {
-            console.log('githubFileService.StarResolver constructor not implemented');
-            /* TODO:
-            assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
-    
-            this.resource = resource;
-            this.isDirectory = isDirectory;
-            this.mtime = mtime;
-            this.name = paths.basename(resource.fsPath);
-            this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
-            this.etag = etag(size, mtime);
-            this.size = size;
-    
-            this.verboseLogging = verboseLogging;
-            */
+});
+/*
+export class StatResolver {
+    private resource: uri;
+    private isDirectory: boolean;
+    private mtime: number;
+    private name: string;
+    private mime: string;
+    private etag: string;
+    private size: number;
+    private verboseLogging: boolean;
+
+    constructor(resource: uri, isDirectory: boolean, mtime: number, size: number, verboseLogging: boolean) {
+        // TODO: assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
+
+        this.resource = resource;
+        this.isDirectory = isDirectory;
+        this.mtime = mtime;
+        this.name = paths.basename(resource.fsPath);
+        this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
+        this.etag = etag(size, mtime);
+        this.size = size;
+
+        this.verboseLogging = verboseLogging;
+    }
+
+    public resolve(options: files.IResolveFileOptions): TPromise<files.IFileStat> {
+
+        // General Data
+        let fileStat: files.IFileStat = {
+            resource: this.resource,
+            isDirectory: this.isDirectory,
+            hasChildren: undefined,
+            name: this.name,
+            etag: this.etag,
+            size: this.size,
+            mtime: this.mtime,
+            mime: this.mime
+        };
+
+        // File Specific Data
+        if (!this.isDirectory) {
+            return TPromise.as(fileStat);
         }
-        StatResolver.prototype.resolve = function (options) {
-            var _this = this;
-            // General Data
-            var fileStat = {
-                resource: this.resource,
-                isDirectory: this.isDirectory,
-                hasChildren: undefined,
-                name: this.name,
-                etag: this.etag,
-                size: this.size,
-                mtime: this.mtime,
-                mime: this.mime
-            };
-            // File Specific Data
-            if (!this.isDirectory) {
-                return winjs_base_1.TPromise.as(fileStat);
-            }
-            else {
-                // Convert the paths from options.resolveTo to absolute paths
-                var absoluteTargetPaths_1 = null;
-                if (options && options.resolveTo) {
-                    absoluteTargetPaths_1 = [];
-                    options.resolveTo.forEach(function (resource) {
-                        absoluteTargetPaths_1.push(resource.fsPath);
-                    });
-                }
-                return new winjs_base_1.TPromise(function (c, e) {
-                    // Load children
-                    _this.resolveChildren(_this.resource.fsPath, absoluteTargetPaths_1, options && options.resolveSingleChildDescendants, function (children) {
-                        children = arrays.coalesce(children); // we don't want those null children (could be permission denied when reading a child)
-                        fileStat.hasChildren = children && children.length > 0;
-                        fileStat.children = children || [];
-                        c(fileStat);
-                    });
+
+        // Directory Specific Data
+        else {
+
+            // Convert the paths from options.resolveTo to absolute paths
+            let absoluteTargetPaths: string[] = null;
+            if (options && options.resolveTo) {
+                absoluteTargetPaths = [];
+                options.resolveTo.forEach((resource) => {
+                    absoluteTargetPaths.push(resource.fsPath);
                 });
             }
-        };
-        StatResolver.prototype.resolveChildren = function (absolutePath, absoluteTargetPaths, resolveSingleChildDescendants, callback) {
-            console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
-            /* TODO:
-            extfs.readdir(absolutePath, (error: Error, files: string[]) => {
-                if (error) {
-                    if (this.verboseLogging) {
-                        console.error(error);
-                    }
-    
-                    return callback(null); // return - we might not have permissions to read the folder
-                }
-    
-                // for each file in the folder
-                flow.parallel(files, (file: string, clb: (error: Error, children: files.IFileStat) => void) => {
-                    let fileResource = uri.file(paths.resolve(absolutePath, file));
-                    let fileStat: fs.Stats;
-                    let $this = this;
-    
-                    flow.sequence(
-                        function onError(error: Error): void {
-                            if ($this.verboseLogging) {
-                                console.error(error);
-                            }
-    
-                            clb(null, null); // return - we might not have permissions to read the folder or stat the file
-                        },
-    
-                        function stat(): void {
-                            fs.stat(fileResource.fsPath, this);
-                        },
-    
-                        function countChildren(fsstat: fs.Stats): void {
-                            fileStat = fsstat;
-    
-                            if (fileStat.isDirectory()) {
-                                extfs.readdir(fileResource.fsPath, (error, result) => {
-                                    this(null, result ? result.length : 0);
-                                });
-                            } else {
-                                this(null, 0);
-                            }
-                        },
-    
-                        function resolve(childCount: number): void {
-                            let childStat: files.IFileStat = {
-                                resource: fileResource,
-                                isDirectory: fileStat.isDirectory(),
-                                hasChildren: childCount > 0,
-                                name: file,
-                                mtime: fileStat.mtime.getTime(),
-                                etag: etag(fileStat),
-                                size: fileStat.size,
-                                mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : undefined
-                            };
-    
-                            // Return early for files
-                            if (!fileStat.isDirectory()) {
-                                return clb(null, childStat);
-                            }
-    
-                            // Handle Folder
-                            let resolveFolderChildren = false;
-                            if (files.length === 1 && resolveSingleChildDescendants) {
-                                resolveFolderChildren = true;
-                            } else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => basePaths.isEqualOrParent(targetPath, fileResource.fsPath))) {
-                                resolveFolderChildren = true;
-                            }
-    
-                            // Continue resolving children based on condition
-                            if (resolveFolderChildren) {
-                                $this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, (children) => {
-                                    children = arrays.coalesce(children);  // we don't want those null children
-                                    childStat.hasChildren = children && children.length > 0;
-                                    childStat.children = children || [];
-    
-                                    clb(null, childStat);
-                                });
-                            }
-    
-                            // Otherwise return result
-                            else {
-                                clb(null, childStat);
-                            }
-                        });
-                }, (errors, result) => {
-                    callback(result);
+
+            return new TPromise((c, e) => {
+
+                // Load children
+                this.resolveChildren(this.resource.fsPath, absoluteTargetPaths, options && options.resolveSingleChildDescendants, (children) => {
+                    children = arrays.coalesce(children); // we don't want those null children (could be permission denied when reading a child)
+                    fileStat.hasChildren = children && children.length > 0;
+                    fileStat.children = children || [];
+
+                    c(fileStat);
                 });
             });
-            */
-        };
-        return StatResolver;
-    }());
-    exports.StatResolver = StatResolver;
-});
+        }
+    }
+
+    private resolveChildren(absolutePath: string, absoluteTargetPaths: string[], resolveSingleChildDescendants: boolean, callback: (children: files.IFileStat[]) => void): void {
+        console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
+        
+        extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+            if (error) {
+                if (this.verboseLogging) {
+                    console.error(error);
+                }
+
+                return callback(null); // return - we might not have permissions to read the folder
+            }
+
+            // for each file in the folder
+            flow.parallel(files, (file: string, clb: (error: Error, children: files.IFileStat) => void) => {
+                let fileResource = uri.file(paths.resolve(absolutePath, file));
+                let fileStat: fs.Stats;
+                let $this = this;
+
+                flow.sequence(
+                    function onError(error: Error): void {
+                        if ($this.verboseLogging) {
+                            console.error(error);
+                        }
+
+                        clb(null, null); // return - we might not have permissions to read the folder or stat the file
+                    },
+
+                    function stat(): void {
+                        fs.stat(fileResource.fsPath, this);
+                    },
+
+                    function countChildren(fsstat: fs.Stats): void {
+                        fileStat = fsstat;
+
+                        if (fileStat.isDirectory()) {
+                            extfs.readdir(fileResource.fsPath, (error, result) => {
+                                this(null, result ? result.length : 0);
+                            });
+                        } else {
+                            this(null, 0);
+                        }
+                    },
+
+                    function resolve(childCount: number): void {
+                        let childStat: files.IFileStat = {
+                            resource: fileResource,
+                            isDirectory: fileStat.isDirectory(),
+                            hasChildren: childCount > 0,
+                            name: file,
+                            mtime: fileStat.mtime.getTime(),
+                            etag: etag(fileStat),
+                            size: fileStat.size,
+                            mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : undefined
+                        };
+
+                        // Return early for files
+                        if (!fileStat.isDirectory()) {
+                            return clb(null, childStat);
+                        }
+
+                        // Handle Folder
+                        let resolveFolderChildren = false;
+                        if (files.length === 1 && resolveSingleChildDescendants) {
+                            resolveFolderChildren = true;
+                        } else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => paths.isEqualOrParent(targetPath, fileResource.fsPath))) {
+                            resolveFolderChildren = true;
+                        }
+
+                        // Continue resolving children based on condition
+                        if (resolveFolderChildren) {
+                            $this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, (children) => {
+                                children = arrays.coalesce(children);  // we don't want those null children
+                                childStat.hasChildren = children && children.length > 0;
+                                childStat.children = children || [];
+
+                                clb(null, childStat);
+                            });
+                        }
+
+                        // Otherwise return result
+                        else {
+                            clb(null, childStat);
+                        }
+                    });
+            }, (errors, result) => {
+                callback(result);
+            });
+        });
+    }
+}
+*/ 
 //# sourceMappingURL=githubFileService.js.map

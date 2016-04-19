@@ -10,10 +10,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         UTF8: 'utf8'
     };
     var FileService = (function () {
-        function FileService(configurationService, eventService, contextService) {
+        function FileService(configurationService, eventService, contextService, githubService) {
             this.configurationService = configurationService;
             this.eventService = eventService;
             this.contextService = contextService;
+            this.githubService = githubService;
             this.serviceId = files_1.IFileService;
             var configuration = this.configurationService.getConfiguration();
             // adjust encodings (TODO@Ben knowledge on settings location ('.vscode') is hardcoded)
@@ -36,7 +37,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             };
             // create service
             var workspace = this.contextService.getWorkspace();
-            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService);
+            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.githubService);
             // Listeners
             this.registerListeners();
         }
