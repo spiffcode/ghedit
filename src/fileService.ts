@@ -20,6 +20,7 @@ import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride
 import {IConfigurationService, IConfigurationServiceEvent, ConfigurationServiceEventTypes} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {Github} from 'github';
 
 // TODO: import {shell} from 'electron';
 
@@ -39,7 +40,8 @@ export class FileService implements IFileService {
 	constructor(
 		private configurationService: IConfigurationService,
 		private eventService: IEventService,
-		private contextService: IWorkspaceContextService
+		private contextService: IWorkspaceContextService,
+		private githubService: Github
 	) {
 		const configuration = this.configurationService.getConfiguration<IFilesConfiguration>();
 
@@ -66,7 +68,7 @@ export class FileService implements IFileService {
 
 		// create service
 		let workspace = this.contextService.getWorkspace();
-		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService);
+		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.githubService);
 
 		// Listeners
 		this.registerListeners();

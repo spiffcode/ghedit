@@ -50,7 +50,7 @@ define([
 
 // TODO:	'vs/workbench/parts/git/electron-browser/git.contribution',
 	'vs/workbench/parts/git/browser/gitQuickOpen',
-	'vs/workbench/parts/git/browser/gitActions.contribution',
+// TODO:	'vs/workbench/parts/git/browser/gitActions.contribution',
 
 // TODO:	'vs/workbench/parts/debug/electron-browser/debug.contribution',
 

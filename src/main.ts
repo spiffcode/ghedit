@@ -28,6 +28,9 @@ import {EventService} from 'vs/platform/event/common/eventService';
 import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
 import {ConfigurationService} from 'configurationService';
+import {Github, Repository, Error as GithubError} from 'github';
+var github = require('github');
+import {ninvoke} from 'vs/base/common/async';
 
 // TODO: import path = require('path');
 var path = {
@@ -46,14 +49,6 @@ var fs = {
 	realpathSync: function (_path) {
 		console.log('fs.realpathSync(\'' + _path + '\')');
 		return _path;
-	},
-	statSync: function (_path) {
-		console.log('fs.statSync(\'' + _path + '\')');
-		return {
-			ino: 1,
-			birthtime: new Date(),
-			mtime: new Date(),
-		};
 	}
 };
 
@@ -75,6 +70,7 @@ export interface IMainEnvironment extends IEnvironment {
 	filesToCreate?: IPath[];
 	filesToDiff?: IPath[];
 	extensionsToInstall?: string[];
+	githubService?: Github;
 	userEnv: IEnv;
 }
 
@@ -105,9 +101,20 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 	if (environment.enablePerformance) {
 		timer.ENABLE_TIMER = true;
 	}
+	
+	var options = {};
+	if (environment.userEnv['githubToken']) {
+		options['token'] = environment.userEnv['githubToken'];
+	} else if (environment.userEnv['githubUsername'] && environment.userEnv['githubPassword']) {
+		options['username'] = environment.userEnv['githubUsername'];
+		options['password'] = environment.userEnv['githubPassword'];
+	}
+	environment.githubService = new github(options);
 
 	// Open workbench
-	return openWorkbench(getWorkspace(environment), shellConfiguration, shellOptions);
+	return getWorkspace(environment).then((workspace: IWorkspace) => {
+		return openWorkbench(workspace, shellConfiguration, shellOptions, environment.githubService);
+	});
 }
 
 function toInputs(paths: IPath[]): IResourceInput[] {
@@ -129,7 +136,7 @@ function toInputs(paths: IPath[]): IResourceInput[] {
 	});
 }
 
-function getWorkspace(environment: IMainEnvironment): IWorkspace {
+function getWorkspace(environment: IMainEnvironment): winjs.TPromise<IWorkspace> {
 	if (!environment.workspacePath) {
 		return null;
 	}
@@ -145,20 +152,28 @@ function getWorkspace(environment: IMainEnvironment): IWorkspace {
 
 	let workspaceResource = uri.file(realWorkspacePath);
 	let folderName = path.basename(realWorkspacePath) || realWorkspacePath;
-	let folderStat = fs.statSync(realWorkspacePath);
-
-	let workspace: IWorkspace = {
-		'resource': workspaceResource,
-		'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
-		'name': folderName,
-		'uid': platform.isLinux ? folderStat.ino : folderStat.birthtime.getTime(), // On Linux, birthtime is ctime, so we cannot use it! We use the ino instead!
-		'mtime': folderStat.mtime.getTime()
-	};
-
-	return workspace;
+	
+	// Make async call to github to check for folder.
+	let repo = environment.githubService.getRepo(environment.workspacePath);
+	return new winjs.TPromise<IWorkspace>((c, e) => {
+		repo.contents('master', '', (err: GithubError, contents?: any) => {
+			err ? e(err) : c(contents);
+		});
+	}).then((contents: any) => {
+		let workspace: IWorkspace = {
+			'resource': workspaceResource,
+			'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
+			'name': folderName,
+		// TODO:	'uid': platform.isLinux ? folderStat.ino : folderStat.birthtime.getTime(), // On Linux, birthtime is ctime, so we cannot use it! We use the ino instead!
+		// TODO:	'mtime': folderStat.mtime.getTime()
+		};
+		return workspace;
+	}, (error: GithubError) => {
+		console.log('unable to repo.contents ' + environment.workspacePath);
+	});
 }
 
-function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions): winjs.TPromise<void> {
+function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: Github): winjs.TPromise<void> {
 	let eventService = new EventService();
 	let contextService = new WorkspaceContextService(eventService, workspace, configuration, options);
 	let configurationService = new ConfigurationService(contextService, eventService);
@@ -176,7 +191,8 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 			let shell = new WorkbenchShell(document.body, workspace, {
 				configurationService,
 				eventService,
-				contextService
+				contextService,
+				githubService
 			}, configuration, options);
 			shell.open();
 

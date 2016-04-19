@@ -116,6 +116,7 @@ import {ILanguageDef} from 'vs/editor/standalone-languages/types';
 //import 'vs/editor/standalone-languages/all';
 //import 'vs/editor/browser/standalone/standaloneSchemas';
 */
+import {Github, Repository, Error as GithubError} from 'github';
 
 /**
  * Services that we require for the Shell
@@ -124,6 +125,7 @@ export interface ICoreServices {
 	contextService: IWorkspaceContextService;
 	eventService: IEventService;
 	configurationService: IConfigurationService;
+	githubService: Github;
 }
 
 /* TODO:
@@ -147,6 +149,7 @@ export class WorkbenchShell {
 	private contextService: IWorkspaceContextService;
 	private telemetryService: ITelemetryService;
 	private keybindingService: WorkbenchKeybindingService;
+	private githubService: Github;
 
 	// DWM: These are dependency injected into various modules. Normally they would
 	// be provided by Electron-dependent modules.
@@ -176,6 +179,7 @@ export class WorkbenchShell {
 		this.contextService = services.contextService;
 		this.eventService = services.eventService;
 		this.configurationService = services.configurationService;
+		this.githubService = services.githubService;
 
 		this.toUnbind = [];
 		this.previousErrorTime = 0;
@@ -329,7 +333,8 @@ export class WorkbenchShell {
 		let fileService = new FileService(
 			this.configurationService,
 			this.eventService,
-			this.contextService
+			this.contextService,
+			this.githubService
 		);
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
 

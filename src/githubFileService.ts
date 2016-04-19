@@ -18,7 +18,7 @@ import files = require('vs/platform/files/common/files');
 import strings = require('vs/base/common/strings');
 import arrays = require('vs/base/common/arrays');
 import baseMime = require('vs/base/common/mime');
-import basePaths = require('vs/base/common/paths');
+import paths = require('vs/base/common/paths');
 import {TPromise} from 'vs/base/common/winjs.base';
 import types = require('vs/base/common/types');
 import objects = require('vs/base/common/objects');
@@ -35,6 +35,13 @@ import nls = require('vs/nls');
 // TODO: import {FileWatcher as WindowsWatcherService} from 'vs/workbench/services/files/node/watcher/win32/watcherService';
 // TODO: import {toFileChangesEvent, normalize, IRawFileChange} from 'vs/workbench/services/files/node/watcher/common';
 import {IEventService} from 'vs/platform/event/common/event';
+import {Github, Repository, Error as GithubError} from 'github';
+
+// TODO: Use vs/base/node/encoding replacement.
+const encoding = {
+	UTF8: 'utf8',
+	UTF8_with_bom: 'utf8bom'
+};
 
 export interface IEncodingOverride {
 	resource: uri;
@@ -69,6 +76,21 @@ function etag(arg1: any, arg2?: any): string {
 	return '"' + crypto.createHash('sha1').update(String(size) + String(mtime)).digest('hex') + '"';
 }
 */
+function etag(size: number, mtime: number): string;
+function etag(arg1: any, arg2?: any): string {
+	let size: number;
+	let mtime: number;
+	if (typeof arg2 === 'number') {
+		size = arg1;
+		mtime = arg2;
+	} else {
+		throw new Error('etag(fs.Stat) not implemented');
+//		size = (<fs.Stats>arg1).size;
+//		mtime = (<fs.Stats>arg1).mtime.getTime();
+	}
+	// TODO: non-Node crypto
+	return '"' + String(size) + String(mtime) + '"';
+}
 
 export class FileService implements files.IFileService {
 
@@ -87,23 +109,11 @@ export class FileService implements files.IFileService {
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	// TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
 
-	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService) {
-		/* TODO:
+	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private githubService: Github) {
 		this.basePath = basePath ? paths.normalize(basePath) : void 0;
 
-		if (this.basePath && this.basePath.indexOf('\\\\') === 0 && strings.endsWith(this.basePath, paths.sep)) {
-			// for some weird reason, node adds a trailing slash to UNC paths
-			// we never ever want trailing slashes as our base path unless
-			// someone opens root ("/").
-			// See also https://github.com/nodejs/io.js/issues/1765
-			this.basePath = strings.rtrim(this.basePath, paths.sep);
-		}
-
-		if (this.basePath && !paths.isAbsolute(basePath)) {
-			throw new Error('basePath has to be an absolute path');
-		}
-
 		this.options = options || Object.create(null);
+		/* TODO:
 		this.tmpPath = this.options.tmpDir || os.tmpdir();
 
 		if (this.options && !this.options.errorLogger) {
@@ -147,13 +157,23 @@ export class FileService implements files.IFileService {
 	}
 
 	public resolveContent(resource: uri, options?: files.IResolveContentOptions): TPromise<files.IContent> {
-		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.resolveContent not implemented (' + resource.toString(true) + ')',
-			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+		let preferredEncoding: string;
+		if (options && options.encoding) {
+			preferredEncoding = options.encoding; // give passed in encoding highest priority
+		} else if (this.options.encoding === encoding.UTF8_with_bom) {
+			preferredEncoding = encoding.UTF8; // if we did not detect UTF 8 BOM before, this can only be UTF 8 then
+		}
+		return this.resolveFileContent(resource, options && options.etag, preferredEncoding).then((content) => {
+
+			// set our knowledge about the mime on the content obj
+// TODO:			content.mime = detected.mimes.join(', ');
+
+			return content;
 		});
+
 		/* TODO:
 		let absolutePath = this.toAbsolutePath(resource);
-
+		
 		// 1.) detect mimes
 		return nfcall(mime.detectMimesFromFile, absolutePath).then((detected: mime.IMimeAndEncoding) => {
 			let isText = detected.mimes.indexOf(baseMime.MIME_BINARY) === -1;
@@ -377,7 +397,7 @@ export class FileService implements files.IFileService {
 			// 2.) make sure target is deleted before we move/copy unless this is a case rename of the same file
 			let deleteTargetPromise = TPromise.as(null);
 			if (exists && !isCaseRename) {
-				if (basePaths.isEqualOrParent(sourcePath, targetPath)) {
+				if (paths.isEqualOrParent(sourcePath, targetPath)) {
 					return TPromise.wrapError(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in.")); // catch this corner case!
 				}
 
@@ -442,9 +462,6 @@ export class FileService implements files.IFileService {
 	// Helpers
 
 	private toAbsolutePath(arg1: uri | files.IFileStat): string {
-		console.log('githubFileService.toAbsolutePath not implemented (' + arg1.toString(true) + ')');
-		return null;
-		/* TODO:
 		let resource: uri;
 		if (arg1 instanceof uri) {
 			resource = <uri>arg1;
@@ -452,37 +469,92 @@ export class FileService implements files.IFileService {
 			resource = (<files.IFileStat>arg1).resource;
 		}
 
-		assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
-
 		return paths.normalize(resource.fsPath);
-		*/
+	}
+	
+	private toRepository(resource: uri): Repository {
+		let path = resource.path;
+		if (path[0] == '/')
+			path = path.slice(1);
+		let splitPath = path.split('/');
+		if (splitPath.length < 2) {
+			console.log('invalid repository: ' + resource.toString(true));
+			return null;
+		}
+		return this.githubService.getRepo(splitPath[0], splitPath[1]);
 	}
 
+	private toRepoPath(resource: uri): string {
+		let path = resource.path;
+		if (path[0] == '/')
+			path = path.slice(1);
+		let splitPath = path.split('/');
+		if (splitPath.length < 2) {
+			console.log('invalid repository: ' + resource.toString(true));
+			return null;
+		}
+		if (splitPath.length == 2)
+			return '';
+		splitPath.shift();
+		splitPath.shift();
+		return splitPath.join('/');
+	}
+
+	// TODO: options
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
-		return this.toStatResolver(resource)
-			.then(model => model.resolve(options));
-	}
-
-	private toStatResolver(resource: uri): TPromise<StatResolver> {
-		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.toStatResolver not implemented (' + resource.toString(true) + ')',
-			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+		let repo = this.toRepository(resource);
+		let path = this.toRepoPath(resource);
+		return new TPromise<files.IFileStat>((c, e) => {
+			repo.contents('master', path, (err: GithubError, contents?: any) => {
+				err ? e(err) : c(contents);
+			});
+		}).then((contents: any) => {
+			if (!Array.isArray(contents)) {
+				// TODO: switch on contents.type (file | symlink | submodule)
+				return {
+					resource: uri.file(paths.join(resource.path, contents.path)),
+					isDirectory: false,
+					hasChildren: false,
+					name: contents.name,
+					mtime: contents.updated_at, // TODO:
+					etag: contents.sha,
+					size: contents.size,
+					mime: baseMime.guessMimeTypes(contents.name).join(', '),
+					content: contents.content
+				}
+			}
+			
+			// TODO: recurse subdirs
+			var stats: files.IFileStat[] = [];
+			for (var i = 0; i < contents.length; i++) {
+				let content = contents[i];
+				stats.push({
+					resource: uri.file(paths.join(resource.path, content.path)),
+					isDirectory: content.type == "dir", // TODO: symlink, submodule
+					hasChildren: content.type == "dir",
+					name: content.name,
+					mtime: content.updated_at, // TODO:
+					etag: content.sha,
+					size: content.size,
+					mime: baseMime.guessMimeTypes(content.name).join(', ')
+				});
+			}
+			return {
+				resource: resource,
+				isDirectory: true,
+				hasChildren: true,
+				name: path, // TODO:
+				mtime: 0, // TODO:
+				etag: '', // TODO: etag(fileStat),
+				children: stats,
+				mime: undefined
+			}
+		}, (error: GithubError) => {
+			console.log('unable to repo.contents ' + resource.toString(true));
 		});
-		/* TODO:
-		let absolutePath = this.toAbsolutePath(resource);
-
-		return pfs.stat(absolutePath).then((stat: fs.Stats) => {
-			return new StatResolver(resource, stat.isDirectory(), stat.mtime.getTime(), stat.size, this.options.verboseLogging);
-		});
-		*/
 	}
-
+	
 	private resolveFileContent(resource: uri, etag?: string, enc?: string): TPromise<files.IContent> {
-		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.resolveFileContent not implemented (' + resource.toString(true) + ')',
-			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-		});
-		/* TODO:		
 		let absolutePath = this.toAbsolutePath(resource);
 
 		// 1.) stat
@@ -504,36 +576,18 @@ export class FileService implements files.IFileService {
 
 			// 2.) read contents
 			return new TPromise<files.IContent>((c, e) => {
-				let done = false;
-				let chunks: NodeBuffer[] = [];
-				let fileEncoding = this.getEncoding(model.resource, enc);
-
-				const reader = fs.createReadStream(absolutePath).pipe(encoding.decodeStream(fileEncoding)); // decode takes care of stripping any BOMs from the file content
-
-				reader.on('data', (buf) => {
-					chunks.push(buf);
-				});
-
-				reader.on('error', (error) => {
-					if (!done) {
-						done = true;
-						e(error);
-					}
-				});
-
-				reader.on('end', () => {
-					let content: files.IContent = <any>model;
-					content.value = chunks.join('');
-					content.encoding = fileEncoding; // make sure to store the encoding in the model to restore it later when writing
-
-					if (!done) {
-						done = true;
-						c(content);
-					}
-				});
+				var content: files.IContent = {
+					resource: model.resource,
+					name: model.name,
+					mtime: model.mtime,
+					etag: model.etag,
+					mime: model.mime,
+					value: atob((<any>model).content),
+					encoding: encoding.UTF8 // TODO:
+				}
+				c(content);
 			});
 		});
-		*/
 	}
 
 	private getEncoding(resource: uri, preferredEncoding?: string): string {
@@ -575,7 +629,7 @@ export class FileService implements files.IFileService {
 
 	private checkFile(absolutePath: string, options: files.IUpdateContentOptions): TPromise<boolean /* exists */> {
 		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.resolveFileContent not implemented (' + absolutePath + ')',
+			message: 'githubFileService.checkFile not implemented (' + absolutePath + ')',
 			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
 		});
 		
@@ -704,6 +758,7 @@ export class FileService implements files.IFileService {
 	}
 }
 
+/*
 export class StatResolver {
 	private resource: uri;
 	private isDirectory: boolean;
@@ -715,9 +770,7 @@ export class StatResolver {
 	private verboseLogging: boolean;
 
 	constructor(resource: uri, isDirectory: boolean, mtime: number, size: number, verboseLogging: boolean) {
-		console.log('githubFileService.StarResolver constructor not implemented');
-		/* TODO:
-		assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
+		// TODO: assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
 
 		this.resource = resource;
 		this.isDirectory = isDirectory;
@@ -728,7 +781,6 @@ export class StatResolver {
 		this.size = size;
 
 		this.verboseLogging = verboseLogging;
-		*/
 	}
 
 	public resolve(options: files.IResolveFileOptions): TPromise<files.IFileStat> {
@@ -779,7 +831,6 @@ export class StatResolver {
 	private resolveChildren(absolutePath: string, absoluteTargetPaths: string[], resolveSingleChildDescendants: boolean, callback: (children: files.IFileStat[]) => void): void {
 		console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
 		
-		/* TODO:
 		extfs.readdir(absolutePath, (error: Error, files: string[]) => {
 			if (error) {
 				if (this.verboseLogging) {
@@ -841,7 +892,7 @@ export class StatResolver {
 						let resolveFolderChildren = false;
 						if (files.length === 1 && resolveSingleChildDescendants) {
 							resolveFolderChildren = true;
-						} else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => basePaths.isEqualOrParent(targetPath, fileResource.fsPath))) {
+						} else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => paths.isEqualOrParent(targetPath, fileResource.fsPath))) {
 							resolveFolderChildren = true;
 						}
 
@@ -865,6 +916,6 @@ export class StatResolver {
 				callback(result);
 			});
 		});
-		*/
 	}
 }
+*/
