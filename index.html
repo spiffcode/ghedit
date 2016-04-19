@@ -149,9 +149,14 @@
 			 */
 
 			var mainStarted = false;
-			var args = parseURLQueryArgs(); // TODO:
-			args.config = '{ "userEnv": { }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
+			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
+//			args.config = '{ "userEnv": { "githubUsername": "darrinm", "githubPassword": "<secret>" }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
+			args.config = '{ "userEnv": {}, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
 			var configuration = JSON.parse(args['config']);
+			if (args.workspacePath)
+				configuration.workspacePath = args.workspacePath;
+			if (args.repo)
+				configuration.workspacePath = args.repo;
 			var enableDeveloperTools = !configuration.isBuilt || !!configuration.extensionDevelopmentPath;
 
 // TODO:			process.env['VSCODE_SHARED_IPC_HOOK'] = configuration.sharedIPCHandle;
@@ -239,6 +244,7 @@
 
 				require([
 					'workbench.main',
+					'github',
 					'vs/nls!vs/workbench/workbench.main',
 					'vs/css!vs/workbench/workbench.main'
 				], function() {
