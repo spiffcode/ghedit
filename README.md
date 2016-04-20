@@ -30,6 +30,7 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
+* move 'dev' stuff to master, 'publish' to gh-pages branch
 * user auth UI
 * settings
 * syntax coloring
