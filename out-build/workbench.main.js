@@ -56,7 +56,7 @@ define([
     // TODO:	'vs/workbench/parts/snippets/electron-browser/snippets.contribution',
     'vs/workbench/parts/contentprovider/common/contentprovider.contribution',
     // TODO:	'vs/workbench/parts/telemetry/node/appInsights.telemetry.contribution',
-    // TODO:	'vs/workbench/parts/themes/electron-browser/themes.contribution',
+    'vs/workbench/parts/themes/electron-browser/themes.contribution',
     // TODO:	'vs/workbench/parts/feedback/electron-browser/feedback.contribution',
     // TODO:	'vs/workbench/parts/gettingStarted/electron-browser/electronGettingStarted.contribution',
     // TODO:	'vs/workbench/parts/update/electron-browser/update.contribution',

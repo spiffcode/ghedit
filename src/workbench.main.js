@@ -81,7 +81,7 @@ define([
 
 // TODO:	'vs/workbench/parts/telemetry/node/appInsights.telemetry.contribution',
 
-// TODO:	'vs/workbench/parts/themes/electron-browser/themes.contribution',
+	'vs/workbench/parts/themes/electron-browser/themes.contribution',
 
 // TODO:	'vs/workbench/parts/feedback/electron-browser/feedback.contribution',
 
