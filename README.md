@@ -51,4 +51,4 @@ Start a web server in the ghcode directory.
 * need error message for invalid/inaccessable repo
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
-* 
+* file encoding smarts (disabled due to Node dependency)

@@ -25,8 +25,8 @@ define([
 
 	// Languages
 	'vs/languages/languages.main',
-//	'vs/languages/typescript/common/typescript.contribution',
-//	'vs/languages/json/common/json.contribution',
+	'vs/languages/typescript/common/typescript.contribution',
+	'vs/languages/json/common/json.contribution',
 
 	// Workbench
 	'vs/workbench/browser/actions/toggleSidebarVisibility',
