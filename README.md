@@ -3,7 +3,7 @@
 #### INSTALLING
 
     # Clone Visual Studio Code if you haven't already.
-    git clone https://github.com/Microsoft/vscode.git
+    git clone https://github.com/spiffcode/vscode.git
     
     # Clone this repository.  
     git clone https://github.com/spiffcode/ghcode.git
