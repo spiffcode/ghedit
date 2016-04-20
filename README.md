@@ -38,3 +38,5 @@ Start a web server in the ghcode directory.
 * markdown preview
 * search
 * repo/branch/tag selection
+* saving
+* DM: clean up stuff
