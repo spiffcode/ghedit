@@ -30,5 +30,11 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* Move index.html to src and have build copy it to build dir.
-* Run from build dir.
+* user auth UI
+* settings
+* syntax coloring
+* all the other language smarts
+* themes
+* markdown preview
+* search
+* repo/branch/tag selection
