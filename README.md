@@ -32,6 +32,7 @@ Start a web server in the ghcode directory.
 
 * move 'dev' stuff to master, 'publish' to gh-pages branch
 * user auth UI
+* session preservation (e.g. across refresh, browser/tab close/open)
 * settings
 * syntax coloring
 * all the other language smarts
