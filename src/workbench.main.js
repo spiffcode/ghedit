@@ -25,8 +25,6 @@ define([
 
 	// Languages
 	'vs/languages/languages.main',
-//	'vs/languages/typescript/common/typescript.contribution',
-//	'vs/languages/json/common/json.contribution',
 
 	// Workbench
 	'vs/workbench/browser/actions/toggleSidebarVisibility',
@@ -92,8 +90,7 @@ define([
 // TODO:	'vs/workbench/electron-browser/darwin/cli.contribution',
 
 // TODO:	'vs/workbench/electron-browser/main.contribution',
-// TODO:	'vs/workbench/electron-browser/main'
-	'main'
+	'main' // Replaces 'vs/workbench/electron-browser/main'
 
 ], function() {
 	'use strict';

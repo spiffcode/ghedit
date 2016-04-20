@@ -19,8 +19,6 @@ define([
     'vs/editor/browser/editor.all',
     // Languages
     'vs/languages/languages.main',
-    //	'vs/languages/typescript/common/typescript.contribution',
-    //	'vs/languages/json/common/json.contribution',
     // Workbench
     'vs/workbench/browser/actions/toggleSidebarVisibility',
     'vs/workbench/browser/actions/toggleSidebarPosition',
@@ -62,8 +60,7 @@ define([
     // TODO:	'vs/workbench/parts/update/electron-browser/update.contribution',
     // TODO:	'vs/workbench/electron-browser/darwin/cli.contribution',
     // TODO:	'vs/workbench/electron-browser/main.contribution',
-    // TODO:	'vs/workbench/electron-browser/main'
-    'main'
+    'main' // Replaces 'vs/workbench/electron-browser/main'
 ], function () {
     'use strict';
 });
