@@ -157,6 +157,10 @@
 				configuration.workspacePath = args.workspacePath;
 			if (args.repo)
 				configuration.workspacePath = args.repo;
+			if (args.u)
+				configuration.userEnv.githubUsername = args.u;
+			if (args.p)
+				configuration.userEnv.githubPassword = args.p;
 			var enableDeveloperTools = !configuration.isBuilt || !!configuration.extensionDevelopmentPath;
 
 // TODO:			process.env['VSCODE_SHARED_IPC_HOOK'] = configuration.sharedIPCHandle;
@@ -244,7 +248,7 @@
 
 				require([
 					'workbench.main',
-					'github',
+					'lib/github',
 					'vs/nls!vs/workbench/workbench.main',
 					'vs/css!vs/workbench/workbench.main'
 				], function() {

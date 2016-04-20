@@ -29,8 +29,7 @@ import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/co
 import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
 import {ConfigurationService} from 'configurationService';
 import {Github, Repository, Error as GithubError} from 'github';
-var github = require('github');
-import {ninvoke} from 'vs/base/common/async';
+var github = require('lib/github');
 
 // TODO: import path = require('path');
 var path = {

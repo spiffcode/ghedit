@@ -14,16 +14,16 @@
     /* istanbul ignore next */
     if (typeof define === 'function' && define.amd) {
         define([
-            'es6-promise',
-            'base-64',
-            'utf8',
-            'axios'
+            'lib/es6-promise',
+            'lib/base-64',
+            'lib/utf8',
+            'lib/axios'
         ], function (Promise, Base64, Utf8, axios) {
             return (root.Github = factory(Promise, Base64, Utf8, axios));
         });
     }
     else if (typeof module === 'object' && module.exports) {
-        module.exports = factory(require('es6-promise'), require('base-64'), require('utf8'), require('axios'));
+        module.exports = factory(require('lib/es6-promise'), require('lib/base-64'), require('lib/utf8'), require('lib/axios'));
     }
     else {
         root.Github = factory(root.Promise, root.base64, root.utf8, root.axios);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/base/common/strings', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'configurationService'], function (require, exports, winjs, shell_1, errors, platform, paths, timer, uri_1, strings, eventService_1, contextService_1, configurationService_1) {
     'use strict';
-    var github = require('github');
+    var github = require('lib/github');
     // TODO: import path = require('path');
     var path = {
         normalize: function (_path) {
