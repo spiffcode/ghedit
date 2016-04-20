@@ -43,3 +43,10 @@ Start a web server in the ghcode directory.
 * repo/branch/tag selection
 * saving
 * DM: clean up stuff
+* 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
+
+#### BUGS
+
+* need error message for invalid/inaccessable repo
+* githubFileService.resolve doesn't respect IResolveFileOptions (optimmization)
+* file mime type detection is crippled due to disabled Node dependency
