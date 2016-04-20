@@ -44,9 +44,11 @@ Start a web server in the ghcode directory.
 * saving
 * DM: clean up stuff
 * 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
+* Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 
 #### BUGS
 
 * need error message for invalid/inaccessable repo
-* githubFileService.resolve doesn't respect IResolveFileOptions (optimmization)
+* githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
+* 
