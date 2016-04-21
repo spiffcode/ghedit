@@ -141,7 +141,7 @@ function toInputs(paths: IPath[]): IResourceInput[] {
 
 function getWorkspace(environment: IMainEnvironment): winjs.TPromise<IWorkspace> {
 	if (!environment.workspacePath) {
-		return null;
+		return winjs.TPromise.as(null);
 	}
 
 	let workspaceResource = uri.file(environment.workspacePath);
