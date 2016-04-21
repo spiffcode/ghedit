@@ -104,6 +104,8 @@ export class FileService implements files.IFileService {
 	private basePath: string;
 	private tmpPath: string;
 	private options: IFileServiceOptions;
+	private repo: Repository;
+	private ref: string;
 
 	private workspaceWatcherToDispose: () => void;
 
@@ -134,6 +136,8 @@ export class FileService implements files.IFileService {
 		this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
 		this.undeliveredRawFileChangesEvents = [];
 		*/
+		this.repo = this.githubService.getRepo(this.githubService.repo);
+		this.ref = this.githubService.ref;
 	}
 
 	public updateOptions(options: IFileServiceOptions): void {
@@ -292,10 +296,8 @@ export class FileService implements files.IFileService {
 				// Write fast if we do UTF 8 without BOM
 				if (!addBom && encodingToWrite === encoding.UTF8) {
 // TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
-					let repo = this.toRepository(resource);
-					let path = this.toRepoPath(resource);
 					writeFilePromise = new TPromise<void>((c, e) => {
-						repo.write('master', path, value, 'Update ' + path, { encode: true }, (err: GithubError) => {
+						this.repo.write(this.ref, resource.path.slice(1), value, 'Update ' + resource.path, { encode: true }, (err: GithubError) => {
 							err ? e(err) : c(null);
 						});
 					}).then(() => {
@@ -474,54 +476,24 @@ export class FileService implements files.IFileService {
 		return paths.normalize(resource.fsPath);
 	}
 	
-	// TODO: rewrite as toRepositoryAndPath: { repo, path }
-	private toRepository(resource: uri): Repository {
-		let path = resource.path;
-		if (path[0] == '/')
-			path = path.slice(1);
-		let splitPath = path.split('/');
-		if (splitPath.length < 2) {
-			console.log('invalid repository: ' + resource.toString(true));
-			return null;
-		}
-		return this.githubService.getRepo(splitPath[0], splitPath[1]);
-	}
-
-	// TODO: see above
-	private toRepoPath(resource: uri): string {
-		let path = resource.path;
-		if (path[0] == '/')
-			path = path.slice(1);
-		let splitPath = path.split('/');
-		if (splitPath.length < 2) {
-			console.log('invalid repository: ' + resource.toString(true));
-			return null;
-		}
-		if (splitPath.length == 2)
-			return '';
-		splitPath.shift();
-		splitPath.shift();
-		return splitPath.join('/');
-	}
-
 	// TODO: options
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
-		let repo = this.toRepository(resource);
-		let path = this.toRepoPath(resource);
+		console.log('resolve ' + resource.toString(true));
 		return new TPromise<files.IFileStat>((c, e) => {
 			// TODO: This API has an upper limit of 1,000 files per directory.
-			// TODO: This API only supports files up to 1 MB in size. So use, e.g.:
+			// TODO: This API only supports files up to 1 MB in size. So use,
 			//		https://raw.githubusercontent.com/:owner/:repo/master/:path
-			//		(download_url of directory entry).
+			//		or download_url of directory entry
+			//		or curl -H 'Authorization: token INSERTACCESSTOKENHERE' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/owner/repo/contents/path
 			// TODO: GET /repos/:owner/:repo/git/trees/:sha for directories
-			repo.contents('master', path, (err: GithubError, contents?: any) => {
+			this.repo.contents(this.ref, resource.path.slice(1), (err: GithubError, contents?: any) => {
 				err ? e(err) : c(contents);
 			});
 		}).then((contents: any) => {
 			if (!Array.isArray(contents)) {
 				// TODO: switch on contents.type (file | symlink | submodule)
 				return {
-					resource: uri.file(paths.join(resource.path, contents.path)),
+					resource: uri.file(contents.path),
 					isDirectory: false,
 					hasChildren: false,
 					name: contents.name,
@@ -538,7 +510,7 @@ export class FileService implements files.IFileService {
 			for (var i = 0; i < contents.length; i++) {
 				let content = contents[i];
 				stats.push({
-					resource: uri.file(paths.join(resource.path, content.path)),
+					resource: uri.file(content.path),
 					isDirectory: content.type == "dir", // TODO: symlink, submodule
 					hasChildren: content.type == "dir",
 					name: content.name,
@@ -552,7 +524,7 @@ export class FileService implements files.IFileService {
 				resource: resource,
 				isDirectory: true,
 				hasChildren: true,
-				name: path, // TODO:
+				name: resource.path, // TODO:
 				mtime: 0, // TODO:
 				etag: '', // TODO: etag(fileStat),
 				children: stats,

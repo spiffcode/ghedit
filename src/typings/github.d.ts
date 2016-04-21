@@ -6,6 +6,9 @@ declare module "github" {
     }
     
     class Github {
+        repo: string;
+        ref: string;
+
         constructor(options?: any);
         getUser(): User;
         getRepo(usernameOrFullname: string, repo?: string): Repository;
@@ -29,6 +32,7 @@ declare module "github" {
     
     class Repository {
         constructor(options?: any);
+        show(cb: (err: Error, info?: any, xhr?: any) => void);
         contents(ref: string, path: string, cb: (err: Error, contents?: any, xhr?: any) => void);
         write(branch: string, path: string, content: string, message: string, cb: (err: Error, response?: any, xhr?: any) => void);
         write(branch: string, path: string, content: string, message: string, options: any, cb: (err: Error, response?: any, xhr?: any) => void);

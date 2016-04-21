@@ -71,6 +71,8 @@ export interface IMainEnvironment extends IEnvironment {
 	extensionsToInstall?: string[];
 	githubService?: Github;
 	userEnv: IEnv;
+	githubRef?: string;
+	githubRepo?: string;
 }
 
 export function startup(environment: IMainEnvironment, globalSettings: IGlobalSettings): winjs.TPromise<void> {
@@ -109,6 +111,8 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 		options['password'] = environment.userEnv['githubPassword'];
 	}
 	environment.githubService = new github(options);
+	environment.githubService.repo = environment.githubRepo;
+	environment.githubService.ref = environment.githubRef;
 
 	// Open workbench
 	return getWorkspace(environment).then((workspace: IWorkspace) => {
@@ -140,35 +144,25 @@ function getWorkspace(environment: IMainEnvironment): winjs.TPromise<IWorkspace>
 		return null;
 	}
 
-	let realWorkspacePath = path.normalize(fs.realpathSync(environment.workspacePath));
-	if (paths.isUNC(realWorkspacePath) && strings.endsWith(realWorkspacePath, paths.nativeSep)) {
-		// for some weird reason, node adds a trailing slash to UNC paths
-		// we never ever want trailing slashes as our workspace path unless
-		// someone opens root ("/").
-		// See also https://github.com/nodejs/io.js/issues/1765
-		realWorkspacePath = strings.rtrim(realWorkspacePath, paths.nativeSep);
-	}
-
-	let workspaceResource = uri.file(realWorkspacePath);
-	let folderName = path.basename(realWorkspacePath) || realWorkspacePath;
+	let workspaceResource = uri.file(environment.workspacePath);
 	
-	// Make async call to github to check for folder.
-	let repo = environment.githubService.getRepo(environment.workspacePath);
+	// Call Github to get repository information used to populate the workspace.
+	let repo = environment.githubService.getRepo(environment.githubRepo);
 	return new winjs.TPromise<IWorkspace>((c, e) => {
-		repo.contents('master', '', (err: GithubError, contents?: any) => {
-			err ? e(err) : c(contents);
+		repo.show((err: GithubError, info?: any) => {
+			err ? e(err) : c(info);
 		});
-	}).then((contents: any) => {
+	}).then((info: any) => {
 		let workspace: IWorkspace = {
 			'resource': workspaceResource,
-			'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
-			'name': folderName,
-		// TODO:	'uid': platform.isLinux ? folderStat.ino : folderStat.birthtime.getTime(), // On Linux, birthtime is ctime, so we cannot use it! We use the ino instead!
-		// TODO:	'mtime': folderStat.mtime.getTime()
+			'id': environment.githubRepo,
+			'name': environment.githubRepo.split('/')[1], // Repository name minus the user name.
+			'uid': Date.parse(info.created_at),
+			'mtime': Date.parse(info.updated_at),
 		};
 		return workspace;
 	}, (error: GithubError) => {
-		console.log('unable to repo.contents ' + environment.workspacePath);
+		console.log('unable to repo.show ' + environment.githubRepo);
 	});
 }
 
