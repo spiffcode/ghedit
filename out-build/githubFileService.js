@@ -51,6 +51,8 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
             this.undeliveredRawFileChangesEvents = [];
             */
+            this.repo = this.githubService.getRepo(this.githubService.repo);
+            this.ref = this.githubService.ref;
         }
         FileService.prototype.updateOptions = function (options) {
             if (options) {
@@ -195,10 +197,8 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     // Write fast if we do UTF 8 without BOM
                     if (!addBom && encodingToWrite === encoding.UTF8) {
                         // TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
-                        var repo_1 = _this.toRepository(resource);
-                        var path_1 = _this.toRepoPath(resource);
                         writeFilePromise = new winjs_base_1.TPromise(function (c, e) {
-                            repo_1.write('master', path_1, value, 'Update ' + path_1, { encode: true }, function (err) {
+                            _this.repo.write(_this.ref, resource.path.slice(1), value, 'Update ' + resource.path, { encode: true }, function (err) {
                                 err ? e(err) : c(null);
                             });
                         }).then(function () {
@@ -355,53 +355,26 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             }
             return paths.normalize(resource.fsPath);
         };
-        // TODO: rewrite as toRepositoryAndPath: { repo, path }
-        FileService.prototype.toRepository = function (resource) {
-            var path = resource.path;
-            if (path[0] == '/')
-                path = path.slice(1);
-            var splitPath = path.split('/');
-            if (splitPath.length < 2) {
-                console.log('invalid repository: ' + resource.toString(true));
-                return null;
-            }
-            return this.githubService.getRepo(splitPath[0], splitPath[1]);
-        };
-        // TODO: see above
-        FileService.prototype.toRepoPath = function (resource) {
-            var path = resource.path;
-            if (path[0] == '/')
-                path = path.slice(1);
-            var splitPath = path.split('/');
-            if (splitPath.length < 2) {
-                console.log('invalid repository: ' + resource.toString(true));
-                return null;
-            }
-            if (splitPath.length == 2)
-                return '';
-            splitPath.shift();
-            splitPath.shift();
-            return splitPath.join('/');
-        };
         // TODO: options
         FileService.prototype.resolve = function (resource, options) {
+            var _this = this;
             if (options === void 0) { options = Object.create(null); }
-            var repo = this.toRepository(resource);
-            var path = this.toRepoPath(resource);
+            console.log('resolve ' + resource.toString(true));
             return new winjs_base_1.TPromise(function (c, e) {
                 // TODO: This API has an upper limit of 1,000 files per directory.
-                // TODO: This API only supports files up to 1 MB in size. So use, e.g.:
+                // TODO: This API only supports files up to 1 MB in size. So use,
                 //		https://raw.githubusercontent.com/:owner/:repo/master/:path
-                //		(download_url of directory entry).
+                //		or download_url of directory entry
+                //		or curl -H 'Authorization: token INSERTACCESSTOKENHERE' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/owner/repo/contents/path
                 // TODO: GET /repos/:owner/:repo/git/trees/:sha for directories
-                repo.contents('master', path, function (err, contents) {
+                _this.repo.contents(_this.ref, resource.path.slice(1), function (err, contents) {
                     err ? e(err) : c(contents);
                 });
             }).then(function (contents) {
                 if (!Array.isArray(contents)) {
                     // TODO: switch on contents.type (file | symlink | submodule)
                     return {
-                        resource: uri_1.default.file(paths.join(resource.path, contents.path)),
+                        resource: uri_1.default.file(contents.path),
                         isDirectory: false,
                         hasChildren: false,
                         name: contents.name,
@@ -417,7 +390,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                 for (var i = 0; i < contents.length; i++) {
                     var content = contents[i];
                     stats.push({
-                        resource: uri_1.default.file(paths.join(resource.path, content.path)),
+                        resource: uri_1.default.file(content.path),
                         isDirectory: content.type == "dir",
                         hasChildren: content.type == "dir",
                         name: content.name,
@@ -431,7 +404,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     resource: resource,
                     isDirectory: true,
                     hasChildren: true,
-                    name: path,
+                    name: resource.path,
                     mtime: 0,
                     etag: '',
                     children: stats,

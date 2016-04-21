@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/base/common/strings', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'configurationService'], function (require, exports, winjs, shell_1, errors, platform, paths, timer, uri_1, strings, eventService_1, contextService_1, configurationService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/common/errors', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'configurationService'], function (require, exports, winjs, shell_1, errors, timer, uri_1, eventService_1, contextService_1, configurationService_1) {
     'use strict';
     var github = require('lib/github');
     // TODO: import path = require('path');
@@ -58,6 +58,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
             options['password'] = environment.userEnv['githubPassword'];
         }
         environment.githubService = new github(options);
+        environment.githubService.repo = environment.githubRepo;
+        environment.githubService.ref = environment.githubRef;
         // Open workbench
         return getWorkspace(environment).then(function (workspace) {
             return openWorkbench(workspace, shellConfiguration, shellOptions, environment.githubService);
@@ -84,31 +86,24 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
         if (!environment.workspacePath) {
             return null;
         }
-        var realWorkspacePath = path.normalize(fs.realpathSync(environment.workspacePath));
-        if (paths.isUNC(realWorkspacePath) && strings.endsWith(realWorkspacePath, paths.nativeSep)) {
-            // for some weird reason, node adds a trailing slash to UNC paths
-            // we never ever want trailing slashes as our workspace path unless
-            // someone opens root ("/").
-            // See also https://github.com/nodejs/io.js/issues/1765
-            realWorkspacePath = strings.rtrim(realWorkspacePath, paths.nativeSep);
-        }
-        var workspaceResource = uri_1.default.file(realWorkspacePath);
-        var folderName = path.basename(realWorkspacePath) || realWorkspacePath;
-        // Make async call to github to check for folder.
-        var repo = environment.githubService.getRepo(environment.workspacePath);
+        var workspaceResource = uri_1.default.file(environment.workspacePath);
+        // Call Github to get repository information used to populate the workspace.
+        var repo = environment.githubService.getRepo(environment.githubRepo);
         return new winjs.TPromise(function (c, e) {
-            repo.contents('master', '', function (err, contents) {
-                err ? e(err) : c(contents);
+            repo.show(function (err, info) {
+                err ? e(err) : c(info);
             });
-        }).then(function (contents) {
+        }).then(function (info) {
             var workspace = {
                 'resource': workspaceResource,
-                'id': platform.isLinux ? realWorkspacePath : realWorkspacePath.toLowerCase(),
-                'name': folderName,
+                'id': environment.githubRepo,
+                'name': environment.githubRepo.split('/')[1],
+                'uid': Date.parse(info.created_at),
+                'mtime': Date.parse(info.updated_at),
             };
             return workspace;
         }, function (error) {
-            console.log('unable to repo.contents ' + environment.workspacePath);
+            console.log('unable to repo.show ' + environment.githubRepo);
         });
     }
     function openWorkbench(workspace, configuration, options, githubService) {
