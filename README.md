@@ -38,7 +38,6 @@ Start a web server in the ghcode directory.
 * syntax coloring
 * all the other language smarts
 * themes
-* markdown preview
 * search
 * repo/branch/tag selection
 * DM: saving
