@@ -84,7 +84,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
     }
     function getWorkspace(environment) {
         if (!environment.workspacePath) {
-            return null;
+            return winjs.TPromise.as(null);
         }
         var workspaceResource = uri_1.default.file(environment.workspacePath);
         // Call Github to get repository information used to populate the workspace.

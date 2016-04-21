@@ -153,9 +153,11 @@
 //			args.config = '{ "userEnv": { "githubUsername": "darrinm", "githubPassword": "<secret>" }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
 			args.config = '{ "userEnv": {}, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
 			var configuration = JSON.parse(args['config']);
-			configuration.workspacePath = args.workspacePath || '/';
-			if (args.repo)
+			configuration.workspacePath = args.workspacePath;
+			if (args.repo) {
 				configuration.githubRepo = args.repo;
+				configuration.workspacePath = '/';
+			}
 			configuration.githubRef = args.ref || 'master';
 			if (args.u)
 				configuration.userEnv.githubUsername = args.u;
