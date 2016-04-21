@@ -7,7 +7,9 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
     // TODO: Use vs/base/node/encoding replacement.
     var encoding = {
         UTF8: 'utf8',
-        UTF8_with_bom: 'utf8bom'
+        UTF8_with_bom: 'utf8bom',
+        UTF16be: 'utf16be',
+        UTF16le: 'utf16le',
     };
     function etag(arg1, arg2) {
         var size;
@@ -167,67 +169,54 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             });
         };
         FileService.prototype.updateContent = function (resource, value, options) {
+            var _this = this;
             if (options === void 0) { options = Object.create(null); }
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.updateContent not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-            });
-            /* TODO:
-            let absolutePath = this.toAbsolutePath(resource);
-    
+            var absolutePath = this.toAbsolutePath(resource);
             // 1.) check file
-            return this.checkFile(absolutePath, options).then((exists) => {
-                let createParentsPromise: TPromise<boolean>;
-                if (exists) {
-                    createParentsPromise = TPromise.as(null);
-                } else {
-                    createParentsPromise = pfs.mkdirp(paths.dirname(absolutePath));
+            return this.checkFile(absolutePath, options).then(function (exists) {
+                var encodingToWrite = _this.getEncoding(resource, options.encoding);
+                var addBomPromise = winjs_base_1.TPromise.as(false);
+                // UTF_16 BE and LE as well as UTF_8 with BOM always have a BOM
+                if (encodingToWrite === encoding.UTF16be || encodingToWrite === encoding.UTF16le || encodingToWrite === encoding.UTF8_with_bom) {
+                    addBomPromise = winjs_base_1.TPromise.as(true);
                 }
-    
-                // 2.) create parents as needed
-                return createParentsPromise.then(() => {
-                    let encodingToWrite = this.getEncoding(resource, options.encoding);
-                    let addBomPromise: TPromise<boolean> = TPromise.as(false);
-    
-                    // UTF_16 BE and LE as well as UTF_8 with BOM always have a BOM
-                    if (encodingToWrite === encoding.UTF16be || encodingToWrite === encoding.UTF16le || encodingToWrite === encoding.UTF8_with_bom) {
-                        addBomPromise = TPromise.as(true);
-                    }
-    
-                    // Existing UTF-8 file: check for options regarding BOM
-                    else if (exists && encodingToWrite === encoding.UTF8) {
-                        if (options.overwriteEncoding) {
-                            addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
-                        } else {
-                            addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then((enc) => enc === encoding.UTF8); // otherwise preserve it if found
-                        }
-                    }
-    
-                    // 3.) check to add UTF BOM
-                    return addBomPromise.then((addBom) => {
-                        let writeFilePromise: TPromise<void>;
-    
-                        // Write fast if we do UTF 8 without BOM
-                        if (!addBom && encodingToWrite === encoding.UTF8) {
-                            writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
-                        }
-    
-                        // Otherwise use encoding lib
-                        else {
-                            let encoded = encoding.encode(value, encodingToWrite, { addBOM: addBom });
-                            writeFilePromise = pfs.writeFile(absolutePath, encoded);
-                        }
-    
-                        // 4.) set contents
-                        return writeFilePromise.then(() => {
-    
-                            // 5.) resolve
-                            return this.resolve(resource);
+                else if (exists && encodingToWrite === encoding.UTF8) {
+                    /* TODO: Node-independent detectEncodingByBOM
+                    if (options.overwriteEncoding) {
+                        addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
+                    } else {
+                        addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then((enc) => enc === encoding.UTF8); // otherwise preserve it if found
+                    }*/
+                    addBomPromise = winjs_base_1.TPromise.as(false);
+                }
+                // 3.) check to add UTF BOM
+                return addBomPromise.then(function (addBom) {
+                    var writeFilePromise;
+                    // Write fast if we do UTF 8 without BOM
+                    if (!addBom && encodingToWrite === encoding.UTF8) {
+                        // TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
+                        var repo_1 = _this.toRepository(resource);
+                        var path_1 = _this.toRepoPath(resource);
+                        writeFilePromise = new winjs_base_1.TPromise(function (c, e) {
+                            repo_1.write('master', path_1, value, 'Update ' + path_1, { encode: true }, function (err) {
+                                err ? e(err) : c(null);
+                            });
+                        }).then(function () {
+                            return;
+                        }, function (error) {
+                            console.log('failed to repo.write ' + resource.toString(true));
                         });
+                    }
+                    else {
+                        throw new Error('githubFileService.updateContent with non-UTF8 encoding not implemented yet');
+                    }
+                    // 4.) set contents
+                    return writeFilePromise.then(function () {
+                        // 5.) resolve
+                        return _this.resolve(resource);
                     });
                 });
             });
-            */
         };
         FileService.prototype.createFile = function (resource, content) {
             if (content === void 0) { content = ''; }
@@ -366,6 +355,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             }
             return paths.normalize(resource.fsPath);
         };
+        // TODO: rewrite as toRepositoryAndPath: { repo, path }
         FileService.prototype.toRepository = function (resource) {
             var path = resource.path;
             if (path[0] == '/')
@@ -377,6 +367,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             }
             return this.githubService.getRepo(splitPath[0], splitPath[1]);
         };
+        // TODO: see above
         FileService.prototype.toRepoPath = function (resource) {
             var path = resource.path;
             if (path[0] == '/')
@@ -398,6 +389,11 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             var repo = this.toRepository(resource);
             var path = this.toRepoPath(resource);
             return new winjs_base_1.TPromise(function (c, e) {
+                // TODO: This API has an upper limit of 1,000 files per directory.
+                // TODO: This API only supports files up to 1 MB in size. So use, e.g.:
+                //		https://raw.githubusercontent.com/:owner/:repo/master/:path
+                //		(download_url of directory entry).
+                // TODO: GET /repos/:owner/:repo/git/trees/:sha for directories
                 repo.contents('master', path, function (err, contents) {
                     err ? e(err) : c(contents);
                 });
@@ -509,11 +505,8 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             return null;
         };
         FileService.prototype.checkFile = function (absolutePath, options) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.checkFile not implemented (' + absolutePath + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-            });
-            /* TODO:
+            return winjs_base_1.TPromise.as(true);
+            /* TODO: full implementation
             return pfs.exists(absolutePath).then((exists) => {
                 if (exists) {
                     return pfs.stat(absolutePath).then((stat: fs.Stats) => {
