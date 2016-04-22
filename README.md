@@ -35,7 +35,6 @@ Start a web server in the ghcode directory.
 * session preservation (e.g. across refresh, browser/tab close/open)
 * user settings
 * project aka workspace settings
-* syntax coloring
 * all the other language smarts
 * themes
 * search

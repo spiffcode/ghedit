@@ -90,6 +90,8 @@ define([
 // TODO:	'vs/workbench/electron-browser/darwin/cli.contribution',
 
 // TODO:	'vs/workbench/electron-browser/main.contribution',
+	// TODO: How is Electron-browser getting this css?
+	'vs/css!vs/editor/browser/standalone/media/standalone-tokens',
 	'main' // Replaces 'vs/workbench/electron-browser/main'
 
 ], function() {
