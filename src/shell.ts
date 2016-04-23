@@ -102,9 +102,9 @@ import {ThemeService} from 'themeService';
 // TODO: import {ExtensionsService} from 'vs/workbench/parts/extensions/node/extensionsService';
 // TODO: import {ReloadWindowAction} from 'vs/workbench/electron-browser/actions';
 
+// Import everything we need to add all the standalone language and json schema support.
 import {ITextFileService} from 'vs/workbench/parts/files/common/files';
 import {TextFileService} from 'bogusTextFileServices';
-/* TODO:
 import {ILanguageExtensionPoint} from 'vs/editor/common/services/modeService';
 import {ModesRegistry} from 'vs/editor/common/modes/modesRegistry';
 import {ExtensionsRegistry} from 'vs/platform/extensions/common/extensionsRegistry';
@@ -113,9 +113,9 @@ import {IJSONSchema} from 'vs/base/common/jsonSchema';
 import {Extensions, IJSONContributionRegistry} from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import {Registry} from 'vs/platform/platform';
 import {ILanguageDef} from 'vs/editor/standalone-languages/types';
-//import 'vs/editor/standalone-languages/all';
-//import 'vs/editor/browser/standalone/standaloneSchemas';
-*/
+import 'vs/languages/json/common/json.contribution';
+import 'vs/editor/standalone-languages/all';
+import 'vs/editor/browser/standalone/standaloneSchemas';
 import {Github, Repository, Error as GithubError} from 'github';
 
 /**
@@ -128,10 +128,8 @@ export interface ICoreServices {
 	githubService: Github;
 }
 
-/* TODO:
 let MonacoEditorLanguages: ILanguageDef[] = this.MonacoEditorLanguages || [];
 let MonacoEditorSchemas: { [url:string]: IJSONSchema } = this.MonacoEditorSchemas || {};
-*/
 
 /**
  * The Monaco Workbench Shell contains the Monaco workbench with a rich header containing navigation and the activity bar.
@@ -150,6 +148,8 @@ export class WorkbenchShell {
 	private telemetryService: ITelemetryService;
 	private keybindingService: WorkbenchKeybindingService;
 	private githubService: Github;
+	private modeService: IModeService;
+	private modelService: IModelService;
 
 	// DWM: These are dependency injected into various modules. Normally they would
 	// be provided by Electron-dependent modules.
@@ -266,41 +266,81 @@ export class WorkbenchShell {
 
 		let workspaceStats: WorkspaceStats = <WorkspaceStats>this.workbench.getInstantiationService().createInstance(WorkspaceStats);
 		workspaceStats.reportWorkspaceTags();
-/*
-		// Register all built-in standalone languages
+
+		// Register all built-in standalone languages.
 		MonacoEditorLanguages.forEach((language) => {
-			this.registerStandaloneLanguage(language, language.defModule);
+			this.registerMonarchStandaloneLanguage(language, language.defModule);
 		});
 
-		// Register all built-in standalone JSON schemas
+		// Register the languages we have smarter handlers for.
+		// These lines come from typescript.contrbution.ts which can't simply be imported
+		// because of its dependency on vs/editor/browser/standalone/standaloneCodeEditor
+		// for the registerStandaloneLanguage implementation.
+		this.registerStandaloneLanguage({
+			id: 'typescript',
+			extensions: ['.ts'],
+			aliases: ['TypeScript', 'ts', 'typescript'],
+			mimetypes: ['text/typescript'],
+		}, 'vs/languages/typescript/common/mode');
+
+		this.registerStandaloneLanguage({
+			id: 'javascript',
+			extensions: ['.js', '.es6'],
+			firstLine: '^#!.*\\bnode',
+			filenames: ['jakefile'],
+			aliases: ['JavaScript', 'javascript', 'js'],
+			mimetypes: ['text/javascript'],
+		}, 'vs/languages/typescript/common/mode');
+
+		// Register all built-in standalone JSON schemas.
 		for (var uri in MonacoEditorSchemas) {
 			this.registerStandaloneSchema(uri, MonacoEditorSchemas[uri]);
 		}
-		*/
 	}
 
-/* TODO:
-	private registerStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
+	// These are adapted versions of functions in vs/editor/browser/standalone/standaloneCodeEditor
+	// without the creation of conflicting supporting services.
+	private registerMonarchStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
 		ModesRegistry.registerLanguage(language);
 
 		ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, () => {
 			require([defModule], (value:{language:ILanguage}) => {
 				if (!value.language) {
-					console.error('Expected ' + defModule + ' to export a `language`');
+					console.error('Expected ' + defModule + ' to export an `language`');
 					return;
 				}
 
-				this.modeService.registerMonarchDefinition(this.modelService, this.editorWorkerService, language.id, value.language);
+				let modeService = this.modeService;
+				let modelService = this.modelService;
+				modeService.registerMonarchDefinition(modelService, this.editorWorkerService, language.id, value.language);
 			}, (err) => {
 				console.error('Cannot find module ' + defModule, err);
 			});
 		});
 	}
+
+	private registerStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
+		ModesRegistry.registerLanguage(language);
+
+		ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, () => {
+			require([defModule], (value:{activate:()=>void}) => {
+				if (!value.activate) {
+					console.error('Expected ' + defModule + ' to export an `activate` function');
+					return;
+				}
+
+				this.workbench.getInstantiationService().invokeFunction(value.activate);
+			}, (err) => {
+				console.error('Cannot find module ' + defModule, err);
+			});
+		});
+	}
+
 	private registerStandaloneSchema(uri:string, schema:IJSONSchema) {
 		let schemaRegistry = <IJSONContributionRegistry>Registry.as(Extensions.JSONContribution);
 		schemaRegistry.registerSchema(uri, schema);
 	}
-*/
+
 
 	private initInstantiationService(): IInstantiationService {
 		this.windowService = new WindowService();
@@ -361,8 +401,8 @@ export class WorkbenchShell {
 		let extensionService = new MainProcessExtensionService();
 // TODO: 		this.keybindingService.setExtensionService(extensionService);
 
-		let modeService = new MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
-		let modelService = new ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
+		let modeService = this.modeService = new MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
+		let modelService = this.modelService = new ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
 		let editorWorkerService = this.editorWorkerService = new EditorWorkerServiceImpl(modelService);
 
 		let untitledEditorService = new UntitledEditorService();
