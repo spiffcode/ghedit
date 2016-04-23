@@ -56,7 +56,7 @@ import {IEditorWorkerService} from 'vs/editor/common/services/editorWorkerServic
 // TODO: import {MainThreadDocuments} from 'vs/workbench/api/node/extHostDocuments';
 // TODO: import {MainProcessTextMateSyntax} from 'vs/editor/node/textMate/TMSyntax';
 // TODO: import {MainProcessTextMateSnippet} from 'vs/editor/node/textMate/TMSnippets';
-// TODO: import {JSONValidationExtensionPoint} from 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint';
+import {JSONValidationExtensionPoint} from 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint';
 // TODO: import {LanguageConfigurationFileHandler} from 'vs/editor/node/languageConfiguration';
 // TODO: import {MainThreadFileSystemEventService} from 'vs/workbench/api/node/extHostFileSystemEventService';
 // TODO: import {MainThreadQuickOpen} from 'vs/workbench/api/node/extHostQuickOpen';
@@ -409,7 +409,7 @@ export class WorkbenchShell {
 		this.threadService.getRemotable(RemoteTelemetryServiceHelper);
 // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSyntax);
 // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSnippet);
-// TODO:		this.workbench.getInstantiationService().createInstance(JSONValidationExtensionPoint);
+		this.workbench.getInstantiationService().createInstance(JSONValidationExtensionPoint);
 // TODO:		this.workbench.getInstantiationService().createInstance(LanguageConfigurationFileHandler);
 // TODO: 		this.threadService.getRemotable(MainThreadConfiguration);
 // TODO: 		this.threadService.getRemotable(MainThreadQuickOpen);
