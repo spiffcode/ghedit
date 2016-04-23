@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/css!vs/workbench/electron-browser/media/shell'], function (require, exports, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, baseLifecycleService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, remoteTelemetryService_1, storage_2, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1) {
+define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas'], function (require, exports, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, baseLifecycleService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, jsonValidationExtensionPoint_1, remoteTelemetryService_1, storage_2, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1) {
     'use strict';
-    /* TODO:
-    let MonacoEditorLanguages: ILanguageDef[] = this.MonacoEditorLanguages || [];
-    let MonacoEditorSchemas: { [url:string]: IJSONSchema } = this.MonacoEditorSchemas || {};
-    */
+    var MonacoEditorLanguages = this.MonacoEditorLanguages || [];
+    var MonacoEditorSchemas = this.MonacoEditorSchemas || {};
     /**
      * The Monaco Workbench Shell contains the Monaco workbench with a rich header containing navigation and the activity bar.
      * With the Shell being the top level element in the page, it is also responsible for driving the layouting.
@@ -72,6 +70,7 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             return workbenchContainer;
         };
         WorkbenchShell.prototype.onWorkbenchStarted = function () {
+            var _this = this;
             // Log to telemetry service
             var windowSize = {
                 innerHeight: window.innerHeight,
@@ -88,40 +87,71 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             });
             var workspaceStats = this.workbench.getInstantiationService().createInstance(workspaceStats_1.WorkspaceStats);
             workspaceStats.reportWorkspaceTags();
-            /*
-                    // Register all built-in standalone languages
-                    MonacoEditorLanguages.forEach((language) => {
-                        this.registerStandaloneLanguage(language, language.defModule);
-                    });
-            
-                    // Register all built-in standalone JSON schemas
-                    for (var uri in MonacoEditorSchemas) {
-                        this.registerStandaloneSchema(uri, MonacoEditorSchemas[uri]);
-                    }
-                    */
+            // Register all built-in standalone languages.
+            MonacoEditorLanguages.forEach(function (language) {
+                _this.registerMonarchStandaloneLanguage(language, language.defModule);
+            });
+            // Register the languages we have smarter handlers for.
+            // These lines come from typescript.contrbution.ts which can't simply be imported
+            // because of its dependency on vs/editor/browser/standalone/standaloneCodeEditor
+            // for the registerStandaloneLanguage implementation.
+            this.registerStandaloneLanguage({
+                id: 'typescript',
+                extensions: ['.ts'],
+                aliases: ['TypeScript', 'ts', 'typescript'],
+                mimetypes: ['text/typescript'],
+            }, 'vs/languages/typescript/common/mode');
+            this.registerStandaloneLanguage({
+                id: 'javascript',
+                extensions: ['.js', '.es6'],
+                firstLine: '^#!.*\\bnode',
+                filenames: ['jakefile'],
+                aliases: ['JavaScript', 'javascript', 'js'],
+                mimetypes: ['text/javascript'],
+            }, 'vs/languages/typescript/common/mode');
+            // Register all built-in standalone JSON schemas.
+            for (var uri in MonacoEditorSchemas) {
+                this.registerStandaloneSchema(uri, MonacoEditorSchemas[uri]);
+            }
         };
-        /* TODO:
-            private registerStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
-                ModesRegistry.registerLanguage(language);
-        
-                ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, () => {
-                    require([defModule], (value:{language:ILanguage}) => {
-                        if (!value.language) {
-                            console.error('Expected ' + defModule + ' to export a `language`');
-                            return;
-                        }
-        
-                        this.modeService.registerMonarchDefinition(this.modelService, this.editorWorkerService, language.id, value.language);
-                    }, (err) => {
-                        console.error('Cannot find module ' + defModule, err);
-                    });
+        // These are adapted versions of functions in vs/editor/browser/standalone/standaloneCodeEditor
+        // without the creation of conflicting supporting services.
+        WorkbenchShell.prototype.registerMonarchStandaloneLanguage = function (language, defModule) {
+            var _this = this;
+            modesRegistry_1.ModesRegistry.registerLanguage(language);
+            extensionsRegistry_1.ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, function () {
+                require([defModule], function (value) {
+                    if (!value.language) {
+                        console.error('Expected ' + defModule + ' to export an `language`');
+                        return;
+                    }
+                    var modeService = _this.modeService;
+                    var modelService = _this.modelService;
+                    modeService.registerMonarchDefinition(modelService, _this.editorWorkerService, language.id, value.language);
+                }, function (err) {
+                    console.error('Cannot find module ' + defModule, err);
                 });
-            }
-            private registerStandaloneSchema(uri:string, schema:IJSONSchema) {
-                let schemaRegistry = <IJSONContributionRegistry>Registry.as(Extensions.JSONContribution);
-                schemaRegistry.registerSchema(uri, schema);
-            }
-        */
+            });
+        };
+        WorkbenchShell.prototype.registerStandaloneLanguage = function (language, defModule) {
+            var _this = this;
+            modesRegistry_1.ModesRegistry.registerLanguage(language);
+            extensionsRegistry_1.ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, function () {
+                require([defModule], function (value) {
+                    if (!value.activate) {
+                        console.error('Expected ' + defModule + ' to export an `activate` function');
+                        return;
+                    }
+                    _this.workbench.getInstantiationService().invokeFunction(value.activate);
+                }, function (err) {
+                    console.error('Cannot find module ' + defModule, err);
+                });
+            });
+        };
+        WorkbenchShell.prototype.registerStandaloneSchema = function (uri, schema) {
+            var schemaRegistry = platform_1.Registry.as(jsonContributionRegistry_1.Extensions.JSONContribution);
+            schemaRegistry.registerSchema(uri, schema);
+        };
         WorkbenchShell.prototype.initInstantiationService = function () {
             this.windowService = new windowService_1.WindowService();
             var disableWorkspaceStorage = this.configuration.env.extensionTestsPath || (!this.workspace && !this.configuration.env.extensionDevelopmentPath); // without workspace or in any extension test, we use inMemory storage unless we develop an extension where we want to preserve state
@@ -158,8 +188,8 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             // TODO: 		let extensionService = new MainProcessExtensionService(this.contextService, this.threadService, this.messageService, this.telemetryService);
             var extensionService = new simpleServices_1.SimpleExtensionService();
             // TODO: 		this.keybindingService.setExtensionService(extensionService);
-            var modeService = new modeServiceImpl_1.MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
-            var modelService = new modelServiceImpl_1.ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
+            var modeService = this.modeService = new modeServiceImpl_1.MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
+            var modelService = this.modelService = new modelServiceImpl_1.ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
             var editorWorkerService = this.editorWorkerService = new editorWorkerServiceImpl_1.EditorWorkerServiceImpl(modelService);
             var untitledEditorService = new untitledEditorService_1.UntitledEditorService();
             this.themeService = new themeService_2.ThemeService(extensionService, this.windowService, this.storageService);
@@ -200,7 +230,7 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             this.threadService.getRemotable(remoteTelemetryService_1.RemoteTelemetryServiceHelper);
             // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSyntax);
             // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSnippet);
-            // TODO:		this.workbench.getInstantiationService().createInstance(JSONValidationExtensionPoint);
+            this.workbench.getInstantiationService().createInstance(jsonValidationExtensionPoint_1.JSONValidationExtensionPoint);
             // TODO:		this.workbench.getInstantiationService().createInstance(LanguageConfigurationFileHandler);
             // TODO: 		this.threadService.getRemotable(MainThreadConfiguration);
             // TODO: 		this.threadService.getRemotable(MainThreadQuickOpen);

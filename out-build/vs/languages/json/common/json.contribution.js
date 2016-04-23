@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/languages/json/common/json.contribution', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/platform', 'vs/editor/common/modes/modesRegistry'], function (require, exports, nls, ConfigurationRegistry, Platform, modesRegistry_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/platform', 'vs/editor/common/modes/modesRegistry'], function (require, exports, nls, ConfigurationRegistry, Platform, modesRegistry_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -17,11 +17,11 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/json.contribution
         'id': 'json',
         'order': 20,
         'type': 'object',
-        'title': nls.localize(0, null),
+        'title': nls.localize('jsonConfigurationTitle', "JSON configuration"),
         'properties': {
             'json.schemas': {
                 'type': 'array',
-                'description': nls.localize(1, null),
+                'description': nls.localize('jsonConfiguration.schemas', "Associate schemas to JSON files in the current project"),
                 'items': {
                     'type': 'object',
                     'defaultSnippets': [{ body: { fileMatch: ['{{/myfile}}'], url: '{{schemaURL}}' } }],
@@ -29,21 +29,21 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/json.contribution
                         'url': {
                             'type': 'string',
                             'default': '/user.schema.json',
-                            'description': nls.localize(2, null),
+                            'description': nls.localize('jsonConfiguration.schemaPath', "A URL to a schema or a relative path to a schema in the current directory"),
                         },
                         'fileMatch': {
                             'type': 'array',
                             'items': {
                                 'type': 'string',
                                 'default': 'MyFile.json',
-                                'description': nls.localize(3, null),
+                                'description': nls.localize('jsonConfiguration.fileMatch', "A file pattern that can contain '*' to match against when resolving JSON files to schemas."),
                             },
                             'minItems': 1,
-                            'description': nls.localize(4, null),
+                            'description': nls.localize('jsonConfiguration.fileMatches', "An array of file patterns to match against when resolving JSON files to schemas."),
                         },
                         'schema': {
                             'type': 'object',
-                            'description': nls.localize(5, null),
+                            'description': nls.localize('jsonConfiguration.schema', "The schema definition for the given URL. The schema only needs to be provided to avoid accesses to the schema URL."),
                         },
                     }
                 }
