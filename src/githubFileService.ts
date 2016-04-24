@@ -563,7 +563,7 @@ export class FileService implements files.IFileService {
 					mtime: model.mtime,
 					etag: model.etag,
 					mime: model.mime,
-					value: atob((<any>model).content),
+					value: atob((<any>model).content.replace(/\s/g, '')),
 					encoding: encoding.UTF8 // TODO:
 				}
 				c(content);
