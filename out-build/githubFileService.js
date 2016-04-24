@@ -438,7 +438,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                         mtime: model.mtime,
                         etag: model.etag,
                         mime: model.mime,
-                        value: atob(model.content),
+                        value: atob(model.content.replace(/\s/g, '')),
                         encoding: encoding.UTF8 // TODO:
                     };
                     c(content);
