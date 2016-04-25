@@ -5,6 +5,11 @@
     # Clone Visual Studio Code if you haven't already.
     git clone https://github.com/spiffcode/vscode.git
     
+    # Get the VS Code revision GH Code is dependent on. 
+    cd vscode
+    git reset --hard 36a964b59d445d3e9002eb0467cbff5e2230ba18
+    cd ..
+    
     # Clone this repository.  
     git clone https://github.com/spiffcode/ghcode.git
     
