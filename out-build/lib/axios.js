@@ -950,5 +950,4 @@
     ]);
 });
 ;
-//# sourceMappingURL=axios.map
 //# sourceMappingURL=axios.js.map
