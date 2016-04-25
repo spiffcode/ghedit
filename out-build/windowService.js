@@ -12,6 +12,7 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
         function BogusWindow() {
         }
         BogusWindow.prototype.showSaveDialog = function (options, callback) {
+            console.log('BogusWindow.showSaveDialog not implemented');
             /* TODO:
             if (callback) {
                 return dialog.showSaveDialog(this.win, options, callback);
@@ -22,6 +23,7 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
             return 'unimplemented';
         };
         BogusWindow.prototype.showMessageBox = function (options) {
+            console.log('BogusWindow.showMessageBox not implemented');
             // TODO:		return dialog.showMessageBox(this.win, options);
             return 0;
         };

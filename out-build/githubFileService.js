@@ -198,7 +198,9 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     if (!addBom && encodingToWrite === encoding.UTF8) {
                         // TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
                         writeFilePromise = new winjs_base_1.TPromise(function (c, e) {
-                            _this.repo.write(_this.ref, resource.path.slice(1), value, 'Update ' + resource.path, { encode: true }, function (err) {
+                            var path = resource.path.slice(1);
+                            var commitMessage = _this.options.commitMessage || 'Update ' + path;
+                            _this.repo.write(_this.ref, path, value, commitMessage, { encode: true }, function (err) {
                                 err ? e(err) : c(null);
                             });
                         }).then(function () {
@@ -359,7 +361,6 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
         FileService.prototype.resolve = function (resource, options) {
             var _this = this;
             if (options === void 0) { options = Object.create(null); }
-            console.log('resolve ' + resource.toString(true));
             return new winjs_base_1.TPromise(function (c, e) {
                 // TODO: This API has an upper limit of 1,000 files per directory.
                 // TODO: This API only supports files up to 1 MB in size. So use,

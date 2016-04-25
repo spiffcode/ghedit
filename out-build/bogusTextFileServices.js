@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'windowService'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'windowService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1, quickOpenService_1) {
     'use strict';
     var TextFileService = (function (_super) {
         __extends(TextFileService, _super);
@@ -27,6 +27,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             this.modeService = modeService;
             this.editorService = editorService;
             this.windowService = windowService;
+            this.instService = instantiationService;
             this.init();
         }
         TextFileService.prototype.beforeShutdown = function () {
@@ -200,22 +201,40 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                     targetsForUntitled.push(uri_1.default.file(targetPath));
                 }
             }
-            // Handle files
-            return _super.prototype.saveAll.call(this, fileResources).then(function (result) {
-                // Handle untitled
-                var untitledSaveAsPromises = [];
-                targetsForUntitled.forEach(function (target, index) {
-                    var untitledSaveAsPromise = _this.saveAs(untitledResources[index], target).then(function (uri) {
-                        result.results.push({
-                            source: untitledResources[index],
-                            target: uri,
-                            success: !!uri
-                        });
+            // Prompt for a commit message.
+            // TODO: validateInput fn to put appropriate constraints on the commit message.
+            var quickOpenService = this.instService.getInstance(quickOpenService_1.IQuickOpenService);
+            return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message' }).then(function (result) {
+                // If user canceled the input box.
+                if (!result)
+                    return winjs_base_1.TPromise.as({
+                        results: fileResources.concat(untitledResources).map(function (r) {
+                            return {
+                                source: r
+                            };
+                        })
                     });
-                    untitledSaveAsPromises.push(untitledSaveAsPromise);
-                });
-                return winjs_base_1.TPromise.join(untitledSaveAsPromises).then(function () {
-                    return result;
+                // This hack gets the commit message from here to the bowels of the githubFileService where
+                // it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+                // but that would involve forking a number of VSC source files.
+                _this.fileService.updateOptions({ commitMessage: result });
+                // Handle files
+                return _super.prototype.saveAll.call(_this, fileResources).then(function (result) {
+                    // Handle untitled
+                    var untitledSaveAsPromises = [];
+                    targetsForUntitled.forEach(function (target, index) {
+                        var untitledSaveAsPromise = _this.saveAs(untitledResources[index], target).then(function (uri) {
+                            result.results.push({
+                                source: untitledResources[index],
+                                target: uri,
+                                success: !!uri
+                            });
+                        });
+                        untitledSaveAsPromises.push(untitledSaveAsPromise);
+                    });
+                    return winjs_base_1.TPromise.join(untitledSaveAsPromises).then(function () {
+                        return result;
+                    });
                 });
             });
         };

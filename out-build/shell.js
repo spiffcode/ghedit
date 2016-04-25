@@ -218,7 +218,6 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             result.addSingleton(editorWorkerService_1.IEditorWorkerService, editorWorkerService);
             result.addSingleton(themeService_1.IThemeService, this.themeService);
             result.addSingleton(actions_1.IActionsService, new actionsService_1.default(extensionService, this.keybindingService));
-            // TODO: this should be moved to workbench.ts
             this.textFileService = new bogusTextFileServices_1.TextFileService(this.contextService, result, fileService, untitledEditorService, lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService, null /* TODO: IWorkbenchEditorService */, this.windowService);
             result.addSingleton(files_2.ITextFileService, this.textFileService);
             return result;
