@@ -18,6 +18,7 @@ export var IWindowService = createDecorator<IWindowService>('windowService');
 
 export class BogusWindow {
 	public showSaveDialog(options: Electron.Dialog.SaveDialogOptions, callback?: (fileName: string) => void): string {
+		console.log('BogusWindow.showSaveDialog not implemented');
 		/* TODO:
 		if (callback) {
 			return dialog.showSaveDialog(this.win, options, callback);
@@ -29,6 +30,7 @@ export class BogusWindow {
 	}
 
 	public showMessageBox(options: Electron.Dialog.ShowMessageBoxOptions): number {
+		console.log('BogusWindow.showMessageBox not implemented');
 // TODO:		return dialog.showMessageBox(this.win, options);
 		return 0;
 	}

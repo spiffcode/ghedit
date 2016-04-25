@@ -434,9 +434,9 @@ export class WorkbenchShell {
 		result.addSingleton(IThemeService, this.themeService);
 		result.addSingleton(IActionsService, new ActionsService(extensionService, this.keybindingService));
 
-		// TODO: this should be moved to workbench.ts
 		this.textFileService = new TextFileService(this.contextService, result, fileService, untitledEditorService,
-				lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService, null /* TODO: IWorkbenchEditorService */, this.windowService);
+				lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService,
+				null /* TODO: IWorkbenchEditorService */, this.windowService);
 		result.addSingleton(ITextFileService, this.textFileService);
 
 		return result;

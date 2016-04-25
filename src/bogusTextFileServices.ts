@@ -30,8 +30,10 @@ import {IConfigurationService} from 'vs/platform/configuration/common/configurat
 import {IModeService} from 'vs/editor/common/services/modeService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IWindowService} from 'windowService';
+import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 
 export class TextFileService extends AbstractTextFileService {
+	private instService: IInstantiationService;
 
 	constructor(
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
@@ -47,6 +49,7 @@ export class TextFileService extends AbstractTextFileService {
 		@IWindowService private windowService: IWindowService
 	) {
 		super(contextService, instantiationService, configurationService, telemetryService, lifecycleService, eventService);
+		this.instService = instantiationService;
 
 		this.init();
 	}
@@ -262,25 +265,45 @@ export class TextFileService extends AbstractTextFileService {
 			}
 		}
 
-		// Handle files
-		return super.saveAll(fileResources).then((result) => {
-
-			// Handle untitled
-			let untitledSaveAsPromises: TPromise<void>[] = [];
-			targetsForUntitled.forEach((target, index) => {
-				let untitledSaveAsPromise = this.saveAs(untitledResources[index], target).then((uri) => {
-					result.results.push({
-						source: untitledResources[index],
-						target: uri,
-						success: !!uri
-					});
+		// Prompt for a commit message.
+		// TODO: validateInput fn to put appropriate constraints on the commit message.
+		let quickOpenService = this.instService.getInstance(IQuickOpenService);
+		return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
+			// If user canceled the input box.
+			if (!result)
+				return TPromise.as({
+					results: [...fileResources, ...untitledResources].map((r) => {
+						return {
+							source: r
+						};
+					})
 				});
 
-				untitledSaveAsPromises.push(untitledSaveAsPromise);
-			});
+			// This hack gets the commit message from here to the bowels of the githubFileService where
+			// it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+			// but that would involve forking a number of VSC source files.
+			this.fileService.updateOptions({ commitMessage: result });
 
-			return TPromise.join(untitledSaveAsPromises).then(() => {
-				return result;
+			// Handle files
+			return super.saveAll(fileResources).then((result) => {
+
+				// Handle untitled
+				let untitledSaveAsPromises: TPromise<void>[] = [];
+				targetsForUntitled.forEach((target, index) => {
+					let untitledSaveAsPromise = this.saveAs(untitledResources[index], target).then((uri) => {
+						result.results.push({
+							source: untitledResources[index],
+							target: uri,
+							success: !!uri
+						});
+					});
+
+					untitledSaveAsPromises.push(untitledSaveAsPromise);
+				});
+
+				return TPromise.join(untitledSaveAsPromises).then(() => {
+					return result;
+				});
 			});
 		});
 	}

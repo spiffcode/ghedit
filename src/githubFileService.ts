@@ -59,6 +59,7 @@ export interface IFileServiceOptions {
 	watcherIgnoredPatterns?: string[];
 	disableWatcher?: boolean;
 	verboseLogging?: boolean;
+	commitMessage?: string;
 }
 
 /* TODO:
@@ -297,7 +298,9 @@ export class FileService implements files.IFileService {
 				if (!addBom && encodingToWrite === encoding.UTF8) {
 // TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
 					writeFilePromise = new TPromise<void>((c, e) => {
-						this.repo.write(this.ref, resource.path.slice(1), value, 'Update ' + resource.path, { encode: true }, (err: GithubError) => {
+						let path = resource.path.slice(1);
+						let commitMessage = this.options.commitMessage || 'Update ' + path;
+						this.repo.write(this.ref, path, value, commitMessage, { encode: true }, (err: GithubError) => {
 							err ? e(err) : c(null);
 						});
 					}).then(() => {
@@ -478,7 +481,6 @@ export class FileService implements files.IFileService {
 	
 	// TODO: options
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
-		console.log('resolve ' + resource.toString(true));
 		return new TPromise<files.IFileStat>((c, e) => {
 			// TODO: This API has an upper limit of 1,000 files per directory.
 			// TODO: This API only supports files up to 1 MB in size. So use,
