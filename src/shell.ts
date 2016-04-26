@@ -339,6 +339,9 @@ export class WorkbenchShell {
 	private registerStandaloneSchema(uri:string, schema:IJSONSchema) {
 		let schemaRegistry = <IJSONContributionRegistry>Registry.as(Extensions.JSONContribution);
 		schemaRegistry.registerSchema(uri, schema);
+		var i = uri.lastIndexOf('/');
+		var pattern = uri.slice(i + 1) + '.json';
+		schemaRegistry.addSchemaFileAssociation(pattern, uri);
 	}
 
 
