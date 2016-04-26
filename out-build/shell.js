@@ -151,6 +151,9 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
         WorkbenchShell.prototype.registerStandaloneSchema = function (uri, schema) {
             var schemaRegistry = platform_1.Registry.as(jsonContributionRegistry_1.Extensions.JSONContribution);
             schemaRegistry.registerSchema(uri, schema);
+            var i = uri.lastIndexOf('/');
+            var pattern = uri.slice(i + 1) + '.json';
+            schemaRegistry.addSchemaFileAssociation(pattern, uri);
         };
         WorkbenchShell.prototype.initInstantiationService = function () {
             this.windowService = new windowService_1.WindowService();
