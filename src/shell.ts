@@ -39,7 +39,7 @@ import {FileService} from 'fileService';
 // TODO: import {LifecycleService} from 'vs/workbench/services/lifecycle/electron-browser/lifecycleService';
 import {BaseLifecycleService as LifecycleService} from 'vs/platform/lifecycle/common/baseLifecycleService';
 // TODO: import {WorkbenchKeybindingService} from 'vs/workbench/services/keybinding/electron-browser/keybindingService';
-import {StandaloneKeybindingService as WorkbenchKeybindingService, SimpleExtensionService as MainProcessExtensionService} from 'vs/editor/browser/standalone/simpleServices';
+import {StandaloneKeybindingService as WorkbenchKeybindingService, SimpleExtensionService as MainProcessExtensionService, SimpleEditorRequestService as RequestService} from 'vs/editor/browser/standalone/simpleServices';
 // TODO: import {MainThreadService} from 'vs/workbench/services/thread/electron-browser/threadService';
 import {MainThreadService} from 'vs/platform/thread/common/mainThreadService';
 import {MainProcessMarkerService} from 'vs/platform/markers/common/markerService';
@@ -83,7 +83,7 @@ import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingServic
 import {ILifecycleService} from 'vs/platform/lifecycle/common/lifecycle';
 import {IMarkerService} from 'vs/platform/markers/common/markers';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
-// TODO: import {IRequestService} from 'vs/platform/request/common/request';
+import {IRequestService} from 'vs/platform/request/common/request';
 // TODO: import {ISearchService} from 'vs/platform/search/common/search';
 import {IThreadService} from 'vs/platform/thread/common/thread';
 import {IConfiguration, IWorkspace} from 'vs/platform/workspace/common/workspace';
@@ -383,20 +383,17 @@ export class WorkbenchShell {
 
 // TODO: 		let lifecycleService = new LifecycleService(this.messageService, this.windowService);
 		let lifecycleService = new LifecycleService();
-// TODO: 		lifecycleService.onShutdown(() => fileService.dispose());
+ 		lifecycleService.onShutdown(() => fileService.dispose());
 
 // TODO: 		this.threadService = new MainThreadService(this.contextService, this.messageService, this.windowService);
 		this.threadService = new MainThreadService(this.contextService, 'vs/editor/common/worker/editorWorkerServer', 1);
 // TODO: 		lifecycleService.onShutdown(() => this.threadService.dispose());
 
-/* TODO:
 		let requestService = new RequestService(
 			this.contextService,
-			this.configurationService,
 			this.telemetryService
 		);
-*/
-// TODO: 		lifecycleService.onShutdown(() => requestService.dispose());
+// 		lifecycleService.onShutdown(() => requestService.dispose());
 
 		let markerService = new MainProcessMarkerService(this.threadService);
 
@@ -414,7 +411,7 @@ export class WorkbenchShell {
 		let result = createInstantiationService();
 		result.addSingleton(ITelemetryService, this.telemetryService);
 		result.addSingleton(IEventService, this.eventService);
-// TODO:		result.addSingleton(IRequestService, requestService);
+		result.addSingleton(IRequestService, requestService);
 		result.addSingleton(IWorkspaceContextService, this.contextService);
 		result.addSingleton(IContextViewService, this.contextViewService);
 		result.addSingleton(IContextMenuService, new ContextMenuService(document.body /* TODO: correct element? */, this.telemetryService, this.messageService, this.contextViewService));
