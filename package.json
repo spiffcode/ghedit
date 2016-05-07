@@ -1,0 +1,11 @@
+{
+  "name": "ghcode",
+  "description": "GH Code",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-run": "^1.6.12"
+  }
+}
