@@ -1,0 +1,29 @@
+/*---------------------------------------------------------
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ *--------------------------------------------------------*/
+define([], [
+	'vscode.extension.contributes.debuggers',
+	'vscode.extension.contributes.debuggers.type',
+	'vscode.extension.contributes.debuggers.label',
+	'vscode.extension.contributes.debuggers.enableBreakpointsFor',
+	'vscode.extension.contributes.debuggers.enableBreakpointsFor.languageIds',
+	'vscode.extension.contributes.debuggers.program',
+	'vscode.extension.contributes.debuggers.args',
+	'vscode.extension.contributes.debuggers.runtime',
+	'vscode.extension.contributes.debuggers.runtimeArgs',
+	'vscode.extension.contributes.debuggers.initialConfigurations',
+	'vscode.extension.contributes.debuggers.configurationAttributes',
+	'vscode.extension.contributes.debuggers.windows',
+	'vscode.extension.contributes.debuggers.windows.runtime',
+	'vscode.extension.contributes.debuggers.osx',
+	'vscode.extension.contributes.debuggers.osx.runtime',
+	'vscode.extension.contributes.debuggers.linux',
+	'vscode.extension.contributes.debuggers.linux.runtime',
+	'app.launch.json.title',
+	'app.launch.json.version',
+	'app.launch.json.configurations',
+	'debugNoType',
+	'duplicateDebuggerType',
+	'DebugConfig.failed',
+	'selectDebug'
+]);

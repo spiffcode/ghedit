@@ -1,4 +1,4 @@
-﻿const webdriver = require('selenium-webdriver');
+const webdriver = require('selenium-webdriver');
 
 function mergeObjects(target) {
     var sources = [];

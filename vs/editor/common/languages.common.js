@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(["require", "exports", 'vs/base/common/assert', 'vs/base/common/async', 'vs/base/common/callbackList', 'vs/base/common/cancellation', 'vs/base/common/collections', 'vs/base/common/event', 'vs/base/common/events', 'vs/base/common/lifecycle', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/platform/platform', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/files/common/files', 'vs/platform/request/common/request', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/thread', 'vs/platform/thread/common/threadService', 'vs/editor/common/editorCommon', 'vs/editor/common/modes', 'vs/editor/common/modes/abstractMode', 'vs/editor/common/modes/abstractState', 'vs/editor/common/modes/monarch/monarch', 'vs/editor/common/modes/monarch/monarchCompile', 'vs/editor/common/modes/supports/declarationSupport', 'vs/editor/common/modes/supports/parameterHintsSupport', 'vs/editor/common/modes/supports/referenceSupport', 'vs/editor/common/modes/supports/richEditSupport', 'vs/editor/common/modes/supports/suggestSupport', 'vs/editor/common/modes/supports/tokenizationSupport', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modeService'], function (require, exports) {
+    'use strict';
+});
+//# sourceMappingURL=languages.common.js.map
