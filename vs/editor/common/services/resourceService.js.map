@@ -1,0 +1,1 @@
+{"version":3,"file":"resourceService.js","sourceRoot":"","sources":["../../../../../src/vs/editor/common/services/resourceService.ts"],"names":[],"mappings":";IAAA;;;oGAGgG;IAChG,YAAY,CAAC;IAQb,mBAAmB;IAER,sBAAc,GAAG;QAC3B,KAAK,EAAE,gBAAgB;QACvB,OAAO,EAAE,kBAAkB;QAC3B,OAAO,EAAE,kBAAkB;KAC3B,CAAC;IAiBS,wBAAgB,GAAG,+BAAe,CAAmB,iBAAiB,CAAC,CAAC"}
