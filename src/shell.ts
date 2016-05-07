@@ -117,6 +117,12 @@ import 'vs/languages/json/common/json.contribution';
 import 'vs/editor/standalone-languages/all';
 import 'vs/editor/browser/standalone/standaloneSchemas';
 import {Github, Repository, Error as GithubError} from 'github';
+import {NavbarPart} from 'navbarPart';
+import {INavbarService, NavbarAlignment, INavbarEntry} from 'navbarService';
+
+const Identifiers = {
+	NAVBAR_PART: 'workbench.parts.navbar'
+};
 
 /**
  * Services that we require for the Shell
@@ -168,6 +174,7 @@ export class WorkbenchShell {
 	private workspace: IWorkspace;
 	private options: IOptions;
 	private workbench: Workbench;
+   	private navbarPart: NavbarPart;
 
 	constructor(container: HTMLElement, workspace: IWorkspace, services: ICoreServices, configuration: IConfiguration, options: IOptions) {
 		this.container = container;
@@ -195,6 +202,15 @@ export class WorkbenchShell {
 
 		// Instantiation service with services
 		let instantiationService = this.initInstantiationService();
+
+		// Nav bar
+		this.navbarPart = new NavbarPart(Identifiers.NAVBAR_PART);
+//		this.toDispose.push(this.navbarPart);
+//		this.toShutdown.push(this.navbarPart);
+		this.navbarPart.setInstantiationService(instantiationService);
+		instantiationService.addSingleton(INavbarService, this.navbarPart);
+        this.createNavbarPart();
+        this.fillNavbar();
 
 		//crash reporting
 		if (!!this.configuration.env.crashReporter) {
@@ -244,6 +260,23 @@ export class WorkbenchShell {
 
 		return workbenchContainer;
 	}
+
+	private createNavbarPart(): void {
+		let navbarContainer = $(this.content).div({
+			'class': ['part', 'navbar'],
+			id: Identifiers.NAVBAR_PART,
+			role: 'contentinfo'
+		});
+
+		this.navbarPart.create(navbarContainer);
+	}
+    
+    private fillNavbar(): void {
+        this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
+        this.navbarPart.addEntry({ text: '<user name>', tooltip: 'user menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 300);
+        this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'settings menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 200);
+        this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
+    }
 
 	private onWorkbenchStarted(): void {
 
@@ -580,7 +613,12 @@ export class WorkbenchShell {
 		let clArea = $(this.container).getClientArea();
 
 		let contentsSize = new Dimension(clArea.width, clArea.height);
-		this.contentsContainer.size(contentsSize.width, contentsSize.height);
+        
+		const navbarStyle = this.navbarPart.getContainer().getComputedStyle();
+        let navbarHeight = parseInt(navbarStyle.getPropertyValue('height'), 10) || 18;
+		this.navbarPart.getContainer().position(0);
+		this.contentsContainer.position(navbarHeight);
+		this.contentsContainer.size(contentsSize.width, contentsSize.height - navbarHeight);
 
 		this.contextViewService.layout();
 		this.workbench.layout();
