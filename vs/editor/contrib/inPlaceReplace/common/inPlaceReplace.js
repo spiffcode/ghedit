@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/inPlaceReplace/common/inPlaceReplace', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/editorWorkerService', './inPlaceReplaceCommand'], function (require, exports, nls, keyCodes_1, winjs_base_1, range_1, editorAction_1, editorCommon_1, editorCommonExtensions_1, editorWorkerService_1, inPlaceReplaceCommand_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/editorWorkerService', './inPlaceReplaceCommand'], function (require, exports, nls, keyCodes_1, winjs_base_1, range_1, editorAction_1, editorCommon_1, editorCommonExtensions_1, editorWorkerService_1, inPlaceReplaceCommand_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -113,11 +113,11 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/inPlaceReplace/common/in
         return InPlaceReplaceDown;
     }(InPlaceReplace));
     // register actions
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceUp, InPlaceReplaceUp.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceUp, InPlaceReplaceUp.ID, nls.localize('InPlaceReplaceAction.previous.label', "Replace with Previous Value"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_COMMA
     }));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceDown, InPlaceReplaceDown.ID, nls.localize(1, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceDown, InPlaceReplaceDown.ID, nls.localize('InPlaceReplaceAction.next.label', "Replace with Next Value"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_DOT
     }));

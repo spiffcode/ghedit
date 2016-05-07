@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTemplates'], function (require, exports, nls) {
+define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -71,7 +71,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTempla
         id: 'tsc.config',
         label: 'TypeScript - tsconfig.json',
         autoDetect: false,
-        description: nls.localize(0, null),
+        description: nls.localize('tsc.config', 'Compiles a TypeScript project'),
         content: [
             '{',
             '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
@@ -89,7 +89,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTempla
         id: 'tsc.watch',
         label: 'TypeScript - Watch Mode',
         autoDetect: false,
-        description: nls.localize(1, null),
+        description: nls.localize('tsc.watch', 'Compiles a TypeScript project in watch mode'),
         content: [
             '{',
             '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
@@ -109,7 +109,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTempla
         label: '.NET Core',
         sort: 'NET Core',
         autoDetect: false,
-        description: nls.localize(2, null),
+        description: nls.localize('dotnetCore', 'Executes .NET Core build command'),
         content: [
             '{',
             '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
@@ -134,7 +134,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTempla
         id: 'msbuild',
         label: 'MSBuild',
         autoDetect: false,
-        description: nls.localize(3, null),
+        description: nls.localize('msbuild', 'Executes the build target'),
         content: [
             '{',
             '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
@@ -163,7 +163,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/taskTempla
         id: 'externalCommand',
         label: 'Others',
         autoDetect: false,
-        description: nls.localize(4, null),
+        description: nls.localize('externalCommand', 'Example to run an arbitrary external command'),
         content: [
             '{',
             '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',

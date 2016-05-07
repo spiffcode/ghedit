@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/window', 'vs/workbench/electron-main/lifecycle', 'vs/nls!vs/workbench/electron-main/windows', 'vs/base/common/paths', 'vs/base/common/arrays', 'vs/base/common/objects', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager'], function (require, exports, events, path, fs, electron_1, platform, env, window, lifecycle, nls, paths, arrays, objects, storage, settings, update_manager_1) {
+define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/window', 'vs/workbench/electron-main/lifecycle', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/arrays', 'vs/base/common/objects', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager'], function (require, exports, events, path, fs, electron_1, platform, env, window, lifecycle, nls, paths, arrays, objects, storage, settings, update_manager_1) {
     'use strict';
     var eventEmitter = new events.EventEmitter();
     var EventTypes = {
@@ -198,7 +198,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 if (newMenuBarHidden) {
                     var vscodeWindow = _this.getWindowById(windowId);
                     if (vscodeWindow) {
-                        vscodeWindow.send('vscode:showInfoMessage', nls.localize(0, null));
+                        vscodeWindow.send('vscode:showInfoMessage', nls.localize('hiddenMenuBar', "You can still access the menu bar by pressing the **Alt** key."));
                     }
                 }
             });
@@ -322,9 +322,9 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                         var options = {
                             title: env.product.nameLong,
                             type: 'info',
-                            buttons: [nls.localize(1, null)],
-                            message: nls.localize(2, null),
-                            detail: nls.localize(3, null, pathToOpen),
+                            buttons: [nls.localize('ok', "OK")],
+                            message: nls.localize('pathNotExistTitle', "Path does not exist"),
+                            detail: nls.localize('pathNotExistDetail', "The path '{0}' does not seem to exist anymore on disk.", pathToOpen),
                             noLink: true
                         };
                         var activeWindow = electron_1.BrowserWindow.getFocusedWindow();
@@ -882,9 +882,9 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 electron_1.dialog.showMessageBox(vscodeWindow.win, {
                     title: env.product.nameLong,
                     type: 'warning',
-                    buttons: [nls.localize(4, null), nls.localize(5, null), nls.localize(6, null)],
-                    message: nls.localize(7, null),
-                    detail: nls.localize(8, null),
+                    buttons: [nls.localize('reopen', "Reopen"), nls.localize('wait', "Keep Waiting"), nls.localize('close', "Close")],
+                    message: nls.localize('appStalled', "The window is no longer responding"),
+                    detail: nls.localize('appStalledDetail', "You can reopen or close the window or keep waiting."),
                     noLink: true
                 }, function (result) {
                     if (result === 0) {
@@ -900,9 +900,9 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 electron_1.dialog.showMessageBox(vscodeWindow.win, {
                     title: env.product.nameLong,
                     type: 'warning',
-                    buttons: [nls.localize(9, null), nls.localize(10, null)],
-                    message: nls.localize(11, null),
-                    detail: nls.localize(12, null),
+                    buttons: [nls.localize('reopen', "Reopen"), nls.localize('close', "Close")],
+                    message: nls.localize('appCrashed', "The window has crashed"),
+                    detail: nls.localize('appCrashedDetail', "We are sorry for the inconvenience! You can reopen the window to continue where you left off."),
                     noLink: true
                 }, function (result) {
                     if (result === 0) {

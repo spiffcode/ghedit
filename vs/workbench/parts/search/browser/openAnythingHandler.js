@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/search/browser/openAnythingHandler', 'vs/base/common/async', 'vs/base/common/types', 'vs/base/common/platform', 'vs/base/common/scorer', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/strings', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/search/browser/openFileHandler', 'vs/workbench/parts/search/browser/openSymbolHandler', 'vs/platform/message/common/message', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/configuration/common/configuration'], function (require, exports, winjs_base_1, nls, async_1, types, platform_1, scorer, paths, labels, strings, quickOpenModel_1, quickopen_1, openFileHandler_1, openSymbolHandler, message_1, instantiation_1, contextService_1, configuration_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/async', 'vs/base/common/types', 'vs/base/common/platform', 'vs/base/common/scorer', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/strings', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/search/browser/openFileHandler', 'vs/workbench/parts/search/browser/openSymbolHandler', 'vs/platform/message/common/message', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/configuration/common/configuration'], function (require, exports, winjs_base_1, nls, async_1, types, platform_1, scorer, paths, labels, strings, quickOpenModel_1, quickopen_1, openFileHandler_1, openSymbolHandler, message_1, instantiation_1, contextService_1, configuration_1) {
     'use strict';
     // OpenSymbolHandler is used from an extension and must be in the main bundle file so it can load
     exports.OpenSymbolHandler = openSymbolHandler.OpenSymbolHandler;
@@ -228,7 +228,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return viewResults;
         };
         OpenAnythingHandler.prototype.getGroupLabel = function () {
-            return nls.localize(0, null);
+            return nls.localize('fileAndTypeResults', "file and symbol results");
         };
         OpenAnythingHandler.prototype.getAutoFocus = function (searchValue) {
             return {

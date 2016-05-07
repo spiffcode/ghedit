@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/errors', 'vs/nls!vs/workbench/parts/files/browser/fileTracker', 'vs/base/common/mime', 'vs/base/common/uri', 'vs/base/common/paths', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/common/editor/iframeEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/common/events', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/activity/common/activityService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation'], function (require, exports, errors, nls, mime_1, uri_1, paths, diffEditorInput_1, editor_1, files_1, files_2, fileEditorInput_1, iframeEditorInput_1, textFileEditorModel_1, events_1, untitledEditorService_1, editorService_1, quickOpenService_1, activityService_1, event_1, instantiation_1) {
+define(["require", "exports", 'vs/base/common/errors', 'vs/nls', 'vs/base/common/mime', 'vs/base/common/uri', 'vs/base/common/paths', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/common/editor/iframeEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/common/events', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/activity/common/activityService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation'], function (require, exports, errors, nls, mime_1, uri_1, paths, diffEditorInput_1, editor_1, files_1, files_2, fileEditorInput_1, iframeEditorInput_1, textFileEditorModel_1, events_1, untitledEditorService_1, editorService_1, quickOpenService_1, activityService_1, event_1, instantiation_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -93,7 +93,7 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/nls!vs/workbench/part
             var dirtyCount = this.textFileService.getDirty().length;
             this.lastDirtyCount = dirtyCount;
             if (dirtyCount > 0) {
-                this.activityService.showActivity(files_1.VIEWLET_ID, new activityService_1.NumberBadge(dirtyCount, function (num) { return nls.localize(0, null, dirtyCount); }), 'explorer-viewlet-label');
+                this.activityService.showActivity(files_1.VIEWLET_ID, new activityService_1.NumberBadge(dirtyCount, function (num) { return nls.localize('dirtyFiles', "{0} unsaved files", dirtyCount); }), 'explorer-viewlet-label');
             }
             else {
                 this.activityService.clearActivity(files_1.VIEWLET_ID);

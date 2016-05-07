@@ -12,14 +12,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/browser/actions/triggerEditorActions', 'vs/base/common/types', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/common/editor', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/part/common/partService', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, types, actions_1, actions_2, actionRegistry_1, platform_1, editor_1, actionBarRegistry_1, quickOpenModel_1, quickopen_1, editorService_1, quickOpenService_1, partService_1, editor_2, instantiation_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/types', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/common/editor', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/part/common/partService', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, types, actions_1, actions_2, actionRegistry_1, platform_1, editor_1, actionBarRegistry_1, quickOpenModel_1, quickopen_1, editorService_1, quickOpenService_1, partService_1, editor_2, instantiation_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var SPLIT_EDITOR_ACTION_ID = 'workbench.action.splitEditor';
-    var SPLIT_EDITOR_ACTION_LABEL = nls.localize(0, null);
+    var SPLIT_EDITOR_ACTION_LABEL = nls.localize('splitEditor', "Split Editor");
     var SplitEditorAction = (function (_super) {
         __extends(SplitEditorAction, _super);
         function SplitEditorAction(id, label, editorService) {
@@ -76,7 +76,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.SplitEditorAction = SplitEditorAction;
     var CYCLE_EDITOR_ACTION_ID = 'workbench.action.cycleEditor';
-    var CYCLE_EDITOR_ACTION_LABEL = nls.localize(1, null);
+    var CYCLE_EDITOR_ACTION_LABEL = nls.localize('cycleEditor', "Cycle Between Opened Editors");
     var CycleEditorAction = (function (_super) {
         __extends(CycleEditorAction, _super);
         function CycleEditorAction(id, label, editorService) {
@@ -102,7 +102,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.CycleEditorAction = CycleEditorAction;
     var FOCUS_FIRST_EDITOR_ACTION_ID = 'workbench.action.focusFirstEditor';
-    var FOCUS_FIRST_EDITOR_ACTION_LABEL = nls.localize(2, null);
+    var FOCUS_FIRST_EDITOR_ACTION_LABEL = nls.localize('focusFirstEditor', "Focus into Left Hand Editor");
     var FocusFirstEditorAction = (function (_super) {
         __extends(FocusFirstEditorAction, _super);
         function FocusFirstEditorAction(id, label, editorService, quickOpenService) {
@@ -195,7 +195,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.BaseFocusSideEditorAction = BaseFocusSideEditorAction;
     var FOCUS_SECOND_EDITOR_ACTION_ID = 'workbench.action.focusSecondEditor';
-    var FOCUS_SECOND_EDITOR_ACTION_LABEL = nls.localize(3, null);
+    var FOCUS_SECOND_EDITOR_ACTION_LABEL = nls.localize('focusSecondEditor', "Focus into Side Editor");
     var FocusSecondEditorAction = (function (_super) {
         __extends(FocusSecondEditorAction, _super);
         function FocusSecondEditorAction(id, label, editorService, quickOpenService) {
@@ -215,7 +215,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(BaseFocusSideEditorAction));
     exports.FocusSecondEditorAction = FocusSecondEditorAction;
     var FOCUS_THIRD_EDITOR_ACTION_ID = 'workbench.action.focusThirdEditor';
-    var FOCUS_THIRD_EDITOR_ACTION_LABEL = nls.localize(4, null);
+    var FOCUS_THIRD_EDITOR_ACTION_LABEL = nls.localize('focusThirdEditor', "Focus into Right Hand Editor");
     var FocusThirdEditorAction = (function (_super) {
         __extends(FocusThirdEditorAction, _super);
         function FocusThirdEditorAction(id, label, editorService, quickOpenService) {
@@ -235,7 +235,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(BaseFocusSideEditorAction));
     exports.FocusThirdEditorAction = FocusThirdEditorAction;
     var NAVIGATE_LEFT_EDITOR_ACTION_ID = 'workbench.action.focusLeftEditor';
-    var NAVIGATE_LEFT_EDITOR_ACTION_LABEL = nls.localize(5, null);
+    var NAVIGATE_LEFT_EDITOR_ACTION_LABEL = nls.localize('focusLeftEditor', "Focus into Next Editor on the Left");
     var NavigateToLeftEditorAction = (function (_super) {
         __extends(NavigateToLeftEditorAction, _super);
         function NavigateToLeftEditorAction(id, label, editorService) {
@@ -264,7 +264,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.NavigateToLeftEditorAction = NavigateToLeftEditorAction;
     var NAVIGATE_RIGHT_EDITOR_ACTION_ID = 'workbench.action.focusRightEditor';
-    var NAVIGATE_RIGHT_EDITOR_ACTION_LABEL = nls.localize(6, null);
+    var NAVIGATE_RIGHT_EDITOR_ACTION_LABEL = nls.localize('focusRigthEditor', "Focus into Next Editor on the Right");
     var NavigateToRightEditorAction = (function (_super) {
         __extends(NavigateToRightEditorAction, _super);
         function NavigateToRightEditorAction(id, label, editorService, instantiationService) {
@@ -330,7 +330,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(false);
         };
         OpenToSideAction.OPEN_TO_SIDE_ID = 'workbench.action.openToSide';
-        OpenToSideAction.OPEN_TO_SIDE_LABEL = nls.localize(7, null);
+        OpenToSideAction.OPEN_TO_SIDE_LABEL = nls.localize('openToSide', "Open to the Side");
         OpenToSideAction = __decorate([
             __param(0, editorService_1.IWorkbenchEditorService)
         ], OpenToSideAction);
@@ -403,7 +403,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.CloseEditorAction = CloseEditorAction;
     var CLOSE_ALL_EDITORS_ACTION_ID = 'workbench.action.closeAllEditors';
-    var CLOSE_ALL_EDITORS_ACTION_LABEL = nls.localize(8, null);
+    var CLOSE_ALL_EDITORS_ACTION_LABEL = nls.localize('closeAllEditors', "Close All Editors");
     var CloseAllEditorsAction = (function (_super) {
         __extends(CloseAllEditorsAction, _super);
         function CloseAllEditorsAction(id, label, editorService) {
@@ -420,7 +420,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.CloseAllEditorsAction = CloseAllEditorsAction;
     var CLOSE_OTHER_EDITORS_ACTION_ID = 'workbench.action.closeOtherEditors';
-    var CLOSE_OTHER_EDITORS_ACTION_LABEL = nls.localize(9, null);
+    var CLOSE_OTHER_EDITORS_ACTION_LABEL = nls.localize('closeOtherEditors', "Close Other Editors");
     var CloseOtherEditorsAction = (function (_super) {
         __extends(CloseOtherEditorsAction, _super);
         function CloseOtherEditorsAction(id, label, editorService) {
@@ -437,7 +437,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.CloseOtherEditorsAction = CloseOtherEditorsAction;
     var MOVE_EDITOR_LEFT_ACTION_ID = 'workbench.action.moveActiveEditorLeft';
-    var MOVE_EDITOR_LEFT_ACTION_LABEL = nls.localize(10, null);
+    var MOVE_EDITOR_LEFT_ACTION_LABEL = nls.localize('moveActiveEditorLeft', "Move Active Editor Left");
     var MoveEditorLeftAction = (function (_super) {
         __extends(MoveEditorLeftAction, _super);
         function MoveEditorLeftAction(id, label, editorService) {
@@ -460,7 +460,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.MoveEditorLeftAction = MoveEditorLeftAction;
     var MOVE_EDITOR_RIGHT_ACTION_ID = 'workbench.action.moveActiveEditorRight';
-    var MOVE_EDITOR_RIGHT_ACTION_LABEL = nls.localize(11, null);
+    var MOVE_EDITOR_RIGHT_ACTION_LABEL = nls.localize('moveActiveEditorRight', "Move Active Editor Right");
     var MoveEditorRightAction = (function (_super) {
         __extends(MoveEditorRightAction, _super);
         function MoveEditorRightAction(id, label, editorService) {
@@ -484,7 +484,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.MoveEditorRightAction = MoveEditorRightAction;
     var MINIMIZE_EDITORS_ACTION_ID = 'workbench.action.minimizeOtherEditors';
-    var MINIMIZE_EDITORS_ACTION_LABEL = nls.localize(12, null);
+    var MINIMIZE_EDITORS_ACTION_LABEL = nls.localize('minimizeOtherEditors', "Minimize Other Editors");
     var MinimizeOtherEditorsAction = (function (_super) {
         __extends(MinimizeOtherEditorsAction, _super);
         function MinimizeOtherEditorsAction(id, label, editorService) {
@@ -502,7 +502,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.MinimizeOtherEditorsAction = MinimizeOtherEditorsAction;
     var EVEN_EDITOR_WIDTHS_ACTION_ID = 'workbench.action.evenEditorWidths';
-    var EVEN_EDITOR_WIDTHS_ACTION_LABEL = nls.localize(13, null);
+    var EVEN_EDITOR_WIDTHS_ACTION_LABEL = nls.localize('evenEditorWidths', "Even Editor Widths");
     var EvenEditorWidthsAction = (function (_super) {
         __extends(EvenEditorWidthsAction, _super);
         function EvenEditorWidthsAction(id, label, editorService) {
@@ -520,7 +520,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.EvenEditorWidthsAction = EvenEditorWidthsAction;
     var MAXIMIZE_EDITOR_ACTION_ID = 'workbench.action.maximizeEditor';
-    var MAXIMIZE_EDITOR_ACTION_LABEL = nls.localize(14, null);
+    var MAXIMIZE_EDITOR_ACTION_LABEL = nls.localize('maximizeEditor', "Maximize Active Editor and Hide Sidebar");
     var MaximizeEditorAction = (function (_super) {
         __extends(MaximizeEditorAction, _super);
         function MaximizeEditorAction(id, label, editorService, partService) {
@@ -546,7 +546,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var actionBarRegistry = platform_1.Registry.as(actionBarRegistry_1.Extensions.Actionbar);
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.VIEWER, QuickOpenActionContributor);
     // Contribute to Workbench Actions
-    var category = nls.localize(15, null);
+    var category = nls.localize('view', "View");
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseAllEditorsAction, CLOSE_ALL_EDITORS_ACTION_ID, CLOSE_ALL_EDITORS_ACTION_LABEL), category);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseOtherEditorsAction, CLOSE_OTHER_EDITORS_ACTION_ID, CLOSE_OTHER_EDITORS_ACTION_LABEL), category);

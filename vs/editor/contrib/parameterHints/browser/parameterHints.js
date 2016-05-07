@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/parameterHints/browser/parameterHints', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/common/modes', './parameterHintsModel', './parameterHintsWidget'], function (require, exports, nls, keyCodes_1, winjs_base_1, keybindingService_1, editorAction_1, editorCommonExtensions_1, editorBrowserExtensions_1, modes_1, parameterHintsModel_1, parameterHintsWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/common/modes', './parameterHintsModel', './parameterHintsWidget'], function (require, exports, nls, keyCodes_1, winjs_base_1, keybindingService_1, editorAction_1, editorCommonExtensions_1, editorBrowserExtensions_1, modes_1, parameterHintsModel_1, parameterHintsWidget_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/parameterHints/browser/p
     var CONTEXT_PARAMETER_HINTS_VISIBLE = 'parameterHintsVisible';
     var weight = editorCommonExtensions_1.CommonEditorRegistry.commandWeight(75);
     editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(ParameterHintsController);
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TriggerParameterHintsAction, TriggerParameterHintsAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TriggerParameterHintsAction, TriggerParameterHintsAction.ID, nls.localize('parameterHints.trigger.label', "Trigger Parameter Hints"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Space
     }));

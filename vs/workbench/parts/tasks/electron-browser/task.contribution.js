@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/task.contribution', 'vs/base/common/flags', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/base/common/objects', 'vs/base/common/actions', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/base/common/types', 'vs/base/common/keyCodes', 'vs/base/common/glob', 'vs/base/common/platform', 'vs/platform/platform', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/extensions', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/markers/common/markers', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/workbench/common/actionRegistry', 'vs/workbench/browser/parts/statusbar/statusbar', 'vs/workbench/browser/quickopen', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/output/common/output', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskTemplates', 'vs/workbench/parts/tasks/common/languageServiceTaskSystem', 'vs/workbench/parts/tasks/node/processRunnerSystem', 'vs/workbench/parts/tasks/node/processRunnerDetector', 'vs/css!./media/task.contribution', 'vs/workbench/parts/tasks/browser/taskQuickOpen'], function (require, exports, nls, Env, winjs_base_1, severity_1, Objects, actions_1, Dom, lifecycle_1, eventEmitter_1, Builder, Types, keyCodes_1, glob_1, platform_1, platform_2, lifecycle_2, actions_2, extensions_1, event_1, message_1, markers_1, telemetry_1, configuration_1, files_1, extensions_2, modeService_1, modelService_1, jsonContributionRegistry, actionRegistry_1, statusbar_1, quickopen_1, quickOpenService_1, editorService_1, contextService_1, systemVariables_1, files_2, output_1, taskSystem_1, taskService_1, taskTemplates_1, languageServiceTaskSystem_1, processRunnerSystem_1, processRunnerDetector_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/flags', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/base/common/objects', 'vs/base/common/actions', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/base/common/types', 'vs/base/common/keyCodes', 'vs/base/common/glob', 'vs/base/common/platform', 'vs/platform/platform', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/extensions', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/markers/common/markers', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/workbench/common/actionRegistry', 'vs/workbench/browser/parts/statusbar/statusbar', 'vs/workbench/browser/quickopen', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/output/common/output', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskTemplates', 'vs/workbench/parts/tasks/common/languageServiceTaskSystem', 'vs/workbench/parts/tasks/node/processRunnerSystem', 'vs/workbench/parts/tasks/node/processRunnerDetector', 'vs/css!./media/task.contribution', 'vs/workbench/parts/tasks/browser/taskQuickOpen'], function (require, exports, nls, Env, winjs_base_1, severity_1, Objects, actions_1, Dom, lifecycle_1, eventEmitter_1, Builder, Types, keyCodes_1, glob_1, platform_1, platform_2, lifecycle_2, actions_2, extensions_1, event_1, message_1, markers_1, telemetry_1, configuration_1, files_1, extensions_2, modeService_1, modelService_1, jsonContributionRegistry, actionRegistry_1, statusbar_1, quickopen_1, quickOpenService_1, editorService_1, contextService_1, systemVariables_1, files_2, output_1, taskSystem_1, taskService_1, taskTemplates_1, languageServiceTaskSystem_1, processRunnerSystem_1, processRunnerDetector_1) {
     'use strict';
     var $ = Builder.$;
     var AbstractTaskAction = (function (_super) {
@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return this.taskService.build();
         };
         BuildAction.ID = 'workbench.action.tasks.build';
-        BuildAction.TEXT = nls.localize(0, null);
+        BuildAction.TEXT = nls.localize('BuildAction.label', 'Run Build Task');
         BuildAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService)
@@ -57,7 +57,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return this.taskService.runTest();
         };
         TestAction.ID = 'workbench.action.tasks.test';
-        TestAction.TEXT = nls.localize(1, null);
+        TestAction.TEXT = nls.localize('TestAction.label', 'Run Test Task');
         TestAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService)
@@ -73,7 +73,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return this.taskService.rebuild();
         };
         RebuildAction.ID = 'workbench.action.tasks.rebuild';
-        RebuildAction.TEXT = nls.localize(2, null);
+        RebuildAction.TEXT = nls.localize('RebuildAction.label', 'Run Rebuild Task');
         RebuildAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService)
@@ -89,7 +89,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return this.taskService.clean();
         };
         CleanAction.ID = 'workbench.action.tasks.clean';
-        CleanAction.TEXT = nls.localize(3, null);
+        CleanAction.TEXT = nls.localize('CleanAction.label', 'Run Clean Task');
         CleanAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService)
@@ -111,7 +111,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
         ConfigureTaskRunnerAction.prototype.run = function (event) {
             var _this = this;
             if (!this.contextService.getWorkspace()) {
-                this.messageService.show(severity_1.default.Info, nls.localize(5, null));
+                this.messageService.show(severity_1.default.Info, nls.localize('ConfigureTaskRunnerAction.noWorkspace', 'Tasks are only available on a workspace folder.'));
                 return winjs_base_1.TPromise.as(undefined);
             }
             var sideBySide = !!(event && (event.ctrlKey || event.metaKey));
@@ -119,7 +119,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                 return success;
             }, function (err) {
                 ;
-                return _this.quickOpenService.pick(taskTemplates_1.templates, { placeHolder: nls.localize(6, null) }).then(function (selection) {
+                return _this.quickOpenService.pick(taskTemplates_1.templates, { placeHolder: nls.localize('ConfigureTaskRunnerAction.quickPick.template', 'Select a Task Runner') }).then(function (selection) {
                     if (!selection) {
                         return undefined;
                     }
@@ -127,7 +127,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     if (selection.autoDetect) {
                         var outputChannel_1 = _this.outputService.getChannel(TaskService.OutputChannelId);
                         outputChannel_1.show();
-                        outputChannel_1.append(nls.localize(7, null, selection.id) + '\n');
+                        outputChannel_1.append(nls.localize('ConfigureTaskRunnerAction.autoDetecting', 'Auto detecting tasks for {0}', selection.id) + '\n');
                         var detector = new processRunnerDetector_1.ProcessRunnerDetector(_this.fileService, _this.contextService, new systemVariables_1.SystemVariables(_this.editorService, _this.contextService));
                         contentPromise = detector.detect(false, selection.id).then(function (value) {
                             var config = value.config;
@@ -135,7 +135,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                                 value.stderr.forEach(function (line) {
                                     outputChannel_1.append(line + '\n');
                                 });
-                                _this.messageService.show(severity_1.default.Warning, nls.localize(8, null));
+                                _this.messageService.show(severity_1.default.Warning, nls.localize('ConfigureTaskRunnerAction.autoDetect', 'Auto detecting the task system failed. Using default template. Consult the task output for details.'));
                                 return selection.content;
                             }
                             else if (config) {
@@ -174,11 +174,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     }
                 }, sideBySide);
             }, function (error) {
-                throw new Error(nls.localize(9, null));
+                throw new Error(nls.localize('ConfigureTaskRunnerAction.failed', "Unable to create the 'tasks.json' file inside the '.vscode' folder. Consult the task output for details."));
             });
         };
         ConfigureTaskRunnerAction.ID = 'workbench.action.tasks.configureTaskRunner';
-        ConfigureTaskRunnerAction.TEXT = nls.localize(4, null);
+        ConfigureTaskRunnerAction.TEXT = nls.localize('ConfigureTaskRunnerAction.label', 'Configure Task Runner');
         ConfigureTaskRunnerAction = __decorate([
             __param(2, configuration_1.IConfigurationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -202,7 +202,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         CloseMessageAction.ID = 'workbench.action.build.closeMessage';
-        CloseMessageAction.TEXT = nls.localize(10, null);
+        CloseMessageAction.TEXT = nls.localize('CloseMessageAction.label', 'Close');
         return CloseMessageAction;
     }(actions_1.Action));
     var TerminateAction = (function (_super) {
@@ -219,14 +219,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                             return;
                         }
                         else {
-                            return winjs_base_1.Promise.wrapError(nls.localize(12, null));
+                            return winjs_base_1.Promise.wrapError(nls.localize('TerminateAction.failed', 'Failed to terminate running task'));
                         }
                     });
                 }
             });
         };
         TerminateAction.ID = 'workbench.action.tasks.terminate';
-        TerminateAction.TEXT = nls.localize(11, null);
+        TerminateAction.TEXT = nls.localize('TerminateAction.label', 'Terminate Running Task');
         TerminateAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService)
@@ -243,7 +243,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return this.outputService.getChannel(TaskService.OutputChannelId).show();
         };
         ShowLogAction.ID = 'workbench.action.tasks.showLog';
-        ShowLogAction.TEXT = nls.localize(13, null);
+        ShowLogAction.TEXT = nls.localize('ShowLogAction.label', 'Show Task Log');
         ShowLogAction = __decorate([
             __param(2, taskService_1.ITaskService),
             __param(3, telemetry_1.ITelemetryService),
@@ -262,7 +262,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         RunTaskAction.ID = 'workbench.action.tasks.runTask';
-        RunTaskAction.TEXT = nls.localize(14, null);
+        RunTaskAction.TEXT = nls.localize('RunTaskAction.label', "Run Task");
         RunTaskAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], RunTaskAction);
@@ -316,7 +316,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     return false;
                 }
             };
-            var manyMarkers = nls.localize(15, null);
+            var manyMarkers = nls.localize('manyMarkers', "99+");
             var updateLabel = function (stats) {
                 error.innerHTML = stats.errors < 100 ? stats.errors.toString() : manyMarkers;
                 warning.innerHTML = stats.warnings < 100 ? stats.warnings.toString() : manyMarkers;
@@ -438,7 +438,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                                 }
                             }
                             if (isAffected) {
-                                _this.outputChannel.append(nls.localize(17, null));
+                                _this.outputChannel.append(nls.localize('TaskSystem.invalidTaskJson', 'Error: The content of the tasks.json file has syntax errors. Please correct them before executing a task.\n'));
                                 _this.outputChannel.show(true);
                                 return winjs_base_1.TPromise.wrapError({});
                             }
@@ -484,7 +484,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                         return configPromise.then(function (config) {
                             if (!config) {
                                 _this._taskSystemPromise = null;
-                                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize(18, null), taskSystem_1.TaskErrors.NotConfigured);
+                                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize('TaskSystem.noConfiguration', 'No task runner configured.'), taskSystem_1.TaskErrors.NotConfigured);
                             }
                             var result = null;
                             if (config.buildSystem === 'service') {
@@ -495,7 +495,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                             }
                             if (result === null) {
                                 _this._taskSystemPromise = null;
-                                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize(19, null), taskSystem_1.TaskErrors.NoValidTaskRunner);
+                                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize('TaskSystem.noBuildType', "No valid task runner configured. Supported task runners are 'service' and 'program'."), taskSystem_1.TaskErrors.NoValidTaskRunner);
                             }
                             _this.taskSystemListeners.push(result.addListener(taskSystem_1.TaskSystemEvents.Active, function (event) { return _this.emit(taskService_1.TaskServiceEvents.Active, event); }));
                             _this.taskSystemListeners.push(result.addListener(taskSystem_1.TaskSystemEvents.Inactive, function (event) { return _this.emit(taskService_1.TaskServiceEvents.Inactive, event); }));
@@ -561,7 +561,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                             return fn(taskSystem);
                         }
                         else {
-                            throw new taskSystem_1.TaskError(severity_1.default.Warning, nls.localize(20, null), taskSystem_1.TaskErrors.RunningTask);
+                            throw new taskSystem_1.TaskError(severity_1.default.Warning, nls.localize('TaskSystem.active', 'There is an active running task right now. Terminate it first before executing another task.'), taskSystem_1.TaskErrors.RunningTask);
                         }
                     });
                 }).
@@ -626,8 +626,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
             var _this = this;
             if (this._taskSystem && this._taskSystem.isActiveSync()) {
                 if (this._taskSystem.canAutoTerminate() || this.messageService.confirm({
-                    message: nls.localize(21, null),
-                    primaryButton: nls.localize(22, null)
+                    message: nls.localize('TaskSystem.runningTask', 'There is a task running. Do you want to terminate it?'),
+                    primaryButton: nls.localize({ key: 'TaskSystem.terminateTask', comment: ['&& denotes a mnemonic'] }, "&&Terminate Task")
                 })) {
                     return this._taskSystem.terminate().then(function (response) {
                         if (response.success) {
@@ -673,7 +673,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                 this.messageService.show(severity_1.default.Error, err);
             }
             else {
-                this.messageService.show(severity_1.default.Error, nls.localize(23, null));
+                this.messageService.show(severity_1.default.Error, nls.localize('TaskSystem.unknownError', 'An error has occurred while running a task. See task log for details.'));
             }
             if (showOutput) {
                 this.outputChannel.show(true);
@@ -681,7 +681,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
         };
         TaskService.SERVICE_ID = 'taskService';
         TaskService.OutputChannelId = 'tasks';
-        TaskService.OutputChannelLabel = nls.localize(16, null);
+        TaskService.OutputChannelLabel = nls.localize('tasks', "Tasks");
         TaskService = __decorate([
             __param(0, modeService_1.IModeService),
             __param(1, configuration_1.IConfigurationService),
@@ -701,7 +701,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
         ], TaskService);
         return TaskService;
     }(eventEmitter_1.EventEmitter));
-    var tasksCategory = nls.localize(24, null);
+    var tasksCategory = nls.localize('tasksCategory', "Tasks");
     var workbenchActionsRegistry = platform_2.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ConfigureTaskRunnerAction, ConfigureTaskRunnerAction.ID, ConfigureTaskRunnerAction.TEXT), tasksCategory);
     if (Env.enableTasks) {
@@ -716,7 +716,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
         workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ShowLogAction, ShowLogAction.ID, ShowLogAction.TEXT), tasksCategory);
         workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(RunTaskAction, RunTaskAction.ID, RunTaskAction.TEXT), tasksCategory);
         // Register Quick Open
-        platform_2.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/tasks/browser/taskQuickOpen', 'QuickOpenHandler', 'task ', nls.localize(25, null)));
+        platform_2.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/tasks/browser/taskQuickOpen', 'QuickOpenHandler', 'task ', nls.localize('taskCommands', "Run Task")));
         // Status bar
         var statusbarRegistry = platform_2.Registry.as(statusbar_1.Extensions.Statusbar);
         statusbarRegistry.registerStatusbarItem(new statusbar_1.StatusbarItemDescriptor(StatusBarItem, statusbar_1.StatusbarAlignment.LEFT, 50 /* Medium Priority */));
@@ -779,47 +779,47 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     'properties': {
                         'regexp': {
                             'type': 'string',
-                            'description': nls.localize(26, null)
+                            'description': nls.localize('JsonSchema.pattern.regexp', 'The regular expression to find an error, warning or info in the output.')
                         },
                         'file': {
                             'type': 'integer',
-                            'description': nls.localize(27, null)
+                            'description': nls.localize('JsonSchema.pattern.file', 'The match group index of the filename. If omitted 1 is used.')
                         },
                         'location': {
                             'type': 'integer',
-                            'description': nls.localize(28, null)
+                            'description': nls.localize('JsonSchema.pattern.location', 'The match group index of the problem\'s location. Valid location patterns are: (line), (line,column) and (startLine,startColumn,endLine,endColumn). If omitted line and column is assumed.')
                         },
                         'line': {
                             'type': 'integer',
-                            'description': nls.localize(29, null)
+                            'description': nls.localize('JsonSchema.pattern.line', 'The match group index of the problem\'s line. Defaults to 2')
                         },
                         'column': {
                             'type': 'integer',
-                            'description': nls.localize(30, null)
+                            'description': nls.localize('JsonSchema.pattern.column', 'The match group index of the problem\'s column. Defaults to 3')
                         },
                         'endLine': {
                             'type': 'integer',
-                            'description': nls.localize(31, null)
+                            'description': nls.localize('JsonSchema.pattern.endLine', 'The match group index of the problem\'s end line. Defaults to undefined')
                         },
                         'endColumn': {
                             'type': 'integer',
-                            'description': nls.localize(32, null)
+                            'description': nls.localize('JsonSchema.pattern.endColumn', 'The match group index of the problem\'s end column. Defaults to undefined')
                         },
                         'severity': {
                             'type': 'integer',
-                            'description': nls.localize(33, null)
+                            'description': nls.localize('JsonSchema.pattern.severity', 'The match group index of the problem\'s severity. Defaults to undefined')
                         },
                         'code': {
                             'type': 'integer',
-                            'description': nls.localize(34, null)
+                            'description': nls.localize('JsonSchema.pattern.code', 'The match group index of the problem\'s code. Defaults to undefined')
                         },
                         'message': {
                             'type': 'integer',
-                            'description': nls.localize(35, null)
+                            'description': nls.localize('JsonSchema.pattern.message', 'The match group index of the message. If omitted it defaults to 4 if location is specified. Otherwise it defaults to 5.')
                         },
                         'loop': {
                             'type': 'boolean',
-                            'description': nls.localize(36, null)
+                            'description': nls.localize('JsonSchema.pattern.loop', 'In a multi line matcher loop indicated whether this pattern is executed in a loop as long as it matches. Can only specified on a last pattern in a multi line pattern.')
                         }
                     }
                 },
@@ -854,11 +854,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     'properties': {
                         'regexp': {
                             'type': 'string',
-                            'description': nls.localize(37, null)
+                            'description': nls.localize('JsonSchema.watchingPattern.regexp', 'The regular expression to detect the begin or end of a watching task.')
                         },
                         'file': {
                             'type': 'integer',
-                            'description': nls.localize(38, null)
+                            'description': nls.localize('JsonSchema.watchingPattern.file', 'The match group index of the filename. Can be omitted.')
                         },
                     }
                 },
@@ -869,25 +869,25 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                         'base': {
                             'type': 'string',
                             'enum': ['$tsc', '$tsc-watch', '$msCompile', '$lessCompile', '$gulp-tsc', '$jshint', '$jshint-stylish', '$eslint-compact', '$eslint-stylish', '$go'],
-                            'description': nls.localize(39, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.base', 'The name of a base problem matcher to use.')
                         },
                         'owner': {
                             'type': 'string',
-                            'description': nls.localize(40, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.owner', 'The owner of the problem inside Code. Can be omitted if base is specified. Defaults to \'external\' if omitted and base is not specified.')
                         },
                         'severity': {
                             'type': 'string',
                             'enum': ['error', 'warning', 'info'],
-                            'description': nls.localize(41, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.severity', 'The default severity for captures problems. Is used if the pattern doesn\'t define a match group for severity.')
                         },
                         'applyTo': {
                             'type': 'string',
                             'enum': ['allDocuments', 'openDocuments', 'closedDocuments'],
-                            'description': nls.localize(42, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.applyTo', 'Controls if a problem reported on a text document is applied only to open, closed or all documents.')
                         },
                         'pattern': {
                             '$ref': '#/definitions/patternType',
-                            'description': nls.localize(43, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.pattern', 'A problem pattern or the name of a predefined problem pattern. Can be omitted if base is specified.')
                         },
                         'fileLocation': {
                             'oneOf': [
@@ -902,7 +902,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                                     }
                                 }
                             ],
-                            'description': nls.localize(44, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.fileLocation', 'Defines how file names reported in a problem pattern should be interpreted.')
                         },
                         'watching': {
                             'type': 'object',
@@ -910,7 +910,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                             'properties': {
                                 'activeOnStart': {
                                     'type': 'boolean',
-                                    'description': nls.localize(45, null)
+                                    'description': nls.localize('JsonSchema.problemMatcher.watching.activeOnStart', 'If set to true the watcher is in active mode when the task starts. This is equals of issuing a line that matches the beginPattern')
                                 },
                                 'beginsPattern': {
                                     'oneOf': [
@@ -921,7 +921,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                                             'type': '#/definitions/watchingPattern'
                                         }
                                     ],
-                                    'description': nls.localize(46, null)
+                                    'description': nls.localize('JsonSchema.problemMatcher.watching.beginsPattern', 'If matched in the output the start of a watching task is signaled.')
                                 },
                                 'endsPattern': {
                                     'oneOf': [
@@ -932,17 +932,17 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                                             'type': '#/definitions/watchingPattern'
                                         }
                                     ],
-                                    'description': nls.localize(47, null)
+                                    'description': nls.localize('JsonSchema.problemMatcher.watching.endsPattern', 'If matched in the output the end of a watching task is signaled.')
                                 }
                             }
                         },
                         'watchedTaskBeginsRegExp': {
                             'type': 'string',
-                            'description': nls.localize(48, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.watchedBegin', 'A regular expression signaling that a watched tasks begins executing triggered through file watching.')
                         },
                         'watchedTaskEndsRegExp': {
                             'type': 'string',
-                            'description': nls.localize(49, null)
+                            'description': nls.localize('JsonSchema.problemMatcher.watchedEnd', 'A regular expression signaling that a watched tasks ends executing.')
                         }
                     }
                 },
@@ -951,34 +951,34 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     'properties': {
                         'command': {
                             'type': 'string',
-                            'description': nls.localize(50, null)
+                            'description': nls.localize('JsonSchema.command', 'The command to be executed. Can be an external program or a shell command.')
                         },
                         'isShellCommand': {
                             'type': 'boolean',
                             'default': true,
-                            'description': nls.localize(51, null)
+                            'description': nls.localize('JsonSchema.shell', 'Specifies whether the command is a shell command or an external program. Defaults to false if omitted.')
                         },
                         'args': {
                             'type': 'array',
-                            'description': nls.localize(52, null),
+                            'description': nls.localize('JsonSchema.args', 'Additional arguments passed to the command.'),
                             'items': {
                                 'type': 'string'
                             }
                         },
                         'options': {
                             'type': 'object',
-                            'description': nls.localize(53, null),
+                            'description': nls.localize('JsonSchema.options', 'Additional command options'),
                             'properties': {
                                 'cwd': {
                                     'type': 'string',
-                                    'description': nls.localize(54, null)
+                                    'description': nls.localize('JsonSchema.options.cwd', 'The current working directory of the executed program or script. If omitted Code\'s current workspace root is used.')
                                 },
                                 'env': {
                                     'type': 'object',
                                     'additionalProperties': {
                                         'type': 'string'
                                     },
-                                    'description': nls.localize(55, null)
+                                    'description': nls.localize('JsonSchema.options.env', 'The environment of the executed program or shell. If omitted the parent process\' environment is used.')
                                 }
                             },
                             'additionalProperties': {
@@ -987,39 +987,39 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                         },
                         'showOutput': {
                             '$ref': '#/definitions/showOutputType',
-                            'description': nls.localize(56, null)
+                            'description': nls.localize('JsonSchema.showOutput', 'Controls whether the output of the running task is shown or not. If omitted \'always\' is used.')
                         },
                         'isWatching': {
                             'type': 'boolean',
-                            'description': nls.localize(57, null),
+                            'description': nls.localize('JsonSchema.watching', 'Whether the executed task is kept alive and is watching the file system.'),
                             'default': true
                         },
                         'promptOnClose': {
                             'type': 'boolean',
-                            'description': nls.localize(58, null),
+                            'description': nls.localize('JsonSchema.promptOnClose', 'Whether the user is prompted when VS Code closes with a running background task.'),
                             'default': false
                         },
                         'echoCommand': {
                             'type': 'boolean',
-                            'description': nls.localize(59, null),
+                            'description': nls.localize('JsonSchema.echoCommand', 'Controls whether the executed command is echoed to the output. Default is false.'),
                             'default': true
                         },
                         'suppressTaskName': {
                             'type': 'boolean',
-                            'description': nls.localize(60, null),
+                            'description': nls.localize('JsonSchema.suppressTaskName', 'Controls whether the task name is added as an argument to the command. Default is false.'),
                             'default': true
                         },
                         'taskSelector': {
                             'type': 'string',
-                            'description': nls.localize(61, null)
+                            'description': nls.localize('JsonSchema.taskSelector', 'Prefix to indicate that an argument is task.')
                         },
                         'problemMatcher': {
                             '$ref': '#/definitions/problemMatcherType',
-                            'description': nls.localize(62, null)
+                            'description': nls.localize('JsonSchema.matchers', 'The problem matcher(s) to use. Can either be a string or a problem matcher definition or an array of strings and problem matchers.')
                         },
                         'tasks': {
                             'type': 'array',
-                            'description': nls.localize(63, null),
+                            'description': nls.localize('JsonSchema.tasks', 'The task configurations. Usually these are enrichments of task already defined in the external task runner.'),
                             'items': {
                                 'type': 'object',
                                 '$ref': '#/definitions/taskDescription'
@@ -1034,47 +1034,47 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                     'properties': {
                         'taskName': {
                             'type': 'string',
-                            'description': nls.localize(64, null)
+                            'description': nls.localize('JsonSchema.tasks.taskName', "The task's name")
                         },
                         'args': {
                             'type': 'array',
-                            'description': nls.localize(65, null),
+                            'description': nls.localize('JsonSchema.tasks.args', 'Additional arguments passed to the command when this task is invoked.'),
                             'items': {
                                 'type': 'string'
                             }
                         },
                         'suppressTaskName': {
                             'type': 'boolean',
-                            'description': nls.localize(66, null),
+                            'description': nls.localize('JsonSchema.tasks.suppressTaskName', 'Controls whether the task name is added as an argument to the command. If omitted the globally defined value is used.'),
                             'default': true
                         },
                         'showOutput': {
                             '$ref': '#/definitions/showOutputType',
-                            'description': nls.localize(67, null)
+                            'description': nls.localize('JsonSchema.tasks.showOutput', 'Controls whether the output of the running task is shown or not. If omitted the globally defined value is used.')
                         },
                         'echoCommand': {
                             'type': 'boolean',
-                            'description': nls.localize(68, null),
+                            'description': nls.localize('JsonSchema.echoCommand', 'Controls whether the executed command is echoed to the output. Default is false.'),
                             'default': true
                         },
                         'isWatching': {
                             'type': 'boolean',
-                            'description': nls.localize(69, null),
+                            'description': nls.localize('JsonSchema.tasks.watching', 'Whether the executed task is kept alive and is watching the file system.'),
                             'default': true
                         },
                         'isBuildCommand': {
                             'type': 'boolean',
-                            'description': nls.localize(70, null),
+                            'description': nls.localize('JsonSchema.tasks.build', 'Maps this task to Code\'s default build command.'),
                             'default': true
                         },
                         'isTestCommand': {
                             'type': 'boolean',
-                            'description': nls.localize(71, null),
+                            'description': nls.localize('JsonSchema.tasks.test', 'Maps this task to Code\'s default test command.'),
                             'default': true
                         },
                         'problemMatcher': {
                             '$ref': '#/definitions/problemMatcherType',
-                            'description': nls.localize(72, null)
+                            'description': nls.localize('JsonSchema.tasks.matchers', 'The problem matcher(s) to use. Can either be a string or a problem matcher definition or an array of strings and problem matchers.')
                         }
                     },
                     'defaultSnippets': [
@@ -1095,19 +1095,19 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/electron-browser/
                         'version': {
                             'type': 'string',
                             'enum': ['0.1.0'],
-                            'description': nls.localize(73, null)
+                            'description': nls.localize('JsonSchema.version', 'The config\'s version number')
                         },
                         'windows': {
                             '$ref': '#/definitions/baseTaskRunnerConfiguration',
-                            'description': nls.localize(74, null)
+                            'description': nls.localize('JsonSchema.windows', 'Windows specific build configuration')
                         },
                         'osx': {
                             '$ref': '#/definitions/baseTaskRunnerConfiguration',
-                            'description': nls.localize(75, null)
+                            'description': nls.localize('JsonSchema.mac', 'Mac specific build configuration')
                         },
                         'linux': {
                             '$ref': '#/definitions/baseTaskRunnerConfiguration',
-                            'description': nls.localize(76, null)
+                            'description': nls.localize('JsonSchema.linux', 'Linux specific build configuration')
                         }
                     }
                 },

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/referenceSearch', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/workspace/common/workspace', 'vs/editor/common/core/position', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/zoneWidget/browser/peekViewWidget', '../common/referenceSearch', './referenceSearchModel', './referenceSearchWidget'], function (require, exports, nls, arrays_1, errors_1, keyCodes_1, lifecycle_1, severity_1, uri_1, winjs_base_1, editor_1, instantiation_1, keybindingService_1, keybindingsRegistry_1, message_1, telemetry_1, workspace_1, position_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, modes_1, editorBrowserExtensions_1, peekViewWidget_1, referenceSearch_1, referenceSearchModel_1, referenceSearchWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/workspace/common/workspace', 'vs/editor/common/core/position', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/zoneWidget/browser/peekViewWidget', '../common/referenceSearch', './referenceSearchModel', './referenceSearchWidget'], function (require, exports, nls, arrays_1, errors_1, keyCodes_1, lifecycle_1, severity_1, uri_1, winjs_base_1, editor_1, instantiation_1, keybindingService_1, keybindingsRegistry_1, message_1, telemetry_1, workspace_1, position_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, modes_1, editorBrowserExtensions_1, peekViewWidget_1, referenceSearch_1, referenceSearchModel_1, referenceSearchWidget_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -71,7 +71,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                 }
             }));
             this.widget = new referenceSearchWidget_1.ReferenceWidget(this.editorService, this.keybindingService, this.contextService, this.instantiationService, this.editor);
-            this.widget.setTitle(nls.localize(0, null));
+            this.widget.setTitle(nls.localize('labelLoading', "Loading..."));
             this.widget.show(range, 18);
             this.callOnClear.push(this.widget.addListener(peekViewWidget_1.Events.Closed, function () {
                 _this.widget = null;
@@ -104,7 +104,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                 }
                 // has a result
                 if (arrays_1.isFalsyOrEmpty(references)) {
-                    _this.widget.showMessage(nls.localize(1, null));
+                    _this.widget.showMessage(nls.localize('noResults', "No results"));
                     timer.stop();
                     return;
                 }
@@ -189,7 +189,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
         // state - changes with every invocation
         function ReferenceAction(descriptor, editor, peekViewService, keybindingService) {
             _super.call(this, descriptor, editor, editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu | editorActionEnablement_1.Behaviour.UpdateOnCursorPositionChange);
-            this.label = nls.localize(2, null);
+            this.label = nls.localize('references.action.label', "Find All References");
             this.peekViewService = peekViewService;
             if (this.peekViewService) {
                 keybindingService.createKey(this.peekViewService.contextKey, true);
@@ -230,7 +230,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
     exports.ReferenceAction = ReferenceAction;
     function metaTitle(references) {
         if (references.length > 1) {
-            return nls.localize(3, null, references.length);
+            return nls.localize('meta.titleReference', " – {0} references", references.length);
         }
     }
     var findReferencesCommand = function (accessor, args) {
@@ -269,7 +269,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
     var CONTEXT_REFERENCE_SEARCH_VISIBLE = 'referenceSearchVisible';
     // register action
     editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(FindReferencesController);
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ReferenceAction, ReferenceAction.ID, nls.localize(4, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ReferenceAction, ReferenceAction.ID, nls.localize('references.action.name', "Show References"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F12
     }));

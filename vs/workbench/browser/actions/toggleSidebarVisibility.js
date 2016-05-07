@@ -12,14 +12,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/browser/actions/toggleSidebarVisibility', 'vs/platform/platform', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/part/common/partService', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, actions_2, actionRegistry_1, partService_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/part/common/partService', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, actions_2, actionRegistry_1, partService_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var ID = 'workbench.action.toggleSidebarVisibility';
-    var LABEL = nls.localize(0, null);
+    var LABEL = nls.localize('toggleSidebar', "Toggle Side Bar Visibility");
     var ToggleSidebarVisibilityAction = (function (_super) {
         __extends(ToggleSidebarVisibilityAction, _super);
         function ToggleSidebarVisibilityAction(id, label, partService) {
@@ -39,6 +39,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.ToggleSidebarVisibilityAction = ToggleSidebarVisibilityAction;
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarVisibilityAction, ID, LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_B }), nls.localize(1, null));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarVisibilityAction, ID, LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_B }), nls.localize('view', "View"));
 });
 //# sourceMappingURL=toggleSidebarVisibility.js.map

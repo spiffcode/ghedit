@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/output/browser/outputActions', 'vs/platform/platform', 'vs/base/common/actions', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/parts/output/common/output', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, editorAction_1, editorActionEnablement_1, output_1, actionbar_1, partService_1, panelService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/parts/output/common/output', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, editorAction_1, editorActionEnablement_1, output_1, actionbar_1, partService_1, panelService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -35,7 +35,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.outputService.getActiveChannel().show();
         };
         ToggleOutputAction.ID = 'workbench.action.output.toggleOutput';
-        ToggleOutputAction.LABEL = nls.localize(0, null);
+        ToggleOutputAction.LABEL = nls.localize('toggleOutput', "Toggle Output");
         ToggleOutputAction = __decorate([
             __param(2, partService_1.IPartService),
             __param(3, panelService_1.IPanelService),
@@ -47,7 +47,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var ClearOutputAction = (function (_super) {
         __extends(ClearOutputAction, _super);
         function ClearOutputAction(outputService, panelService) {
-            _super.call(this, 'workbench.output.action.clearOutput', nls.localize(1, null), 'output-action clear-output');
+            _super.call(this, 'workbench.output.action.clearOutput', nls.localize('clearOutput', "Clear Output"), 'output-action clear-output');
             this.outputService = outputService;
             this.panelService = panelService;
         }
@@ -91,7 +91,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var SwitchOutputAction = (function (_super) {
         __extends(SwitchOutputAction, _super);
         function SwitchOutputAction(outputService) {
-            _super.call(this, SwitchOutputAction.ID, nls.localize(2, null));
+            _super.call(this, SwitchOutputAction.ID, nls.localize('switchToOutput.label', "Switch to Output"));
             this.outputService = outputService;
             this.class = 'output-action switch-to-output';
         }

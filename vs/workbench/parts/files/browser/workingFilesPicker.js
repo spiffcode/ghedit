@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/files/browser/workingFilesPicker', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/parts/files/common/workingFilesModel', 'vs/base/common/scorer', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, labels, errors, strings, quickOpen_1, quickOpenModel_1, workingFilesModel_1, scorer, quickopen_1, files_1, editorService_1, instantiation_1, workspace_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/parts/files/common/workingFilesModel', 'vs/base/common/scorer', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, labels, errors, strings, quickOpen_1, quickOpenModel_1, workingFilesModel_1, scorer, quickopen_1, files_1, editorService_1, instantiation_1, workspace_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -37,7 +37,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.name;
         };
         WorkingFilePickerEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, working file picker", this.getLabel());
         };
         WorkingFilePickerEntry.prototype.getDescription = function () {
             return this.description;
@@ -110,16 +110,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 // Apply group label
                 map(function (e, index) {
                 if (index === 0) {
-                    e.setGroupLabel(nls.localize(1, null));
+                    e.setGroupLabel(nls.localize('workingFilesGroupLabel', "working files"));
                 }
                 return e;
             })));
         };
         WorkingFilesPicker.prototype.getEmptyLabel = function (searchString) {
             if (searchString) {
-                return nls.localize(2, null);
+                return nls.localize('noResultsFound', "No matching working files found");
             }
-            return nls.localize(3, null);
+            return nls.localize('noWorkingFiles', "List of working files is currently empty");
         };
         WorkingFilesPicker.prototype.getAutoFocus = function (searchValue) {
             if (searchValue) {

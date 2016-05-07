@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/disabled/disabledView', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./disabledView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./disabledView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
     'use strict';
     var $ = builder.$;
     var DisabledView = (function (_super) {
@@ -29,7 +29,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/disab
         DisabledView.prototype.render = function () {
             this._element = $([
                 '<div class="disabled-view">',
-                '<p>', nls.localize(0, null), '</p>',
+                '<p>', nls.localize('disabled', "Git is disabled in the settings."), '</p>',
                 '</div>'
             ].join('')).getHTMLElement();
         };

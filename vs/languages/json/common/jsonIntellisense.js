@@ -1,4 +1,4 @@
-define(["require", "exports", './parser/jsonParser', 'vs/base/common/types', 'vs/base/common/winjs.base', 'vs/nls!vs/languages/json/common/jsonIntellisense', 'vs/base/common/errors'], function (require, exports, Parser, Types, WinJS, nls, errors) {
+define(["require", "exports", './parser/jsonParser', 'vs/base/common/types', 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/errors'], function (require, exports, Parser, Types, WinJS, nls, errors) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -294,7 +294,7 @@ define(["require", "exports", './parser/jsonParser', 'vs/base/common/types', 'vs
                     type: this.getSuggestionType(schema.type),
                     label: this.getLabelForValue(schema.default),
                     codeSnippet: this.getTextForValue(schema.default),
-                    typeLabel: nls.localize(0, null),
+                    typeLabel: nls.localize('json.suggest.default', 'Default value'),
                 });
             }
             if (Array.isArray(schema.defaultSnippets)) {

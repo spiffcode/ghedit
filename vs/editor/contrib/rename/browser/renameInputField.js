@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/renameInputField', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/css!./rename'], function (require, exports, nls_1, errors_1, lifecycle_1, winjs_base_1, range_1, editorCommon_1, editorBrowser_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/css!./rename'], function (require, exports, nls_1, errors_1, lifecycle_1, winjs_base_1, range_1, editorCommon_1, editorBrowser_1) {
     'use strict';
     var RenameInputField = (function () {
         function RenameInputField(editor) {
@@ -24,7 +24,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/renameInp
                 this._inputField = document.createElement('input');
                 this._inputField.className = 'rename-input';
                 this._inputField.type = 'text';
-                this._inputField.setAttribute('aria-label', nls_1.localize(0, null));
+                this._inputField.setAttribute('aria-label', nls_1.localize('renameAriaLabel', "Rename input. Type new name and press Enter to commit."));
                 this._domNode = document.createElement('div');
                 this._domNode.style.height = this._editor.getConfiguration().lineHeight + "px";
                 this._domNode.className = 'monaco-editor rename-box';

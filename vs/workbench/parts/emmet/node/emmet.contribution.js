@@ -1,10 +1,10 @@
-define(["require", "exports", 'vs/nls!vs/workbench/parts/emmet/node/emmet.contribution', 'vs/platform/platform', 'vs/editor/common/editorCommonExtensions', 'vs/platform/configuration/common/configurationRegistry', 'vs/editor/common/editorCommon', './emmetActions', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/base/common/keyCodes', 'vs/platform/keybinding/common/keybindingService'], function (require, exports, nls, platform_1, editorCommonExtensions_1, configurationRegistry_1, editorCommon, emmetActions_1, keybindingsRegistry_1, keyCodes_1, keybindingService_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/editor/common/editorCommonExtensions', 'vs/platform/configuration/common/configurationRegistry', 'vs/editor/common/editorCommon', './emmetActions', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/base/common/keyCodes', 'vs/platform/keybinding/common/keybindingService'], function (require, exports, nls, platform_1, editorCommonExtensions_1, configurationRegistry_1, editorCommon, emmetActions_1, keybindingsRegistry_1, keyCodes_1, keybindingService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(emmetActions_1.ExpandAbbreviationAction, emmetActions_1.ExpandAbbreviationAction.ID, nls.localize(0, null)));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(emmetActions_1.ExpandAbbreviationAction, emmetActions_1.ExpandAbbreviationAction.ID, nls.localize('expandAbbreviationAction', "Emmet: Expand Abbreviation")));
     keybindingsRegistry_1.KeybindingsRegistry.registerCommandRule({
         id: emmetActions_1.ExpandAbbreviationAction.ID,
         weight: keybindingsRegistry_1.KeybindingsRegistry.WEIGHT.editorContrib(),
@@ -16,13 +16,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/emmet/node/emmet.contri
     configurationRegistry.registerConfiguration({
         'id': 'emmet',
         'order': 7,
-        'title': nls.localize(1, null),
+        'title': nls.localize('emmetConfigurationTitle', "Emmet configuration"),
         'type': 'object',
         'properties': {
             'emmet.triggerExpansionOnTab': {
                 'type': 'boolean',
                 'default': true,
-                'description': nls.localize(2, null)
+                'description': nls.localize('triggerExpansionOnTab', "When enabled, emmet abbreviations are expanded when pressing TAB.")
             }
         }
     });

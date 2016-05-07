@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugViewlet', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/common/memento', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/browser/debugActionItems', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/css!./media/debugViewlet'], function (require, exports, nls, builder, winjs_base_1, lifecycle, splitview_1, memento, viewlet_1, debug, debugactions, dbgactionitems, instantiation_1, progress_1, workspace_1, telemetry_1, storage_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/common/memento', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/browser/debugActionItems', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/css!./media/debugViewlet'], function (require, exports, nls, builder, winjs_base_1, lifecycle, splitview_1, memento, viewlet_1, debug, debugactions, dbgactionitems, instantiation_1, progress_1, workspace_1, telemetry_1, storage_1) {
     "use strict";
     var IDebugService = debug.IDebugService;
     var $ = builder.$;
@@ -55,8 +55,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
             else {
                 this.$el.append($([
                     '<div class="noworkspace-view">',
-                    '<p>', nls.localize(0, null), '</p>',
-                    '<p>', nls.localize(1, null), '</p>',
+                    '<p>', nls.localize('noWorkspace', "There is no currently opened folder."), '</p>',
+                    '<p>', nls.localize('pleaseRestartToDebug', "Open a folder in order to start debugging."), '</p>',
                     '</div>'
                 ].join('')));
             }

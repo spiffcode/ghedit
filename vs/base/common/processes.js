@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/base/common/processes', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/base/common/types', 'vs/base/common/parsers'], function (require, exports, NLS, Objects, Platform, Types, parsers_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/base/common/types', 'vs/base/common/parsers'], function (require, exports, NLS, Objects, Platform, Types, parsers_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls!vs/base/common/processes', 'vs/base/common
             }
             if ((!result || !result.command) && !parserOptions.emptyCommand) {
                 this.status.state = parsers_1.ValidationState.Fatal;
-                this.log(NLS.localize(0, null));
+                this.log(NLS.localize('ExecutableParser.commandMissing', 'Error: executable info must define a command of type string.'));
                 return null;
             }
             if (!parserOptions.noDefaults) {
@@ -62,10 +62,10 @@ define(["require", "exports", 'vs/nls!vs/base/common/processes', 'vs/base/common
             if (this.is(json.command, Types.isString)) {
                 command = json.command;
             }
-            if (this.is(json.isShellCommand, Types.isBoolean, parsers_1.ValidationState.Warning, NLS.localize(1, null, json.isShellCommand))) {
+            if (this.is(json.isShellCommand, Types.isBoolean, parsers_1.ValidationState.Warning, NLS.localize('ExecutableParser.isShellCommand', 'Warning: isShellCommand must be of type boolean. Ignoring value {0}.', json.isShellCommand))) {
                 isShellCommand = json.isShellCommand;
             }
-            if (this.is(json.args, Types.isStringArray, parsers_1.ValidationState.Warning, NLS.localize(2, null, json.isShellCommand))) {
+            if (this.is(json.args, Types.isStringArray, parsers_1.ValidationState.Warning, NLS.localize('ExecutableParser.args', 'Warning: args must be of type string[]. Ignoring value {0}.', json.isShellCommand))) {
                 args = json.args.slice(0);
             }
             if (this.is(json.options, Types.isObject)) {
@@ -78,7 +78,7 @@ define(["require", "exports", 'vs/nls!vs/base/common/processes', 'vs/base/common
             if (!json) {
                 return result;
             }
-            if (this.is(json.cwd, Types.isString, parsers_1.ValidationState.Warning, NLS.localize(3, null, json.cwd))) {
+            if (this.is(json.cwd, Types.isString, parsers_1.ValidationState.Warning, NLS.localize('ExecutableParser.invalidCWD', 'Warning: options.cwd must be of type string. Ignoring value {0}.', json.cwd))) {
                 result.cwd = json.cwd;
             }
             if (!Types.isUndefined(json.env)) {

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/git/browser/views/changes/changesViewer', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/severity', 'vs/base/browser/dom', 'vs/base/common/comparers', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/parts/tree/browser/tree', 'vs/base/parts/tree/browser/treeDnd', 'vs/base/parts/tree/browser/treeDefaults', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/base/common/keyCodes', 'vs/platform/workspace/common/workspace', 'vs/base/common/uri'], function (require, exports, winjs, nls, platform, paths, severity_1, dom, comparers, actionbar, countbadge, tree, treednd, treedefaults, git, gitmodel, gitactions, contextView_1, instantiation_1, message_1, keyCodes_1, workspace_1, uri_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/severity', 'vs/base/browser/dom', 'vs/base/common/comparers', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/parts/tree/browser/tree', 'vs/base/parts/tree/browser/treeDnd', 'vs/base/parts/tree/browser/treeDefaults', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/base/common/keyCodes', 'vs/platform/workspace/common/workspace', 'vs/base/common/uri'], function (require, exports, winjs, nls, platform, paths, severity_1, dom, comparers, actionbar, countbadge, tree, treednd, treedefaults, git, gitmodel, gitactions, contextView_1, instantiation_1, message_1, keyCodes_1, workspace_1, uri_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -217,13 +217,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             data.root = dom.append(container, $('.status-group'));
             switch (statusType) {
                 case git.StatusType.INDEX:
-                    data.root.textContent = nls.localize(0, null);
+                    data.root.textContent = nls.localize('stagedChanges', "Staged Changes");
                     break;
                 case git.StatusType.WORKING_TREE:
-                    data.root.textContent = nls.localize(1, null);
+                    data.root.textContent = nls.localize('allChanges', "Changes");
                     break;
                 case git.StatusType.MERGE:
-                    data.root.textContent = nls.localize(2, null);
+                    data.root.textContent = nls.localize('mergeChanges', "Merge Changes");
                     break;
             }
             var wrapper = dom.append(container, $('.count-badge-wrapper'));
@@ -295,7 +295,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 data.root.title = '';
             }
             else {
-                data.root.title = nls.localize(3, null);
+                data.root.title = nls.localize('outsideOfWorkspace', "This file is located outside the current workspace.");
                 data.root.className += ' out-of-workspace';
             }
             data.name.textContent = rename || name;
@@ -311,43 +311,43 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         };
         Renderer.statusToChar = function (status) {
             switch (status) {
-                case git.Status.INDEX_MODIFIED: return nls.localize(4, null);
-                case git.Status.MODIFIED: return nls.localize(5, null);
-                case git.Status.INDEX_ADDED: return nls.localize(6, null);
-                case git.Status.INDEX_DELETED: return nls.localize(7, null);
-                case git.Status.DELETED: return nls.localize(8, null);
-                case git.Status.INDEX_RENAMED: return nls.localize(9, null);
-                case git.Status.INDEX_COPIED: return nls.localize(10, null);
-                case git.Status.UNTRACKED: return nls.localize(11, null);
-                case git.Status.IGNORED: return nls.localize(12, null);
-                case git.Status.BOTH_DELETED: return nls.localize(13, null);
-                case git.Status.ADDED_BY_US: return nls.localize(14, null);
-                case git.Status.DELETED_BY_THEM: return nls.localize(15, null);
-                case git.Status.ADDED_BY_THEM: return nls.localize(16, null);
-                case git.Status.DELETED_BY_US: return nls.localize(17, null);
-                case git.Status.BOTH_ADDED: return nls.localize(18, null);
-                case git.Status.BOTH_MODIFIED: return nls.localize(19, null);
+                case git.Status.INDEX_MODIFIED: return nls.localize('modified-char', "M");
+                case git.Status.MODIFIED: return nls.localize('modified-char', "M");
+                case git.Status.INDEX_ADDED: return nls.localize('added-char', "A");
+                case git.Status.INDEX_DELETED: return nls.localize('deleted-char', "D");
+                case git.Status.DELETED: return nls.localize('deleted-char', "D");
+                case git.Status.INDEX_RENAMED: return nls.localize('renamed-char', "R");
+                case git.Status.INDEX_COPIED: return nls.localize('copied-char', "C");
+                case git.Status.UNTRACKED: return nls.localize('untracked-char', "U");
+                case git.Status.IGNORED: return nls.localize('ignored-char', "!");
+                case git.Status.BOTH_DELETED: return nls.localize('deleted-char', "D");
+                case git.Status.ADDED_BY_US: return nls.localize('added-char', "A");
+                case git.Status.DELETED_BY_THEM: return nls.localize('deleted-char', "D");
+                case git.Status.ADDED_BY_THEM: return nls.localize('added-char', "A");
+                case git.Status.DELETED_BY_US: return nls.localize('deleted-char', "D");
+                case git.Status.BOTH_ADDED: return nls.localize('added-char', "A");
+                case git.Status.BOTH_MODIFIED: return nls.localize('modified-char', "M");
                 default: return '';
             }
         };
         Renderer.statusToTitle = function (status) {
             switch (status) {
-                case git.Status.INDEX_MODIFIED: return nls.localize(20, null);
-                case git.Status.MODIFIED: return nls.localize(21, null);
-                case git.Status.INDEX_ADDED: return nls.localize(22, null);
-                case git.Status.INDEX_DELETED: return nls.localize(23, null);
-                case git.Status.DELETED: return nls.localize(24, null);
-                case git.Status.INDEX_RENAMED: return nls.localize(25, null);
-                case git.Status.INDEX_COPIED: return nls.localize(26, null);
-                case git.Status.UNTRACKED: return nls.localize(27, null);
-                case git.Status.IGNORED: return nls.localize(28, null);
-                case git.Status.BOTH_DELETED: return nls.localize(29, null);
-                case git.Status.ADDED_BY_US: return nls.localize(30, null);
-                case git.Status.DELETED_BY_THEM: return nls.localize(31, null);
-                case git.Status.ADDED_BY_THEM: return nls.localize(32, null);
-                case git.Status.DELETED_BY_US: return nls.localize(33, null);
-                case git.Status.BOTH_ADDED: return nls.localize(34, null);
-                case git.Status.BOTH_MODIFIED: return nls.localize(35, null);
+                case git.Status.INDEX_MODIFIED: return nls.localize('title-index-modified', "Modified in index");
+                case git.Status.MODIFIED: return nls.localize('title-modified', "Modified");
+                case git.Status.INDEX_ADDED: return nls.localize('title-index-added', "Added to index");
+                case git.Status.INDEX_DELETED: return nls.localize('title-index-deleted', "Deleted in index");
+                case git.Status.DELETED: return nls.localize('title-deleted', "Deleted");
+                case git.Status.INDEX_RENAMED: return nls.localize('title-index-renamed', "Renamed in index");
+                case git.Status.INDEX_COPIED: return nls.localize('title-index-copied', "Copied in index");
+                case git.Status.UNTRACKED: return nls.localize('title-untracked', "Untracked");
+                case git.Status.IGNORED: return nls.localize('title-ignored', "Ignored");
+                case git.Status.BOTH_DELETED: return nls.localize('title-conflict-both-deleted', "Conflict: both deleted");
+                case git.Status.ADDED_BY_US: return nls.localize('title-conflict-added-by-us', "Conflict: added by us");
+                case git.Status.DELETED_BY_THEM: return nls.localize('title-conflict-deleted-by-them', "Conflict: deleted by them");
+                case git.Status.ADDED_BY_THEM: return nls.localize('title-conflict-added-by-them', "Conflict: added by them");
+                case git.Status.DELETED_BY_US: return nls.localize('title-conflict-deleted-by-us', "Conflict: deleted by us");
+                case git.Status.BOTH_ADDED: return nls.localize('title-conflict-both-added', "Conflict: both added");
+                case git.Status.BOTH_MODIFIED: return nls.localize('title-conflict-both-modified', "Conflict: both modified");
                 default: return '';
             }
         };
@@ -586,13 +586,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 var lastSlashIndex = path.lastIndexOf('/');
                 var name_1 = lastSlashIndex === -1 ? path : path.substr(lastSlashIndex + 1, path.length);
                 var folder = (lastSlashIndex === -1 ? '' : path.substr(0, lastSlashIndex));
-                return nls.localize(36, null, name_1, folder, Renderer.statusToTitle(status_1));
+                return nls.localize('fileStatusAriaLabel', "File {0} in folder {1} has status: {2}, Git", name_1, folder, Renderer.statusToTitle(status_1));
             }
             if (element instanceof gitmodel.StatusGroup) {
                 switch (element.getType()) {
-                    case git.StatusType.INDEX: return nls.localize(37, null);
-                    case git.StatusType.WORKING_TREE: return nls.localize(38, null);
-                    case git.StatusType.MERGE: return nls.localize(39, null);
+                    case git.StatusType.INDEX: return nls.localize('ariaLabelStagedChanges', "Staged Changes, Git");
+                    case git.StatusType.WORKING_TREE: return nls.localize('ariaLabelChanges', "Changes, Git");
+                    case git.StatusType.MERGE: return nls.localize('ariaLabelMerge', "Merge, Git");
                 }
             }
         };

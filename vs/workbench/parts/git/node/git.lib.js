@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/node/extfs', 'vs/base/common/mime', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/uuid', 'vs/nls!vs/workbench/parts/git/node/git.lib', 'vs/base/common/strings', 'vs/workbench/parts/git/common/git', 'vs/base/node/mime', 'vs/platform/files/common/files', 'child_process', 'vs/base/node/encoding'], function (require, exports, winjs_base_1, extfs, mime_1, lifecycle_1, objects, uuid, nls, strings, git_1, mime_2, files, child_process_1, encoding_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/node/extfs', 'vs/base/common/mime', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/uuid', 'vs/nls', 'vs/base/common/strings', 'vs/workbench/parts/git/common/git', 'vs/base/node/mime', 'vs/platform/files/common/files', 'child_process', 'vs/base/node/encoding'], function (require, exports, winjs_base_1, extfs, mime_1, lifecycle_1, objects, uuid, nls, strings, git_1, mime_2, files, child_process_1, encoding_1) {
     "use strict";
     function exec(child, encoding) {
         if (encoding === void 0) { encoding = 'utf8'; }
@@ -257,7 +257,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/node/extfs',
                     }
                     else if (mime_1.isBinaryMime(result.mimes)) {
                         e({
-                            message: nls.localize(0, null),
+                            message: nls.localize('fileBinaryError', "File seems to be binary and cannot be opened as text"),
                             fileOperationResult: files.FileOperationResult.FILE_IS_BINARY
                         });
                     }

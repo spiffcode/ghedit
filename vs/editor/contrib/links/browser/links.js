@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/links/browser/links', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/message/common/message', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/editorWorkerService', 'vs/css!./links'], function (require, exports, nls, errors_1, keyCodes_1, platform, severity_1, uri_1, winjs_base_1, editor_1, message_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorWorkerService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/message/common/message', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/editorWorkerService', 'vs/css!./links'], function (require, exports, nls, errors_1, keyCodes_1, platform, severity_1, uri_1, winjs_base_1, editor_1, message_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorWorkerService_1) {
     'use strict';
     var LinkOccurence = (function () {
         function LinkOccurence(link, decorationId /*, changeAccessor:editorCommon.IModelDecorationsChangeAccessor*/) {
@@ -277,7 +277,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/links/browser/links', 'v
             }
             catch (err) {
                 // invalid url
-                this.messageService.show(severity_1.default.Warning, nls.localize(2, null, absoluteUrl));
+                this.messageService.show(severity_1.default.Warning, nls.localize('invalid.url', 'Invalid URI: cannot open {0}', absoluteUrl));
                 return;
             }
             var input = {
@@ -330,7 +330,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/links/browser/links', 'v
         LinkDetector.RECOMPUTE_TIME = 1000; // ms
         LinkDetector.TRIGGER_KEY_VALUE = platform.isMacintosh ? keyCodes_1.KeyCode.Meta : keyCodes_1.KeyCode.Ctrl;
         LinkDetector.TRIGGER_MODIFIER = platform.isMacintosh ? 'metaKey' : 'ctrlKey';
-        LinkDetector.HOVER_MESSAGE_GENERAL = platform.isMacintosh ? nls.localize(0, null) : nls.localize(1, null);
+        LinkDetector.HOVER_MESSAGE_GENERAL = platform.isMacintosh ? nls.localize('links.navigate.mac', "Cmd + click to follow link") : nls.localize('links.navigate', "Ctrl + click to follow link");
         LinkDetector.CLASS_NAME = 'detected-link';
         LinkDetector.CLASS_NAME_ACTIVE = 'detected-link-active';
         return LinkDetector;
@@ -367,6 +367,6 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/links/browser/links', 'v
         ], OpenLinkAction);
         return OpenLinkAction;
     }(editorAction_1.EditorAction));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenLinkAction, OpenLinkAction.ID, nls.localize(3, null)));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenLinkAction, OpenLinkAction.ID, nls.localize('label', "Open Link")));
 });
 //# sourceMappingURL=links.js.map

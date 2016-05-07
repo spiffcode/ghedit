@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/quickopen/browser/helpHandler', 'vs/base/browser/builder', 'vs/base/common/types', 'vs/platform/platform', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, winjs_base_1, nls, builder_1, types, platform_1, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/browser/builder', 'vs/base/common/types', 'vs/platform/platform', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, winjs_base_1, nls, builder_1, types, platform_1, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -32,7 +32,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.prefix;
         };
         HelpEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, picker help", this.getLabel());
         };
         HelpEntry.prototype.getDescription = function () {
             return this.description;
@@ -138,11 +138,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
             // Add separator for workbench scoped handlers
             if (workbenchScoped.length > 0) {
-                workbenchScoped[0].setGroupLabel(nls.localize(1, null));
+                workbenchScoped[0].setGroupLabel(nls.localize('globalCommands', "global commands"));
             }
             // Add separator for editor scoped handlers
             if (editorScoped.length > 0) {
-                editorScoped[0].setGroupLabel(nls.localize(2, null));
+                editorScoped[0].setGroupLabel(nls.localize('editorCommands', "editor commands"));
                 if (workbenchScoped.length > 0) {
                     editorScoped[0].setShowBorder(true);
                 }

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/files/browser/saveErrorHandler', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/base/common/uri', 'vs/base/common/mime', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor/resourceEditorInput', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/fileActions', 'vs/platform/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService'], function (require, exports, winjs_base_1, nls, errors, paths, actions_1, uri_1, mime_1, baseEditor_1, resourceEditorInput_1, diffEditorInput_1, fileEditorInput_1, fileActions_1, files_1, editorService_1, event_1, instantiation_1, message_1, workspace_1, modeService_1, modelService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/base/common/uri', 'vs/base/common/mime', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor/resourceEditorInput', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/fileActions', 'vs/platform/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService'], function (require, exports, winjs_base_1, nls, errors, paths, actions_1, uri_1, mime_1, baseEditor_1, resourceEditorInput_1, diffEditorInput_1, fileEditorInput_1, fileActions_1, files_1, editorService_1, event_1, instantiation_1, message_1, workspace_1, modeService_1, modelService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -38,7 +38,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 actions.push(message_1.CancelAction);
                 // Retry
                 if (isReadonly) {
-                    actions.push(new actions_1.Action('workbench.files.action.overwrite', nls.localize(0, null), null, true, function () {
+                    actions.push(new actions_1.Action('workbench.files.action.overwrite', nls.localize('overwrite', "Overwrite"), null, true, function () {
                         if (!model.isDisposed()) {
                             return model.save(true /* overwrite readonly */).then(function () { return true; });
                         }
@@ -46,14 +46,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     }));
                 }
                 else {
-                    actions.push(new actions_1.Action('workbench.files.action.retry', nls.localize(1, null), null, true, function () {
+                    actions.push(new actions_1.Action('workbench.files.action.retry', nls.localize('retry', "Retry"), null, true, function () {
                         var saveFileAction = _this.instantiationService.createInstance(fileActions_1.SaveFileAction, fileActions_1.SaveFileAction.ID, fileActions_1.SaveFileAction.LABEL);
                         saveFileAction.setResource(model.getResource());
                         return saveFileAction.run().then(function () { saveFileAction.dispose(); return true; });
                     }));
                 }
                 // Discard
-                actions.push(new actions_1.Action('workbench.files.action.discard', nls.localize(2, null), null, true, function () {
+                actions.push(new actions_1.Action('workbench.files.action.discard', nls.localize('discard', "Discard"), null, true, function () {
                     var revertFileAction = _this.instantiationService.createInstance(fileActions_1.RevertFileAction, fileActions_1.RevertFileAction.ID, fileActions_1.RevertFileAction.LABEL);
                     revertFileAction.setResource(model.getResource());
                     return revertFileAction.run().then(function () { revertFileAction.dispose(); return true; });
@@ -66,10 +66,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }));
                 var errorMessage = void 0;
                 if (isReadonly) {
-                    errorMessage = nls.localize(3, null, paths.basename(model.getResource().fsPath));
+                    errorMessage = nls.localize('readonlySaveError', "Failed to save '{0}': File is write protected. Select 'Overwrite' to remove protection.", paths.basename(model.getResource().fsPath));
                 }
                 else {
-                    errorMessage = nls.localize(4, null, paths.basename(model.getResource().fsPath), errors.toErrorMessage(error, false));
+                    errorMessage = nls.localize('genericSaveError', "Failed to save '{0}': {1}", paths.basename(model.getResource().fsPath), errors.toErrorMessage(error, false));
                 }
                 message = {
                     message: errorMessage,
@@ -175,20 +175,20 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 this.message = message;
             }
             else {
-                this.message = nls.localize(5, null, paths.basename(resource.fsPath));
+                this.message = nls.localize('staleSaveError', "Failed to save '{0}': The content on disk is newer. Click on **Compare** to compare your version with the one on disk.", paths.basename(resource.fsPath));
             }
             this.actions = [
-                new actions_1.Action('workbench.files.action.resolveConflict', nls.localize(6, null), null, true, function () {
+                new actions_1.Action('workbench.files.action.resolveConflict', nls.localize('compareChanges', "Compare"), null, true, function () {
                     if (!_this.model.isDisposed()) {
                         var mime = mime_1.guessMimeTypes(resource.fsPath).join(', ');
                         var originalInput = _this.instantiationService.createInstance(FileOnDiskEditorInput, resource, mime, paths.basename(resource.fsPath), resource.fsPath);
                         var modifiedInput = _this.instantiationService.createInstance(fileEditorInput_1.FileEditorInput, resource, mime, void 0);
-                        var conflictInput = _this.instantiationService.createInstance(ConflictResolutionDiffEditorInput, _this.model, nls.localize(7, null, modifiedInput.getName(), _this.contextService.getConfiguration().env.appName), nls.localize(8, null, modifiedInput.getDescription()), originalInput, modifiedInput);
+                        var conflictInput = _this.instantiationService.createInstance(ConflictResolutionDiffEditorInput, _this.model, nls.localize('saveConflictDiffLabel', "{0} - on disk ↔ in {1}", modifiedInput.getName(), _this.contextService.getConfiguration().env.appName), nls.localize('resolveSaveConflict', "{0} - Resolve save conflict", modifiedInput.getDescription()), originalInput, modifiedInput);
                         return _this.editorService.openEditor(conflictInput).then(function () {
                             // We have to bring the model into conflict resolution mode to prevent subsequent save erros when the user makes edits
                             _this.model.setConflictResolutionMode();
                             // Inform user
-                            _this.messageService.show(message_1.Severity.Info, nls.localize(9, null));
+                            _this.messageService.show(message_1.Severity.Info, nls.localize('userGuide', "Use the actions in the editor tool bar to either **undo** your changes or **overwrite** the content on disk with your changes"));
                         });
                     }
                     return winjs_base_1.TPromise.as(true);
@@ -207,7 +207,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var AcceptLocalChangesAction = (function (_super) {
         __extends(AcceptLocalChangesAction, _super);
         function AcceptLocalChangesAction(messageService, instantiationService, editorService) {
-            _super.call(this, 'workbench.files.action.acceptLocalChanges', nls.localize(10, null), 'conflict-editor-action accept-changes');
+            _super.call(this, 'workbench.files.action.acceptLocalChanges', nls.localize('acceptLocalChanges', "Use local changes and overwrite disk contents"), 'conflict-editor-action accept-changes');
             this.messageService = messageService;
             this.instantiationService = instantiationService;
             this.editorService = editorService;
@@ -249,7 +249,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                         model.textEditorModel.setValue(localModelValue);
                         // Reload the left hand side of the diff editor to show the up to date version and inform the user that he has to redo the action
                         return conflictInput.originalInput.resolve(true).then(function () {
-                            _this.messagesToHide.push(_this.messageService.show(message_1.Severity.Info, nls.localize(11, null)));
+                            _this.messagesToHide.push(_this.messageService.show(message_1.Severity.Info, nls.localize('conflictingFileHasChanged', "The content of the file on disk has changed and the left hand side of the compare editor was refreshed. Please review and resolve again.")));
                         });
                     }
                 });
@@ -267,7 +267,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var RevertLocalChangesAction = (function (_super) {
         __extends(RevertLocalChangesAction, _super);
         function RevertLocalChangesAction(instantiationService, editorService) {
-            _super.call(this, 'workbench.action.files.revert', nls.localize(12, null), 'conflict-editor-action revert-changes');
+            _super.call(this, 'workbench.action.files.revert', nls.localize('revertLocalChanges', "Discard local changes and revert to content on disk"), 'conflict-editor-action revert-changes');
             this.instantiationService = instantiationService;
             this.editorService = editorService;
         }

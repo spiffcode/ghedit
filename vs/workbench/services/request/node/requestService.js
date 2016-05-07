@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/configuration/common/configurationRegistry', 'vs/base/common/strings', 'vs/nls!vs/workbench/services/request/node/requestService', 'vs/base/common/lifecycle', 'vs/base/common/timer', 'vs/platform/platform', 'vs/base/common/async', 'vs/platform/configuration/common/configuration', 'vs/platform/request/common/baseRequestService', 'vs/workbench/services/request/node/rawHttpService'], function (require, exports, winjs_base_1, configurationRegistry_1, strings, nls, lifecycle, timer, platform, async, configuration_1, baseRequestService_1, rawHttpService) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/configuration/common/configurationRegistry', 'vs/base/common/strings', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/timer', 'vs/platform/platform', 'vs/base/common/async', 'vs/platform/configuration/common/configuration', 'vs/platform/request/common/baseRequestService', 'vs/workbench/services/request/node/rawHttpService'], function (require, exports, winjs_base_1, configurationRegistry_1, strings, nls, lifecycle, timer, platform, async, configuration_1, baseRequestService_1, rawHttpService) {
     'use strict';
     var RequestService = (function (_super) {
         __extends(RequestService, _super);
@@ -49,7 +49,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/configur
                     if (xhr.status === 0 && xhr.responseText) {
                         return xhr; // loading resources locally returns a status of 0 which in WinJS is an error so we need to handle it here
                     }
-                    return winjs_base_1.Promise.wrapError({ status: 404, responseText: nls.localize(0, null) });
+                    return winjs_base_1.Promise.wrapError({ status: 404, responseText: nls.localize('localFileNotFound', "File not found.") });
                 });
             }
             return _super.prototype.makeRequest.call(this, options);
@@ -77,17 +77,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/configur
     confRegistry.registerConfiguration({
         'id': 'http',
         'order': 9,
-        'title': nls.localize(1, null),
+        'title': nls.localize('httpConfigurationTitle', "HTTP configuration"),
         'type': 'object',
         'properties': {
             'http.proxy': {
                 'type': 'string',
-                'description': nls.localize(2, null)
+                'description': nls.localize('proxy', "The proxy setting to use. If not set will be taken from the http_proxy and https_proxy environment variables")
             },
             'http.proxyStrictSSL': {
                 'type': 'boolean',
                 'default': true,
-                'description': nls.localize(3, null)
+                'description': nls.localize('strictSSL', "Whether the proxy server certificate should be verified against the list of supplied CAs.")
             }
         }
     });

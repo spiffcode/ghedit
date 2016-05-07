@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/languages/css/common/services/languageFacts', 'vs/languages/css/common/services/lintRules', 'vs/languages/css/common/parser/cssNodes', 'vs/nls!vs/languages/css/common/services/lint', 'vs/languages/css/common/level'], function (require, exports, languageFacts, lintRules, nodes, nls, _level) {
+define(["require", "exports", 'vs/languages/css/common/services/languageFacts', 'vs/languages/css/common/services/lintRules', 'vs/languages/css/common/parser/cssNodes', 'vs/nls', 'vs/languages/css/common/level'], function (require, exports, languageFacts, lintRules, nodes, nls, _level) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -107,10 +107,10 @@ define(["require", "exports", 'vs/languages/css/common/services/languageFacts', 
                 var curr = expected[i];
                 if (curr) {
                     if (result === null) {
-                        result = nls.localize(0, null, curr);
+                        result = nls.localize('namelist.single', "'{0}'", curr);
                     }
                     else {
-                        result = nls.localize(1, null, result, curr);
+                        result = nls.localize('namelist.concatenated', "{0}, '{1}'", result, curr);
                     }
                 }
             }
@@ -151,11 +151,11 @@ define(["require", "exports", 'vs/languages/css/common/services/languageFacts', 
             var expected = ['@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes'];
             var addVendorSpecificWarnings = function (node) {
                 if (needsStandard) {
-                    var message = nls.localize(2, null);
+                    var message = nls.localize('keyframes.standardrule.missing', "Always define standard rule '@keyframes' when defining keyframes.");
                     _this.addEntry(node, lintRules.Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
                 }
                 if (missingVendorSpecific) {
-                    var message = nls.localize(3, null, missingVendorSpecific);
+                    var message = nls.localize('keyframes.vendorspecific.missing', "Always include all vendor specific rules: Missing: {0}", missingVendorSpecific);
                     _this.addEntry(node, lintRules.Rules.AllVendorPrefixes, message);
                 }
             };
@@ -339,11 +339,11 @@ define(["require", "exports", 'vs/languages/css/common/services/languageFacts', 
             if (!containsUnknowns) {
                 var addVendorSpecificWarnings = function (node) {
                     if (needsStandard) {
-                        var message = nls.localize(4, null, suffix);
+                        var message = nls.localize('property.standard.missing', "Also define the standard property '{0}' for compatibility", suffix);
                         _this.addEntry(node, lintRules.Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
                     }
                     if (missingVendorSpecific) {
-                        var message = nls.localize(5, null, missingVendorSpecific);
+                        var message = nls.localize('property.vendorspecific.missing', "Always include all vendor specific properties: Missing: {0}", missingVendorSpecific);
                         _this.addEntry(node, lintRules.Rules.AllVendorPrefixes, message);
                     }
                 };

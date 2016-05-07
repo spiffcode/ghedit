@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/gitless/gitlessView', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/css!./gitlessView'], function (require, exports, nls, platform, winjs, ee, builder, workspace_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/css!./gitlessView'], function (require, exports, nls, platform, winjs, ee, builder, workspace_1, selection_1) {
     'use strict';
     var $ = builder.$;
     var GitlessView = (function (_super) {
@@ -39,22 +39,22 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/gitle
         GitlessView.prototype.render = function () {
             var instructions;
             if (platform.isMacintosh) {
-                instructions = nls.localize(0, null, '<a href="http://brew.sh/" tabindex="0" target="_blank">Homebrew</a>', '<a href="http://git-scm.com/download/mac" tabindex="0" target="_blank">git-scm.com</a>', '<a href="https://developer.apple.com/xcode/" tabindex="0" target="_blank">XCode</a>', '<code>git</code>');
+                instructions = nls.localize('macInstallWith', "You can either install it with {0}, download it from {1} or install the {2} command line developer tools, by simply typing {3} on a Terminal prompt.", '<a href="http://brew.sh/" tabindex="0" target="_blank">Homebrew</a>', '<a href="http://git-scm.com/download/mac" tabindex="0" target="_blank">git-scm.com</a>', '<a href="https://developer.apple.com/xcode/" tabindex="0" target="_blank">XCode</a>', '<code>git</code>');
             }
             else if (platform.isWindows) {
-                instructions = nls.localize(1, null, '<a href="https://chocolatey.org/packages/git" tabindex="0" target="_blank">Chocolatey</a>', '<a href="http://git-scm.com/download/win" tabindex="0" target="_blank">git-scm.com</a>');
+                instructions = nls.localize('winInstallWith', "You can either install it with {0} or download it from {1}.", '<a href="https://chocolatey.org/packages/git" tabindex="0" target="_blank">Chocolatey</a>', '<a href="http://git-scm.com/download/win" tabindex="0" target="_blank">git-scm.com</a>');
             }
             else if (platform.isLinux) {
-                instructions = nls.localize(2, null, '<a href="http://git-scm.com/download/linux" tabindex="0" target="_blank">git-scm.com</a>');
+                instructions = nls.localize('linuxDownloadFrom', "You can download it from {0}.", '<a href="http://git-scm.com/download/linux" tabindex="0" target="_blank">git-scm.com</a>');
             }
             else {
-                instructions = nls.localize(3, null, '<a href="http://git-scm.com/download" tabindex="0" target="_blank">git-scm.com</a>');
+                instructions = nls.localize('downloadFrom', "You can download it from {0}.", '<a href="http://git-scm.com/download" tabindex="0" target="_blank">git-scm.com</a>');
             }
             this._element = $([
                 '<div class="gitless-view">',
-                '<p>', nls.localize(4, null), '</p>',
+                '<p>', nls.localize('looksLike', "It looks like git is not installed on your system."), '</p>',
                 '<p>', instructions, '</p>',
-                '<p>', nls.localize(5, null, this._contextService.getConfiguration().env.appName), '</p>',
+                '<p>', nls.localize('pleaseRestart', "Once git is installed, please restart {0}.", this._contextService.getConfiguration().env.appName), '</p>',
                 '</div>'
             ].join('')).getHTMLElement();
         };

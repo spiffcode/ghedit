@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/explorerView', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/common/uri', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/events', 'vs/workbench/common/editor', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/views/explorerViewer', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message'], function (require, exports, nls, winjs_base_1, builder_1, uri_1, async_1, errors, paths, actionBarRegistry_1, treeImpl_1, events_1, editor_1, files_1, fileActions_1, fileEditorInput_1, explorerViewer_1, lifecycle, DOM, viewlet_1, explorerViewModel_1, editorService_1, partService_1, storage_1, configuration_1, event_1, instantiation_1, progress_1, workspace_1, contextView_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/common/uri', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/events', 'vs/workbench/common/editor', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/views/explorerViewer', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message'], function (require, exports, nls, winjs_base_1, builder_1, uri_1, async_1, errors, paths, actionBarRegistry_1, treeImpl_1, events_1, editor_1, files_1, fileActions_1, fileEditorInput_1, explorerViewer_1, lifecycle, DOM, viewlet_1, explorerViewModel_1, editorService_1, partService_1, storage_1, configuration_1, event_1, instantiation_1, progress_1, workspace_1, contextView_1, message_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -21,7 +21,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/exp
     var ExplorerView = (function (_super) {
         __extends(ExplorerView, _super);
         function ExplorerView(viewletState, actionRunner, settings, messageService, contextMenuService, instantiationService, eventService, storageService, contextService, progressService, editorService, fileService, partService, configurationService) {
-            _super.call(this, actionRunner, false, nls.localize(0, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, false, nls.localize('explorerSection', "Files Explorer Section"), messageService, contextMenuService);
             this.instantiationService = instantiationService;
             this.eventService = eventService;
             this.storageService = storageService;
@@ -234,7 +234,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/exp
                 accessibilityProvider: accessibility
             }, {
                 autoExpandSingleChildren: true,
-                ariaLabel: nls.localize(1, null)
+                ariaLabel: nls.localize('treeAriaLabel', "Files Explorer")
             });
             this.toDispose.push(lifecycle.toDisposable(function () { return renderer.dispose(); }));
             // Update Viewer based on File Change Events

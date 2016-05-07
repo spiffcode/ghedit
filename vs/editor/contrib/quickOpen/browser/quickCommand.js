@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickCommand', 'vs/base/common/errors', 'vs/base/common/filters', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorActionEnablement', './editorQuickOpen'], function (require, exports, nls, errors_1, filters_1, strings, winjs_base_1, quickOpenModel_1, quickOpen_1, keybindingService_1, editorActionEnablement_1, editorQuickOpen_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/filters', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorActionEnablement', './editorQuickOpen'], function (require, exports, nls, errors_1, filters_1, strings, winjs_base_1, quickOpenModel_1, quickOpen_1, keybindingService_1, editorActionEnablement_1, editorQuickOpen_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickC
             return this.action.label;
         };
         EditorActionCommandEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('ariaLabelEntry', "{0}, commands", this.getLabel());
         };
         EditorActionCommandEntry.prototype.getGroupLabel = function () {
             return this.key;
@@ -63,7 +63,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickC
     var QuickCommandAction = (function (_super) {
         __extends(QuickCommandAction, _super);
         function QuickCommandAction(descriptor, editor, keybindingService) {
-            _super.call(this, descriptor, editor, nls.localize(1, null), editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu);
+            _super.call(this, descriptor, editor, nls.localize('QuickCommandAction.label', "Command Palette"), editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu);
             this._keybindingService = keybindingService;
         }
         QuickCommandAction.prototype._getModel = function (value) {
@@ -105,7 +105,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickC
             };
         };
         QuickCommandAction.prototype._getInputAriaLabel = function () {
-            return nls.localize(2, null);
+            return nls.localize('quickCommandActionInput', "Type the name of an action you want to execute");
         };
         QuickCommandAction.ID = 'editor.action.quickCommand';
         QuickCommandAction = __decorate([

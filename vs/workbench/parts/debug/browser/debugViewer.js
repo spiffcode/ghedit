@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugViewer', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/common/keyCodes', 'vs/base/common/paths', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/labels', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/parts/tree/browser/treeDefaults', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/workspace/common/workspace', 'vs/platform/message/common/message'], function (require, exports, nls, winjs_base_1, lifecycle, keyCodes_1, paths, async, errors, strings, platform_1, dom, labels, actionbar, inputbox, treedefaults, debug, model, viewmodel, debugactions, contextView_1, workspace_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/common/keyCodes', 'vs/base/common/paths', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/labels', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/parts/tree/browser/treeDefaults', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/workspace/common/workspace', 'vs/platform/message/common/message'], function (require, exports, nls, winjs_base_1, lifecycle, keyCodes_1, paths, async, errors, strings, platform_1, dom, labels, actionbar, inputbox, treedefaults, debug, model, viewmodel, debugactions, contextView_1, workspace_1, message_1) {
     "use strict";
     var $ = dom.emmet;
     var booleanRegex = /^true|false$/i;
@@ -265,7 +265,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
             data.name.textContent = thread.name;
         };
         CallStackRenderer.prototype.renderLoadMore = function (element, data) {
-            data.label.textContent = nls.localize(0, null);
+            data.label.textContent = nls.localize('loadMoreStackFrames', "Load More Stack Frames");
         };
         CallStackRenderer.prototype.renderStackFrame = function (stackFrame, data) {
             stackFrame.source.available ? dom.removeClass(data.stackFrame, 'disabled') : dom.addClass(data.stackFrame, 'disabled');
@@ -294,10 +294,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         CallstackAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof model.Thread) {
-                return nls.localize(1, null, element.name);
+                return nls.localize('threadAriaLabel', "Thread {0}, callstack, debug", element.name);
             }
             if (element instanceof model.StackFrame) {
-                return nls.localize(2, null, element.name, element.lineNumber, getSourceName(element.source, this.contextService));
+                return nls.localize('stackFrameAriaLabel', "Stack Frame {0} line {1} {2}, callstack, debug", element.name, element.lineNumber, getSourceName(element.source, this.contextService));
             }
             return null;
         };
@@ -416,10 +416,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         VariablesAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof model.Scope) {
-                return nls.localize(3, null, element.name);
+                return nls.localize('variableScopeAriaLabel', "Scope {0}, variables, debug", element.name);
             }
             if (element instanceof model.Variable) {
-                return nls.localize(4, null, element.name, element.value);
+                return nls.localize('variableAriaLabel', "{0} value {1}, variables, debug", element.name, element.value);
             }
             return null;
         };
@@ -543,7 +543,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         WatchExpressionsRenderer.prototype.renderWatchExpression = function (tree, watchExpression, data) {
             var selectedExpression = this.debugService.getViewModel().getSelectedExpression();
             if ((selectedExpression instanceof model.Expression && selectedExpression.getId() === watchExpression.getId()) || (watchExpression instanceof model.Expression && !watchExpression.name)) {
-                renderRenameBox(this.debugService, this.contextViewService, tree, watchExpression, data.expression, nls.localize(5, null), nls.localize(6, null));
+                renderRenameBox(this.debugService, this.contextViewService, tree, watchExpression, data.expression, nls.localize('watchExpressionPlaceholder', "Expression to watch"), nls.localize('watchExpressionInputAriaLabel', "Type watch expression"));
             }
             data.actionBar.context = watchExpression;
             data.name.textContent = watchExpression.name + ":";
@@ -575,10 +575,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         WatchExpressionsAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof model.Expression) {
-                return nls.localize(7, null, element.name, element.value);
+                return nls.localize('watchExpressionAriaLabel', "{0} value {1}, watch, debug", element.name, element.value);
             }
             if (element instanceof model.Variable) {
-                return nls.localize(8, null, element.name, element.value);
+                return nls.localize('watchVariableAriaLabel', "{0} value {1}, watch, debug", element.name, element.value);
             }
             return null;
         };
@@ -768,7 +768,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         BreakpointsRenderer.prototype.renderFunctionBreakpoint = function (tree, functionBreakpoint, data) {
             var selected = this.debugService.getViewModel().getSelectedFunctionBreakpoint();
             if (!functionBreakpoint.name || (selected && selected.getId() === functionBreakpoint.getId())) {
-                renderRenameBox(this.debugService, this.contextViewService, tree, functionBreakpoint, data.breakpoint, nls.localize(9, null), nls.localize(10, null));
+                renderRenameBox(this.debugService, this.contextViewService, tree, functionBreakpoint, data.breakpoint, nls.localize('functionBreakpointPlaceholder', "Function to break on"), nls.localize('functionBreakPointInputAriaLabel', "Type function breakpoint"));
             }
             else {
                 this.debugService.getModel().areBreakpointsActivated() ? tree.removeTraits('disabled', [functionBreakpoint]) : tree.addTraits('disabled', [functionBreakpoint]);
@@ -812,13 +812,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         BreakpointsAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof model.Breakpoint) {
-                return nls.localize(11, null, element.lineNumber, getSourceName(element.source, this.contextService));
+                return nls.localize('breakpointAriaLabel', "Breakpoint line {0} {1}, breakpoints, debug", element.lineNumber, getSourceName(element.source, this.contextService));
             }
             if (element instanceof model.FunctionBreakpoint) {
-                return nls.localize(12, null, element.name);
+                return nls.localize('functionBreakpointAriaLabel', "Function breakpoint {0}, breakpoints, debug", element.name);
             }
             if (element instanceof model.ExceptionBreakpoint) {
-                return nls.localize(13, null, element.filter);
+                return nls.localize('exceptionBreakpointAriaLabel', "Exception breakpoint {0}, breakpoints, debug", element.filter);
             }
             return null;
         };

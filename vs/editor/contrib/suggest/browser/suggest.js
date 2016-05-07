@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggest', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/snippet/common/snippet', 'vs/editor/contrib/suggest/common/suggest', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/config/config', './suggestModel', './suggestWidget'], function (require, exports, nls, errors_1, keyCodes_1, lifecycle_1, winjs_base_1, instantiation_1, keybindingService_1, editorAction_1, editorCommon_1, editorCommonExtensions_1, modes_1, editorBrowserExtensions_1, snippet_1, suggest_1, keybindingsRegistry_1, config_1, suggestModel_1, suggestWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/snippet/common/snippet', 'vs/editor/contrib/suggest/common/suggest', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/config/config', './suggestModel', './suggestWidget'], function (require, exports, nls, errors_1, keyCodes_1, lifecycle_1, winjs_base_1, instantiation_1, keybindingService_1, editorAction_1, editorCommon_1, editorCommonExtensions_1, modes_1, editorBrowserExtensions_1, snippet_1, suggest_1, keybindingsRegistry_1, config_1, suggestModel_1, suggestWidget_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -177,7 +177,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggest'
     exports.TriggerSuggestAction = TriggerSuggestAction;
     var weight = editorCommonExtensions_1.CommonEditorRegistry.commandWeight(90);
     // register action
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TriggerSuggestAction, TriggerSuggestAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TriggerSuggestAction, TriggerSuggestAction.ID, nls.localize('suggest.trigger.label', "Trigger Suggest"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Space,
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.Space }

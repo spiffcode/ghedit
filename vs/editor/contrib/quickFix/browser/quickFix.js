@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFix', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/bulkEdit', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', './quickFixModel', './quickFixSelectionWidget'], function (require, exports, nls, errors_1, keyCodes_1, severity_1, winjs_base_1, editor_1, event_1, keybindingService_1, markers_1, message_1, telemetry_1, editorAction_1, editorCommonExtensions_1, bulkEdit_1, modes_1, editorBrowserExtensions_1, quickFixModel_1, quickFixSelectionWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/bulkEdit', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowserExtensions', './quickFixModel', './quickFixSelectionWidget'], function (require, exports, nls, errors_1, keyCodes_1, severity_1, winjs_base_1, editor_1, event_1, keybindingService_1, markers_1, message_1, telemetry_1, editorAction_1, editorCommonExtensions_1, bulkEdit_1, modes_1, editorBrowserExtensions_1, quickFixModel_1, quickFixSelectionWidget_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -136,7 +136,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFi
     var CONTEXT_QUICK_FIX_WIDGET_VISIBLE = 'quickFixWidgetVisible';
     var weight = editorCommonExtensions_1.CommonEditorRegistry.commandWeight(80);
     // register action
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(QuickFixAction, QuickFixAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(QuickFixAction, QuickFixAction.ID, nls.localize('quickfix.trigger.label', "Quick Fix"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_DOT
     }));

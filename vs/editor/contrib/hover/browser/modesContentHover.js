@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/hover/browser/modesContentHover', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/browser/htmlContentRenderer', 'vs/platform/opener/common/opener', 'vs/editor/common/core/range', 'vs/editor/common/modes', 'vs/editor/common/modes/textToHtmlTokenizer', '../common/hover', './hoverOperation', './hoverWidgets', 'vs/css!vs/base/browser/ui/progressbar/progressbar'], function (require, exports, nls, uri_1, winjs_base_1, htmlContentRenderer_1, opener_1, range_1, modes_1, textToHtmlTokenizer_1, hover_1, hoverOperation_1, hoverWidgets_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/browser/htmlContentRenderer', 'vs/platform/opener/common/opener', 'vs/editor/common/core/range', 'vs/editor/common/modes', 'vs/editor/common/modes/textToHtmlTokenizer', '../common/hover', './hoverOperation', './hoverWidgets', 'vs/css!vs/base/browser/ui/progressbar/progressbar'], function (require, exports, nls, uri_1, winjs_base_1, htmlContentRenderer_1, opener_1, range_1, modes_1, textToHtmlTokenizer_1, hover_1, hoverOperation_1, hoverWidgets_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/hover/browser/modesConte
                         tagName: 'div',
                         className: '',
                         children: [{
-                                text: nls.localize(0, null)
+                                text: nls.localize('modesContentHover.loading', "Loading...")
                             }]
                     }]
             };

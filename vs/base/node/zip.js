@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/base/node/zip', 'path', 'fs', 'vs/base/common/async', 'vs/base/node/pfs', 'vs/base/common/winjs.base', 'yauzl'], function (require, exports, nls, path, fs_1, async_1, pfs_1, winjs_base_1, yauzl_1) {
+define(["require", "exports", 'vs/nls', 'path', 'fs', 'vs/base/common/async', 'vs/base/node/pfs', 'vs/base/common/winjs.base', 'yauzl'], function (require, exports, nls, path, fs_1, async_1, pfs_1, winjs_base_1, yauzl_1) {
     "use strict";
     function modeFromEntry(entry) {
         var attr = entry.externalFileAttributes >> 16 || 33188;
@@ -56,7 +56,7 @@ define(["require", "exports", 'vs/nls!vs/base/node/zip', 'path', 'fs', 'vs/base/
                         async_1.ninvoke(zipfile, zipfile.openReadStream, entry).done(function (stream) { return c(stream); }, function (err) { return e(err); });
                     }
                 });
-                zipfile.once('close', function () { return e(new Error(nls.localize(0, null, filePath))); });
+                zipfile.once('close', function () { return e(new Error(nls.localize('notFound', "{0} not found inside zip.", filePath))); });
             });
         });
     }

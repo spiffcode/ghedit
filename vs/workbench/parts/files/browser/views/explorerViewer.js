@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/files/browser/views/explorerViewer', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/browser/dom', 'vs/base/common/uri', 'vs/base/common/mime', 'vs/base/common/async', 'vs/base/common/paths', 'vs/base/common/errors', 'vs/base/common/types', 'vs/base/common/actions', 'vs/base/common/comparers', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/builder', 'vs/base/common/platform', 'vs/base/common/glob', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/common/editor', 'vs/base/parts/tree/browser/tree', 'vs/base/common/labels', 'vs/base/parts/tree/browser/treeDnd', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/actionsRenderer', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, lifecycle, objects, DOM, uri_1, mime_1, async, paths, errors, types_1, Actions, comparers, inputBox_1, builder_1, platform, glob, actionBarRegistry_1, files_1, files_2, fileEditorInput_1, fileActions_1, editor_1, tree_1, labels, treeDnd_1, treeDefaults_1, actionsRenderer_1, explorerViewModel_1, editorService_1, partService_1, contextService_1, contextView_1, event_1, instantiation_1, message_1, progress_1, telemetry_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/browser/dom', 'vs/base/common/uri', 'vs/base/common/mime', 'vs/base/common/async', 'vs/base/common/paths', 'vs/base/common/errors', 'vs/base/common/types', 'vs/base/common/actions', 'vs/base/common/comparers', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/builder', 'vs/base/common/platform', 'vs/base/common/glob', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/common/editor', 'vs/base/parts/tree/browser/tree', 'vs/base/common/labels', 'vs/base/parts/tree/browser/treeDnd', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/actionsRenderer', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, lifecycle, objects, DOM, uri_1, mime_1, async, paths, errors, types_1, Actions, comparers, inputBox_1, builder_1, platform, glob, actionBarRegistry_1, files_1, files_2, fileEditorInput_1, fileActions_1, editor_1, tree_1, labels, treeDnd_1, treeDefaults_1, actionsRenderer_1, explorerViewModel_1, editorService_1, partService_1, contextService_1, contextView_1, event_1, instantiation_1, message_1, progress_1, telemetry_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -219,7 +219,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     validation: editableData.validator,
                     showMessage: true
                 },
-                ariaLabel: nls.localize(0, null)
+                ariaLabel: nls.localize('fileInputAriaLabel', "Type file name. Press Enter to confirm or Escape to cancel.")
             });
             var value = stat.name || '';
             var lastDot = value.lastIndexOf('.');
@@ -271,7 +271,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         function FileAccessibilityProvider() {
         }
         FileAccessibilityProvider.prototype.getAriaLabel = function (tree, stat) {
-            return nls.localize(1, null, stat.name);
+            return nls.localize('filesExplorerViewerAriaLabel', "{0}, Files Explorer", stat.name);
         };
         return FileAccessibilityProvider;
     }());
@@ -678,7 +678,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     return saveOrRevertPromise.then(function () {
                         // If the file is still dirty, do not touch it because a save is pending to the disk and we can not abort it
                         if (_this.textFileService.isDirty(source_1.resource)) {
-                            _this.messageService.show(message_1.Severity.Warning, nls.localize(2, null, labels.getPathLabel(source_1.resource)));
+                            _this.messageService.show(message_1.Severity.Warning, nls.localize('warningFileDirty', "File '{0}' is currently being saved, please try again later.", labels.getPathLabel(source_1.resource)));
                             return winjs_base_1.TPromise.as(null);
                         }
                         var targetResource = uri_1.default.file(paths.join(target.resource.fsPath, source_1.name));
@@ -692,9 +692,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                             if (error.fileOperationResult === files_2.FileOperationResult.FILE_MOVE_CONFLICT) {
                                 didHandleConflict = true;
                                 var confirm_1 = {
-                                    message: nls.localize(3, null, source_1.name),
-                                    detail: nls.localize(4, null),
-                                    primaryButton: nls.localize(5, null)
+                                    message: nls.localize('confirmOverwriteMessage', "'{0}' already exists in the destination folder. Do you want to replace it?", source_1.name),
+                                    detail: nls.localize('irreversible', "This action is irreversible!"),
+                                    primaryButton: nls.localize({ key: 'replaceButtonLabel', comment: ['&& denotes a mnemonic'] }, "&&Replace")
                                 };
                                 if (_this.messageService.confirm(confirm_1)) {
                                     return _this.fileService.moveFile(source_1.resource, targetResource, true).then(function (result) {

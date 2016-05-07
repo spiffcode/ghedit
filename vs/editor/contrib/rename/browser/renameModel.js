@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/renameModel', 'vs/base/common/arrays', 'vs/base/common/collections', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/editor/common/core/editOperation', 'vs/editor/common/core/range', 'vs/editor/common/core/selection'], function (require, exports, nls, arrays, collections, uri_1, winjs_base_1, editOperation_1, range_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/collections', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/editor/common/core/editOperation', 'vs/editor/common/core/range', 'vs/editor/common/core/selection'], function (require, exports, nls, arrays, collections, uri_1, winjs_base_1, editOperation_1, range_1, selection_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -127,7 +127,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/renameMod
             collections.forEach(this._edits, function (entry) {
                 var promise = _this._editorService.resolveEditorModel({ resource: uri_1.default.parse(entry.key) }).then(function (model) {
                     if (!model || !model.textEditorModel) {
-                        _this.reject(nls.localize(0, null, entry.key));
+                        _this.reject(nls.localize('cannotLoadFile', "Cannot load file {0}", entry.key));
                     }
                     else {
                         var textEditorModel = model.textEditorModel, task;

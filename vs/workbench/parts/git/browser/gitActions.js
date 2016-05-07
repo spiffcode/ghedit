@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/git/browser/gitActions', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/types', 'vs/base/common/actions', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/common/editor', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/parts/git/common/git', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/base/common/paths', 'vs/base/common/uri'], function (require, exports, winjs_base_1, nls, lifecycle_1, strings, types_1, actions_1, model, inputs, editor_1, errors, platform, editorService_1, contextService_1, event_1, files_1, message_1, severity_1, git_1, quickOpenService_1, paths, uri_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/types', 'vs/base/common/actions', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/common/editor', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/parts/git/common/git', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/base/common/paths', 'vs/base/common/uri'], function (require, exports, winjs_base_1, nls, lifecycle_1, strings, types_1, actions_1, model, inputs, editor_1, errors, platform, editorService_1, contextService_1, event_1, files_1, message_1, severity_1, git_1, quickOpenService_1, paths, uri_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -75,7 +75,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var OpenChangeAction = (function (_super) {
         __extends(OpenChangeAction, _super);
         function OpenChangeAction(editorService, gitService) {
-            _super.call(this, OpenChangeAction.ID, nls.localize(0, null), 'git-action open-change', gitService);
+            _super.call(this, OpenChangeAction.ID, nls.localize('openChange', "Open Change"), 'git-action open-change', gitService);
             this.editorService = editorService;
             this.onGitServiceChange();
         }
@@ -102,7 +102,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var OpenFileAction = (function (_super) {
         __extends(OpenFileAction, _super);
         function OpenFileAction(editorService, fileService, gitService, contextService) {
-            _super.call(this, OpenFileAction.ID, nls.localize(1, null), 'git-action open-file', gitService);
+            _super.call(this, OpenFileAction.ID, nls.localize('openFile', "Open File"), 'git-action open-file', gitService);
             this.fileService = fileService;
             this.editorService = editorService;
             this.contextService = contextService;
@@ -157,7 +157,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var InitAction = (function (_super) {
         __extends(InitAction, _super);
         function InitAction(gitService) {
-            _super.call(this, InitAction.ID, nls.localize(2, null), 'git-action init', gitService);
+            _super.call(this, InitAction.ID, nls.localize('init', "Init"), 'git-action init', gitService);
         }
         InitAction.prototype.isEnabled = function () {
             return _super.prototype.isEnabled.call(this) && this.gitService.getState() === git_1.ServiceState.NotARepo;
@@ -175,7 +175,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var RefreshAction = (function (_super) {
         __extends(RefreshAction, _super);
         function RefreshAction(gitService) {
-            _super.call(this, RefreshAction.ID, nls.localize(3, null), 'git-action refresh', gitService);
+            _super.call(this, RefreshAction.ID, nls.localize('refresh', "Refresh"), 'git-action refresh', gitService);
         }
         RefreshAction.prototype.run = function () {
             return this.gitService.status();
@@ -248,7 +248,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             _super.call(this, StageAction.ID, StageAction.LABEL, 'git-action stage', gitService, editorService);
         }
         StageAction.ID = 'workbench.action.git.stage';
-        StageAction.LABEL = nls.localize(4, null);
+        StageAction.LABEL = nls.localize('stageChanges', "Stage");
         StageAction = __decorate([
             __param(0, git_1.IGitService),
             __param(1, editorService_1.IWorkbenchEditorService)
@@ -259,7 +259,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var GlobalStageAction = (function (_super) {
         __extends(GlobalStageAction, _super);
         function GlobalStageAction(gitService, editorService) {
-            _super.call(this, GlobalStageAction.ID, nls.localize(5, null), 'git-action stage', gitService, editorService);
+            _super.call(this, GlobalStageAction.ID, nls.localize('stageAllChanges', "Stage All"), 'git-action stage', gitService, editorService);
         }
         GlobalStageAction.prototype.isEnabled = function () {
             return _super.prototype.isEnabled.call(this) && this.gitService.getModel().getStatus().getWorkingTreeStatus().all().length > 0;
@@ -375,18 +375,18 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             if (all.length > 1) {
                 var count = all.length;
                 return {
-                    message: nls.localize(6, null),
+                    message: nls.localize('confirmUndoMessage', "Are you sure you want to clean all changes?"),
                     detail: count === 1
-                        ? nls.localize(7, null, count)
-                        : nls.localize(8, null, count),
-                    primaryButton: nls.localize(9, null)
+                        ? nls.localize('confirmUndoAllOne', "There are unstaged changes in {0} file.\n\nThis action is irreversible!", count)
+                        : nls.localize('confirmUndoAllMultiple', "There are unstaged changes in {0} files.\n\nThis action is irreversible!", count),
+                    primaryButton: nls.localize({ key: 'cleanChangesLabel', comment: ['&& denotes a mnemonic'] }, "&&Clean Changes")
                 };
             }
             var label = all[0].getPathComponents().reverse()[0];
             return {
-                message: nls.localize(10, null, label),
-                detail: nls.localize(11, null),
-                primaryButton: nls.localize(12, null)
+                message: nls.localize('confirmUndo', "Are you sure you want to clean changes in '{0}'?", label),
+                detail: nls.localize('irreversible', "This action is irreversible!"),
+                primaryButton: nls.localize({ key: 'cleanChangesLabel', comment: ['&& denotes a mnemonic'] }, "&&Clean Changes")
             };
         };
         BaseUndoAction.prototype.dispose = function () {
@@ -401,7 +401,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var UndoAction = (function (_super) {
         __extends(UndoAction, _super);
         function UndoAction(gitService, eventService, messageService, fileService, editorService, contextService) {
-            _super.call(this, UndoAction.ID, nls.localize(13, null), 'git-action undo', gitService, eventService, messageService, fileService, editorService, contextService);
+            _super.call(this, UndoAction.ID, nls.localize('undoChanges', "Clean"), 'git-action undo', gitService, eventService, messageService, fileService, editorService, contextService);
         }
         UndoAction.ID = 'workbench.action.git.undo';
         UndoAction = __decorate([
@@ -418,7 +418,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var GlobalUndoAction = (function (_super) {
         __extends(GlobalUndoAction, _super);
         function GlobalUndoAction(gitService, eventService, messageService, fileService, editorService, contextService) {
-            _super.call(this, GlobalUndoAction.ID, nls.localize(14, null), 'git-action undo', gitService, eventService, messageService, fileService, editorService, contextService);
+            _super.call(this, GlobalUndoAction.ID, nls.localize('undoAllChanges', "Clean All"), 'git-action undo', gitService, eventService, messageService, fileService, editorService, contextService);
         }
         GlobalUndoAction.prototype.isEnabled = function () {
             return _super.prototype.isEnabled.call(this) && this.gitService.getModel().getStatus().getWorkingTreeStatus().all().length > 0;
@@ -500,7 +500,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var UnstageAction = (function (_super) {
         __extends(UnstageAction, _super);
         function UnstageAction(gitService, editorService) {
-            _super.call(this, UnstageAction.ID, nls.localize(15, null), 'git-action unstage', gitService, editorService);
+            _super.call(this, UnstageAction.ID, nls.localize('unstage', "Unstage"), 'git-action unstage', gitService, editorService);
         }
         UnstageAction.ID = 'workbench.action.git.unstage';
         UnstageAction = __decorate([
@@ -513,7 +513,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var GlobalUnstageAction = (function (_super) {
         __extends(GlobalUnstageAction, _super);
         function GlobalUnstageAction(gitService, editorService) {
-            _super.call(this, GlobalUnstageAction.ID, nls.localize(16, null), 'git-action unstage', gitService, editorService);
+            _super.call(this, GlobalUnstageAction.ID, nls.localize('unstageAllChanges', "Unstage All"), 'git-action unstage', gitService, editorService);
         }
         GlobalUnstageAction.prototype.isEnabled = function () {
             return _super.prototype.isEnabled.call(this) && this.gitService.getModel().getStatus().getIndexStatus().all().length > 0;
@@ -571,7 +571,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             }
             var result = this.gitService.checkout(this.branch.name).then(null, function (err) {
                 if (err.gitErrorCode === git_1.GitErrorCodes.DirtyWorkTree) {
-                    return winjs_base_1.Promise.wrapError(new Error(nls.localize(17, null)));
+                    return winjs_base_1.Promise.wrapError(new Error(nls.localize('dirtyTreeCheckout', "Can't checkout. Please commit or stage your work first.")));
                 }
                 return winjs_base_1.Promise.wrapError(err);
             });
@@ -605,7 +605,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var BranchAction = (function (_super) {
         __extends(BranchAction, _super);
         function BranchAction(checkout, gitService) {
-            _super.call(this, BranchAction.ID, nls.localize(18, null), 'git-action checkout', gitService);
+            _super.call(this, BranchAction.ID, nls.localize('branch', "Branch"), 'git-action checkout', gitService);
             this.checkout = checkout;
         }
         BranchAction.prototype.run = function (context) {
@@ -648,7 +648,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var CommitAction = (function (_super) {
         __extends(CommitAction, _super);
         function CommitAction(commitState, gitService) {
-            _super.call(this, commitState, CommitAction.ID, nls.localize(19, null), 'git-action commit', gitService);
+            _super.call(this, commitState, CommitAction.ID, nls.localize('commitStaged', "Commit Staged"), 'git-action commit', gitService);
         }
         CommitAction.ID = 'workbench.action.git.commit';
         CommitAction = __decorate([
@@ -685,7 +685,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 .then(function (message) { return message && _this.gitService.commit(message, false, status.getIndexStatus().all().length === 0); });
         };
         InputCommitAction.ID = 'workbench.action.git.input-commit';
-        InputCommitAction.LABEL = nls.localize(20, null);
+        InputCommitAction.LABEL = nls.localize('commit', "Commit");
         InputCommitAction = __decorate([
             __param(2, git_1.IGitService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -696,7 +696,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var StageAndCommitAction = (function (_super) {
         __extends(StageAndCommitAction, _super);
         function StageAndCommitAction(commitState, gitService) {
-            _super.call(this, commitState, StageAndCommitAction.ID, nls.localize(21, null), 'git-action stage-and-commit', gitService);
+            _super.call(this, commitState, StageAndCommitAction.ID, nls.localize('commitAll', "Commit All"), 'git-action stage-and-commit', gitService);
         }
         StageAndCommitAction.prototype.isEnabled = function () {
             if (!this.gitService) {
@@ -765,8 +765,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.gitService.commit(this.commitState.getCommitMessage(), false, status.getIndexStatus().all().length === 0);
         };
         SmartCommitAction.ID = 'workbench.action.git.commitAll';
-        SmartCommitAction.ALL = nls.localize(22, null);
-        SmartCommitAction.STAGED = nls.localize(23, null);
+        SmartCommitAction.ALL = nls.localize('commitAll2', "Commit All");
+        SmartCommitAction.STAGED = nls.localize('commitStaged2', "Commit Staged");
         SmartCommitAction = __decorate([
             __param(1, git_1.IGitService),
             __param(2, message_1.IMessageService)
@@ -802,16 +802,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             if (rebase === void 0) { rebase = false; }
             return this.gitService.pull(rebase).then(null, function (err) {
                 if (err.gitErrorCode === git_1.GitErrorCodes.DirtyWorkTree) {
-                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize(25, null), { severity: severity_1.default.Warning }));
+                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize('dirtyTreePull', "Can't pull. Please commit or stage your work first."), { severity: severity_1.default.Warning }));
                 }
                 else if (err.gitErrorCode === git_1.GitErrorCodes.AuthenticationFailed) {
-                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize(26, null)));
+                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize('authFailed', "Authentication failed on the git remote.")));
                 }
                 return winjs_base_1.Promise.wrapError(err);
             });
         };
         PullAction.ID = 'workbench.action.git.pull';
-        PullAction.LABEL = nls.localize(24, null);
+        PullAction.LABEL = nls.localize('pull', "Pull");
         PullAction = __decorate([
             __param(2, git_1.IGitService)
         ], PullAction);
@@ -827,7 +827,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.pull(true);
         };
         PullWithRebaseAction.ID = 'workbench.action.git.pull.rebase';
-        PullWithRebaseAction.LABEL = nls.localize(27, null);
+        PullWithRebaseAction.LABEL = nls.localize('pullWithRebase', "Pull (Rebase)");
         PullWithRebaseAction = __decorate([
             __param(0, git_1.IGitService)
         ], PullWithRebaseAction);
@@ -861,13 +861,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         PushAction.prototype.run = function (context) {
             return this.gitService.push().then(null, function (err) {
                 if (err.gitErrorCode === git_1.GitErrorCodes.AuthenticationFailed) {
-                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize(29, null)));
+                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize('authFailed', "Authentication failed on the git remote.")));
                 }
                 return winjs_base_1.Promise.wrapError(err);
             });
         };
         PushAction.ID = 'workbench.action.git.push';
-        PushAction.LABEL = nls.localize(28, null);
+        PushAction.LABEL = nls.localize('push', "Push");
         PushAction = __decorate([
             __param(2, git_1.IGitService)
         ], PushAction);
@@ -909,27 +909,27 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             if (remotes.length === 1) {
                 var remoteName = remotes[0].name;
                 var result = this.messageService.confirm({
-                    message: nls.localize(31, null, branchName, remoteName),
-                    primaryButton: nls.localize(32, null)
+                    message: nls.localize('confirmPublishMessage', "Are you sure you want to publish '{0}' to '{1}'?", branchName, remoteName),
+                    primaryButton: nls.localize({ key: 'confirmPublishMessageButton', comment: ['&& denotes a mnemonic'] }, "&&Publish")
                 });
                 promise = winjs_base_1.TPromise.as(result ? remoteName : null);
             }
             else {
                 promise = this.quickOpenService.pick(remotes.map(function (r) { return r.name; }), {
-                    placeHolder: nls.localize(33, null, branchName)
+                    placeHolder: nls.localize('publishPickMessage', "Pick a remote to publish the branch '{0}' to:", branchName)
                 });
             }
             return promise
                 .then(function (remote) { return remote && _this.gitService.push(remote, branchName, { setUpstream: true }); })
                 .then(null, function (err) {
                 if (err.gitErrorCode === git_1.GitErrorCodes.AuthenticationFailed) {
-                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize(34, null)));
+                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize('authFailed', "Authentication failed on the git remote.")));
                 }
                 return winjs_base_1.Promise.wrapError(err);
             });
         };
         PublishAction.ID = 'workbench.action.git.publish';
-        PublishAction.LABEL = nls.localize(30, null);
+        PublishAction.LABEL = nls.localize('publish', "Publish");
         PublishAction = __decorate([
             __param(2, git_1.IGitService),
             __param(3, quickOpenService_1.IQuickOpenService),
@@ -963,7 +963,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             }
             return this.gitService.sync().then(null, function (err) {
                 if (err.gitErrorCode === git_1.GitErrorCodes.AuthenticationFailed) {
-                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize(35, null)));
+                    return winjs_base_1.Promise.wrapError(errors.create(nls.localize('authFailed', "Authentication failed on the git remote.")));
                 }
                 return winjs_base_1.Promise.wrapError(err);
             });
@@ -977,7 +977,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             _super.call(this, id, label, 'git-action sync', gitService);
         }
         SyncAction.ID = 'workbench.action.git.sync';
-        SyncAction.LABEL = nls.localize(36, null);
+        SyncAction.LABEL = nls.localize('sync', "Sync");
         SyncAction = __decorate([
             __param(2, git_1.IGitService)
         ], SyncAction);
@@ -987,7 +987,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var LiveSyncAction = (function (_super) {
         __extends(LiveSyncAction, _super);
         function LiveSyncAction(gitService) {
-            _super.call(this, LiveSyncAction.ID, nls.localize(37, null), LiveSyncAction.CLASS_NAME, gitService);
+            _super.call(this, LiveSyncAction.ID, nls.localize('sync', "Sync"), LiveSyncAction.CLASS_NAME, gitService);
         }
         LiveSyncAction.prototype.onGitServiceChange = function () {
             _super.prototype.onGitServiceChange.call(this);
@@ -998,7 +998,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             })) {
                 this.label = '';
                 this.class = LiveSyncAction.CLASS_NAME_LOADING;
-                this.tooltip = nls.localize(38, null);
+                this.tooltip = nls.localize('synchronizing', "Synchronizing...");
             }
             else {
                 this.class = LiveSyncAction.CLASS_NAME;
@@ -1010,32 +1010,32 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
                 else if (!HEAD.name) {
                     this.label = '';
-                    this.tooltip = nls.localize(39, null);
+                    this.tooltip = nls.localize('currentlyDetached', "Can't sync in detached mode.");
                 }
                 else if (!HEAD.upstream) {
                     this.label = '';
-                    this.tooltip = nls.localize(40, null, HEAD.name);
+                    this.tooltip = nls.localize('noUpstream', "Current branch '{0} doesn't have an upstream branch configured.", HEAD.name);
                 }
                 else if (!HEAD.ahead && !HEAD.behind) {
                     this.label = '';
-                    this.tooltip = nls.localize(41, null, HEAD.name);
+                    this.tooltip = nls.localize('currentBranch', "Current branch '{0}' is up to date.", HEAD.name);
                 }
                 else {
                     this.label = strings.format('{0}↓ {1}↑', HEAD.behind, HEAD.ahead);
                     if (model.getStatus().getGroups().some(function (g) { return g.all().length > 0; })) {
-                        this.tooltip = nls.localize(42, null);
+                        this.tooltip = nls.localize('dirtyChanges', "Please commit, undo or stash your changes before synchronizing.");
                     }
                     else if (HEAD.behind === 1 && HEAD.ahead === 1) {
-                        this.tooltip = nls.localize(43, null, HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
+                        this.tooltip = nls.localize('currentBranchSingle', "Current branch '{0}' is {1} commit behind and {2} commit ahead of '{3}'.", HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
                     }
                     else if (HEAD.behind === 1) {
-                        this.tooltip = nls.localize(44, null, HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
+                        this.tooltip = nls.localize('currentBranchSinglePlural', "Current branch '{0}' is {1} commit behind and {2} commits ahead of '{3}'.", HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
                     }
                     else if (HEAD.ahead === 1) {
-                        this.tooltip = nls.localize(45, null, HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
+                        this.tooltip = nls.localize('currentBranchPluralSingle', "Current branch '{0}' is {1} commits behind and {2} commit ahead of '{3}'.", HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
                     }
                     else {
-                        this.tooltip = nls.localize(46, null, HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
+                        this.tooltip = nls.localize('currentBranchPlural', "Current branch '{0}' is {1} commits behind and {2} commits ahead of '{3}'.", HEAD.name, HEAD.behind, HEAD.ahead, HEAD.upstream);
                     }
                 }
             }
@@ -1060,7 +1060,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.gitService.reset('HEAD~');
         };
         UndoLastCommitAction.ID = 'workbench.action.git.undoLastCommit';
-        UndoLastCommitAction.LABEL = nls.localize(47, null);
+        UndoLastCommitAction.LABEL = nls.localize('undoLastCommit', "Undo Last Commit");
         UndoLastCommitAction = __decorate([
             __param(2, git_1.IGitService)
         ], UndoLastCommitAction);
@@ -1078,7 +1078,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(null);
         };
         StartGitCheckoutAction.ID = 'workbench.action.git.startGitCheckout';
-        StartGitCheckoutAction.LABEL = nls.localize(48, null);
+        StartGitCheckoutAction.LABEL = nls.localize('checkout', "Checkout");
         StartGitCheckoutAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], StartGitCheckoutAction);
@@ -1096,7 +1096,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(null);
         };
         StartGitBranchAction.ID = 'workbench.action.git.startGitBranch';
-        StartGitBranchAction.LABEL = nls.localize(49, null);
+        StartGitBranchAction.LABEL = nls.localize('branch2', "Branch");
         StartGitBranchAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], StartGitBranchAction);

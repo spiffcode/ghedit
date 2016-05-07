@@ -16,9 +16,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/accessibility/browser/accessibility', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/base/browser/styleMutator', 'vs/base/browser/ui/widget', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/config/commonEditorConfig', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode', 'vs/css!./accessibility'], function (require, exports, nls, keyCodes_1, lifecycle_1, strings, winjs_base_1, dom_1, htmlContentRenderer_1, styleMutator_1, widget_1, keybindingService_1, keybindingsRegistry_1, commonEditorConfig_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, editorBrowserExtensions_1, toggleTabFocusMode_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/base/browser/styleMutator', 'vs/base/browser/ui/widget', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/config/commonEditorConfig', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode', 'vs/css!./accessibility'], function (require, exports, nls, keyCodes_1, lifecycle_1, strings, winjs_base_1, dom_1, htmlContentRenderer_1, styleMutator_1, widget_1, keybindingService_1, keybindingsRegistry_1, commonEditorConfig_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, editorBrowserExtensions_1, toggleTabFocusMode_1) {
     'use strict';
-    var NLS_SHOW_ACCESSIBILITY_HELP_ACTION_LABEL = nls.localize(0, null);
+    var NLS_SHOW_ACCESSIBILITY_HELP_ACTION_LABEL = nls.localize('ShowAccessibilityHelpAction', "Show Accessibility Help");
     var CONTEXT_ACCESSIBILITY_WIDGET_VISIBLE = 'accessibilityHelpWidgetVisible';
     var TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID = 'toggleExperimentalScreenReaderSupport';
     var AccessibilityHelpController = (function (_super) {
@@ -109,23 +109,23 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/accessibility/browser/ac
         };
         AccessibilityHelpWidget.prototype._buildContent = function () {
             var opts = this._editor.getConfiguration();
-            var text = nls.localize(1, null);
-            text += '\n\n' + nls.localize(2, null);
-            var NLS_TAB_FOCUS_MODE_ON = nls.localize(3, null);
-            var NLS_TAB_FOCUS_MODE_ON_NO_KB = nls.localize(4, null);
-            var NLS_TAB_FOCUS_MODE_OFF = nls.localize(5, null);
-            var NLS_TAB_FOCUS_MODE_OFF_NO_KB = nls.localize(6, null);
+            var text = nls.localize('introMsg', "Thank you for trying out VS Code's experimental accessibility options.");
+            text += '\n\n' + nls.localize('status', "Status:");
+            var NLS_TAB_FOCUS_MODE_ON = nls.localize('tabFocusModeOnMsg', "Pressing Tab in this editor will move focus to the next focusable element. Toggle this behaviour by pressing {0}.");
+            var NLS_TAB_FOCUS_MODE_ON_NO_KB = nls.localize('tabFocusModeOnMsgNoKb', "Pressing Tab in this editor will move focus to the next focusable element. The command {0} is currently not triggerable by a keybinding.");
+            var NLS_TAB_FOCUS_MODE_OFF = nls.localize('tabFocusModeOffMsg', "Pressing Tab in this editor will insert the tab character. Toggle this behaviour by pressing {0}.");
+            var NLS_TAB_FOCUS_MODE_OFF_NO_KB = nls.localize('tabFocusModeOffMsgNoKb', "Pressing Tab in this editor will move focus to the next focusable element. The command {0} is currently not triggerable by a keybinding.");
             if (opts.tabFocusMode) {
                 text += '\n\n -' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_ON, NLS_TAB_FOCUS_MODE_ON_NO_KB);
             }
             else {
                 text += '\n\n -' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_OFF, NLS_TAB_FOCUS_MODE_OFF_NO_KB);
             }
-            var NLS_EXPERIMENTAL_SCREENREADER_OPTS_ON = nls.localize(7, null);
-            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON = nls.localize(8, null);
-            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON_NO_KB = nls.localize(9, null);
-            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF = nls.localize(10, null);
-            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF_NO_KB = nls.localize(11, null);
+            var NLS_EXPERIMENTAL_SCREENREADER_OPTS_ON = nls.localize('experimentalScreenReaderOptsOn', "Experimental screen reader support is turned on due to editor.experimentalScreenReader settings key.");
+            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON = nls.localize('experimentalScreenReaderSessionOn', "Experimental screen reader support is turned on for this session. Toggle this behaviour by pressing {0}.");
+            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON_NO_KB = nls.localize('experimentalScreenReaderSessionOnNoKb', "Experimental screen reader support is turned on for this session. The command {0} is currently not triggerable by a keybinding.");
+            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF = nls.localize('experimentalScreenReaderSessionOff', "Experimental screen reader support is turned off. Turn it on for this session by pressing {0} or turn it on for all sessions by configuring the editor.experimentalScreenReader setting to true.");
+            var NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF_NO_KB = nls.localize('experimentalScreenReaderSessionOffNoKb', "Experimental screen reader support is turned off. The command {0} is currently not triggerable by a keybinding. Turn it on for all sessions by configuring the editor.experimentalScreenReader setting to true.");
             if (opts.experimentalScreenReader) {
                 text += '\n\n - ' + NLS_EXPERIMENTAL_SCREENREADER_OPTS_ON;
             }
@@ -137,7 +137,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/accessibility/browser/ac
                     text += '\n\n -' + this._descriptionForCommand(TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF_NO_KB);
                 }
             }
-            text += '\n\n' + nls.localize(12, null);
+            text += '\n\n' + nls.localize('outroMsg', "You can dismiss this tooltip and return to the editor by pressing Escape.");
             this._domNode.appendChild(htmlContentRenderer_1.renderHtml({
                 formattedText: text
             }));

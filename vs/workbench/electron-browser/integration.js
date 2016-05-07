@@ -11,18 +11,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/integration', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/arrays', 'vs/base/common/severity', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/common/actions', 'vs/workbench/services/part/common/partService', 'vs/platform/message/common/message', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/platform/configuration/common/configuration', 'vs/workbench/electron-browser/window', 'electron'], function (require, exports, nls, winjs_base_1, errors, arrays, severity_1, actionbar_1, actions_1, partService_1, message_1, instantiation_1, telemetry_1, contextView_1, keybindingService_1, contextService_1, windowService_1, configuration_1, win, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/arrays', 'vs/base/common/severity', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/common/actions', 'vs/workbench/services/part/common/partService', 'vs/platform/message/common/message', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/platform/configuration/common/configuration', 'vs/workbench/electron-browser/window', 'electron'], function (require, exports, nls, winjs_base_1, errors, arrays, severity_1, actionbar_1, actions_1, partService_1, message_1, instantiation_1, telemetry_1, contextView_1, keybindingService_1, contextService_1, windowService_1, configuration_1, win, electron_1) {
     'use strict';
     var currentWindow = electron_1.remote.getCurrentWindow();
     var TextInputActions = [
-        new actions_1.Action('undo', nls.localize(0, null), null, true, function () { return document.execCommand('undo') && winjs_base_1.TPromise.as(true); }),
-        new actions_1.Action('redo', nls.localize(1, null), null, true, function () { return document.execCommand('redo') && winjs_base_1.TPromise.as(true); }),
+        new actions_1.Action('undo', nls.localize('undo', "Undo"), null, true, function () { return document.execCommand('undo') && winjs_base_1.TPromise.as(true); }),
+        new actions_1.Action('redo', nls.localize('redo', "Redo"), null, true, function () { return document.execCommand('redo') && winjs_base_1.TPromise.as(true); }),
         new actionbar_1.Separator(),
-        new actions_1.Action('editor.action.clipboardCutAction', nls.localize(2, null), null, true, function () { return document.execCommand('cut') && winjs_base_1.TPromise.as(true); }),
-        new actions_1.Action('editor.action.clipboardCopyAction', nls.localize(3, null), null, true, function () { return document.execCommand('copy') && winjs_base_1.TPromise.as(true); }),
-        new actions_1.Action('editor.action.clipboardPasteAction', nls.localize(4, null), null, true, function () { return document.execCommand('paste') && winjs_base_1.TPromise.as(true); }),
+        new actions_1.Action('editor.action.clipboardCutAction', nls.localize('cut', "Cut"), null, true, function () { return document.execCommand('cut') && winjs_base_1.TPromise.as(true); }),
+        new actions_1.Action('editor.action.clipboardCopyAction', nls.localize('copy', "Copy"), null, true, function () { return document.execCommand('copy') && winjs_base_1.TPromise.as(true); }),
+        new actions_1.Action('editor.action.clipboardPasteAction', nls.localize('paste', "Paste"), null, true, function () { return document.execCommand('paste') && winjs_base_1.TPromise.as(true); }),
         new actionbar_1.Separator(),
-        new actions_1.Action('editor.action.selectAll', nls.localize(5, null), null, true, function () { return document.execCommand('selectAll') && winjs_base_1.TPromise.as(true); })
+        new actions_1.Action('editor.action.selectAll', nls.localize('selectAll', "Select All"), null, true, function () { return document.execCommand('selectAll') && winjs_base_1.TPromise.as(true); })
     ];
     var ElectronIntegration = (function () {
         function ElectronIntegration(instantiationService, windowService, partService, contextService, telemetryService, configurationService, keybindingService, messageService, contextMenuService) {

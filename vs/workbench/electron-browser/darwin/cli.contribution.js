@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.contribution', 'path', 'fs', 'os', 'child_process', 'vs/base/node/pfs', 'vs/base/common/async', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/message/common/message', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation'], function (require, exports, nls, path, fs, os, cp, pfs, async_1, winjs_base_1, uri_1, actions_1, actionRegistry_1, contributions_1, platform_1, actions_2, contextService_1, message_1, editor_1, instantiation_1) {
+define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs/base/node/pfs', 'vs/base/common/async', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/message/common/message', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation'], function (require, exports, nls, path, fs, os, cp, pfs, async_1, winjs_base_1, uri_1, actions_1, actionRegistry_1, contributions_1, platform_1, actions_2, contextService_1, message_1, editor_1, instantiation_1) {
     "use strict";
     function ignore(code, value) {
         if (value === void 0) { value = null; }
@@ -58,15 +58,15 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
                     var _a = uses[0], file_1 = _a.file, lineNumber = _a.lineNumber;
                     var resource = uri_1.default.create('file', null, file_1);
                     var env = _this.contextService.getConfiguration().env;
-                    var message = nls.localize(1, null, env.darwinBundleIdentifier, file_1, lineNumber);
+                    var message = nls.localize('exists', "Please remove the alias referencing '{0}' in '{1}' (line {2}) and retry this action.", env.darwinBundleIdentifier, file_1, lineNumber);
                     var input_1 = { resource: resource, mime: 'text/x-shellscript' };
                     var actions = [
-                        new actions_1.Action('inlineEdit', nls.localize(2, null, file_1), '', true, function () {
+                        new actions_1.Action('inlineEdit', nls.localize('editFile', "Edit '{0}'", file_1), '', true, function () {
                             return _this.editorService.openEditor(input_1).then(function () {
-                                var message = nls.localize(3, null, _this.applicationName, file_1);
+                                var message = nls.localize('again', "Please remove the '{0}' alias from '{1}' before continuing.", _this.applicationName, file_1);
                                 var actions = [
-                                    new actions_1.Action('cancel', nls.localize(4, null)),
-                                    new actions_1.Action('continue', nls.localize(5, null), '', true, function () { return _this.run(); })
+                                    new actions_1.Action('cancel', nls.localize('cancel', "Cancel")),
+                                    new actions_1.Action('continue', nls.localize('continue', "Continue"), '', true, function () { return _this.run(); })
                                 ];
                                 _this.messageService.show(message_1.Severity.Info, { message: message, actions: actions });
                             });
@@ -95,7 +95,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
                         });
                     }
                 })
-                    .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize(6, null, _this.applicationName)); });
+                    .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successIn', "Shell command '{0}' successfully installed in PATH.", _this.applicationName)); });
             });
         };
         InstallAction.prototype.isInstalled = function () {
@@ -109,13 +109,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
         InstallAction.prototype.createBinFolder = function () {
             var _this = this;
             return new winjs_base_1.TPromise(function (c, e) {
-                var message = nls.localize(7, null);
+                var message = nls.localize('warnEscalation', "Code will now prompt with 'osascript' for Administrator privileges to install the shell command.");
                 var actions = [
-                    new actions_1.Action('cancel2', nls.localize(8, null), '', true, function () { e(new Error(nls.localize(9, null))); return null; }),
-                    new actions_1.Action('ok', nls.localize(10, null), '', true, function () {
+                    new actions_1.Action('cancel2', nls.localize('cancel2', "Cancel"), '', true, function () { e(new Error(nls.localize('aborted', "Aborted"))); return null; }),
+                    new actions_1.Action('ok', nls.localize('ok', "OK"), '', true, function () {
                         var command = 'osascript -e "do shell script \\"mkdir -p /usr/local/bin && chown \\" & (do shell script (\\"whoami\\")) & \\" /usr/local/bin\\" with administrator privileges"';
                         async_1.nfcall(cp.exec, command, {})
-                            .then(null, function (_) { return winjs_base_1.TPromise.wrapError(new Error(nls.localize(11, null))); })
+                            .then(null, function (_) { return winjs_base_1.TPromise.wrapError(new Error(nls.localize('cantCreateBinFolder', "Unable to create '/usr/local/bin'."))); })
                             .done(c, e);
                         return null;
                     })
@@ -147,7 +147,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
             });
         };
         InstallAction.ID = 'workbench.action.installCommandLine';
-        InstallAction.LABEL = nls.localize(0, null);
+        InstallAction.LABEL = nls.localize('install', "Install 'code' command in PATH");
         InstallAction = __decorate([
             __param(2, contextService_1.IWorkspaceContextService),
             __param(3, message_1.IMessageService),
@@ -180,10 +180,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
             var _this = this;
             return pfs.unlink(this.target)
                 .then(null, ignore('ENOENT'))
-                .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize(13, null, _this.applicationName)); });
+                .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successFrom', "Shell command '{0}' successfully uninstalled from PATH.", _this.applicationName)); });
         };
         UninstallAction.ID = 'workbench.action.uninstallCommandLine';
-        UninstallAction.LABEL = nls.localize(12, null);
+        UninstallAction.LABEL = nls.localize('uninstall', "Uninstall 'code' command from PATH");
         UninstallAction = __decorate([
             __param(2, contextService_1.IWorkspaceContextService),
             __param(3, message_1.IMessageService)
@@ -195,10 +195,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
             var installAction = instantiationService.createInstance(InstallAction, InstallAction.ID, InstallAction.LABEL);
             installAction.checkLegacy().done(function (files) {
                 if (files.length > 0) {
-                    var message = nls.localize(14, null, installAction.applicationName);
-                    var now = new actions_1.Action('changeNow', nls.localize(15, null), '', true, function () { return installAction.run(); });
-                    var later = new actions_1.Action('later', nls.localize(16, null), '', true, function () {
-                        messageService.show(message_1.Severity.Info, nls.localize(17, null, installAction.label));
+                    var message = nls.localize('update', "Code needs to change the '{0}' shell command. Would you like to do this now?", installAction.applicationName);
+                    var now = new actions_1.Action('changeNow', nls.localize('changeNow', "Change Now"), '', true, function () { return installAction.run(); });
+                    var later = new actions_1.Action('later', nls.localize('later', "Later"), '', true, function () {
+                        messageService.show(message_1.Severity.Info, nls.localize('laterInfo', "Remember you can always run the '{0}' action from the Command Palette.", installAction.label));
                         return null;
                     });
                     var actions = [later, now];
@@ -216,7 +216,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/darwin/cli.c
         return DarwinCLIHelper;
     }());
     if (isAvailable && process.platform === 'darwin') {
-        var category = nls.localize(18, null);
+        var category = nls.localize('shellCommand', "Shell Command");
         var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
         workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(InstallAction, InstallAction.ID, InstallAction.LABEL), category);
         workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(UninstallAction, UninstallAction.ID, UninstallAction.LABEL), category);

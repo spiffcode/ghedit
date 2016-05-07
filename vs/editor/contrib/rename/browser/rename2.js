@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/rename2', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/message/common/message', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes/supports', 'vs/editor/common/modes', 'vs/editor/common/services/bulkEdit', '../common/rename', './renameInputField', 'vs/css!./rename'], function (require, exports, nls, errors_1, keyCodes_1, severity_1, winjs_base_1, editor_1, event_1, keybindingService_1, message_1, editorAction_1, editorActionEnablement_1, editorCommonExtensions_1, supports_1, modes_1, bulkEdit_1, rename_1, renameInputField_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/message/common/message', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes/supports', 'vs/editor/common/modes', 'vs/editor/common/services/bulkEdit', '../common/rename', './renameInputField', 'vs/css!./rename'], function (require, exports, nls, errors_1, keyCodes_1, severity_1, winjs_base_1, editor_1, event_1, keybindingService_1, message_1, editorAction_1, editorActionEnablement_1, editorCommonExtensions_1, supports_1, modes_1, bulkEdit_1, rename_1, renameInputField_1) {
     'use strict';
     // ---  register actions and commands
     var CONTEXT_RENAME_INPUT_VISIBLE = 'renameInputVisible';
@@ -126,7 +126,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/browser/rename2',
     }(editorAction_1.EditorAction));
     exports.RenameAction = RenameAction;
     var weight = editorCommonExtensions_1.CommonEditorRegistry.commandWeight(99);
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(RenameAction, RenameAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(RenameAction, RenameAction.ID, nls.localize('rename.label', "Rename Symbol"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyCode.F2
     }));

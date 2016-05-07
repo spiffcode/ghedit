@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/referenceSearchWidget', 'vs/base/common/collections', 'vs/base/common/errors', 'vs/base/common/labels', 'vs/base/common/lifecycle', 'vs/base/common/network', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/browser/ui/filelabel/fileLabel', 'vs/base/browser/ui/leftRightWidget/leftRightWidget', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/treeImpl', 'vs/platform/workspace/common/workspace', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', 'vs/editor/browser/widget/embeddedCodeEditorWidget', 'vs/editor/contrib/zoneWidget/browser/peekViewWidget', './referenceSearchModel', 'vs/css!./referenceSearchWidget'], function (require, exports, nls, collections, errors_1, labels_1, lifecycle_1, network_1, strings, winjs_base_1, builder_1, dom, countBadge_1, fileLabel_1, leftRightWidget_1, treeDefaults_1, treeImpl_1, workspace_1, defaultConfig_1, range_1, editorCommon, model_1, embeddedCodeEditorWidget_1, peekViewWidget_1, referenceSearchModel_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/collections', 'vs/base/common/errors', 'vs/base/common/labels', 'vs/base/common/lifecycle', 'vs/base/common/network', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/browser/ui/filelabel/fileLabel', 'vs/base/browser/ui/leftRightWidget/leftRightWidget', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/treeImpl', 'vs/platform/workspace/common/workspace', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', 'vs/editor/browser/widget/embeddedCodeEditorWidget', 'vs/editor/contrib/zoneWidget/browser/peekViewWidget', './referenceSearchModel', 'vs/css!./referenceSearchWidget'], function (require, exports, nls, collections, errors_1, labels_1, lifecycle_1, network_1, strings, winjs_base_1, builder_1, dom, countBadge_1, fileLabel_1, leftRightWidget_1, treeDefaults_1, treeImpl_1, workspace_1, defaultConfig_1, range_1, editorCommon, model_1, embeddedCodeEditorWidget_1, peekViewWidget_1, referenceSearchModel_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -287,7 +287,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                     return null;
                 }, function (right) {
                     var len = fileReferences.children.length;
-                    return new countBadge_1.CountBadge(right, len, len > 1 ? nls.localize(0, null, len) : nls.localize(1, null, len));
+                    return new countBadge_1.CountBadge(right, len, len > 1 ? nls.localize('referencesCount', "{0} references", len) : nls.localize('referenceCount', "{0} reference", len));
                 });
                 /* tslint:enable:no-unused-expression */
                 fileReferencesContainer.appendTo(container);
@@ -346,7 +346,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                 };
                 _this.preview = _this.instantiationService.createInstance(embeddedCodeEditorWidget_1.EmbeddedCodeEditorWidget, div.getHTMLElement(), options, _this.editor);
                 _this.previewContainer = div.hide();
-                _this.previewNotAvailableMessage = new model_1.Model(nls.localize(2, null), model_1.Model.DEFAULT_CREATION_OPTIONS, null);
+                _this.previewNotAvailableMessage = new model_1.Model(nls.localize('missingPreviewMessage', "no preview available"), model_1.Model.DEFAULT_CREATION_OPTIONS, null);
             });
             // tree
             container.div({ 'class': 'ref-tree inline' }, function (div) {
@@ -359,7 +359,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                 var options = {
                     allowHorizontalScroll: false,
                     twistiePixels: 20,
-                    ariaLabel: nls.localize(3, null)
+                    ariaLabel: nls.localize('treeAriaLabel', "References")
                 };
                 _this.tree = new treeImpl_1.Tree(div.getHTMLElement(), config, options);
                 _this.treeContainer = div.hide();
@@ -479,7 +479,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/referenceSearch/browser/
                     _this.setTitle(reference.name, labels_1.getPathLabel(reference.directory, _this.contextService));
                 }
                 else {
-                    _this.setTitle(nls.localize(4, null));
+                    _this.setTitle(nls.localize('peekView.alternateTitle', "References"));
                 }
             }, errors_1.onUnexpectedError);
             // show in tree

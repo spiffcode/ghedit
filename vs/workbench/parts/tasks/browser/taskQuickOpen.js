@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/browser/taskQuickOpen', 'vs/base/common/filters', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/tasks/common/taskService'], function (require, exports, nls, Filters, Quickopen, QuickOpen, Model, quickOpenService_1, taskService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/filters', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/tasks/common/taskService'], function (require, exports, nls, Filters, Quickopen, QuickOpen, Model, quickOpenService_1, taskService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -30,7 +30,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/browser/taskQuick
             return this.task.name;
         };
         TaskEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, tasks", this.getLabel());
         };
         TaskEntry.prototype.run = function (mode, context) {
             if (mode === QuickOpen.Mode.PREVIEW) {
@@ -49,7 +49,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/browser/taskQuick
             this.taskService = taskService;
         }
         QuickOpenHandler.prototype.getAriaLabel = function () {
-            return nls.localize(1, null);
+            return nls.localize('tasksAriaLabel', "Type the name of a task to run");
         };
         QuickOpenHandler.prototype.getResults = function (input) {
             var _this = this;
@@ -84,9 +84,9 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/browser/taskQuick
         };
         QuickOpenHandler.prototype.getEmptyLabel = function (searchString) {
             if (searchString.length > 0) {
-                return nls.localize(2, null);
+                return nls.localize('noTasksMatching', "No tasks matching");
             }
-            return nls.localize(3, null);
+            return nls.localize('noTasksFound', "No tasks found");
         };
         QuickOpenHandler = __decorate([
             __param(0, quickOpenService_1.IQuickOpenService),

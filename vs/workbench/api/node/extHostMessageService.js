@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/api/node/extHostMessageService', 'vs/platform/thread/common/thread', 'vs/platform/message/common/message', 'vs/base/common/actions', 'vs/base/common/winjs.base'], function (require, exports, nls, thread_1, message_1, actions_1, winjs_base_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/thread/common/thread', 'vs/platform/message/common/message', 'vs/base/common/actions', 'vs/base/common/winjs.base'], function (require, exports, nls, thread_1, message_1, actions_1, winjs_base_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -49,7 +49,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/api/node/extHostMessageServic
             var _this = this;
             var hide;
             var actions = [];
-            actions.push(new actions_1.Action('__close', nls.localize(0, null), undefined, true, function () {
+            actions.push(new actions_1.Action('__close', nls.localize('close', "Close"), undefined, true, function () {
                 hide();
                 return winjs_base_1.TPromise.as(undefined);
             }));

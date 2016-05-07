@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/fileActions.contribution', 'vs/platform/platform', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/saveErrorHandler', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actionbar_1, actionBarRegistry_1, baseEditor_1, fileActions_1, saveErrorHandler_1, actions_1, actionRegistry_1, instantiation_1, workspace_1, keybindingService_1, explorerViewModel_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/saveErrorHandler', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actionbar_1, actionBarRegistry_1, baseEditor_1, fileActions_1, saveErrorHandler_1, actions_1, actionRegistry_1, instantiation_1, workspace_1, keybindingService_1, explorerViewModel_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -138,7 +138,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/fileActio
     // Contribute to Conflict Editor Inputs
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.EDITOR, ConflictResolutionActionContributor);
     // Contribute Global Actions
-    var category = nls.localize(0, null);
+    var category = nls.localize('filesCategory', "Files");
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(fileActions_1.SaveFileAction, fileActions_1.SaveFileAction.ID, fileActions_1.SaveFileAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_S }), category);
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(fileActions_1.SaveAllAction, fileActions_1.SaveAllAction.ID, fileActions_1.SaveAllAction.LABEL), category);

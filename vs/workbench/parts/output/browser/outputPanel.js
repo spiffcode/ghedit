@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/output/browser/outputPanel', 'vs/base/common/lifecycle', 'vs/editor/common/services/modeService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/workbench/browser/parts/editor/stringEditor', 'vs/workbench/parts/output/common/output', 'vs/workbench/parts/output/common/outputEditorInput', 'vs/workbench/parts/output/browser/outputActions', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/themes/common/themeService'], function (require, exports, nls, lifecycle, modeService_1, telemetry_1, storage_1, configuration_1, event_1, instantiation_1, message_1, stringEditor_1, output_1, outputEditorInput_1, outputActions_1, contextService_1, editorService_1, themeService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/editor/common/services/modeService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/workbench/browser/parts/editor/stringEditor', 'vs/workbench/parts/output/common/output', 'vs/workbench/parts/output/common/outputEditorInput', 'vs/workbench/parts/output/browser/outputActions', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/themes/common/themeService'], function (require, exports, nls, lifecycle, modeService_1, telemetry_1, storage_1, configuration_1, event_1, instantiation_1, message_1, stringEditor_1, output_1, outputEditorInput_1, outputActions_1, contextService_1, editorService_1, themeService_1) {
     "use strict";
     var OutputPanel = (function (_super) {
         __extends(OutputPanel, _super);
@@ -56,7 +56,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/output/browser/outputPa
             options.rulers = [];
             options.folding = false;
             var channel = this.outputService.getActiveChannel();
-            options.ariaLabel = channel ? nls.localize(0, null, channel.label) : nls.localize(1, null);
+            options.ariaLabel = channel ? nls.localize('outputPanelWithInputAriaLabel', "{0}, Output panel", channel.label) : nls.localize('outputPanelAriaLabel', "Output panel");
             return options;
         };
         OutputPanel.prototype.setInput = function (input, options) {

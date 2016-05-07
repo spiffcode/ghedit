@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWidgets', 'vs/base/common/strings', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/workbench/parts/git/common/git', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/instantiation/common/instantiation', './gitActions', 'vs/base/common/severity', 'vs/platform/message/common/message'], function (require, exports, nls, strings, async_1, dom_1, lifecycle_1, git_1, quickOpenService_1, instantiation_1, gitActions_1, severity_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/strings', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/workbench/parts/git/common/git', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/instantiation/common/instantiation', './gitActions', 'vs/base/common/severity', 'vs/platform/message/common/message'], function (require, exports, nls, strings, async_1, dom_1, lifecycle_1, git_1, quickOpenService_1, instantiation_1, gitActions_1, severity_1, message_1) {
     "use strict";
     var DisablementDelay = 500;
     var GitStatusbarItem = (function () {
@@ -41,10 +41,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWidgets'
             this.element = dom_1.append(container, dom_1.emmet('.git-statusbar-group'));
             this.branchElement = dom_1.append(this.element, dom_1.emmet('a'));
             this.publishElement = dom_1.append(this.element, dom_1.emmet('a.octicon.octicon-cloud-upload'));
-            this.publishElement.title = nls.localize(0, null);
+            this.publishElement.title = nls.localize('publishBranch', "Publish Branch");
             this.publishElement.onclick = function () { return _this.onPublishClick(); };
             this.syncElement = dom_1.append(this.element, dom_1.emmet('a.git-statusbar-sync-item'));
-            this.syncElement.title = nls.localize(1, null);
+            this.syncElement.title = nls.localize('syncBranch', "Synchronize Changes");
             this.syncElement.onclick = function () { return _this.onSyncClick(); };
             dom_1.append(this.syncElement, dom_1.emmet('span.octicon.octicon-sync'));
             this.syncLabelElement = dom_1.append(this.syncElement, dom_1.emmet('span.ahead-behind'));
@@ -75,7 +75,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWidgets'
             if (state.serviceState !== git_1.ServiceState.OK) {
                 isGitDisabled = true;
                 className += ' disabled';
-                title = nls.localize(2, null);
+                title = nls.localize('gitNotEnabled', "Git is not enabled in this workspace.");
                 textContent = '\u00a0';
             }
             else {

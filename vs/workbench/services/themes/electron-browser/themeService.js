@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/services/themes/electron-browser/themeService', 'vs/base/common/paths', 'vs/base/common/json', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'vs/workbench/services/window/electron-browser/windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event', 'vs/base/node/plist', 'vs/base/node/pfs'], function (require, exports, winjs_base_1, nls, Paths, Json, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1, plist, pfs) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/json', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'vs/workbench/services/window/electron-browser/windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event', 'vs/base/node/plist', 'vs/base/node/pfs'], function (require, exports, winjs_base_1, nls, Paths, Json, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1, plist, pfs) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         return theme;
     }
     var themesExtPoint = extensionsRegistry_1.ExtensionsRegistry.registerExtensionPoint('themes', {
-        description: nls.localize(0, null),
+        description: nls.localize('vscode.extension.contributes.themes', 'Contributes textmate color themes.'),
         type: 'array',
         defaultSnippets: [{ body: [{ label: '{{label}}', uiTheme: 'vs-dark', path: './themes/{{id}}.tmTheme.' }] }],
         items: {
@@ -39,15 +39,15 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             defaultSnippets: [{ body: { label: '{{label}}', uiTheme: 'vs-dark', path: './themes/{{id}}.tmTheme.' } }],
             properties: {
                 label: {
-                    description: nls.localize(1, null),
+                    description: nls.localize('vscode.extension.contributes.themes.label', 'Label of the color theme as shown in the UI.'),
                     type: 'string'
                 },
                 uiTheme: {
-                    description: nls.localize(2, null),
+                    description: nls.localize('vscode.extension.contributes.themes.uiTheme', 'Base theme defining the colors around the editor: \'vs\' is the light color theme, \'vs-dark\' is the dark color theme.'),
                     enum: ['vs', 'vs-dark', 'hc-black']
                 },
                 path: {
-                    description: nls.localize(3, null),
+                    description: nls.localize('vscode.extension.contributes.themes.path', 'Path of the tmTheme file. The path is relative to the extension folder and is typically \'./themes/themeFile.tmTheme\'.'),
                     type: 'string'
                 }
             }
@@ -153,17 +153,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         ThemeService.prototype.onThemes = function (extensionFolderPath, extensionId, themes, collector) {
             var _this = this;
             if (!Array.isArray(themes)) {
-                collector.error(nls.localize(4, null, themesExtPoint.name));
+                collector.error(nls.localize('reqarray', "Extension point `{0}` must be an array.", themesExtPoint.name));
                 return;
             }
             themes.forEach(function (theme) {
                 if (!theme.path || (typeof theme.path !== 'string')) {
-                    collector.error(nls.localize(5, null, themesExtPoint.name, String(theme.path)));
+                    collector.error(nls.localize('reqpath', "Expected string in `contributes.{0}.path`. Provided value: {1}", themesExtPoint.name, String(theme.path)));
                     return;
                 }
                 var normalizedAbsolutePath = Paths.normalize(Paths.join(extensionFolderPath, theme.path));
                 if (normalizedAbsolutePath.indexOf(extensionFolderPath) !== 0) {
-                    collector.warn(nls.localize(6, null, themesExtPoint.name, normalizedAbsolutePath, extensionFolderPath));
+                    collector.warn(nls.localize('invalid.path.1', "Expected `contributes.{0}.path` ({1}) to be included inside extension's folder ({2}). This might make the extension non-portable.", themesExtPoint.name, normalizedAbsolutePath, extensionFolderPath));
                 }
                 var themeSelector = toCssSelector(extensionId + '-' + Paths.normalize(theme.path));
                 _this.knownThemes.push({
@@ -197,7 +197,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             onApply(theme.id);
             return true;
         }, function (error) {
-            return winjs_base_1.TPromise.wrapError(nls.localize(7, null, theme.path));
+            return winjs_base_1.TPromise.wrapError(nls.localize('error.cannotloadtheme', "Unable to load {0}", theme.path));
         });
     }
     function _loadThemeDocument(themePath) {
@@ -206,7 +206,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 var errors = [];
                 var contentValue_1 = Json.parse(content.toString(), errors);
                 if (errors.length > 0) {
-                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize(8, null, errors.join(', '))));
+                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
                 }
                 if (contentValue_1.include) {
                     return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue_1.include)).then(function (includedValue) {
@@ -219,7 +219,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             else {
                 var parseResult = plist.parse(content.toString());
                 if (parseResult.errors && parseResult.errors.length) {
-                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize(9, null, parseResult.errors.join(', '))));
+                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
                 }
                 return winjs_base_1.TPromise.as(parseResult.value);
             }

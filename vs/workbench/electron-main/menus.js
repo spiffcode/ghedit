@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/menus', 'vs/base/common/platform', 'vs/base/common/arrays', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/update-manager', 'vs/base/common/keyCodes'], function (require, exports, electron_1, nls, platform, arrays, windows, env, storage, um, keyCodes_1) {
+define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/arrays', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/update-manager', 'vs/base/common/keyCodes'], function (require, exports, electron_1, nls, platform, arrays, windows, env, storage, um, keyCodes_1) {
     'use strict';
     var UpdateManager = um.Instance;
     var VSCodeMenu = (function () {
@@ -104,30 +104,30 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             }
             // File
             var fileMenu = new electron_1.Menu();
-            var fileMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(0, null)), submenu: fileMenu });
+            var fileMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File")), submenu: fileMenu });
             this.setFileMenu(fileMenu);
             // Edit
             var editMenu = new electron_1.Menu();
-            var editMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(1, null)), submenu: editMenu });
+            var editMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")), submenu: editMenu });
             this.setEditMenu(editMenu);
             // View
             var viewMenu = new electron_1.Menu();
-            var viewMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(2, null)), submenu: viewMenu });
+            var viewMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")), submenu: viewMenu });
             this.setViewMenu(viewMenu);
             // Goto
             var gotoMenu = new electron_1.Menu();
-            var gotoMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(3, null)), submenu: gotoMenu });
+            var gotoMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Goto")), submenu: gotoMenu });
             this.setGotoMenu(gotoMenu);
             // Mac: Window
             var macWindowMenuItem;
             if (platform.isMacintosh) {
                 var windowMenu = new electron_1.Menu();
-                macWindowMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(4, null)), submenu: windowMenu, role: 'window' });
+                macWindowMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize('mWindow', "Window")), submenu: windowMenu, role: 'window' });
                 this.setMacWindowMenu(windowMenu);
             }
             // Help
             var helpMenu = new electron_1.Menu();
-            var helpMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(5, null)), submenu: helpMenu, role: 'help' });
+            var helpMenuItem = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")), submenu: helpMenu, role: 'help' });
             this.setHelpMenu(helpMenu);
             // Menu Structure
             if (macApplicationMenuItem) {
@@ -146,7 +146,7 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             if (platform.isMacintosh && !this.appMenuInstalled) {
                 this.appMenuInstalled = true;
                 var dockMenu = new electron_1.Menu();
-                dockMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(6, null)), click: function () { return windows.manager.openNewWindow(); } }));
+                dockMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), click: function () { return windows.manager.openNewWindow(); } }));
                 electron_1.app.dock.setMenu(dockMenu);
             }
         };
@@ -194,13 +194,13 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
         };
         VSCodeMenu.prototype.setMacApplicationMenu = function (macApplicationMenu) {
             var _this = this;
-            var about = new electron_1.MenuItem({ label: nls.localize(7, null, env.product.nameLong), role: 'about' });
+            var about = new electron_1.MenuItem({ label: nls.localize('mAbout', "About {0}", env.product.nameLong), role: 'about' });
             var checkForUpdates = this.getUpdateMenuItems();
             var preferences = this.getPreferencesMenu();
-            var hide = new electron_1.MenuItem({ label: nls.localize(8, null, env.product.nameLong), role: 'hide', accelerator: 'Command+H' });
-            var hideOthers = new electron_1.MenuItem({ label: nls.localize(9, null), role: 'hideothers', accelerator: 'Command+Alt+H' });
-            var showAll = new electron_1.MenuItem({ label: nls.localize(10, null), role: 'unhide' });
-            var quit = new electron_1.MenuItem({ label: nls.localize(11, null, env.product.nameLong), click: function () { return _this.quit(); }, accelerator: 'Command+Q' });
+            var hide = new electron_1.MenuItem({ label: nls.localize('mHide', "Hide {0}", env.product.nameLong), role: 'hide', accelerator: 'Command+H' });
+            var hideOthers = new electron_1.MenuItem({ label: nls.localize('mHideOthers', "Hide Others"), role: 'hideothers', accelerator: 'Command+Alt+H' });
+            var showAll = new electron_1.MenuItem({ label: nls.localize('mShowAll', "Show All"), role: 'unhide' });
+            var quit = new electron_1.MenuItem({ label: nls.localize('miQuit', "Quit {0}", env.product.nameLong), click: function () { return _this.quit(); }, accelerator: 'Command+Q' });
             var actions = [about];
             actions.push.apply(actions, checkForUpdates);
             actions.push.apply(actions, [
@@ -220,27 +220,27 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             var hasNoWindows = (windows.manager.getWindowCount() === 0);
             var newFile;
             if (hasNoWindows) {
-                newFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(12, null)), accelerator: this.getAccelerator('workbench.action.files.newUntitledFile'), click: function () { return windows.manager.openNewWindow(); } });
+                newFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File")), accelerator: this.getAccelerator('workbench.action.files.newUntitledFile'), click: function () { return windows.manager.openNewWindow(); } });
             }
             else {
-                newFile = this.createMenuItem(nls.localize(13, null), 'workbench.action.files.newUntitledFile');
+                newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File"), 'workbench.action.files.newUntitledFile');
             }
-            var open = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(14, null)), accelerator: this.getAccelerator('workbench.action.files.openFileFolder'), click: function () { return windows.manager.openFileFolderPicker(); } });
-            var openFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(15, null)), accelerator: this.getAccelerator('workbench.action.files.openFile'), click: function () { return windows.manager.openFilePicker(); } });
-            var openFolder = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(16, null)), accelerator: this.getAccelerator('workbench.action.files.openFolder'), click: function () { return windows.manager.openFolderPicker(); } });
+            var open = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpen', comment: ['&& denotes a mnemonic'] }, "&&Open...")), accelerator: this.getAccelerator('workbench.action.files.openFileFolder'), click: function () { return windows.manager.openFileFolderPicker(); } });
+            var openFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFile', comment: ['&& denotes a mnemonic'] }, "&&Open File...")), accelerator: this.getAccelerator('workbench.action.files.openFile'), click: function () { return windows.manager.openFilePicker(); } });
+            var openFolder = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFolder', comment: ['&& denotes a mnemonic'] }, "Open &&Folder...")), accelerator: this.getAccelerator('workbench.action.files.openFolder'), click: function () { return windows.manager.openFolderPicker(); } });
             var openRecentMenu = new electron_1.Menu();
             this.setOpenRecentMenu(openRecentMenu);
-            var openRecent = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(17, null)), submenu: openRecentMenu, enabled: openRecentMenu.items.length > 0 });
-            var saveFile = this.createMenuItem(nls.localize(18, null), 'workbench.action.files.save', windows.manager.getWindowCount() > 0);
-            var saveFileAs = this.createMenuItem(nls.localize(19, null), 'workbench.action.files.saveAs', windows.manager.getWindowCount() > 0);
-            var saveAllFiles = this.createMenuItem(nls.localize(20, null), 'workbench.action.files.saveAll', windows.manager.getWindowCount() > 0);
+            var openRecent = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenRecent', comment: ['&& denotes a mnemonic'] }, "Open &&Recent")), submenu: openRecentMenu, enabled: openRecentMenu.items.length > 0 });
+            var saveFile = this.createMenuItem(nls.localize({ key: 'miSave', comment: ['&& denotes a mnemonic'] }, "&&Save"), 'workbench.action.files.save', windows.manager.getWindowCount() > 0);
+            var saveFileAs = this.createMenuItem(nls.localize({ key: 'miSaveAs', comment: ['&& denotes a mnemonic'] }, "Save &&As..."), 'workbench.action.files.saveAs', windows.manager.getWindowCount() > 0);
+            var saveAllFiles = this.createMenuItem(nls.localize({ key: 'miSaveAll', comment: ['&& denotes a mnemonic'] }, "Save A&&ll"), 'workbench.action.files.saveAll', windows.manager.getWindowCount() > 0);
             var preferences = this.getPreferencesMenu();
-            var newWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(21, null)), accelerator: this.getAccelerator('workbench.action.newWindow'), click: function () { return windows.manager.openNewWindow(); } });
-            var revertFile = this.createMenuItem(nls.localize(22, null), 'workbench.action.files.revert', windows.manager.getWindowCount() > 0);
-            var closeWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(23, null)), accelerator: this.getAccelerator('workbench.action.closeWindow'), click: function () { return windows.manager.getLastActiveWindow().win.close(); }, enabled: windows.manager.getWindowCount() > 0 });
-            var closeFolder = this.createMenuItem(nls.localize(24, null), 'workbench.action.closeFolder');
-            var closeEditor = this.createMenuItem(nls.localize(25, null), 'workbench.action.closeActiveEditor');
-            var exit = this.createMenuItem(nls.localize(26, null), function () { return _this.quit(); });
+            var newWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), accelerator: this.getAccelerator('workbench.action.newWindow'), click: function () { return windows.manager.openNewWindow(); } });
+            var revertFile = this.createMenuItem(nls.localize({ key: 'miRevert', comment: ['&& denotes a mnemonic'] }, "Revert F&&ile"), 'workbench.action.files.revert', windows.manager.getWindowCount() > 0);
+            var closeWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Close &&Window")), accelerator: this.getAccelerator('workbench.action.closeWindow'), click: function () { return windows.manager.getLastActiveWindow().win.close(); }, enabled: windows.manager.getWindowCount() > 0 });
+            var closeFolder = this.createMenuItem(nls.localize({ key: 'miCloseFolder', comment: ['&& denotes a mnemonic'] }, "Close &&Folder"), 'workbench.action.closeFolder');
+            var closeEditor = this.createMenuItem(nls.localize({ key: 'miCloseEditor', comment: ['&& denotes a mnemonic'] }, "Close &&Editor"), 'workbench.action.closeActiveEditor');
+            var exit = this.createMenuItem(nls.localize({ key: 'miExit', comment: ['&& denotes a mnemonic'] }, "E&&xit"), function () { return _this.quit(); });
             arrays.coalesce([
                 newFile,
                 newWindow,
@@ -265,11 +265,11 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             ]).forEach(function (item) { return fileMenu.append(item); });
         };
         VSCodeMenu.prototype.getPreferencesMenu = function () {
-            var userSettings = this.createMenuItem(nls.localize(27, null), 'workbench.action.openGlobalSettings');
-            var workspaceSettings = this.createMenuItem(nls.localize(28, null), 'workbench.action.openWorkspaceSettings');
-            var kebindingSettings = this.createMenuItem(nls.localize(29, null), 'workbench.action.openGlobalKeybindings');
-            var snippetsSettings = this.createMenuItem(nls.localize(30, null), 'workbench.action.openSnippets');
-            var themeSelection = this.createMenuItem(nls.localize(31, null), 'workbench.action.selectTheme');
+            var userSettings = this.createMenuItem(nls.localize({ key: 'miOpenSettings', comment: ['&& denotes a mnemonic'] }, "&&User Settings"), 'workbench.action.openGlobalSettings');
+            var workspaceSettings = this.createMenuItem(nls.localize({ key: 'miOpenWorkspaceSettings', comment: ['&& denotes a mnemonic'] }, "&&Workspace Settings"), 'workbench.action.openWorkspaceSettings');
+            var kebindingSettings = this.createMenuItem(nls.localize({ key: 'miOpenKeymap', comment: ['&& denotes a mnemonic'] }, "&&Keyboard Shortcuts"), 'workbench.action.openGlobalKeybindings');
+            var snippetsSettings = this.createMenuItem(nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets"), 'workbench.action.openSnippets');
+            var themeSelection = this.createMenuItem(nls.localize({ key: 'miSelectTheme', comment: ['&& denotes a mnemonic'] }, "&&Color Theme"), 'workbench.action.selectTheme');
             var preferencesMenu = new electron_1.Menu();
             preferencesMenu.append(userSettings);
             preferencesMenu.append(workspaceSettings);
@@ -279,7 +279,7 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             preferencesMenu.append(snippetsSettings);
             preferencesMenu.append(__separator__());
             preferencesMenu.append(themeSelection);
-            return new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(32, null)), submenu: preferencesMenu });
+            return new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miPreferences', comment: ['&& denotes a mnemonic'] }, "&&Preferences")), submenu: preferencesMenu });
         };
         VSCodeMenu.prototype.quit = function () {
             var _this = this;
@@ -322,7 +322,7 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             }
             if (recentList.folders.length || files.length) {
                 openRecentMenu.append(__separator__());
-                openRecentMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(33, null)), click: function () { return _this.clearOpenedPathsList(); } }));
+                openRecentMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miClearItems', comment: ['&& denotes a mnemonic'] }, "&&Clear Items")), click: function () { return _this.clearOpenedPathsList(); } }));
             }
         };
         VSCodeMenu.prototype.createOpenRecentMenuItem = function (path) {
@@ -354,24 +354,24 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             var paste;
             var selectAll;
             if (platform.isMacintosh) {
-                undo = this.createDevToolsAwareMenuItem(nls.localize(34, null), 'undo', function (devTools) { return devTools.undo(); });
-                redo = this.createDevToolsAwareMenuItem(nls.localize(35, null), 'redo', function (devTools) { return devTools.redo(); });
-                cut = this.createRoleMenuItem(nls.localize(36, null), 'editor.action.clipboardCutAction', 'cut');
-                copy = this.createRoleMenuItem(nls.localize(37, null), 'editor.action.clipboardCopyAction', 'copy');
-                paste = this.createRoleMenuItem(nls.localize(38, null), 'editor.action.clipboardPasteAction', 'paste');
-                selectAll = this.createDevToolsAwareMenuItem(nls.localize(39, null), 'editor.action.selectAll', function (devTools) { return devTools.selectAll(); });
+                undo = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo', function (devTools) { return devTools.undo(); });
+                redo = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"), 'redo', function (devTools) { return devTools.redo(); });
+                cut = this.createRoleMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "&&Cut"), 'editor.action.clipboardCutAction', 'cut');
+                copy = this.createRoleMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "C&&opy"), 'editor.action.clipboardCopyAction', 'copy');
+                paste = this.createRoleMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction', 'paste');
+                selectAll = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll', function (devTools) { return devTools.selectAll(); });
             }
             else {
-                undo = this.createMenuItem(nls.localize(40, null), 'undo');
-                redo = this.createMenuItem(nls.localize(41, null), 'redo');
-                cut = this.createMenuItem(nls.localize(42, null), 'editor.action.clipboardCutAction');
-                copy = this.createMenuItem(nls.localize(43, null), 'editor.action.clipboardCopyAction');
-                paste = this.createMenuItem(nls.localize(44, null), 'editor.action.clipboardPasteAction');
-                selectAll = this.createMenuItem(nls.localize(45, null), 'editor.action.selectAll');
+                undo = this.createMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo');
+                redo = this.createMenuItem(nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"), 'redo');
+                cut = this.createMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "&&Cut"), 'editor.action.clipboardCutAction');
+                copy = this.createMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "C&&opy"), 'editor.action.clipboardCopyAction');
+                paste = this.createMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction');
+                selectAll = this.createMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll');
             }
-            var find = this.createMenuItem(nls.localize(46, null), 'actions.find');
-            var replace = this.createMenuItem(nls.localize(47, null), 'editor.action.startFindReplaceAction');
-            var findInFiles = this.createMenuItem(nls.localize(48, null), 'workbench.view.search');
+            var find = this.createMenuItem(nls.localize({ key: 'miFind', comment: ['&& denotes a mnemonic'] }, "&&Find"), 'actions.find');
+            var replace = this.createMenuItem(nls.localize({ key: 'miReplace', comment: ['&& denotes a mnemonic'] }, "&&Replace"), 'editor.action.startFindReplaceAction');
+            var findInFiles = this.createMenuItem(nls.localize({ key: 'miFindInFiles', comment: ['&& denotes a mnemonic'] }, "Find &&in Files"), 'workbench.view.search');
             [
                 undo,
                 redo,
@@ -388,24 +388,24 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             ].forEach(function (item) { return winLinuxEditMenu.append(item); });
         };
         VSCodeMenu.prototype.setViewMenu = function (viewMenu) {
-            var explorer = this.createMenuItem(nls.localize(49, null), 'workbench.view.explorer');
-            var search = this.createMenuItem(nls.localize(50, null), 'workbench.view.search');
-            var git = this.createMenuItem(nls.localize(51, null), 'workbench.view.git');
-            var debug = this.createMenuItem(nls.localize(52, null), 'workbench.view.debug');
-            var commands = this.createMenuItem(nls.localize(53, null), 'workbench.action.showCommands');
-            var markers = this.createMenuItem(nls.localize(54, null), 'workbench.action.showErrorsWarnings');
-            var output = this.createMenuItem(nls.localize(55, null), 'workbench.action.output.toggleOutput');
-            var debugConsole = this.createMenuItem(nls.localize(56, null), 'workbench.debug.action.toggleRepl');
-            var fullscreen = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(57, null)), accelerator: this.getAccelerator('workbench.action.toggleFullScreen'), click: function () { return windows.manager.getLastActiveWindow().toggleFullScreen(); }, enabled: windows.manager.getWindowCount() > 0 });
-            var toggleMenuBar = this.createMenuItem(nls.localize(58, null), 'workbench.action.toggleMenuBar');
-            var splitEditor = this.createMenuItem(nls.localize(59, null), 'workbench.action.splitEditor');
-            var toggleSidebar = this.createMenuItem(nls.localize(60, null), 'workbench.action.toggleSidebarVisibility');
-            var moveSidebar = this.createMenuItem(nls.localize(61, null), 'workbench.action.toggleSidebarPosition');
-            var togglePanel = this.createMenuItem(nls.localize(62, null), 'workbench.action.togglePanel');
-            var toggleWordWrap = this.createMenuItem(nls.localize(63, null), 'editor.action.toggleWordWrap');
-            var toggleRenderWhitespace = this.createMenuItem(nls.localize(64, null), 'editor.action.toggleRenderWhitespace');
-            var zoomIn = this.createMenuItem(nls.localize(65, null), 'workbench.action.zoomIn');
-            var zoomOut = this.createMenuItem(nls.localize(66, null), 'workbench.action.zoomOut');
+            var explorer = this.createMenuItem(nls.localize({ key: 'miViewExplorer', comment: ['&& denotes a mnemonic'] }, "&&Explorer"), 'workbench.view.explorer');
+            var search = this.createMenuItem(nls.localize({ key: 'miViewSearch', comment: ['&& denotes a mnemonic'] }, "&&Search"), 'workbench.view.search');
+            var git = this.createMenuItem(nls.localize({ key: 'miViewGit', comment: ['&& denotes a mnemonic'] }, "&&Git"), 'workbench.view.git');
+            var debug = this.createMenuItem(nls.localize({ key: 'miViewDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"), 'workbench.view.debug');
+            var commands = this.createMenuItem(nls.localize({ key: 'miCommandPalette', comment: ['&& denotes a mnemonic'] }, "&&Command Palette..."), 'workbench.action.showCommands');
+            var markers = this.createMenuItem(nls.localize({ key: 'miMarker', comment: ['&& denotes a mnemonic'] }, "&&Errors and Warnings..."), 'workbench.action.showErrorsWarnings');
+            var output = this.createMenuItem(nls.localize({ key: 'miToggleOutput', comment: ['&& denotes a mnemonic'] }, "Toggle &&Output"), 'workbench.action.output.toggleOutput');
+            var debugConsole = this.createMenuItem(nls.localize({ key: 'miToggleDebugConsole', comment: ['&& denotes a mnemonic'] }, "Toggle De&&bug Console"), 'workbench.debug.action.toggleRepl');
+            var fullscreen = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miToggleFullScreen', comment: ['&& denotes a mnemonic'] }, "Toggle &&Full Screen")), accelerator: this.getAccelerator('workbench.action.toggleFullScreen'), click: function () { return windows.manager.getLastActiveWindow().toggleFullScreen(); }, enabled: windows.manager.getWindowCount() > 0 });
+            var toggleMenuBar = this.createMenuItem(nls.localize({ key: 'miToggleMenuBar', comment: ['&& denotes a mnemonic'] }, "Toggle Menu &&Bar"), 'workbench.action.toggleMenuBar');
+            var splitEditor = this.createMenuItem(nls.localize({ key: 'miSplitEditor', comment: ['&& denotes a mnemonic'] }, "Split &&Editor"), 'workbench.action.splitEditor');
+            var toggleSidebar = this.createMenuItem(nls.localize({ key: 'miToggleSidebar', comment: ['&& denotes a mnemonic'] }, "&&Toggle Side Bar"), 'workbench.action.toggleSidebarVisibility');
+            var moveSidebar = this.createMenuItem(nls.localize({ key: 'miMoveSidebar', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar"), 'workbench.action.toggleSidebarPosition');
+            var togglePanel = this.createMenuItem(nls.localize({ key: 'miTogglePanel', comment: ['&& denotes a mnemonic'] }, "Toggle &&Panel"), 'workbench.action.togglePanel');
+            var toggleWordWrap = this.createMenuItem(nls.localize({ key: 'miToggleWordWrap', comment: ['&& denotes a mnemonic'] }, "Toggle &&Word Wrap"), 'editor.action.toggleWordWrap');
+            var toggleRenderWhitespace = this.createMenuItem(nls.localize({ key: 'miToggleRenderWhitespace', comment: ['&& denotes a mnemonic'] }, "Toggle &&Render Whitespace"), 'editor.action.toggleRenderWhitespace');
+            var zoomIn = this.createMenuItem(nls.localize({ key: 'miZoomIn', comment: ['&& denotes a mnemonic'] }, "&&Zoom in"), 'workbench.action.zoomIn');
+            var zoomOut = this.createMenuItem(nls.localize({ key: 'miZoomOut', comment: ['&& denotes a mnemonic'] }, "Zoom o&&ut"), 'workbench.action.zoomOut');
             arrays.coalesce([
                 explorer,
                 search,
@@ -434,13 +434,13 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             ]).forEach(function (item) { return viewMenu.append(item); });
         };
         VSCodeMenu.prototype.setGotoMenu = function (gotoMenu) {
-            var back = this.createMenuItem(nls.localize(67, null), 'workbench.action.navigateBack');
-            var forward = this.createMenuItem(nls.localize(68, null), 'workbench.action.navigateForward');
-            var navigateHistory = this.createMenuItem(nls.localize(69, null), 'workbench.action.openPreviousEditor');
-            var gotoFile = this.createMenuItem(nls.localize(70, null), 'workbench.action.quickOpen');
-            var gotoSymbol = this.createMenuItem(nls.localize(71, null), 'workbench.action.gotoSymbol');
-            var gotoDefinition = this.createMenuItem(nls.localize(72, null), 'editor.action.goToDeclaration');
-            var gotoLine = this.createMenuItem(nls.localize(73, null), 'workbench.action.gotoLine');
+            var back = this.createMenuItem(nls.localize({ key: 'miBack', comment: ['&& denotes a mnemonic'] }, "&&Back"), 'workbench.action.navigateBack');
+            var forward = this.createMenuItem(nls.localize({ key: 'miForward', comment: ['&& denotes a mnemonic'] }, "&&Forward"), 'workbench.action.navigateForward');
+            var navigateHistory = this.createMenuItem(nls.localize({ key: 'miNavigateHistory', comment: ['&& denotes a mnemonic'] }, "&&Navigate History"), 'workbench.action.openPreviousEditor');
+            var gotoFile = this.createMenuItem(nls.localize({ key: 'miGotoFile', comment: ['&& denotes a mnemonic'] }, "Go to &&File..."), 'workbench.action.quickOpen');
+            var gotoSymbol = this.createMenuItem(nls.localize({ key: 'miGotoSymbol', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol..."), 'workbench.action.gotoSymbol');
+            var gotoDefinition = this.createMenuItem(nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition"), 'editor.action.goToDeclaration');
+            var gotoLine = this.createMenuItem(nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line..."), 'workbench.action.gotoLine');
             [
                 back,
                 forward,
@@ -454,9 +454,9 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             ].forEach(function (item) { return gotoMenu.append(item); });
         };
         VSCodeMenu.prototype.setMacWindowMenu = function (macWindowMenu) {
-            var minimize = new electron_1.MenuItem({ label: nls.localize(74, null), role: 'minimize', accelerator: 'Command+M', enabled: windows.manager.getWindowCount() > 0 });
-            var close = new electron_1.MenuItem({ label: nls.localize(75, null), role: 'close', accelerator: 'Command+W', enabled: windows.manager.getWindowCount() > 0 });
-            var bringAllToFront = new electron_1.MenuItem({ label: nls.localize(76, null), role: 'front', enabled: windows.manager.getWindowCount() > 0 });
+            var minimize = new electron_1.MenuItem({ label: nls.localize('mMinimize', "Minimize"), role: 'minimize', accelerator: 'Command+M', enabled: windows.manager.getWindowCount() > 0 });
+            var close = new electron_1.MenuItem({ label: nls.localize('mClose', "Close"), role: 'close', accelerator: 'Command+W', enabled: windows.manager.getWindowCount() > 0 });
+            var bringAllToFront = new electron_1.MenuItem({ label: nls.localize('mBringToFront', "Bring All to Front"), role: 'front', enabled: windows.manager.getWindowCount() > 0 });
             [
                 minimize,
                 close,
@@ -466,21 +466,21 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
         };
         VSCodeMenu.prototype.setHelpMenu = function (helpMenu) {
             var toggleDevToolsItem = new electron_1.MenuItem({
-                label: mnemonicLabel(nls.localize(77, null)),
+                label: mnemonicLabel(nls.localize({ key: 'miToggleDevTools', comment: ['&& denotes a mnemonic'] }, "&&Toggle Developer Tools")),
                 accelerator: this.getAccelerator('workbench.action.toggleDevTools'),
                 click: toggleDevTools,
                 enabled: (windows.manager.getWindowCount() > 0)
             });
             arrays.coalesce([
-                env.product.documentationUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(78, null)), click: function () { return openUrl(env.product.documentationUrl, 'openDocumentationUrl'); } }) : null,
-                env.product.releaseNotesUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(79, null)), click: function () { return openUrl(env.product.releaseNotesUrl, 'openReleaseNotesUrl'); } }) : null,
+                env.product.documentationUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miDocumentation', comment: ['&& denotes a mnemonic'] }, "&&Documentation")), click: function () { return openUrl(env.product.documentationUrl, 'openDocumentationUrl'); } }) : null,
+                env.product.releaseNotesUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "&&Release Notes")), click: function () { return openUrl(env.product.releaseNotesUrl, 'openReleaseNotesUrl'); } }) : null,
                 (env.product.documentationUrl || env.product.releaseNotesUrl) ? __separator__() : null,
-                env.product.twitterUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(80, null)), click: function () { return openUrl(env.product.twitterUrl, 'openTwitterUrl'); } }) : null,
-                env.product.requestFeatureUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(81, null)), click: function () { return openUrl(env.product.requestFeatureUrl, 'openUserVoiceUrl'); } }) : null,
-                env.product.reportIssueUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(82, null)), click: function () { return openUrl(env.product.reportIssueUrl, 'openReportIssues'); } }) : null,
+                env.product.twitterUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: function () { return openUrl(env.product.twitterUrl, 'openTwitterUrl'); } }) : null,
+                env.product.requestFeatureUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Request Features")), click: function () { return openUrl(env.product.requestFeatureUrl, 'openUserVoiceUrl'); } }) : null,
+                env.product.reportIssueUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReportIssues', comment: ['&& denotes a mnemonic'] }, "Report &&Issues")), click: function () { return openUrl(env.product.reportIssueUrl, 'openReportIssues'); } }) : null,
                 (env.product.twitterUrl || env.product.requestFeatureUrl || env.product.reportIssueUrl) ? __separator__() : null,
                 env.product.licenseUrl ? new electron_1.MenuItem({
-                    label: mnemonicLabel(nls.localize(83, null)), click: function () {
+                    label: mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "&&View License")), click: function () {
                         if (platform.language) {
                             var queryArgChar = env.product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
                             openUrl("" + env.product.licenseUrl + queryArgChar + "lang=" + platform.language, 'openLicenseUrl');
@@ -490,7 +490,7 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
                         }
                     }
                 }) : null,
-                env.product.privacyStatementUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(84, null)), click: function () { return openUrl(env.product.privacyStatementUrl, 'openPrivacyStatement'); } }) : null,
+                env.product.privacyStatementUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: function () { return openUrl(env.product.privacyStatementUrl, 'openPrivacyStatement'); } }) : null,
                 (env.product.licenseUrl || env.product.privacyStatementUrl) ? __separator__() : null,
                 toggleDevToolsItem,
             ]).forEach(function (item) { return helpMenu.append(item); });
@@ -501,7 +501,7 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
                     updateMenuItems.forEach(function (i) { return helpMenu.append(i); });
                 }
                 helpMenu.append(__separator__());
-                helpMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize(85, null)), click: openAboutDialog }));
+                helpMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miAbout', comment: ['&& denotes a mnemonic'] }, "&&About")), click: openAboutDialog }));
             }
         };
         VSCodeMenu.prototype.getUpdateMenuItems = function () {
@@ -511,35 +511,35 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
                 case um.State.UpdateDownloaded:
                     var update_1 = UpdateManager.availableUpdate;
                     return [new electron_1.MenuItem({
-                            label: nls.localize(86, null), click: function () {
+                            label: nls.localize('miRestartToUpdate', "Restart To Update..."), click: function () {
                                 reportMenuActionTelemetry('RestartToUpdate');
                                 update_1.quitAndUpdate();
                             }
                         })];
                 case um.State.CheckingForUpdate:
-                    return [new electron_1.MenuItem({ label: nls.localize(87, null), enabled: false })];
+                    return [new electron_1.MenuItem({ label: nls.localize('miCheckingForUpdates', "Checking For Updates..."), enabled: false })];
                 case um.State.UpdateAvailable:
                     if (platform.isLinux) {
                         var update_2 = UpdateManager.availableUpdate;
                         return [new electron_1.MenuItem({
-                                label: nls.localize(88, null), click: function () {
+                                label: nls.localize('miDownloadUpdate', "Download Available Update"), click: function () {
                                     update_2.quitAndUpdate();
                                 }
                             })];
                     }
                     var updateAvailableLabel = platform.isWindows
-                        ? nls.localize(89, null)
-                        : nls.localize(90, null);
+                        ? nls.localize('miDownloadingUpdate', "Downloading Update...")
+                        : nls.localize('miInstallingUpdate', "Installing Update...");
                     return [new electron_1.MenuItem({ label: updateAvailableLabel, enabled: false })];
                 default:
                     var result = [new electron_1.MenuItem({
-                            label: nls.localize(91, null), click: function () { return setTimeout(function () {
+                            label: nls.localize('miCheckForUpdates', "Check For Updates..."), click: function () { return setTimeout(function () {
                                 reportMenuActionTelemetry('CheckForUpdate');
                                 UpdateManager.checkForUpdates(true);
                             }, 0); }
                         })];
                     if (UpdateManager.lastCheckDate) {
-                        result.push(new electron_1.MenuItem({ label: nls.localize(92, null, UpdateManager.lastCheckDate.toLocaleTimeString()), enabled: false }));
+                        result.push(new electron_1.MenuItem({ label: nls.localize('miLastCheckedAt', "Last checked at {0}", UpdateManager.lastCheckDate.toLocaleTimeString()), enabled: false }));
                     }
                     return result;
             }
@@ -604,8 +604,8 @@ define(["require", "exports", 'electron', 'vs/nls!vs/workbench/electron-main/men
             title: env.product.nameLong,
             type: 'info',
             message: env.product.nameLong,
-            detail: nls.localize(93, null, electron_1.app.getVersion(), env.product.commit || 'Unknown', env.product.date || 'Unknown', process.versions['electron'], process.versions['chrome'], process.versions['node']),
-            buttons: [nls.localize(94, null)],
+            detail: nls.localize('aboutDetail', "\nVersion {0}\nCommit {1}\nDate {2}\nShell {3}\nRenderer {4}\nNode {5}", electron_1.app.getVersion(), env.product.commit || 'Unknown', env.product.date || 'Unknown', process.versions['electron'], process.versions['chrome'], process.versions['node']),
+            buttons: [nls.localize('okButton', "OK")],
             noLink: true
         }, function (result) { return null; });
         reportMenuActionTelemetry('showAboutDialog');

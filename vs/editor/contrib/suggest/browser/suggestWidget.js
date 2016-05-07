@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestWidget', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/base/browser/ui/list/listWidget', 'vs/base/browser/ui/scrollbar/scrollableElementImpl', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/editorCommon', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowser', '../common/suggest', 'vs/base/browser/ui/aria/aria', 'vs/base/browser/ui/scrollbar/domNodeScrollable', 'vs/css!./suggest'], function (require, exports, nls, strings, errors_1, event_1, lifecycle_1, winjs_base_1, dom_1, highlightedLabel_1, listWidget_1, scrollableElementImpl_1, instantiation_1, keybindingService_1, telemetry_1, editorCommon_1, modes_1, editorBrowser_1, suggest_1, aria_1, domNodeScrollable_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/base/browser/ui/list/listWidget', 'vs/base/browser/ui/scrollbar/scrollableElementImpl', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/editorCommon', 'vs/editor/common/modes', 'vs/editor/browser/editorBrowser', '../common/suggest', 'vs/base/browser/ui/aria/aria', 'vs/base/browser/ui/scrollbar/domNodeScrollable', 'vs/css!./suggest'], function (require, exports, nls, strings, errors_1, event_1, lifecycle_1, winjs_base_1, dom_1, highlightedLabel_1, listWidget_1, scrollableElementImpl_1, instantiation_1, keybindingService_1, telemetry_1, editorCommon_1, modes_1, editorBrowser_1, suggest_1, aria_1, domNodeScrollable_1) {
     'use strict';
     var Renderer = (function () {
         function Renderer(widget, keybindingService) {
@@ -38,7 +38,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestW
             var docs = dom_1.append(text, dom_1.emmet('.docs'));
             data.documentation = dom_1.append(docs, dom_1.emmet('span.docs-text'));
             data.documentationDetails = dom_1.append(docs, dom_1.emmet('span.docs-details.octicon.octicon-info'));
-            data.documentationDetails.title = nls.localize(0, null, this.triggerKeybindingLabel);
+            data.documentationDetails.title = nls.localize('readMore', "Read More...{0}", this.triggerKeybindingLabel);
             return data;
         };
         Renderer.prototype.renderElement = function (element, index, templateData) {
@@ -46,10 +46,10 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestW
             var data = templateData;
             var suggestion = element.suggestion;
             if (suggestion.documentationLabel) {
-                data.root.setAttribute('aria-label', nls.localize(1, null, suggestion.label));
+                data.root.setAttribute('aria-label', nls.localize('suggestionWithDetailsAriaLabel', "{0}, suggestion, has details", suggestion.label));
             }
             else {
-                data.root.setAttribute('aria-label', nls.localize(2, null, suggestion.label));
+                data.root.setAttribute('aria-label', nls.localize('suggestionAriaLabel', "{0}, suggestion", suggestion.label));
             }
             if (suggestion.type === 'customcolor') {
                 data.icon.className = 'icon customcolor';
@@ -138,7 +138,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestW
             var header = dom_1.append(this.el, dom_1.emmet('.header'));
             this.title = dom_1.append(header, dom_1.emmet('span.title'));
             this.back = dom_1.append(header, dom_1.emmet('span.go-back.octicon.octicon-mail-reply'));
-            this.back.title = nls.localize(3, null);
+            this.back.title = nls.localize('goback', "Go back");
             this.body = dom_1.emmet('.body');
             this.scrollable = new domNodeScrollable_1.DomNodeScrollable(this.body);
             this.scrollbar = new scrollableElementImpl_1.ScrollableElement(this.body, this.scrollable, {});
@@ -291,15 +291,15 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestW
             var overwriteBefore = (typeof item.suggestion.overwriteBefore === 'undefined') ? container.currentWord.length : item.suggestion.overwriteBefore;
             var overwriteAfter = (typeof item.suggestion.overwriteAfter === 'undefined') ? 0 : Math.max(0, item.suggestion.overwriteAfter);
             this.model.accept(item.suggestion, overwriteBefore, overwriteAfter);
-            aria_1.alert(nls.localize(6, null, item.suggestion.label));
+            aria_1.alert(nls.localize('suggestionAriaAccepted', "{0}, accepted", item.suggestion.label));
             this.editor.focus();
         };
         SuggestWidget.prototype._getSuggestionAriaAlertLabel = function (item) {
             if (item.suggestion.documentationLabel) {
-                return nls.localize(7, null, item.suggestion.label);
+                return nls.localize('ariaCurrentSuggestionWithDetails', "{0}, suggestion, has details", item.suggestion.label);
             }
             else {
-                return nls.localize(8, null, item.suggestion.label);
+                return nls.localize('ariaCurrentSuggestion', "{0}, suggestion", item.suggestion.label);
             }
         };
         SuggestWidget.prototype._ariaAlert = function (newAriaAlertLabel) {
@@ -685,8 +685,8 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/suggest/browser/suggestW
         };
         SuggestWidget.ID = 'editor.widget.suggestWidget';
         SuggestWidget.WIDTH = 438;
-        SuggestWidget.LOADING_MESSAGE = nls.localize(4, null);
-        SuggestWidget.NO_SUGGESTIONS_MESSAGE = nls.localize(5, null);
+        SuggestWidget.LOADING_MESSAGE = nls.localize('suggestWidget.loading', "Loading...");
+        SuggestWidget.NO_SUGGESTIONS_MESSAGE = nls.localize('suggestWidget.noSuggestions', "No suggestions.");
         SuggestWidget = __decorate([
             __param(2, keybindingService_1.IKeybindingService),
             __param(3, telemetry_1.ITelemetryService),

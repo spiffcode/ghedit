@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/node/extensionHostMain', 'vs/base/node/pfs', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/api/node/extHost.api.impl', 'vs/workbench/api/node/extHostDocuments', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/extensions/common/nativeExtensionService', 'vs/platform/thread/common/extHostThreadService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/modeServiceImpl', 'vs/workbench/node/extensionPoints', 'vs/platform/workspace/common/workspace', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/node/extensionsService'], function (require, exports, nls, pfs, uri_1, winjs_base_1, paths, extensions_1, extensionsRegistry_1, extHost_api_impl_1, extHostDocuments_1, InstantiationService, nativeExtensionService_1, extHostThreadService_1, remoteTelemetryService_1, baseWorkspaceContextService_1, modeServiceImpl_1, extensionPoints_1, workspace_1, extensions_2, extensionsService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/node/pfs', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/api/node/extHost.api.impl', 'vs/workbench/api/node/extHostDocuments', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/extensions/common/nativeExtensionService', 'vs/platform/thread/common/extHostThreadService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/modeServiceImpl', 'vs/workbench/node/extensionPoints', 'vs/platform/workspace/common/workspace', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/node/extensionsService'], function (require, exports, nls, pfs, uri_1, winjs_base_1, paths, extensions_1, extensionsRegistry_1, extHost_api_impl_1, extHostDocuments_1, InstantiationService, nativeExtensionService_1, extHostThreadService_1, remoteTelemetryService_1, baseWorkspaceContextService_1, modeServiceImpl_1, extensionPoints_1, workspace_1, extensions_2, extensionsService_1) {
     'use strict';
     var DIRNAME = uri_1.default.parse(require.toUrl('./')).fsPath;
     var BASE_PATH = paths.normalize(paths.join(DIRNAME, '../../../..'));
@@ -112,14 +112,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/node/extensionHostMain', 'vs/
                 });
                 userExtensions.forEach(function (userExtension) {
                     if (result.hasOwnProperty(userExtension.id)) {
-                        collector.warn(userExtension.extensionFolderPath, nls.localize(0, null, result[userExtension.id].extensionFolderPath, userExtension.extensionFolderPath));
+                        collector.warn(userExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extesion {0} with {1}.", result[userExtension.id].extensionFolderPath, userExtension.extensionFolderPath));
                     }
                     result[userExtension.id] = userExtension;
                 });
                 developedExtensions.forEach(function (developedExtension) {
-                    collector.info('', nls.localize(1, null, developedExtension.extensionFolderPath));
+                    collector.info('', nls.localize('extensionUnderDevelopment', "Loading development extension at {0}", developedExtension.extensionFolderPath));
                     if (result.hasOwnProperty(developedExtension.id)) {
-                        collector.warn(developedExtension.extensionFolderPath, nls.localize(2, null, result[developedExtension.id].extensionFolderPath, developedExtension.extensionFolderPath));
+                        collector.warn(developedExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extesion {0} with {1}.", result[developedExtension.id].extensionFolderPath, developedExtension.extensionFolderPath));
                     }
                     result[developedExtension.id] = developedExtension;
                 });
@@ -198,7 +198,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/node/extensionHostMain', 'vs/
             else {
                 this.gracefulExit(1 /* ERROR */);
             }
-            return winjs_base_1.TPromise.wrapError(requireError ? requireError.toString() : nls.localize(3, null, env.extensionTestsPath));
+            return winjs_base_1.TPromise.wrapError(requireError ? requireError.toString() : nls.localize('extensionTestError', "Path {0} does not point to a valid extension test runner.", env.extensionTestsPath));
         };
         ExtensionHostMain.prototype.gracefulExit = function (code) {
             // to give the PH process a chance to flush any outstanding console

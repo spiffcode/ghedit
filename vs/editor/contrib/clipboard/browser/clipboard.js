@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/clipboard/browser/clipboard', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/browser', 'vs/editor/common/config/config', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/css!./clipboard'], function (require, exports, nls, keyCodes_1, lifecycle_1, winjs_base_1, browser, config_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/browser', 'vs/editor/common/config/config', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/css!./clipboard'], function (require, exports, nls, keyCodes_1, lifecycle_1, winjs_base_1, browser, config_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1) {
     'use strict';
     var ClipboardWritingAction = (function (_super) {
         __extends(ClipboardWritingAction, _super);
@@ -114,7 +114,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/clipboard/browser/clipbo
     registerClipboardAction({
         ctor: ExecCommandCutAction,
         id: 'editor.action.clipboardCutAction',
-        label: nls.localize(0, null),
+        label: nls.localize('actions.clipboard.cutLabel', "Cut"),
         execCommand: 'cut',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_X,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_X, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Delete] }
@@ -122,7 +122,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/clipboard/browser/clipbo
     registerClipboardAction({
         ctor: ExecCommandCopyAction,
         id: 'editor.action.clipboardCopyAction',
-        label: nls.localize(1, null),
+        label: nls.localize('actions.clipboard.copyLabel', "Copy"),
         execCommand: 'copy',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C, secondary: [keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Insert] }
@@ -130,7 +130,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/clipboard/browser/clipbo
     registerClipboardAction({
         ctor: ExecCommandPasteAction,
         id: 'editor.action.clipboardPasteAction',
-        label: nls.localize(2, null),
+        label: nls.localize('actions.clipboard.pasteLabel', "Paste"),
         execCommand: 'paste',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_V,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_V, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Insert] }

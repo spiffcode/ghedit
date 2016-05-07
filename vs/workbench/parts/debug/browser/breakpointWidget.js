@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/breakpointWidget', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/browser/ui/inputbox/inputBox', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/editorCommon', 'vs/editor/contrib/zoneWidget/browser/zoneWidget', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/parts/debug/common/debug', 'vs/css!../browser/media/breakpointWidget'], function (require, exports, nls, async, errors, keyCodes_1, platform, lifecycle, dom, inputBox_1, editorCommonExtensions_1, editorcommon, zoneWidget_1, contextView_1, keybindingService_1, debug) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/browser/ui/inputbox/inputBox', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/editorCommon', 'vs/editor/contrib/zoneWidget/browser/zoneWidget', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/parts/debug/common/debug', 'vs/css!../browser/media/breakpointWidget'], function (require, exports, nls, async, errors, keyCodes_1, platform, lifecycle, dom, inputBox_1, editorCommonExtensions_1, editorcommon, zoneWidget_1, contextView_1, keybindingService_1, debug) {
     "use strict";
     var $ = dom.emmet;
     var CONTEXT_BREAKPOINT_WIDGET_VISIBLE = 'breakpointWidgetVisible';
@@ -43,8 +43,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/breakpoin
             var breakpoint = this.debugService.getModel().getBreakpoints().filter(function (bp) { return bp.lineNumber === _this.lineNumber && bp.source.uri.toString() === uri.toString(); }).pop();
             var inputBoxContainer = dom.append(container, $('.inputBoxContainer'));
             this.inputBox = new inputBox_1.InputBox(inputBoxContainer, this.contextViewService, {
-                placeholder: nls.localize(0, null, this.lineNumber),
-                ariaLabel: nls.localize(1, null)
+                placeholder: nls.localize('breakpointWidgetPlaceholder', "Breakpoint on line {0} will only stop if this condition is true. 'Enter' to accept, 'esc' to cancel.", this.lineNumber),
+                ariaLabel: nls.localize('breakpointWidgetAriaLabel', "Type the breakpoint condition for line {0}. The program will only stop here if this condition is true. Press Enter to accept or Escape to cancel.")
             });
             this.toDispose.push(this.inputBox);
             dom.addClass(this.inputBox.inputElement, platform.isWindows ? 'windows' : platform.isMacintosh ? 'mac' : 'linux');

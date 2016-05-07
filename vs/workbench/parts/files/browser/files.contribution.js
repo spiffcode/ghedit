@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewlet', 'vs/nls!vs/workbench/parts/files/browser/files.contribution', 'vs/platform/actions/common/actions', 'vs/platform/platform', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/browser/actions/quickOpenAction', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/files/browser/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/browser/fileTracker', 'vs/workbench/parts/files/common/editors/saveParticipant', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/editors/textFileEditor', 'vs/workbench/parts/files/browser/editors/binaryFileEditor', 'vs/platform/instantiation/common/descriptors', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/css!./media/files.contribution'], function (require, exports, uri_1, viewlet_1, nls, actions_1, platform_1, quickOpenService_1, quickOpenAction_1, configurationRegistry_1, actionRegistry_1, contributions_1, baseEditor_1, quickopen_1, files_1, files_2, files_3, fileTracker_1, saveParticipant_1, fileEditorInput_1, textFileEditor_1, binaryFileEditor_1, descriptors_1, viewletService_1, editorService_1, keyCodes_1, platform) {
+define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewlet', 'vs/nls', 'vs/platform/actions/common/actions', 'vs/platform/platform', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/browser/actions/quickOpenAction', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/files/browser/files', 'vs/platform/files/common/files', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/browser/fileTracker', 'vs/workbench/parts/files/common/editors/saveParticipant', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/browser/editors/textFileEditor', 'vs/workbench/parts/files/browser/editors/binaryFileEditor', 'vs/platform/instantiation/common/descriptors', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/css!./media/files.contribution'], function (require, exports, uri_1, viewlet_1, nls, actions_1, platform_1, quickOpenService_1, quickOpenAction_1, configurationRegistry_1, actionRegistry_1, contributions_1, baseEditor_1, quickopen_1, files_1, files_2, files_3, fileTracker_1, saveParticipant_1, fileEditorInput_1, textFileEditor_1, binaryFileEditor_1, descriptors_1, viewletService_1, editorService_1, keyCodes_1, platform) {
     'use strict';
     // Viewlet Action
     var OpenExplorerViewletAction = (function (_super) {
@@ -25,7 +25,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
             _super.call(this, id, label, files_3.VIEWLET_ID, viewletService, editorService);
         }
         OpenExplorerViewletAction.ID = files_3.VIEWLET_ID;
-        OpenExplorerViewletAction.LABEL = nls.localize(0, null);
+        OpenExplorerViewletAction.LABEL = nls.localize('showExplorerViewlet', "Show Explorer");
         OpenExplorerViewletAction = __decorate([
             __param(2, viewletService_1.IViewletService),
             __param(3, editorService_1.IWorkbenchEditorService)
@@ -34,17 +34,17 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
     }(viewlet_1.ToggleViewletAction));
     exports.OpenExplorerViewletAction = OpenExplorerViewletAction;
     // Register Viewlet
-    platform_1.Registry.as(viewlet_1.Extensions.Viewlets).registerViewlet(new viewlet_1.ViewletDescriptor('vs/workbench/parts/files/browser/explorerViewlet', 'ExplorerViewlet', files_3.VIEWLET_ID, nls.localize(1, null), 'explore', 0));
+    platform_1.Registry.as(viewlet_1.Extensions.Viewlets).registerViewlet(new viewlet_1.ViewletDescriptor('vs/workbench/parts/files/browser/explorerViewlet', 'ExplorerViewlet', files_3.VIEWLET_ID, nls.localize('explore', "Explorer"), 'explore', 0));
     platform_1.Registry.as(viewlet_1.Extensions.Viewlets).setDefaultViewletId(files_3.VIEWLET_ID);
     var openViewletKb = {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_E
     };
     // Register Action to Open Viewlet
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenExplorerViewletAction, OpenExplorerViewletAction.ID, OpenExplorerViewletAction.LABEL, openViewletKb), nls.localize(2, null));
+    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenExplorerViewletAction, OpenExplorerViewletAction.ID, OpenExplorerViewletAction.LABEL, openViewletKb), nls.localize('view', "View"));
     // Register file editors
     platform_1.Registry.as(baseEditor_1.Extensions.Editors).registerEditor(new files_1.FileEditorDescriptor(textFileEditor_1.TextFileEditor.ID, // explicit dependency because we don't want these editors lazy loaded
-    nls.localize(3, null), 'vs/workbench/parts/files/browser/editors/textFileEditor', 'TextFileEditor', [
+    nls.localize('textFileEditor', "Text File Editor"), 'vs/workbench/parts/files/browser/editors/textFileEditor', 'TextFileEditor', [
         'text/*',
         // In case the mime type is unknown, we prefer the text file editor over the binary editor to leave a chance
         // of opening a potential text file properly. The resolution of the file in the text file editor will fail
@@ -54,7 +54,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
         new descriptors_1.SyncDescriptor(fileEditorInput_1.FileEditorInput)
     ]);
     platform_1.Registry.as(baseEditor_1.Extensions.Editors).registerEditor(new files_1.FileEditorDescriptor(binaryFileEditor_1.BinaryFileEditor.ID, // explicit dependency because we don't want these editors lazy loaded
-    nls.localize(4, null), 'vs/workbench/parts/files/browser/editors/binaryFileEditor', 'BinaryFileEditor', [
+    nls.localize('binaryFileEditor', "Binary File Editor"), 'vs/workbench/parts/files/browser/editors/binaryFileEditor', 'BinaryFileEditor', [
         'image/*',
         'application/pdf',
         'audio/*',
@@ -97,18 +97,18 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
     configurationRegistry.registerConfiguration({
         'id': 'files',
         'order': 7,
-        'title': nls.localize(5, null),
+        'title': nls.localize('filesConfigurationTitle', "Files configuration"),
         'type': 'object',
         'properties': {
             'files.exclude': {
                 'type': 'object',
-                'description': nls.localize(6, null),
+                'description': nls.localize('exclude', "Configure glob patterns for excluding files and folders."),
                 'default': { '**/.git': true, '**/.DS_Store': true },
                 'additionalProperties': {
                     'anyOf': [
                         {
                             'type': 'boolean',
-                            'description': nls.localize(7, null),
+                            'description': nls.localize('files.exclude.boolean', "The glob pattern to match file paths against. Set to true or false to enable or disable the pattern."),
                         },
                         {
                             'type': 'object',
@@ -117,7 +117,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
                                     'type': 'string',
                                     'pattern': '\\w*\\$\\(basename\\)\\w*',
                                     'default': '$(basename).ext',
-                                    'description': nls.localize(8, null)
+                                    'description': nls.localize('files.exclude.when', 'Additional check on the siblings of a matching file. Use $(basename) as variable for the matching file name.')
                                 }
                             }
                         }
@@ -126,13 +126,13 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
             },
             'files.associations': {
                 'type': 'object',
-                'description': nls.localize(9, null),
+                'description': nls.localize('associations', "Configure file associations to languages (e.g. \"*.extension\": \"html\"). These have precedence over the default associations of the languages installed."),
             },
             'files.encoding': {
                 'type': 'string',
                 'enum': Object.keys(files_2.SUPPORTED_ENCODINGS),
                 'default': 'utf8',
-                'description': nls.localize(10, null),
+                'description': nls.localize('encoding', "The default character set encoding to use when reading and writing files."),
             },
             'files.eol': {
                 'type': 'string',
@@ -141,50 +141,50 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
                     '\r\n'
                 ],
                 'default': (platform.isLinux || platform.isMacintosh) ? '\n' : '\r\n',
-                'description': nls.localize(11, null),
+                'description': nls.localize('eol', "The default end of line character."),
             },
             'files.trimTrailingWhitespace': {
                 'type': 'boolean',
                 'default': false,
-                'description': nls.localize(12, null)
+                'description': nls.localize('trimTrailingWhitespace', "When enabled, will trim trailing whitespace when you save a file.")
             },
             'files.autoSave': {
                 'type': 'string',
                 'enum': [files_2.AutoSaveConfiguration.OFF, files_2.AutoSaveConfiguration.AFTER_DELAY, files_2.AutoSaveConfiguration.ON_FOCUS_CHANGE],
                 'default': files_2.AutoSaveConfiguration.OFF,
-                'description': nls.localize(13, null, files_2.AutoSaveConfiguration.OFF, files_2.AutoSaveConfiguration.AFTER_DELAY, files_2.AutoSaveConfiguration.ON_FOCUS_CHANGE, files_2.AutoSaveConfiguration.AFTER_DELAY)
+                'description': nls.localize('autoSave', "Controls auto save of dirty files. Accepted values:  \"{0}\", \"{1}\", \"{2}\". If set to \"{3}\" you can configure the delay in \"files.autoSaveDelay\".", files_2.AutoSaveConfiguration.OFF, files_2.AutoSaveConfiguration.AFTER_DELAY, files_2.AutoSaveConfiguration.ON_FOCUS_CHANGE, files_2.AutoSaveConfiguration.AFTER_DELAY)
             },
             'files.autoSaveDelay': {
                 'type': 'number',
                 'default': 1000,
-                'description': nls.localize(14, null, files_2.AutoSaveConfiguration.AFTER_DELAY)
+                'description': nls.localize('autoSaveDelay', "Controls the delay in ms after which a dirty file is saved automatically. Only applies when \"files.autoSave\" is set to \"{0}\"", files_2.AutoSaveConfiguration.AFTER_DELAY)
             },
             'files.watcherExclude': {
                 'type': 'object',
                 'default': (platform.isLinux || platform.isMacintosh) ? { '**/.git/objects/**': true, '**/node_modules/**': true } : { '**/.git/objects/**': true },
-                'description': nls.localize(15, null)
+                'description': nls.localize('watcherExclude', "Configure glob patterns of file paths to exclude from file watching. Changing this setting requires a restart. When you experience Code consuming lots of cpu time on startup, you can exclude large folders to reduce the initial load.")
             }
         }
     });
     configurationRegistry.registerConfiguration({
         'id': 'explorer',
         'order': 8,
-        'title': nls.localize(16, null),
+        'title': nls.localize('explorerConfigurationTitle', "File Explorer configuration"),
         'type': 'object',
         'properties': {
             'explorer.workingFiles.maxVisible': {
                 'type': 'number',
-                'description': nls.localize(17, null),
+                'description': nls.localize('maxVisible', "Maximum number of working files to show before scrollbars appear."),
                 'default': 9
             },
             'explorer.workingFiles.dynamicHeight': {
                 'type': 'boolean',
-                'description': nls.localize(18, null),
+                'description': nls.localize('dynamicHeight', "Controls if the height of the working files section should adapt dynamically to the number of elements or not."),
                 'default': true
             },
             'explorer.autoReveal': {
                 'type': 'boolean',
-                'description': nls.localize(19, null),
+                'description': nls.localize('autoReveal', "Controls if the explorer should automatically reveal files when opening them."),
                 'default': true
             }
         }
@@ -197,7 +197,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
             _super.call(this, actionId, actionLabel, ALL_WORKING_FILES_PREFIX, quickOpenService);
         }
         OpenWorkingFileByNameAction.ID = 'workbench.files.action.workingFilesPicker';
-        OpenWorkingFileByNameAction.LABEL = nls.localize(20, null);
+        OpenWorkingFileByNameAction.LABEL = nls.localize('workingFilesPicker', "Open Working File by Name");
         OpenWorkingFileByNameAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], OpenWorkingFileByNameAction);
@@ -207,11 +207,11 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
         {
             prefix: ALL_WORKING_FILES_PREFIX,
             needsEditor: false,
-            description: nls.localize(21, null)
+            description: nls.localize('openWorkingFile', "Open Working File By Name")
         }
     ]));
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenWorkingFileByNameAction, OpenWorkingFileByNameAction.ID, OpenWorkingFileByNameAction.LABEL, {
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_P)
-    }), nls.localize(22, null));
+    }), nls.localize('filesCategory', "Files"));
 });
 //# sourceMappingURL=files.contribution.js.map

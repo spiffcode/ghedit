@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/languages/json/common/jsonSchemaService', 'vs/base/common/objects', 'vs/base/common/json', 'vs/base/common/http', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/types', 'vs/base/common/winjs.base', 'vs/editor/common/services/resourceService', 'vs/platform/request/common/request', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry'], function (require, exports, nls, Objects, Json, http, Strings, uri_1, Types, WinJS, resourceService_1, request_1, workspace_1, telemetry_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/json', 'vs/base/common/http', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/types', 'vs/base/common/winjs.base', 'vs/editor/common/services/resourceService', 'vs/platform/request/common/request', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry'], function (require, exports, nls, Objects, Json, http, Strings, uri_1, Types, WinJS, resourceService_1, request_1, workspace_1, telemetry_1) {
     'use strict';
     var FilePatternAssociation = (function () {
         function FilePatternAssociation(pattern) {
@@ -253,16 +253,16 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/jsonSchemaService
             return this.requestService.makeRequest({ url: url }).then(function (request) {
                 var content = request.responseText;
                 if (!content) {
-                    var errorMessage = nls.localize(0, null, toDisplayString(url));
+                    var errorMessage = nls.localize('json.schema.nocontent', 'Unable to load schema from \'{0}\': No content.', toDisplayString(url));
                     return new UnresolvedSchema({}, [errorMessage]);
                 }
                 var schemaContent = {};
                 var jsonErrors = [];
                 schemaContent = Json.parse(content, errors);
-                var errors = jsonErrors.length ? [nls.localize(1, null, toDisplayString(url), jsonErrors[0])] : [];
+                var errors = jsonErrors.length ? [nls.localize('json.schema.invalidFormat', 'Unable to parse content from \'{0}\': {1}.', toDisplayString(url), jsonErrors[0])] : [];
                 return new UnresolvedSchema(schemaContent, errors);
             }, function (error) {
-                var errorMessage = nls.localize(2, null, toDisplayString(url), error.responseText || http.getErrorStatusDescription(error.status) || error.toString());
+                var errorMessage = nls.localize('json.schema.unabletoload', 'Unable to load schema from \'{0}\': {1}', toDisplayString(url), error.responseText || http.getErrorStatusDescription(error.status) || error.toString());
                 return new UnresolvedSchema({}, [errorMessage]);
             });
         };
@@ -287,7 +287,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/jsonSchemaService
                     Objects.mixin(node, section, false);
                 }
                 else {
-                    resolveErrors.push(nls.localize(3, null, linkPath, linkedSchema.id));
+                    resolveErrors.push(nls.localize('json.schema.invalidref', '$ref \'{0}\' in {1} can not be resolved.', linkPath, linkedSchema.id));
                 }
                 delete node.$ref;
             };
@@ -295,7 +295,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/jsonSchemaService
                 return _this.getOrAddSchemaHandle(uri).getUnresolvedSchema().then(function (unresolvedSchema) {
                     if (unresolvedSchema.errors.length) {
                         var loc = linkPath ? uri + '#' + linkPath : uri;
-                        resolveErrors.push(nls.localize(4, null, loc, unresolvedSchema.errors[0]));
+                        resolveErrors.push(nls.localize('json.schema.problemloadingref', 'Problems loading reference \'{0}\': {1}', loc, unresolvedSchema.errors[0]));
                     }
                     resolveLink(node, unresolvedSchema.schema, linkPath);
                     return resolveRefs(node, unresolvedSchema.schema);

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/search/browser/openSymbolHandler', 'vs/base/common/async', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/common/filters', 'vs/base/common/labels', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeService', 'vs/workbench/parts/search/common/search'], function (require, exports, winjs_base_1, nls, async_1, quickopen_1, quickOpenModel_1, filters, labels, editorService_1, instantiation_1, workspace_1, modeService_1, search_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/async', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/common/filters', 'vs/base/common/labels', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeService', 'vs/workbench/parts/search/common/search'], function (require, exports, winjs_base_1, nls, async_1, quickopen_1, quickOpenModel_1, filters, labels, editorService_1, instantiation_1, workspace_1, modeService_1, search_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -34,7 +34,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.name + this.parameters;
         };
         SymbolEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, symbols picker", this.getLabel());
         };
         SymbolEntry.prototype.getName = function () {
             return this.name;
@@ -159,13 +159,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return quickOpenModel_1.QuickOpenEntry.compare(elementA, elementB, searchValue);
         };
         OpenSymbolHandler.prototype.getGroupLabel = function () {
-            return nls.localize(1, null);
+            return nls.localize('symbols', "symbol results");
         };
         OpenSymbolHandler.prototype.getEmptyLabel = function (searchString) {
             if (searchString.length > 0) {
-                return nls.localize(2, null);
+                return nls.localize('noSymbolsMatching', "No symbols matching");
             }
-            return nls.localize(3, null);
+            return nls.localize('noSymbolsWithoutInput', "Type to search for symbols");
         };
         OpenSymbolHandler.prototype.getAutoFocus = function (searchValue) {
             return {

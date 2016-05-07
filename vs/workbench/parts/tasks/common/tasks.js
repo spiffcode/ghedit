@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/tasks', 'vs/base/common/types', 'vs/base/common/uuid', 'vs/base/common/parsers', 'vs/base/common/processes', 'vs/platform/markers/common/problemMatcher'], function (require, exports, NLS, Types, UUID, parsers_1, processes_1, problemMatcher_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/types', 'vs/base/common/uuid', 'vs/base/common/parsers', 'vs/base/common/processes', 'vs/platform/markers/common/problemMatcher'], function (require, exports, NLS, Types, UUID, parsers_1, processes_1, problemMatcher_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -59,7 +59,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/tasks', 'v
             }
             if (name === null && trigger === null) {
                 this.status.state = parsers_1.ValidationState.Error;
-                this.log(NLS.localize(0, null));
+                this.log(NLS.localize('TaskParser.nameOrTrigger', 'A task must either define a name or a trigger.'));
                 return null;
             }
             var executable = json.executable ? (new processes_1.ExecutableParser(this.logger, this.status)).parse(json.executable, { emptyCommand: !!parserSettings.emptyCommand }) : null;
@@ -68,7 +68,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/common/tasks', 'v
             }
             if (executable === null && !parserSettings.emptyExecutable) {
                 this.status.state = parsers_1.ValidationState.Error;
-                this.log(NLS.localize(1, null));
+                this.log(NLS.localize('TaskParser.noExecutable', 'A task must must define a valid executable.'));
                 return null;
             }
             var isWatching = false;

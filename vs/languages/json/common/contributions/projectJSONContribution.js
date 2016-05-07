@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/json/common/contributions/projectJSONContribution', 'vs/platform/request/common/request'], function (require, exports, Strings, nls, request_1) {
+define(["require", "exports", 'vs/base/common/strings', 'vs/nls', 'vs/platform/request/common/request'], function (require, exports, Strings, nls, request_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -32,7 +32,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                         'dnxcore50': {}
                     }
                 };
-                result.add({ type: 'snippet', label: nls.localize(0, null), codeSnippet: JSON.stringify(defaultValue, null, '\t'), documentationLabel: '' });
+                result.add({ type: 'snippet', label: nls.localize('json.project.default', 'Default project.json'), codeSnippet: JSON.stringify(defaultValue, null, '\t'), documentationLabel: '' });
             }
             return null;
         };
@@ -88,11 +88,11 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                         }
                     }
                     else {
-                        result.error(nls.localize(1, null, success.responseText));
+                        result.error(nls.localize('json.nugget.error.repoaccess', 'Request to the nuget repository failed: {0}', success.responseText));
                         return 0;
                     }
                 }, function (error) {
-                    result.error(nls.localize(2, null, error.responseText));
+                    result.error(nls.localize('json.nugget.error.repoaccess', 'Request to the nuget repository failed: {0}', error.responseText));
                     return 0;
                 });
             }
@@ -120,7 +120,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                                     var label = name;
                                     var documentationLabel = '';
                                     if (isLatest) {
-                                        documentationLabel = nls.localize(3, null);
+                                        documentationLabel = nls.localize('json.nugget.versiondescription.suggest', 'The currently latest version of the package');
                                     }
                                     result.add({ type: 'class', label: label, codeSnippet: name, documentationLabel: documentationLabel });
                                 }
@@ -143,7 +143,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
             if (this.isProjectJSONFile(resource) && (location.matches(['dependencies', '*']) || location.matches(['frameworks', '*', 'dependencies', '*']) || location.matches(['frameworks', '*', 'frameworkAssemblies', '*']))) {
                 var pack = location.getSegments()[location.getSegments().length - 1];
                 var htmlContent = [];
-                htmlContent.push({ className: 'type', text: nls.localize(4, null, pack) });
+                htmlContent.push({ className: 'type', text: nls.localize('json.nugget.package.hover', '{0}', pack) });
                 var queryUrl = 'https://www.myget.org/F/aspnetrelease/api/v2/Packages?'
                     + '$filter=Id%20eq%20\''
                     + encodeURIComponent(pack)
@@ -162,7 +162,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                                     htmlContent.push({ className: 'documentation', text: res.Description });
                                 }
                                 if (res.Version) {
-                                    htmlContent.push({ className: 'documentation', text: nls.localize(5, null, res.Version) });
+                                    htmlContent.push({ className: 'documentation', text: nls.localize('json.nugget.version.hover', 'Latest version: {0}', res.Version) });
                                 }
                             }
                         }

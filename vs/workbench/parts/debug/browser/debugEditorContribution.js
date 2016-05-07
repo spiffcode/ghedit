@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugEditorContribution', 'vs/base/common/winjs.base', 'vs/base/common/async', 'vs/base/common/lifecycle', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/keyCodes', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/browser/debugHover', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/contextview/browser/contextView'], function (require, exports, nls, winjs_base_1, async_1, lifecycle, env, actions_1, keyCodes_1, editorcommon, debugHover_1, debugactions, debug, contextService_1, instantiation_1, contextView_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/async', 'vs/base/common/lifecycle', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/keyCodes', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/browser/debugHover', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/contextview/browser/contextView'], function (require, exports, nls, winjs_base_1, async_1, lifecycle, env, actions_1, keyCodes_1, editorcommon, debugHover_1, debugactions, debug, contextService_1, instantiation_1, contextView_1) {
     "use strict";
     var HOVER_DELAY = 300;
     var DebugEditorContribution = (function () {
@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugEdit
                 actions.push(this.instantiationService.createInstance(debugactions.ToggleEnablementAction, debugactions.ToggleEnablementAction.ID, debugactions.ToggleEnablementAction.LABEL));
             }
             else {
-                actions.push(new actions_1.Action('addBreakpoint', nls.localize(0, null), null, true, function () { return _this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber }); }));
+                actions.push(new actions_1.Action('addBreakpoint', nls.localize('addBreakpoint', "Add Breakpoint"), null, true, function () { return _this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber }); }));
                 actions.push(this.instantiationService.createInstance(debugactions.AddConditionalBreakpointAction, debugactions.AddConditionalBreakpointAction.ID, debugactions.AddConditionalBreakpointAction.LABEL, this.editor, lineNumber));
             }
             return winjs_base_1.TPromise.as(actions);

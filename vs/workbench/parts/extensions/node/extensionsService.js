@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensionsService', 'os', 'path', 'vs/base/common/types', 'vs/base/common/service', 'vs/base/node/pfs', 'vs/base/common/objects', 'vs/base/common/arrays', 'vs/base/node/zip', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/node/request', 'vs/base/node/proxy', 'vs/workbench/services/workspace/common/contextService', 'vs/base/common/async', 'vs/base/common/event', 'vs/workbench/node/userSettings', 'semver', 'vs/base/common/collections', 'vs/platform/extensions/node/extensionValidator'], function (require, exports, nls, os_1, path, types, service_1, pfs, objects_1, arrays_1, zip_1, winjs_base_1, extensions_1, request_1, proxy_1, contextService_1, async_1, event_1, userSettings_1, semver, collections_1, extensionValidator_1) {
+define(["require", "exports", 'vs/nls', 'os', 'path', 'vs/base/common/types', 'vs/base/common/service', 'vs/base/node/pfs', 'vs/base/common/objects', 'vs/base/common/arrays', 'vs/base/node/zip', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/node/request', 'vs/base/node/proxy', 'vs/workbench/services/workspace/common/contextService', 'vs/base/common/async', 'vs/base/common/event', 'vs/workbench/node/userSettings', 'semver', 'vs/base/common/collections', 'vs/platform/extensions/node/extensionValidator'], function (require, exports, nls, os_1, path, types, service_1, pfs, objects_1, arrays_1, zip_1, winjs_base_1, extensions_1, request_1, proxy_1, contextService_1, async_1, event_1, userSettings_1, semver, collections_1, extensionValidator_1) {
     'use strict';
     function parseManifest(raw) {
         return new winjs_base_1.Promise(function (c, e) {
@@ -19,7 +19,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
                 c(JSON.parse(raw));
             }
             catch (err) {
-                e(new Error(nls.localize(0, null)));
+                e(new Error(nls.localize('invalidManifest', "Extension invalid: package.json is not a JSON file.")));
             }
         });
     }
@@ -30,13 +30,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
             .then(function (manifest) {
             if (extension) {
                 if (extension.name !== manifest.name) {
-                    return winjs_base_1.Promise.wrapError(Error(nls.localize(1, null)));
+                    return winjs_base_1.Promise.wrapError(Error(nls.localize('invalidName', "Extension invalid: manifest name mismatch.")));
                 }
                 if (extension.publisher !== manifest.publisher) {
-                    return winjs_base_1.Promise.wrapError(Error(nls.localize(2, null)));
+                    return winjs_base_1.Promise.wrapError(Error(nls.localize('invalidPublisher', "Extension invalid: manifest publisher mismatch.")));
                 }
                 if (version !== manifest.version) {
-                    return winjs_base_1.Promise.wrapError(Error(nls.localize(3, null)));
+                    return winjs_base_1.Promise.wrapError(Error(nls.localize('invalidVersion', "Extension invalid: manifest version mismatch.")));
                 }
             }
             return winjs_base_1.TPromise.as(manifest);
@@ -88,7 +88,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
             var extension = arg;
             return this.isObsolete(extension).then(function (obsolete) {
                 if (obsolete) {
-                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize(4, null, extension.name)));
+                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize('restartCode', "Please restart Code before reinstalling {0}.", extension.name)));
                 }
                 return _this.installFromGallery(arg);
             });
@@ -97,7 +97,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
             var _this = this;
             var galleryInformation = extension.galleryInformation;
             if (!galleryInformation) {
-                return winjs_base_1.TPromise.wrapError(new Error(nls.localize(5, null)));
+                return winjs_base_1.TPromise.wrapError(new Error(nls.localize('missingGalleryInformation', "Gallery information is missing")));
             }
             this._onInstallExtension.fire(extension);
             return this.getLastValidExtensionVersion(extension, extension.galleryInformation.versions).then(function (versionInfo) {
@@ -121,7 +121,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
         ExtensionsService.prototype.getLastValidExtensionVersion = function (extension, versions) {
             var _this = this;
             if (!versions.length) {
-                return winjs_base_1.TPromise.wrapError(new Error(nls.localize(6, null, extension.displayName)));
+                return winjs_base_1.TPromise.wrapError(new Error(nls.localize('noCompatible', "Couldn't find a compatible version of {0} with this version of Code.", extension.displayName)));
             }
             var version = versions[0];
             return this.request(version.manifestUrl)
@@ -153,7 +153,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/node/extensi
             var _this = this;
             var extensionPath = extension.path || path.join(this.extensionsPath, getExtensionId(extension));
             return pfs.exists(extensionPath)
-                .then(function (exists) { return exists ? null : winjs_base_1.Promise.wrapError(new Error(nls.localize(7, null))); })
+                .then(function (exists) { return exists ? null : winjs_base_1.Promise.wrapError(new Error(nls.localize('notExists', "Could not find extension"))); })
                 .then(function () { return _this._onUninstallExtension.fire(extension); })
                 .then(function () { return _this.setObsolete(extension); })
                 .then(function () { return pfs.rimraf(extensionPath); })

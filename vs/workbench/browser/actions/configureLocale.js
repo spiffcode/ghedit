@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/configureLocale', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/labels', 'vs/base/common/actions', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/files/common/files', 'vs/platform/actions/common/actions'], function (require, exports, nls, Path, uri_1, Labels, actions_1, platform_1, actionRegistry_1, editorService_1, contextService_1, files_1, actions_2) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/labels', 'vs/base/common/actions', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/files/common/files', 'vs/platform/actions/common/actions'], function (require, exports, nls, Path, uri_1, Labels, actions_1, platform_1, actionRegistry_1, editorService_1, contextService_1, files_1, actions_2) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -42,16 +42,16 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/configureLoca
                     }
                 });
             }, function (error) {
-                throw new Error(nls.localize(4, null, Labels.getPathLabel(file, _this.contextService), error));
+                throw new Error(nls.localize('fail.createSettings', "Unable to create '{0}' ({1}).", Labels.getPathLabel(file, _this.contextService), error));
             });
         };
         ConfigureLocaleAction.ID = 'workbench.action.configureLocale';
-        ConfigureLocaleAction.LABEL = nls.localize(0, null);
+        ConfigureLocaleAction.LABEL = nls.localize('configureLocale', "Configure Language");
         ConfigureLocaleAction.DEFAULT_CONTENT = [
             '{',
-            ("\t// " + nls.localize(1, null)),
-            ("\t// " + nls.localize(2, null, 'http://go.microsoft.com/fwlink/?LinkId=761051')),
-            ("\t// " + nls.localize(3, null)),
+            ("\t// " + nls.localize('displayLanguage', 'Defines VSCode\'s display language.')),
+            ("\t// " + nls.localize('doc', 'See {0} for a list of supported languages.', 'http://go.microsoft.com/fwlink/?LinkId=761051')),
+            ("\t// " + nls.localize('restart', 'Changing the value requires to restart VSCode.')),
             "\t\"locale\":\"en-US\"",
             '}'
         ].join('\n');

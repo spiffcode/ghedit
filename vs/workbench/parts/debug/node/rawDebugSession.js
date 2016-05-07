@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSession', 'child_process', 'fs', 'net', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/v8Protocol', 'vs/base/node/stdFork', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, cp, fs, net, platform, actions_1, errors, winjs_base_1, severity_1, debug, v8, stdfork, message_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/v8Protocol', 'vs/base/node/stdFork', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, cp, fs, net, platform, actions_1, errors, winjs_base_1, severity_1, debug, v8, stdfork, message_1, electron_1) {
     "use strict";
     var RawDebugSession = (function (_super) {
         __extends(RawDebugSession, _super);
@@ -47,7 +47,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSess
                         _this.telemtryAdapter.log('debugProtocolErrorResponse', { error: message });
                     }
                     if (error && error.url) {
-                        var label = error.urlLabel ? error.urlLabel : nls.localize(0, null);
+                        var label = error.urlLabel ? error.urlLabel : nls.localize('moreInfo', "More Info");
                         return winjs_base_1.TPromise.wrapError(errors.create(message, { actions: [message_1.CloseAction, new actions_1.Action('debug.moreInfo', label, null, true, function () {
                                     electron_1.shell.openExternal(error.url);
                                     return winjs_base_1.TPromise.as(null);
@@ -178,7 +178,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSess
         RawDebugSession.prototype.startServer = function () {
             var _this = this;
             if (!this.adapter.program) {
-                return winjs_base_1.TPromise.wrapError(new Error(nls.localize(1, null, this.adapter.type)));
+                return winjs_base_1.TPromise.wrapError(new Error(nls.localize('noDebugAdapterExtensionInstalled', "No extension installed for '{0}' debugging.", this.adapter.type)));
             }
             return this.getLaunchDetails().then(function (d) { return _this.launchServer(d).then(function () {
                 _this.serverProcess.on('error', function (err) { return _this.onServerError(err); });
@@ -199,7 +199,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSess
                 if (launch.command === 'node') {
                     stdfork.fork(launch.argv[0], launch.argv.slice(1), {}, function (err, child) {
                         if (err) {
-                            e(new Error(nls.localize(2, null, launch.argv[0])));
+                            e(new Error(nls.localize('unableToLaunchDebugAdapter', "Unable to launch debug adapter from '{0}'.", launch.argv[0])));
                         }
                         _this.serverProcess = child;
                         c(null);
@@ -257,7 +257,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSess
                         c(null);
                     }
                     else {
-                        e(new Error(nls.localize(3, null, _this.adapter.program)));
+                        e(new Error(nls.localize('debugAdapterBinNotFound', "Debug adapter executable '{0}' not found.", _this.adapter.program)));
                     }
                 });
             }).then(function () {
@@ -274,14 +274,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/rawDebugSess
             });
         };
         RawDebugSession.prototype.onServerError = function (err) {
-            this.messageService.show(severity_1.default.Error, nls.localize(4, null, err.message));
+            this.messageService.show(severity_1.default.Error, nls.localize('stoppingDebugAdapter', "{0}. Stopping the debug adapter.", err.message));
             this.stopServer().done(null, errors.onUnexpectedError);
         };
         RawDebugSession.prototype.onServerExit = function () {
             this.serverProcess = null;
             this.cachedInitServer = null;
             if (!this.stopServerPending) {
-                this.messageService.show(severity_1.default.Error, nls.localize(5, null));
+                this.messageService.show(severity_1.default.Error, nls.localize('debugAdapterCrash', "Debug adapter process has terminated unexpectedly"));
             }
             this.emit(debug.SessionEvents.SERVER_EXIT);
         };

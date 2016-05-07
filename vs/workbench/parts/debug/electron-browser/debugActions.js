@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/debugActions', 'vs/base/common/actions', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/common/events', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/viewlet/common/viewletService', 'electron'], function (require, exports, nls, actions, lifecycle, winjs_base_1, range_1, editorAction_1, editorActionEnablement_1, event_1, keybindingService_1, events_1, debug, model, partService_1, panelService_1, viewletService_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/common/events', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/viewlet/common/viewletService', 'electron'], function (require, exports, nls, actions, lifecycle, winjs_base_1, range_1, editorAction_1, editorActionEnablement_1, event_1, keybindingService_1, events_1, debug, model, partService_1, panelService_1, viewletService_1, electron_1) {
     "use strict";
     var IDebugService = debug.IDebugService;
     var AbstractDebugAction = (function (_super) {
@@ -40,7 +40,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
         };
         AbstractDebugAction.prototype.updateLabel = function (newLabel) {
             if (this.keybinding) {
-                this.label = nls.localize(0, null, newLabel, this.keybinding);
+                this.label = nls.localize('debugActionLabelAndKeybinding', "{0} ({1})", newLabel, this.keybinding);
             }
             else {
                 this.label = newLabel;
@@ -78,7 +78,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.openConfigFile(sideBySide);
         };
         ConfigureAction.ID = 'workbench.action.debug.configure';
-        ConfigureAction.LABEL = nls.localize(1, null, 'launch.json');
+        ConfigureAction.LABEL = nls.localize('openLaunchJson', "Open {0}", 'launch.json');
         ConfigureAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -98,7 +98,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
         };
         SelectConfigAction.ID = 'workbench.debug.action.setActiveConfig';
-        SelectConfigAction.LABEL = nls.localize(2, null);
+        SelectConfigAction.LABEL = nls.localize('selectConfig', "Select Configuration");
         SelectConfigAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -119,7 +119,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
         };
         StartDebugAction.ID = 'workbench.action.debug.start';
-        StartDebugAction.LABEL = nls.localize(3, null);
+        StartDebugAction.LABEL = nls.localize('startDebug', "Start Debugging");
         StartDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -147,8 +147,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() !== debug.State.Inactive;
         };
         RestartDebugAction.ID = 'workbench.action.debug.restart';
-        RestartDebugAction.LABEL = nls.localize(4, null);
-        RestartDebugAction.RECONNECT_LABEL = nls.localize(5, null);
+        RestartDebugAction.LABEL = nls.localize('restartDebug', "Restart");
+        RestartDebugAction.RECONNECT_LABEL = nls.localize('reconnectDebug', "Reconnect");
         RestartDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -168,7 +168,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
         };
         StepOverDebugAction.ID = 'workbench.action.debug.stepOver';
-        StepOverDebugAction.LABEL = nls.localize(6, null);
+        StepOverDebugAction.LABEL = nls.localize('stepOverDebug', "Step Over");
         StepOverDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -188,7 +188,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
         };
         StepIntoDebugAction.ID = 'workbench.action.debug.stepInto';
-        StepIntoDebugAction.LABEL = nls.localize(7, null);
+        StepIntoDebugAction.LABEL = nls.localize('stepIntoDebug', "Step Into");
         StepIntoDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -208,7 +208,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
         };
         StepOutDebugAction.ID = 'workbench.action.debug.stepOut';
-        StepOutDebugAction.LABEL = nls.localize(8, null);
+        StepOutDebugAction.LABEL = nls.localize('stepOutDebug', "Step Out");
         StepOutDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -236,8 +236,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() !== debug.State.Inactive;
         };
         StopDebugAction.ID = 'workbench.action.debug.stop';
-        StopDebugAction.LABEL = nls.localize(9, null);
-        StopDebugAction.DISCONNECT_LABEL = nls.localize(10, null);
+        StopDebugAction.LABEL = nls.localize('stopDebug', "Stop");
+        StopDebugAction.DISCONNECT_LABEL = nls.localize('disconnectDebug', "Disconnect");
         StopDebugAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -257,7 +257,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
         };
         ContinueAction.ID = 'workbench.action.debug.continue';
-        ContinueAction.LABEL = nls.localize(11, null);
+        ContinueAction.LABEL = nls.localize('continueDebug', "Continue");
         ContinueAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -277,7 +277,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Running;
         };
         PauseAction.ID = 'workbench.action.debug.pause';
-        PauseAction.LABEL = nls.localize(12, null);
+        PauseAction.LABEL = nls.localize('pauseDebug', "Pause");
         PauseAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -296,7 +296,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 : this.debugService.removeFunctionBreakpoints(breakpoint.getId());
         };
         RemoveBreakpointAction.ID = 'workbench.debug.viewlet.action.removeBreakpoint';
-        RemoveBreakpointAction.LABEL = nls.localize(13, null);
+        RemoveBreakpointAction.LABEL = nls.localize('removeBreakpoint', "Remove Breakpoint");
         RemoveBreakpointAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -318,7 +318,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && (this.debugService.getModel().getBreakpoints().length > 0 || this.debugService.getModel().getFunctionBreakpoints().length > 0);
         };
         RemoveAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.removeAllBreakpoints';
-        RemoveAllBreakpointsAction.LABEL = nls.localize(14, null);
+        RemoveAllBreakpointsAction.LABEL = nls.localize('removeAllBreakpoints', "Remove All Breakpoints");
         RemoveAllBreakpointsAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -335,7 +335,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.toggleEnablement(element);
         };
         ToggleEnablementAction.ID = 'workbench.debug.viewlet.action.toggleBreakpointEnablement';
-        ToggleEnablementAction.LABEL = nls.localize(15, null);
+        ToggleEnablementAction.LABEL = nls.localize('toggleEnablement', "Enable/Disable Breakpoint");
         ToggleEnablementAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -358,7 +358,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return !bp.enabled; });
         };
         EnableAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.enableAllBreakpoints';
-        EnableAllBreakpointsAction.LABEL = nls.localize(16, null);
+        EnableAllBreakpointsAction.LABEL = nls.localize('enableAllBreakpoints', "Enable All Breakpoints");
         EnableAllBreakpointsAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -381,7 +381,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return bp.enabled; });
         };
         DisableAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.disableAllBreakpoints';
-        DisableAllBreakpointsAction.LABEL = nls.localize(17, null);
+        DisableAllBreakpointsAction.LABEL = nls.localize('disableAllBreakpoints', "Disable All Breakpoints");
         DisableAllBreakpointsAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -407,8 +407,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return (this.debugService.getModel().getFunctionBreakpoints().length + this.debugService.getModel().getBreakpoints().length) > 0;
         };
         ToggleBreakpointsActivatedAction.ID = 'workbench.debug.viewlet.action.toggleBreakpointsActivatedAction';
-        ToggleBreakpointsActivatedAction.ACTIVATE_LABEL = nls.localize(18, null);
-        ToggleBreakpointsActivatedAction.DEACTIVATE_LABEL = nls.localize(19, null);
+        ToggleBreakpointsActivatedAction.ACTIVATE_LABEL = nls.localize('activateBreakpoints', "Activate Breakpoints");
+        ToggleBreakpointsActivatedAction.DEACTIVATE_LABEL = nls.localize('deactivateBreakpoints', "Deactivate Breakpoints");
         ToggleBreakpointsActivatedAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -431,7 +431,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 ((this.debugService.getModel().getFunctionBreakpoints().length + this.debugService.getModel().getBreakpoints().length) > 0);
         };
         ReapplyBreakpointsAction.ID = 'workbench.debug.viewlet.action.reapplyBreakpointsAction';
-        ReapplyBreakpointsAction.LABEL = nls.localize(20, null);
+        ReapplyBreakpointsAction.LABEL = nls.localize('reapplyAllBreakpoints', "Reapply All Breakpoints");
         ReapplyBreakpointsAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -449,7 +449,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         AddFunctionBreakpointAction.ID = 'workbench.debug.viewlet.action.addFunctionBreakpointAction';
-        AddFunctionBreakpointAction.LABEL = nls.localize(21, null);
+        AddFunctionBreakpointAction.LABEL = nls.localize('addFunctionBreakpoint', "Add Function Breakpoint");
         AddFunctionBreakpointAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -467,7 +467,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         RenameFunctionBreakpointAction.ID = 'workbench.debug.viewlet.action.renameFunctionBreakpointAction';
-        RenameFunctionBreakpointAction.LABEL = nls.localize(22, null);
+        RenameFunctionBreakpointAction.LABEL = nls.localize('renameFunctionBreakpoint', "Rename Function Breakpoint");
         RenameFunctionBreakpointAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -486,7 +486,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.editBreakpoint(this.editor, this.lineNumber);
         };
         AddConditionalBreakpointAction.ID = 'workbench.debug.viewlet.action.addConditionalBreakpointAction';
-        AddConditionalBreakpointAction.LABEL = nls.localize(23, null);
+        AddConditionalBreakpointAction.LABEL = nls.localize('addConditionalBreakpoint', "Add Conditional Breakpoint");
         AddConditionalBreakpointAction = __decorate([
             __param(4, IDebugService),
             __param(5, keybindingService_1.IKeybindingService)
@@ -505,7 +505,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.editBreakpoint(this.editor, this.lineNumber);
         };
         EditConditionalBreakpointAction.ID = 'workbench.debug.viewlet.action.editConditionalBreakpointAction';
-        EditConditionalBreakpointAction.LABEL = nls.localize(24, null);
+        EditConditionalBreakpointAction.LABEL = nls.localize('editConditionalBreakpoint', "Edit Breakpoint");
         EditConditionalBreakpointAction = __decorate([
             __param(4, IDebugService),
             __param(5, keybindingService_1.IKeybindingService)
@@ -577,7 +577,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         CopyValueAction.ID = 'workbench.debug.viewlet.action.copyValue';
-        CopyValueAction.LABEL = nls.localize(25, null);
+        CopyValueAction.LABEL = nls.localize('copyValue', "Copy Value");
         CopyValueAction = __decorate([
             __param(3, IDebugService),
             __param(4, keybindingService_1.IKeybindingService)
@@ -638,7 +638,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getModel().getWatchExpressions().every(function (we) { return !!we.name; });
         };
         AddWatchExpressionAction.ID = 'workbench.debug.viewlet.action.addWatchExpression';
-        AddWatchExpressionAction.LABEL = nls.localize(26, null);
+        AddWatchExpressionAction.LABEL = nls.localize('addWatchExpression', "Add Expression");
         AddWatchExpressionAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -727,7 +727,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.addWatchExpression(model.getFullExpressionName(this.expression, this.debugService.getActiveSession().getType()));
         };
         AddToWatchExpressionsAction.ID = 'workbench.debug.viewlet.action.addToWatchExpressions';
-        AddToWatchExpressionsAction.LABEL = nls.localize(27, null);
+        AddToWatchExpressionsAction.LABEL = nls.localize('addToWatchExpressions', "Add to Watch");
         AddToWatchExpressionsAction = __decorate([
             __param(3, IDebugService),
             __param(4, keybindingService_1.IKeybindingService)
@@ -746,7 +746,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         RenameWatchExpressionAction.ID = 'workbench.debug.viewlet.action.renameWatchExpression';
-        RenameWatchExpressionAction.LABEL = nls.localize(28, null);
+        RenameWatchExpressionAction.LABEL = nls.localize('renameWatchExpression', "Rename Expression");
         RenameWatchExpressionAction = __decorate([
             __param(3, IDebugService),
             __param(4, keybindingService_1.IKeybindingService)
@@ -764,7 +764,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         RemoveWatchExpressionAction.ID = 'workbench.debug.viewlet.action.removeWatchExpression';
-        RemoveWatchExpressionAction.LABEL = nls.localize(29, null);
+        RemoveWatchExpressionAction.LABEL = nls.localize('removeWatchExpression', "Remove Expression");
         RemoveWatchExpressionAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -787,7 +787,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getModel().getWatchExpressions().length > 0;
         };
         RemoveAllWatchExpressionsAction.ID = 'workbench.debug.viewlet.action.removeAllWatchExpressions';
-        RemoveAllWatchExpressionsAction.LABEL = nls.localize(30, null);
+        RemoveAllWatchExpressionsAction.LABEL = nls.localize('removeAllWatchExpressions', "Remove All Expressions");
         RemoveAllWatchExpressionsAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -806,7 +806,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.debugService.revealRepl();
         };
         ClearReplAction.ID = 'workbench.debug.panel.action.clearReplAction';
-        ClearReplAction.LABEL = nls.localize(31, null);
+        ClearReplAction.LABEL = nls.localize('clearRepl', "Clear Console");
         ClearReplAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -824,7 +824,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return winjs_base_1.TPromise.as(null);
         };
         CopyAction.ID = 'workbench.debug.action.copy';
-        CopyAction.LABEL = nls.localize(32, null);
+        CopyAction.LABEL = nls.localize('copy', "Copy");
         return CopyAction;
     }(actions.Action));
     exports.CopyAction = CopyAction;
@@ -863,7 +863,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return panel && panel.getId() === debug.REPL_ID;
         };
         ToggleReplAction.ID = 'workbench.debug.action.toggleRepl';
-        ToggleReplAction.LABEL = nls.localize(33, null);
+        ToggleReplAction.LABEL = nls.localize('toggleRepl', "Debug Console");
         ToggleReplAction = __decorate([
             __param(2, IDebugService),
             __param(3, partService_1.IPartService),
@@ -886,7 +886,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
         };
         RunAction.ID = 'workbench.action.debug.run';
-        RunAction.LABEL = nls.localize(34, null);
+        RunAction.LABEL = nls.localize('startWithoutDebugging', "Start Without Debugging");
         RunAction = __decorate([
             __param(2, IDebugService),
             __param(3, keybindingService_1.IKeybindingService)

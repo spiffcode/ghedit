@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platform/files/common/files', 'vs/base/common/strings', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/node/extfs', 'vs/base/common/async', 'vs/base/common/uri', 'vs/nls!vs/workbench/services/files/node/fileService', 'vs/base/node/pfs', 'vs/base/node/encoding', 'vs/base/node/mime', 'vs/base/node/flow', 'vs/workbench/services/files/node/watcher/unix/watcherService', 'vs/workbench/services/files/node/watcher/win32/watcherService', 'vs/workbench/services/files/node/watcher/common'], function (require, exports, paths, fs, os, crypto, assert, files, strings, arrays, baseMime, basePaths, winjs_base_1, types, objects, extfs, async_1, uri_1, nls, pfs, encoding, mime, flow, watcherService_1, watcherService_2, common_1) {
+define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platform/files/common/files', 'vs/base/common/strings', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/node/extfs', 'vs/base/common/async', 'vs/base/common/uri', 'vs/nls', 'vs/base/node/pfs', 'vs/base/node/encoding', 'vs/base/node/mime', 'vs/base/node/flow', 'vs/workbench/services/files/node/watcher/unix/watcherService', 'vs/workbench/services/files/node/watcher/win32/watcherService', 'vs/workbench/services/files/node/watcher/common'], function (require, exports, paths, fs, os, crypto, assert, files, strings, arrays, baseMime, basePaths, winjs_base_1, types, objects, extfs, async_1, uri_1, nls, pfs, encoding, mime, flow, watcherService_1, watcherService_2, common_1) {
     'use strict';
     function etag(arg1, arg2) {
         var size;
@@ -72,7 +72,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
                 // Return error early if client only accepts text and this is not text
                 if (options && options.acceptTextOnly && !isText) {
                     return winjs_base_1.TPromise.wrapError({
-                        message: nls.localize(0, null),
+                        message: nls.localize('fileBinaryError', "File seems to be binary and cannot be opened as text"),
                         fileOperationResult: files.FileOperationResult.FILE_IS_BINARY
                     });
                 }
@@ -112,7 +112,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
                     // Return if file not found
                     if (!exists) {
                         return winjs_base_1.TPromise.wrapError({
-                            message: nls.localize(1, null, absolutePath),
+                            message: nls.localize('fileNotFoundError', "File not found ({0})", absolutePath),
                             fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
                         });
                     }
@@ -120,7 +120,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
                     return pfs.stat(absolutePath).then(function (stat) {
                         if (stat.isDirectory()) {
                             return winjs_base_1.TPromise.wrapError({
-                                message: nls.localize(2, null, absolutePath),
+                                message: nls.localize('fileIsDirectoryError', "File is directory ({0})", absolutePath),
                                 fileOperationResult: files.FileOperationResult.FILE_IS_DIRECTORY
                             });
                         }
@@ -239,7 +239,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
                 var deleteTargetPromise = winjs_base_1.TPromise.as(null);
                 if (exists && !isCaseRename) {
                     if (basePaths.isEqualOrParent(sourcePath, targetPath)) {
-                        return winjs_base_1.TPromise.wrapError(nls.localize(3, null)); // catch this corner case!
+                        return winjs_base_1.TPromise.wrapError(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in.")); // catch this corner case!
                     }
                     deleteTargetPromise = _this.del(uri_1.default.file(targetPath));
                 }
@@ -268,7 +268,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
             // 1.) resolve
             return pfs.stat(sourcePath).then(function (stat) {
                 if (stat.isDirectory()) {
-                    return winjs_base_1.TPromise.wrapError(nls.localize(4, null)); // for now we do not allow to import a folder into a workspace
+                    return winjs_base_1.TPromise.wrapError(nls.localize('foldersCopyError', "Folders cannot be copied into the workspace. Please select individual files to copy them.")); // for now we do not allow to import a folder into a workspace
                 }
                 // 2.) copy
                 return _this.doMoveOrCopyFile(sourcePath, targetPath, true, true).then(function (exists) {
@@ -401,7 +401,7 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
                         // Throw if file is readonly and we are not instructed to overwrite
                         if (readonly && !options.overwriteReadonly) {
                             return winjs_base_1.TPromise.wrapError({
-                                message: nls.localize(5, null),
+                                message: nls.localize('fileReadOnlyError', "File is Read Only"),
                                 fileOperationResult: files.FileOperationResult.FILE_READ_ONLY
                             });
                         }

@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenchContributions', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/workbench/common/contributions', 'vs/workbench/parts/git/common/git', 'vs/workbench/common/events', 'vs/editor/common/editorCommon', 'vs/editor/browser/widget/codeEditorWidget', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/parts/statusbar/statusbar', 'vs/platform/platform', 'vs/workbench/parts/git/browser/gitWidgets', 'vs/workbench/common/actionRegistry', 'vs/workbench/parts/git/browser/gitOutput', 'vs/workbench/parts/output/common/output', 'vs/platform/actions/common/actions', 'vs/editor/browser/editorBrowserExtensions', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/git/browser/gitEditorContributions', 'vs/workbench/services/activity/common/activityService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/base/common/keyCodes', 'vs/editor/common/services/modelService', 'vs/editor/common/model/textModel', 'vs/editor/common/services/editorWorkerService', 'vs/css!./media/git.contribution'], function (require, exports, nls, async, errors, paths, lifecycle, winjs, ext, git, workbenchEvents, common, widget, viewlet, statusbar, platform, widgets, wbar, gitoutput, output, actions_1, editorBrowserExtensions_1, confregistry, quickopen, editorcontrib, activityService_1, event_1, instantiation_1, message_1, workspace_1, viewletService_1, editorService_1, keyCodes_1, modelService_1, textModel_1, editorWorkerService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/workbench/common/contributions', 'vs/workbench/parts/git/common/git', 'vs/workbench/common/events', 'vs/editor/common/editorCommon', 'vs/editor/browser/widget/codeEditorWidget', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/parts/statusbar/statusbar', 'vs/platform/platform', 'vs/workbench/parts/git/browser/gitWidgets', 'vs/workbench/common/actionRegistry', 'vs/workbench/parts/git/browser/gitOutput', 'vs/workbench/parts/output/common/output', 'vs/platform/actions/common/actions', 'vs/editor/browser/editorBrowserExtensions', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/git/browser/gitEditorContributions', 'vs/workbench/services/activity/common/activityService', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/base/common/keyCodes', 'vs/editor/common/services/modelService', 'vs/editor/common/model/textModel', 'vs/editor/common/services/editorWorkerService', 'vs/css!./media/git.contribution'], function (require, exports, nls, async, errors, paths, lifecycle, winjs, ext, git, workbenchEvents, common, widget, viewlet, statusbar, platform, widgets, wbar, gitoutput, output, actions_1, editorBrowserExtensions_1, confregistry, quickopen, editorcontrib, activityService_1, event_1, instantiation_1, message_1, workspace_1, viewletService_1, editorService_1, keyCodes_1, modelService_1, textModel_1, editorWorkerService_1) {
     'use strict';
     var IGitService = git.IGitService;
     var StatusUpdater = (function () {
@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenc
             }
             else {
                 this.progressBadgeDelayer.trigger(function () {
-                    _this.activityService.showActivity('workbench.view.git', new activityService_1.ProgressBadge(function () { return nls.localize(0, null); }), 'git-viewlet-label-progress');
+                    _this.activityService.showActivity('workbench.view.git', new activityService_1.ProgressBadge(function () { return nls.localize('gitProgressBadge', 'Running git status'); }), 'git-viewlet-label-progress');
                 });
             }
         };
@@ -49,7 +49,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenc
             var count = this.gitService.getModel().getStatus().getGroups().map(function (g1) {
                 return g1.all().length;
             }).reduce(function (a, b) { return a + b; }, 0);
-            var badge = new activityService_1.NumberBadge(count, function (num) { return nls.localize(1, null, num); });
+            var badge = new activityService_1.NumberBadge(count, function (num) { return nls.localize('gitPendingChangesBadge', '{0} pending changes', num); });
             this.progressBadgeDelayer.cancel();
             this.activityService.showActivity('workbench.view.git', badge, 'git-viewlet-label');
         };
@@ -329,7 +329,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenc
             _super.call(this, id, label, exports.VIEWLET_ID, viewletService, editorService);
         }
         OpenGitViewletAction.ID = exports.VIEWLET_ID;
-        OpenGitViewletAction.LABEL = nls.localize(2, null);
+        OpenGitViewletAction.LABEL = nls.localize('toggleGitViewlet', "Show Git");
         OpenGitViewletAction = __decorate([
             __param(2, viewletService_1.IViewletService),
             __param(3, editorService_1.IWorkbenchEditorService)
@@ -341,18 +341,18 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenc
         platform.Registry.as(statusbar.Extensions.Statusbar).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(widgets.GitStatusbarItem, statusbar.StatusbarAlignment.LEFT, 100 /* High Priority */));
         // Register Output Channel
         var outputChannelRegistry = platform.Registry.as(output.Extensions.OutputChannels);
-        outputChannelRegistry.registerChannel('Git', nls.localize(3, null));
+        outputChannelRegistry.registerChannel('Git', nls.localize('git', "Git"));
         // Register Git Output
         platform.Registry.as(ext.Extensions.Workbench).registerWorkbenchContribution(gitoutput.GitOutput);
         // Register Viewlet
-        platform.Registry.as(viewlet.Extensions.Viewlets).registerViewlet(new viewlet.ViewletDescriptor('vs/workbench/parts/git/browser/gitViewlet', 'GitViewlet', exports.VIEWLET_ID, nls.localize(4, null), 'git', 35));
+        platform.Registry.as(viewlet.Extensions.Viewlets).registerViewlet(new viewlet.ViewletDescriptor('vs/workbench/parts/git/browser/gitViewlet', 'GitViewlet', exports.VIEWLET_ID, nls.localize('git', "Git"), 'git', 35));
         // Register Action to Open Viewlet
         platform.Registry.as(wbar.Extensions.WorkbenchActions).registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenGitViewletAction, OpenGitViewletAction.ID, OpenGitViewletAction.LABEL, {
             primary: null,
             win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G },
             linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G },
             mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G }
-        }), nls.localize(5, null));
+        }), nls.localize('view', "View"));
         // Register MergeDecorator
         editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(editorcontrib.MergeDecorator);
         // Register StatusUpdater
@@ -360,28 +360,28 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitWorkbenc
         // Register DirtyDiffDecorator
         platform.Registry.as(ext.Extensions.Workbench).registerWorkbenchContribution(DirtyDiffDecorator);
         // Register Quick Open for git
-        platform.Registry.as(quickopen.Extensions.Quickopen).registerQuickOpenHandler(new quickopen.QuickOpenHandlerDescriptor('vs/workbench/parts/git/browser/gitQuickOpen', 'CommandQuickOpenHandler', 'git ', nls.localize(6, null)));
+        platform.Registry.as(quickopen.Extensions.Quickopen).registerQuickOpenHandler(new quickopen.QuickOpenHandlerDescriptor('vs/workbench/parts/git/browser/gitQuickOpen', 'CommandQuickOpenHandler', 'git ', nls.localize('gitCommands', "Git Commands")));
         // Register configuration
         var configurationRegistry = platform.Registry.as(confregistry.Extensions.Configuration);
         configurationRegistry.registerConfiguration({
             id: 'git',
             order: 10,
-            title: nls.localize(7, null),
+            title: nls.localize('gitConfigurationTitle', "Git configuration"),
             type: 'object',
             properties: {
                 'git.enabled': {
                     type: 'boolean',
-                    description: nls.localize(8, null),
+                    description: nls.localize('gitEnabled', "Is git enabled"),
                     default: true
                 },
                 'git.path': {
                     type: ['string', 'null'],
-                    description: nls.localize(9, null),
+                    description: nls.localize('gitPath', "Path to the git executable"),
                     default: null
                 },
                 'git.autofetch': {
                     type: 'boolean',
-                    description: nls.localize(10, null),
+                    description: nls.localize('gitAutoFetch', "Whether auto fetching is enabled."),
                     default: true
                 }
             }

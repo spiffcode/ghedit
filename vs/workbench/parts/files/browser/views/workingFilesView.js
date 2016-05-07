@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/workingFilesView', 'vs/base/browser/builder', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/editor', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/parts/files/common/files', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/workbench/common/events', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/views/workingFilesViewer', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message'], function (require, exports, nls, builder_1, treeImpl_1, workbenchEditorCommon, splitview_1, files_1, DOM, errors, events_1, viewlet_1, fileActions_1, workingFilesViewer_1, editorService_1, configuration_1, event_1, instantiation_1, contextView_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/editor', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/parts/files/common/files', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/workbench/common/events', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/browser/views/workingFilesViewer', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message'], function (require, exports, nls, builder_1, treeImpl_1, workbenchEditorCommon, splitview_1, files_1, DOM, errors, events_1, viewlet_1, fileActions_1, workingFilesViewer_1, editorService_1, configuration_1, event_1, instantiation_1, contextView_1, message_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -21,7 +21,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/wor
     var WorkingFilesView = (function (_super) {
         __extends(WorkingFilesView, _super);
         function WorkingFilesView(actionRunner, settings, eventService, instantiationService, messageService, contextMenuService, textFileService, editorService, configurationService) {
-            _super.call(this, actionRunner, WorkingFilesView.computeExpandedBodySize(textFileService.getWorkingFilesModel()), !!settings[WorkingFilesView.MEMENTO_COLLAPSED], nls.localize(0, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, WorkingFilesView.computeExpandedBodySize(textFileService.getWorkingFilesModel()), !!settings[WorkingFilesView.MEMENTO_COLLAPSED], nls.localize('workingFilesSection', "Working Files Section"), messageService, contextMenuService);
             this.eventService = eventService;
             this.instantiationService = instantiationService;
             this.textFileService = textFileService;
@@ -34,7 +34,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/wor
         }
         WorkingFilesView.prototype.renderHeader = function (container) {
             var titleDiv = builder_1.$('div.title').appendTo(container);
-            builder_1.$('span').text(nls.localize(1, null)).appendTo(titleDiv);
+            builder_1.$('span').text(nls.localize('workingFiles', "Working Files")).appendTo(titleDiv);
             this.dirtyCountElement = builder_1.$('div.monaco-count-badge').appendTo(titleDiv).hide().getHTMLElement();
             this.updateDirtyIndicator();
             _super.prototype.renderHeader.call(this, container);
@@ -129,7 +129,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/wor
                 builder_1.$(this.dirtyCountElement).hide();
             }
             else {
-                var label = nls.localize(2, null, dirty);
+                var label = nls.localize('dirtyCounter', "{0} unsaved", dirty);
                 builder_1.$(this.dirtyCountElement).show().text(label).title(label);
             }
         };
@@ -223,7 +223,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/wor
             }, {
                 indentPixels: 0,
                 twistiePixels: 8,
-                ariaLabel: nls.localize(3, null)
+                ariaLabel: nls.localize('treeAriaLabel', "Working Files")
             });
             this.tree.setInput(this.model);
             return this.tree;

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'electron', 'fs', 'vs/nls!vs/workbench/electron-main/main', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/lifecycle', 'vs/workbench/electron-main/menus', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager', 'vs/base/node/service.net', 'vs/base/node/env', 'vs/base/common/winjs.base', 'vs/workbench/parts/git/electron-main/askpassService', 'vs/workbench/electron-main/sharedProcess'], function (require, exports, electron_1, fs, nls, objects_1, platform, env, windows, lifecycle, menu, settings, update_manager_1, service_net_1, env_1, winjs_base_1, askpassService_1, sharedProcess_1) {
+define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/lifecycle', 'vs/workbench/electron-main/menus', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager', 'vs/base/node/service.net', 'vs/base/node/env', 'vs/base/common/winjs.base', 'vs/workbench/parts/git/electron-main/askpassService', 'vs/workbench/electron-main/sharedProcess'], function (require, exports, electron_1, fs, nls, objects_1, platform, env, windows, lifecycle, menu, settings, update_manager_1, service_net_1, env_1, winjs_base_1, askpassService_1, sharedProcess_1) {
     'use strict';
     var LaunchService = (function () {
         function LaunchService() {
@@ -132,7 +132,7 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls!vs/workbench/electron-ma
         if (platform.isWindows && env.isBuilt) {
             electron_1.app.setUserTasks([
                 {
-                    title: nls.localize(0, null),
+                    title: nls.localize('newWindow', "New Window"),
                     program: process.execPath,
                     arguments: '-n',
                     iconPath: process.execPath,

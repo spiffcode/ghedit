@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/languages/json/common/json', 'vs/languages/json/common/features/tokenization', 'vs/editor/common/modes/abstractMode', 'vs/platform/thread/common/threadService', 'vs/platform/thread/common/thread', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/modes/supports/richEditSupport', 'vs/editor/common/modes/supports/suggestSupport'], function (require, exports, Platform, nls, tokenization, abstractMode_1, threadService_1, thread_1, jsonContributionRegistry_1, instantiation_1, richEditSupport_1, suggestSupport_1) {
+define(["require", "exports", 'vs/platform/platform', 'vs/nls', 'vs/languages/json/common/features/tokenization', 'vs/editor/common/modes/abstractMode', 'vs/platform/thread/common/threadService', 'vs/platform/thread/common/thread', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/modes/supports/richEditSupport', 'vs/editor/common/modes/supports/suggestSupport'], function (require, exports, Platform, nls, tokenization, abstractMode_1, threadService_1, thread_1, jsonContributionRegistry_1, instantiation_1, richEditSupport_1, suggestSupport_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -50,12 +50,12 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/languages/json/
             // Initialize Outline support
             this.outlineSupport = this;
             this.outlineGroupLabel = Object.create(null);
-            this.outlineGroupLabel['object'] = nls.localize(0, null);
-            this.outlineGroupLabel['array'] = nls.localize(1, null);
-            this.outlineGroupLabel['string'] = nls.localize(2, null);
-            this.outlineGroupLabel['number'] = nls.localize(3, null);
-            this.outlineGroupLabel['boolean'] = nls.localize(4, null);
-            this.outlineGroupLabel['null'] = nls.localize(5, null);
+            this.outlineGroupLabel['object'] = nls.localize('object', "objects");
+            this.outlineGroupLabel['array'] = nls.localize('array', "arrays");
+            this.outlineGroupLabel['string'] = nls.localize('string', "strings");
+            this.outlineGroupLabel['number'] = nls.localize('number', "numbers");
+            this.outlineGroupLabel['boolean'] = nls.localize('boolean', "booleans");
+            this.outlineGroupLabel['null'] = nls.localize('undefined', "undefined");
             this.formattingSupport = this;
             this.suggestSupport = new suggestSupport_1.SuggestSupport(this.getId(), {
                 triggerCharacters: [],

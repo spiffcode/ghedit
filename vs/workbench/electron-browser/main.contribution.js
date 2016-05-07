@@ -2,12 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/workbench/electron-browser/main.contribution', 'vs/platform/actions/common/actions', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/common/actionRegistry', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/message/browser/messageService', 'vs/workbench/electron-browser/actions'], function (require, exports, platform_1, nls, actions_1, configurationRegistry_1, actionRegistry_1, keyCodes_1, platform, keybindingService_1, messageService_1, actions_2) {
+define(["require", "exports", 'vs/platform/platform', 'vs/nls', 'vs/platform/actions/common/actions', 'vs/platform/configuration/common/configurationRegistry', 'vs/workbench/common/actionRegistry', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/message/browser/messageService', 'vs/workbench/electron-browser/actions'], function (require, exports, platform_1, nls, actions_1, configurationRegistry_1, actionRegistry_1, keyCodes_1, platform, keybindingService_1, messageService_1, actions_2) {
     'use strict';
     // Contribute Global Actions
-    var viewCategory = nls.localize(0, null);
-    var developerCategory = nls.localize(1, null);
-    var fileCategory = nls.localize(2, null);
+    var viewCategory = nls.localize('view', "View");
+    var developerCategory = nls.localize('developer', "Developer");
+    var fileCategory = nls.localize('file', "File");
     var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(actions_2.NewWindowAction, actions_2.NewWindowAction.ID, actions_2.NewWindowAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_N }));
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(actions_2.CloseWindowAction, actions_2.CloseWindowAction.ID, actions_2.CloseWindowAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_W }));
@@ -30,24 +30,24 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/workbench/elect
     configurationRegistry.registerConfiguration({
         'id': 'window',
         'order': 6,
-        'title': nls.localize(3, null),
+        'title': nls.localize('windowConfigurationTitle', "Window configuration"),
         'type': 'object',
         'properties': {
             'window.openFilesInNewWindow': {
                 'type': 'boolean',
                 'default': true,
-                'description': nls.localize(4, null)
+                'description': nls.localize('openFilesInNewWindow', "When enabled, will open files in a new window instead of reusing an existing instance.")
             },
             'window.reopenFolders': {
                 'type': 'string',
                 'enum': ['none', 'one', 'all'],
                 'default': 'one',
-                'description': nls.localize(5, null)
+                'description': nls.localize('reopenFolders', "Controls how folders are being reopened after a restart. Select 'none' to never reopen a folder, 'one' to reopen the last folder you worked on or 'all' to reopen all folders of your last session.")
             },
             'window.zoomLevel': {
                 'type': 'number',
                 'default': 0,
-                'description': nls.localize(6, null)
+                'description': nls.localize('zoomLevel', "Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity.")
             }
         }
     });
@@ -55,14 +55,14 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/workbench/elect
     configurationRegistry.registerConfiguration({
         'id': 'update',
         'order': 10,
-        'title': nls.localize(7, null),
+        'title': nls.localize('updateConfigurationTitle', "Update configuration"),
         'type': 'object',
         'properties': {
             'update.channel': {
                 'type': 'string',
                 'enum': ['none', 'default'],
                 'default': 'default',
-                'description': nls.localize(8, null)
+                'description': nls.localize('updateChannel', "Configure the update channel to receive updates from. Requires a restart after change.")
             }
         }
     });

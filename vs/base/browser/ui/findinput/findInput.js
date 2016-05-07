@@ -3,16 +3,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/base/browser/ui/findinput/findInput', 'vs/base/browser/dom', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/checkbox/checkbox', 'vs/base/browser/ui/widget', 'vs/base/common/event', 'vs/base/common/keyCodes', 'vs/css!./findInput'], function (require, exports, nls, dom, inputBox_1, checkbox_1, widget_1, event_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/checkbox/checkbox', 'vs/base/browser/ui/widget', 'vs/base/common/event', 'vs/base/common/keyCodes', 'vs/css!./findInput'], function (require, exports, nls, dom, inputBox_1, checkbox_1, widget_1, event_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    var NLS_REGEX_CHECKBOX_LABEL = nls.localize(0, null);
-    var NLS_WHOLE_WORD_CHECKBOX_LABEL = nls.localize(1, null);
-    var NLS_CASE_SENSITIVE_CHECKBOX_LABEL = nls.localize(2, null);
-    var NLS_DEFAULT_LABEL = nls.localize(3, null);
+    var NLS_REGEX_CHECKBOX_LABEL = nls.localize('regexDescription', "Use Regular Expression");
+    var NLS_WHOLE_WORD_CHECKBOX_LABEL = nls.localize('wordsDescription', "Match Whole Word");
+    var NLS_CASE_SENSITIVE_CHECKBOX_LABEL = nls.localize('caseDescription', "Match Case");
+    var NLS_DEFAULT_LABEL = nls.localize('defaultLabel', "input");
     var FindInput = (function (_super) {
         __extends(FindInput, _super);
         function FindInput(parent, contextViewProvider, options) {

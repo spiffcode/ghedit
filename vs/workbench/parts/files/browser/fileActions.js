@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/files/browser/fileActions', 'vs/base/common/platform', 'vs/base/common/async', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/events', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/base/common/diagnostics', 'vs/base/common/actions', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/lifecycle', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/base/common/keyCodes', 'vs/css!./media/fileactions'], function (require, exports, winjs_base_1, nls, platform_1, async_1, mime_1, paths, uri_1, errors, strings, events_1, labels_1, severity_1, diagnostics, actions_1, inputBox_1, lifecycle_1, events_2, Files, files_1, diffEditorInput_1, editor_1, fileEditorInput_1, explorerViewModel_1, textFileEditorModel_1, untitledEditorService_1, editorService_1, quickOpenService_1, viewletService_1, partService_1, storage_1, editor_2, event_1, instantiation_1, message_1, progress_1, workspace_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/async', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/events', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/base/common/diagnostics', 'vs/base/common/actions', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/lifecycle', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/base/common/keyCodes', 'vs/css!./media/fileactions'], function (require, exports, winjs_base_1, nls, platform_1, async_1, mime_1, paths, uri_1, errors, strings, events_1, labels_1, severity_1, diagnostics, actions_1, inputBox_1, lifecycle_1, events_2, Files, files_1, diffEditorInput_1, editor_1, fileEditorInput_1, explorerViewModel_1, textFileEditorModel_1, untitledEditorService_1, editorService_1, quickOpenService_1, viewletService_1, partService_1, storage_1, editor_2, event_1, instantiation_1, message_1, progress_1, workspace_1, keyCodes_1) {
     'use strict';
     var ITextFileService = Files.ITextFileService;
     var BaseFileAction = (function (_super) {
@@ -101,7 +101,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         BaseFileAction.prototype.onErrorWithRetry = function (error, retry, extraAction) {
             var actions = [
                 message_1.CancelAction,
-                new actions_1.Action(this.id, nls.localize(0, null), null, true, function () { return retry(); })
+                new actions_1.Action(this.id, nls.localize('retry', "Retry"), null, true, function () { return retry(); })
             ];
             if (extraAction) {
                 actions.push(extraAction);
@@ -143,7 +143,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var TriggerRenameFileAction = (function (_super) {
         __extends(TriggerRenameFileAction, _super);
         function TriggerRenameFileAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService, instantiationService) {
-            _super.call(this, TriggerRenameFileAction.ID, nls.localize(1, null), contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, TriggerRenameFileAction.ID, nls.localize('rename', "Rename"), contextService, editorService, fileService, messageService, textFileService, eventService);
             this.tree = tree;
             this.element = element;
             this.renameAction = instantiationService.createInstance(RenameFileAction, element);
@@ -273,7 +273,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var RenameFileAction = (function (_super) {
         __extends(RenameFileAction, _super);
         function RenameFileAction(element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService) {
-            _super.call(this, RenameFileAction.ID, nls.localize(2, null), element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService);
+            _super.call(this, RenameFileAction.ID, nls.localize('rename', "Rename"), element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService);
             this._updateEnablement();
         }
         RenameFileAction.prototype.runAction = function (newName) {
@@ -285,7 +285,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
                 // If the file is still dirty, do not touch it because a save is pending to disk and we can not abort it
                 if (_this.textFileService.isDirty(_this.element.resource)) {
-                    _this.onWarning(nls.localize(3, null, labels_1.getPathLabel(_this.element.resource)));
+                    _this.onWarning(nls.localize('warningFileDirty', "File '{0}' is currently being saved, please try again later.", labels_1.getPathLabel(_this.element.resource)));
                     return winjs_base_1.TPromise.as(null);
                 }
                 return _this.fileService.rename(_this.element.resource, newName).then(null, function (error) {
@@ -390,7 +390,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var NewFileAction = (function (_super) {
         __extends(NewFileAction, _super);
         function NewFileAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService, instantiationService) {
-            _super.call(this, 'workbench.action.files.newFile', nls.localize(4, null), tree, true, instantiationService.createInstance(CreateFileAction, element), null, contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, 'workbench.action.files.newFile', nls.localize('newFile', "New File"), tree, true, instantiationService.createInstance(CreateFileAction, element), null, contextService, editorService, fileService, messageService, textFileService, eventService);
             this.class = 'explorer-action new-file';
             this._updateEnablement();
         }
@@ -410,7 +410,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var NewFolderAction = (function (_super) {
         __extends(NewFolderAction, _super);
         function NewFolderAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService, instantiationService) {
-            _super.call(this, 'workbench.action.files.newFolder', nls.localize(5, null), tree, false, instantiationService.createInstance(CreateFolderAction, element), null, contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, 'workbench.action.files.newFolder', nls.localize('newFolder', "New Folder"), tree, false, instantiationService.createInstance(CreateFolderAction, element), null, contextService, editorService, fileService, messageService, textFileService, eventService);
             this.class = 'explorer-action new-folder';
             this._updateEnablement();
         }
@@ -479,7 +479,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.editorService.openEditor(input);
         };
         GlobalNewFileAction.ID = 'workbench.action.files.newUntitledFile';
-        GlobalNewFileAction.LABEL = nls.localize(6, null);
+        GlobalNewFileAction.LABEL = nls.localize('newFile', "New File");
         GlobalNewFileAction = __decorate([
             __param(2, storage_1.IStorageService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -499,7 +499,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return NewFolderAction;
         };
         GlobalNewFolderAction.ID = 'workbench.action.files.newFolder';
-        GlobalNewFolderAction.LABEL = nls.localize(7, null);
+        GlobalNewFolderAction.LABEL = nls.localize('newFolder', "New Folder");
         return GlobalNewFolderAction;
     }(BaseGlobalNewAction));
     exports.GlobalNewFolderAction = GlobalNewFolderAction;
@@ -535,7 +535,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         CreateFileAction.ID = 'workbench.files.action.createFileFromExplorer';
-        CreateFileAction.LABEL = nls.localize(8, null);
+        CreateFileAction.LABEL = nls.localize('createNewFile', "New File");
         CreateFileAction = __decorate([
             __param(1, workspace_1.IWorkspaceContextService),
             __param(2, editorService_1.IWorkbenchEditorService),
@@ -562,7 +562,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         CreateFolderAction.ID = 'workbench.files.action.createFolderFromExplorer';
-        CreateFolderAction.LABEL = nls.localize(9, null);
+        CreateFolderAction.LABEL = nls.localize('createNewFolder', "New Folder");
         CreateFolderAction = __decorate([
             __param(1, workspace_1.IWorkspaceContextService),
             __param(2, editorService_1.IWorkbenchEditorService),
@@ -595,16 +595,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 var confirm_1;
                 if (this.useTrash) {
                     confirm_1 = {
-                        message: this.element.isDirectory ? nls.localize(10, null, this.element.name) : nls.localize(11, null, this.element.name),
-                        detail: platform_1.isWindows ? nls.localize(12, null) : nls.localize(13, null),
-                        primaryButton: platform_1.isWindows ? nls.localize(14, null) : nls.localize(15, null)
+                        message: this.element.isDirectory ? nls.localize('confirmMoveTrashMessageFolder', "Are you sure you want to delete '{0}' and its contents?", this.element.name) : nls.localize('confirmMoveTrashMessageFile', "Are you sure you want to delete '{0}'?", this.element.name),
+                        detail: platform_1.isWindows ? nls.localize('undoBin', "You can restore from the recycle bin.") : nls.localize('undoTrash', "You can restore from the trash."),
+                        primaryButton: platform_1.isWindows ? nls.localize('deleteButtonLabelRecycleBin', "&&Move to Recycle Bin") : nls.localize({ key: 'deleteButtonLabelTrash', comment: ['&& denotes a mnemonic'] }, "&&Move to Trash")
                     };
                 }
                 else {
                     confirm_1 = {
-                        message: this.element.isDirectory ? nls.localize(16, null, this.element.name) : nls.localize(17, null, this.element.name),
-                        detail: nls.localize(18, null),
-                        primaryButton: nls.localize(19, null)
+                        message: this.element.isDirectory ? nls.localize('confirmDeleteMessageFolder', "Are you sure you want to permanently delete '{0}' and its contents?", this.element.name) : nls.localize('confirmDeleteMessageFile', "Are you sure you want to permanently delete '{0}'?", this.element.name),
+                        detail: nls.localize('irreversible', "This action is irreversible!"),
+                        primaryButton: nls.localize({ key: 'deleteButtonLabel', comment: ['&& denotes a mnemonic'] }, "&&Delete")
                     };
                 }
                 if (!this.messageService.confirm(confirm_1)) {
@@ -623,7 +623,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 // Allow to retry
                 var extraAction;
                 if (_this.useTrash) {
-                    extraAction = new actions_1.Action('permanentDelete', nls.localize(20, null), null, true, function () { _this.useTrash = false; _this.skipConfirm = true; return _this.run(); });
+                    extraAction = new actions_1.Action('permanentDelete', nls.localize('permDelete', "Delete Permanently"), null, true, function () { _this.useTrash = false; _this.skipConfirm = true; return _this.run(); });
                 }
                 _this.onErrorWithRetry(error, function () { return _this.run(); }, extraAction);
                 // Since the delete failed, best we can do is to refresh the explorer from the root to show the current state of files.
@@ -649,7 +649,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var MoveFileToTrashAction = (function (_super) {
         __extends(MoveFileToTrashAction, _super);
         function MoveFileToTrashAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService) {
-            _super.call(this, MoveFileToTrashAction.ID, nls.localize(21, null), tree, element, true, contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, MoveFileToTrashAction.ID, nls.localize('delete', "Delete"), tree, element, true, contextService, editorService, fileService, messageService, textFileService, eventService);
         }
         MoveFileToTrashAction.ID = 'workbench.files.action.moveFileToTrash';
         MoveFileToTrashAction = __decorate([
@@ -667,7 +667,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var DeleteFileAction = (function (_super) {
         __extends(DeleteFileAction, _super);
         function DeleteFileAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService) {
-            _super.call(this, DeleteFileAction.ID, nls.localize(22, null), tree, element, false, contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, DeleteFileAction.ID, nls.localize('delete', "Delete"), tree, element, false, contextService, editorService, fileService, messageService, textFileService, eventService);
         }
         DeleteFileAction.ID = 'workbench.files.action.deleteFile';
         DeleteFileAction = __decorate([
@@ -685,7 +685,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var ImportFileAction = (function (_super) {
         __extends(ImportFileAction, _super);
         function ImportFileAction(tree, element, clazz, contextService, editorService, fileService, messageService, textFileService, eventService, progressService) {
-            _super.call(this, ImportFileAction.ID, nls.localize(23, null), contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, ImportFileAction.ID, nls.localize('importFiles', "Import Files"), contextService, editorService, fileService, messageService, textFileService, eventService);
             this.progressService = progressService;
             this.tree = tree;
             this.element = element;
@@ -732,9 +732,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                             return !!targetNames[platform_1.isLinux ? file.name : file.name.toLowerCase()];
                         })) {
                             var confirm_2 = {
-                                message: nls.localize(24, null),
-                                detail: nls.localize(25, null),
-                                primaryButton: nls.localize(26, null)
+                                message: nls.localize('confirmOverwrite', "A file or folder with the same name already exists in the destination folder. Do you want to replace it?"),
+                                detail: nls.localize('irreversible', "This action is irreversible!"),
+                                primaryButton: nls.localize({ key: 'replaceButtonLabel', comment: ['&& denotes a mnemonic'] }, "&&Replace")
                             };
                             overwrite = _this.messageService.confirm(confirm_2);
                         }
@@ -823,7 +823,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var CopyFileAction = (function (_super) {
         __extends(CopyFileAction, _super);
         function CopyFileAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService) {
-            _super.call(this, CopyFileAction.ID, nls.localize(27, null), contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, CopyFileAction.ID, nls.localize('copyFile', "Copy"), contextService, editorService, fileService, messageService, textFileService, eventService);
             this.tree = tree;
             this.element = element;
             this._updateEnablement();
@@ -854,7 +854,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var PasteFileAction = (function (_super) {
         __extends(PasteFileAction, _super);
         function PasteFileAction(tree, element, contextService, editorService, fileService, messageService, textFileService, eventService, instantiationService) {
-            _super.call(this, PasteFileAction.ID, nls.localize(28, null), contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, PasteFileAction.ID, nls.localize('pasteFile', "Paste"), contextService, editorService, fileService, messageService, textFileService, eventService);
             this.instantiationService = instantiationService;
             this.tree = tree;
             this.element = element;
@@ -911,7 +911,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var DuplicateFileAction = (function (_super) {
         __extends(DuplicateFileAction, _super);
         function DuplicateFileAction(tree, element, target, contextService, editorService, fileService, messageService, textFileService, eventService, progressService) {
-            _super.call(this, 'workbench.files.action.duplicateFile', nls.localize(29, null), contextService, editorService, fileService, messageService, textFileService, eventService);
+            _super.call(this, 'workbench.files.action.duplicateFile', nls.localize('duplicateFile', "Duplicate"), contextService, editorService, fileService, messageService, textFileService, eventService);
             this.progressService = progressService;
             this.tree = tree;
             this.element = element;
@@ -1013,7 +1013,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             }, true);
         };
         OpenToSideAction.ID = 'workbench.files.action.openToSide';
-        OpenToSideAction.LABEL = nls.localize(30, null);
+        OpenToSideAction.LABEL = nls.localize('openToSide', "Open to the Side");
         OpenToSideAction = __decorate([
             __param(3, editorService_1.IWorkbenchEditorService)
         ], OpenToSideAction);
@@ -1024,7 +1024,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var SelectResourceForCompareAction = (function (_super) {
         __extends(SelectResourceForCompareAction, _super);
         function SelectResourceForCompareAction(resource, tree) {
-            _super.call(this, 'workbench.files.action.selectForCompare', nls.localize(31, null));
+            _super.call(this, 'workbench.files.action.selectForCompare', nls.localize('compareSource', "Select for Compare"));
             this.tree = tree;
             this.resource = resource;
             this.enabled = true;
@@ -1070,7 +1070,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                             compareAction_1.run().done(function () { return compareAction_1.dispose(); });
                         }
                         else {
-                            _this.messageService.show(message_1.Severity.Info, nls.localize(33, null, paths.basename(globalResourceToCompare.fsPath)));
+                            _this.messageService.show(message_1.Severity.Info, nls.localize('unableToFileToCompare', "The selected file can not be compared with '{0}'.", paths.basename(globalResourceToCompare.fsPath)));
                         }
                     }
                 });
@@ -1080,12 +1080,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 });
             }
             else {
-                this.messageService.show(message_1.Severity.Info, nls.localize(34, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('openFileToCompare', "Open a file first to compare it with another file."));
             }
             return winjs_base_1.TPromise.as(true);
         };
         GlobalCompareResourcesAction.ID = 'workbench.files.action.compareFileWith';
-        GlobalCompareResourcesAction.LABEL = nls.localize(32, null);
+        GlobalCompareResourcesAction.LABEL = nls.localize('globalCompareFile', "Compare Active File With...");
         GlobalCompareResourcesAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService),
             __param(3, instantiation_1.IInstantiationService),
@@ -1109,9 +1109,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         }
         CompareResourcesAction.computeLabel = function () {
             if (globalResourceToCompare) {
-                return nls.localize(35, null, paths.basename(globalResourceToCompare.fsPath));
+                return nls.localize('compareWith', "Compare with '{0}'", paths.basename(globalResourceToCompare.fsPath));
             }
-            return nls.localize(36, null);
+            return nls.localize('compareFiles', "Compare Files");
         };
         CompareResourcesAction.prototype.getLabel = function () {
             return CompareResourcesAction.computeLabel();
@@ -1172,7 +1172,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var RefreshViewExplorerAction = (function (_super) {
         __extends(RefreshViewExplorerAction, _super);
         function RefreshViewExplorerAction(explorerView, clazz) {
-            _super.call(this, 'workbench.files.action.refreshExplorer', nls.localize(37, null), clazz, true, function (context) { return explorerView.refresh(); });
+            _super.call(this, 'workbench.files.action.refreshExplorer', nls.localize('refresh', "Refresh"), clazz, true, function (context) { return explorerView.refresh(); });
         }
         return RefreshViewExplorerAction;
     }(actions_1.Action));
@@ -1303,7 +1303,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return false;
         };
         SaveFileAction.ID = 'workbench.action.files.save';
-        SaveFileAction.LABEL = nls.localize(38, null);
+        SaveFileAction.LABEL = nls.localize('save', "Save");
         return SaveFileAction;
     }(BaseSaveFileAction));
     exports.SaveFileAction = SaveFileAction;
@@ -1316,7 +1316,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return true;
         };
         SaveFileAsAction.ID = 'workbench.action.files.saveAs';
-        SaveFileAsAction.LABEL = nls.localize(39, null);
+        SaveFileAsAction.LABEL = nls.localize('saveAs', "Save As...");
         return SaveFileAsAction;
     }(BaseSaveFileAction));
     exports.SaveFileAsAction = SaveFileAsAction;
@@ -1445,7 +1445,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return true;
         };
         SaveAllAction.ID = 'workbench.action.files.saveAll';
-        SaveAllAction.LABEL = nls.localize(40, null);
+        SaveAllAction.LABEL = nls.localize('saveAll', "Save All");
         return SaveAllAction;
     }(BaseSaveAllAction));
     exports.SaveAllAction = SaveAllAction;
@@ -1458,7 +1458,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return false;
         };
         SaveFilesAction.ID = 'workbench.action.files.saveFiles';
-        SaveFilesAction.LABEL = nls.localize(41, null);
+        SaveFilesAction.LABEL = nls.localize('saveFiles', "Save Dirty Files");
         return SaveFilesAction;
     }(BaseSaveAllAction));
     exports.SaveFilesAction = SaveFilesAction;
@@ -1490,7 +1490,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(true);
         };
         RevertFileAction.ID = 'workbench.action.files.revert';
-        RevertFileAction.LABEL = nls.localize(42, null);
+        RevertFileAction.LABEL = nls.localize('revert', "Revert File");
         RevertFileAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, ITextFileService)
@@ -1651,7 +1651,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var CloseAllWorkingFilesAction = (function (_super) {
         __extends(CloseAllWorkingFilesAction, _super);
         function CloseAllWorkingFilesAction(model, untitledEditorService, editorService, textFileService, messageService, quickOpenService) {
-            _super.call(this, CloseAllWorkingFilesAction.ID, nls.localize(43, null), 'action-close-all-files', model, null, untitledEditorService, editorService, textFileService, messageService, quickOpenService);
+            _super.call(this, CloseAllWorkingFilesAction.ID, nls.localize('closeAllLabel', "Close All Files"), 'action-close-all-files', model, null, untitledEditorService, editorService, textFileService, messageService, quickOpenService);
             this.enabled = (model.count() > 0);
             this.listenerToDispose = model.onModelChange(this.onModelChange, this);
         }
@@ -1683,7 +1683,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var CloseOneWorkingFileAction = (function (_super) {
         __extends(CloseOneWorkingFileAction, _super);
         function CloseOneWorkingFileAction(model, element, untitledEditorService, editorService, textFileService, messageService, quickOpenService) {
-            _super.call(this, CloseOneWorkingFileAction.ID, nls.localize(44, null), element.dirty ? 'action-close-dirty-file' : 'action-close-file', model, [element], untitledEditorService, editorService, textFileService, messageService, quickOpenService);
+            _super.call(this, CloseOneWorkingFileAction.ID, nls.localize('closeLabel', "Close File"), element.dirty ? 'action-close-dirty-file' : 'action-close-file', model, [element], untitledEditorService, editorService, textFileService, messageService, quickOpenService);
         }
         CloseOneWorkingFileAction.ID = 'workbench.files.action.closeOneWorkingFile';
         CloseOneWorkingFileAction = __decorate([
@@ -1699,7 +1699,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var CloseOtherWorkingFilesAction = (function (_super) {
         __extends(CloseOtherWorkingFilesAction, _super);
         function CloseOtherWorkingFilesAction(model, element, untitledEditorService, editorService, textFileService, messageService, quickOpenService) {
-            _super.call(this, CloseOtherWorkingFilesAction.ID, nls.localize(45, null), 'action-close-file', model, model.getEntries().filter(function (e) { return e !== element; }), untitledEditorService, editorService, textFileService, messageService, quickOpenService);
+            _super.call(this, CloseOtherWorkingFilesAction.ID, nls.localize('closeOtherLabel', "Close Other Files"), 'action-close-file', model, model.getEntries().filter(function (e) { return e !== element; }), untitledEditorService, editorService, textFileService, messageService, quickOpenService);
         }
         CloseOtherWorkingFilesAction.prototype.run = function () {
             var _this = this;
@@ -1802,12 +1802,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 ;
             }
             else {
-                this.messageService.show(message_1.Severity.Info, nls.localize(47, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('noFileOpen', "There is currently no file opened to close."));
             }
             return winjs_base_1.TPromise.as(true);
         };
         CloseFileAction.ID = 'workbench.files.action.closeFile';
-        CloseFileAction.LABEL = nls.localize(46, null);
+        CloseFileAction.LABEL = nls.localize('closeFile', "Close File");
         CloseFileAction = __decorate([
             __param(2, instantiation_1.IInstantiationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -1847,7 +1847,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         CloseOtherFilesAction.ID = 'workbench.files.action.closeOtherFiles';
-        CloseOtherFilesAction.LABEL = nls.localize(48, null);
+        CloseOtherFilesAction.LABEL = nls.localize('closeOtherFiles', "Close Other Files");
         CloseOtherFilesAction = __decorate([
             __param(2, instantiation_1.IInstantiationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -1879,7 +1879,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         CloseAllFilesAction.ID = 'workbench.files.action.closeAllFiles';
-        CloseAllFilesAction.LABEL = nls.localize(49, null);
+        CloseAllFilesAction.LABEL = nls.localize('closeAllFiles', "Close All Files");
         CloseAllFilesAction = __decorate([
             __param(2, instantiation_1.IInstantiationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -1902,7 +1902,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             var model = this.textFileService.getWorkingFilesModel();
             // Return: No working files
             if (model.count() === 0) {
-                this.messageService.show(message_1.Severity.Info, nls.localize(51, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('noWorkingFiles', "Currently there are no working files."));
             }
             else {
                 var resource = editor_1.getUntitledOrFileResource(this.editorService.getActiveEditorInput(), true);
@@ -1911,7 +1911,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(true);
         };
         OpenNextWorkingFile.ID = 'workbench.files.action.openNextWorkingFile';
-        OpenNextWorkingFile.LABEL = nls.localize(50, null);
+        OpenNextWorkingFile.LABEL = nls.localize('openNextWorkingFile', "Open Next Working File");
         OpenNextWorkingFile = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, ITextFileService),
@@ -1932,7 +1932,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             var model = this.textFileService.getWorkingFilesModel();
             // Return: No working files
             if (model.count() === 0) {
-                this.messageService.show(message_1.Severity.Info, nls.localize(53, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('noWorkingFiles', "Currently there are no working files."));
             }
             else {
                 var resource = editor_1.getUntitledOrFileResource(this.editorService.getActiveEditorInput(), true);
@@ -1941,7 +1941,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return winjs_base_1.TPromise.as(true);
         };
         OpenPreviousWorkingFile.ID = 'workbench.files.action.openPreviousWorkingFile';
-        OpenPreviousWorkingFile.LABEL = nls.localize(52, null);
+        OpenPreviousWorkingFile.LABEL = nls.localize('openPreviousWorkingFile', "Open Previous Working File");
         OpenPreviousWorkingFile = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, ITextFileService),
@@ -1964,12 +1964,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 this.textFileService.getWorkingFilesModel().addEntry(fileInput.getResource());
             }
             else {
-                this.messageService.show(message_1.Severity.Info, nls.localize(55, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('openFileToAdd', "Open a file first to add it to working files"));
             }
             return winjs_base_1.TPromise.as(true);
         };
         AddToWorkingFiles.ID = 'workbench.files.action.addToWorkingFiles';
-        AddToWorkingFiles.LABEL = nls.localize(54, null);
+        AddToWorkingFiles.LABEL = nls.localize('addToWorkingFiles', "Add Active File to Working Files");
         AddToWorkingFiles = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, ITextFileService),
@@ -1991,7 +1991,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         FocusWorkingFiles.ID = 'workbench.files.action.focusWorkingFiles';
-        FocusWorkingFiles.LABEL = nls.localize(56, null);
+        FocusWorkingFiles.LABEL = nls.localize('focusWorkingFiles', "Focus on Working Files");
         FocusWorkingFiles = __decorate([
             __param(2, viewletService_1.IViewletService)
         ], FocusWorkingFiles);
@@ -2014,7 +2014,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         FocusFilesExplorer.ID = 'workbench.files.action.focusFilesExplorer';
-        FocusFilesExplorer.LABEL = nls.localize(57, null);
+        FocusFilesExplorer.LABEL = nls.localize('focusFilesExplorer', "Focus on Files Explorer");
         FocusFilesExplorer = __decorate([
             __param(2, viewletService_1.IViewletService)
         ], FocusFilesExplorer);
@@ -2050,12 +2050,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 });
             }
             else {
-                this.messageService.show(severity_1.default.Info, nls.localize(59, null));
+                this.messageService.show(severity_1.default.Info, nls.localize('openFileToShow', "Open a file first to show it in the explorer"));
             }
             return winjs_base_1.TPromise.as(true);
         };
         ShowActiveFileInExplorer.ID = 'workbench.files.action.showActiveFileInExplorer';
-        ShowActiveFileInExplorer.LABEL = nls.localize(58, null);
+        ShowActiveFileInExplorer.LABEL = nls.localize('showInExplorer', "Show Active File in Explorer");
         ShowActiveFileInExplorer = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, viewletService_1.IViewletService),
@@ -2097,7 +2097,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         name = getWellFormedFileName(name);
         // Name not provided
         if (!name || name.length === 0 || /^\s+$/.test(name)) {
-            return nls.localize(60, null);
+            return nls.localize('emptyFileNameError', "A file or folder name must be provided.");
         }
         // Do not allow to overwrite existing file
         if (!allowOverwriting) {
@@ -2107,18 +2107,18 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
                 return c.name.toLowerCase() === name.toLowerCase();
             })) {
-                return nls.localize(61, null, name);
+                return nls.localize('fileNameExistsError', "A file or folder **{0}** already exists at this location. Please choose a different name.", name);
             }
         }
         // Invalid File name
         if (!paths.isValidBasename(name)) {
-            return nls.localize(62, null, name);
+            return nls.localize('invalidFileNameError', "The name **{0}** is not valid as a file or folder name. Please choose a different name.", name);
         }
         // Max length restriction (on Windows)
         if (platform_1.isWindows) {
             var fullPathLength = name.length + parent.resource.fsPath.length + 1;
             if (fullPathLength > 255) {
-                return nls.localize(63, null, name);
+                return nls.localize('filePathTooLongError', "The name **{0}** results in a path that is too long. Please choose a shorter name.", name);
             }
         }
         return null;

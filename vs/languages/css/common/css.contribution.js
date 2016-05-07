@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/languages/css/common/css.contribution', 'vs/platform/platform', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/languages/css/common/services/lintRules', 'vs/css!vs/languages/css/common/css-hover'], function (require, exports, nls, Platform, modesRegistry_1, ConfigurationRegistry, lintRules) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/languages/css/common/services/lintRules', 'vs/css!vs/languages/css/common/css-hover'], function (require, exports, nls, Platform, modesRegistry_1, ConfigurationRegistry, lintRules) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16,9 +16,9 @@ define(["require", "exports", 'vs/nls!vs/languages/css/common/css.contribution',
     configurationRegistry.registerConfiguration({
         'id': 'css',
         'order': 20,
-        'title': nls.localize(0, null),
+        'title': nls.localize('cssConfigurationTitle', "CSS configuration"),
         'allOf': [{
-                'title': nls.localize(1, null),
+                'title': nls.localize('lint', "Controls CSS validation and problem severities."),
                 'properties': lintRules.getConfigurationProperties('css')
             }]
     });

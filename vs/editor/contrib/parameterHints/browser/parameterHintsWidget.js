@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/editor/contrib/parameterHints/browser/parameterHintsWidget', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/ui/aria/aria', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/css!./parameterHints'], function (require, exports, nls, lifecycle_1, winjs_base_1, builder_1, aria, editorCommon_1, editorBrowser_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/ui/aria/aria', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/css!./parameterHints'], function (require, exports, nls, lifecycle_1, winjs_base_1, builder_1, aria, editorCommon_1, editorBrowser_1) {
     'use strict';
     var ParameterHintsWidget = (function () {
         function ParameterHintsWidget(model, editor, onShown, onHidden) {
@@ -168,7 +168,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/parameterHints/browser/p
                 // Select method gets called on every user type while parameter hints are visible.
                 // We do not want to spam the user with same announcements, so we only announce if the current parameter changed.
                 if (this.announcedLabel !== labelToAnnounce) {
-                    aria.alert(nls.localize(0, null, labelToAnnounce));
+                    aria.alert(nls.localize('hint', "{0}, hint", labelToAnnounce));
                     this.announcedLabel = labelToAnnounce;
                 }
             }

@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/quickopen/browser/commandsHandler', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/common/filters', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/css!./media/commandsHandler'], function (require, exports, winjs_base_1, nls, arrays, types, strings, errors_1, quickOpen_1, quickOpenModel_1, actions_1, actionRegistry_1, platform_1, quickopen_1, quickOpenAction_1, filters_1, editorAction_1, editorActionEnablement_1, editorService_1, instantiation_1, message_1, telemetry_1, keybindingService_1, quickOpenService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/common/filters', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/css!./media/commandsHandler'], function (require, exports, winjs_base_1, nls, arrays, types, strings, errors_1, quickOpen_1, quickOpenModel_1, actions_1, actionRegistry_1, platform_1, quickopen_1, quickOpenAction_1, filters_1, editorAction_1, editorActionEnablement_1, editorService_1, instantiation_1, message_1, telemetry_1, keybindingService_1, quickOpenService_1) {
     'use strict';
     exports.ALL_COMMANDS_PREFIX = '>';
     exports.EDITOR_COMMANDS_PREFIX = '$';
@@ -27,7 +27,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             _super.call(this, actionId, actionLabel, exports.ALL_COMMANDS_PREFIX, quickOpenService);
         }
         ShowAllCommandsAction.ID = 'workbench.action.showCommands';
-        ShowAllCommandsAction.LABEL = nls.localize(0, null);
+        ShowAllCommandsAction.LABEL = nls.localize('showTriggerActions', "Show All Commands");
         ShowAllCommandsAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], ShowAllCommandsAction);
@@ -50,15 +50,15 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         };
         BaseCommandEntry.prototype.getAriaLabel = function () {
             if (this.keyAriaLabel) {
-                return nls.localize(1, null, this.getLabel(), this.keyAriaLabel);
+                return nls.localize('entryAriaLabelWithKey', "{0}, {1}, commands", this.getLabel(), this.keyAriaLabel);
             }
-            return nls.localize(2, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, commands", this.getLabel());
         };
         BaseCommandEntry.prototype.getGroupLabel = function () {
             return this.keyLabel;
         };
         BaseCommandEntry.prototype.onError = function (error) {
-            var message = !error ? nls.localize(3, null, this.description) : errors_1.toErrorMessage(error);
+            var message = !error ? nls.localize('canNotRun', "Command '{0}' can not be run from here.", this.description) : errors_1.toErrorMessage(error);
             this.messageService.show(message_1.Severity.Error, message);
         };
         BaseCommandEntry.prototype.runAction = function (action) {
@@ -77,7 +77,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     }
                 }
                 else {
-                    _this.messageService.show(message_1.Severity.Info, nls.localize(4, null, _this.getLabel()));
+                    _this.messageService.show(message_1.Severity.Info, nls.localize('actionNotEnabled', "Command '{0}' is not enabled in the current context.", _this.getLabel()));
                 }
             }, function (err) { return _this.onError(err); });
         };
@@ -204,7 +204,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     var label = actionDescriptor.label;
                     var category = registry.getCategory(actionDescriptor.id);
                     if (category) {
-                        label = nls.localize(5, null, category, label);
+                        label = nls.localize('commandLabel', "{0}: {1}", category, label);
                     }
                     var highlights = wordFilter(searchValue, label);
                     if (highlights) {
@@ -260,7 +260,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return 'commands-handler';
         };
         CommandsHandler.prototype.getEmptyLabel = function (searchString) {
-            return nls.localize(6, null);
+            return nls.localize('noCommandsMatching', "No commands matching");
         };
         CommandsHandler = __decorate([
             __param(0, editorService_1.IWorkbenchEditorService),
@@ -288,7 +288,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         function QuickCommandsEditorAction(descriptor, editor, quickOpenService) {
             _super.call(this, descriptor, editor, editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu);
             this.quickOpenService = quickOpenService;
-            this.label = nls.localize(7, null);
+            this.label = nls.localize('QuickCommandsAction.label', "Show Editor Commands");
         }
         QuickCommandsEditorAction.prototype.getGroupId = function () {
             return '4_tools/1_commands';

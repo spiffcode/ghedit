@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/languages/less/common/less.contribution', 'vs/languages/css/common/services/lintRules', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/css!vs/languages/css/common/css-hover'], function (require, exports, platform, nls, lintRules, modesRegistry_1, ConfigurationRegistry) {
+define(["require", "exports", 'vs/platform/platform', 'vs/nls', 'vs/languages/css/common/services/lintRules', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/css!vs/languages/css/common/css-hover'], function (require, exports, platform, nls, lintRules, modesRegistry_1, ConfigurationRegistry) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -17,9 +17,9 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls!vs/languages/less/
         'id': 'less',
         'order': 22,
         'type': 'object',
-        'title': nls.localize(0, null),
+        'title': nls.localize('lessConfigurationTitle', "LESS configuration"),
         'allOf': [{
-                'title': nls.localize(1, null),
+                'title': nls.localize('lessLint', "Controls LESS validation and problem severities."),
                 'properties': lintRules.getConfigurationProperties('less')
             }]
     });

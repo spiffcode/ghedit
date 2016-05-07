@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/languages/css/common/parser/cssNodes', 'vs/languages/css/common/parser/cssSymbols', 'vs/languages/css/common/services/languageFacts', 'vs/nls!vs/languages/css/common/services/intelliSense'], function (require, exports, nodes, cssSymbols, languageFacts, nls) {
+define(["require", "exports", 'vs/languages/css/common/parser/cssNodes', 'vs/languages/css/common/parser/cssSymbols', 'vs/languages/css/common/services/languageFacts', 'vs/nls'], function (require, exports, nodes, cssSymbols, languageFacts, nls) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -514,10 +514,10 @@ define(["require", "exports", 'vs/languages/css/common/parser/cssNodes', 'vs/lan
             return result;
         };
         CSSIntellisense.colorFunctions = [
-            { func: 'rgb($red, $green, $blue)', desc: nls.localize(0, null) },
-            { func: 'rgba($red, $green, $blue, $alpha)', desc: nls.localize(1, null) },
-            { func: 'hsl($hue, $saturation, $lightness)', desc: nls.localize(2, null) },
-            { func: 'hsla($hue, $saturation, $lightness, $alpha)', desc: nls.localize(3, null) }
+            { func: 'rgb($red, $green, $blue)', desc: nls.localize('css.builtin.rgb', 'Creates a Color from red, green, and blue values.') },
+            { func: 'rgba($red, $green, $blue, $alpha)', desc: nls.localize('css.builtin.rgba', 'Creates a Color from red, green, blue, and alpha values.') },
+            { func: 'hsl($hue, $saturation, $lightness)', desc: nls.localize('css.builtin.hsl', 'Creates a Color from hue, saturation, and lightness values.') },
+            { func: 'hsla($hue, $saturation, $lightness, $alpha)', desc: nls.localize('css.builtin.hsla', 'Creates a Color from hue, saturation, lightness, and alpha values.') }
         ];
         return CSSIntellisense;
     }());

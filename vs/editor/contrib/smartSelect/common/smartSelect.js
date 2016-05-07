@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/smartSelect/common/smartSelect', 'vs/base/common/arrays', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', './tokenSelectionSupport'], function (require, exports, nls, arrays, keyCodes_1, winjs_base_1, instantiation_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, tokenSelectionSupport_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', './tokenSelectionSupport'], function (require, exports, nls, arrays, keyCodes_1, winjs_base_1, instantiation_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, tokenSelectionSupport_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -133,12 +133,12 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/smartSelect/common/smart
         return ShrinkSelectionAction;
     }(SmartSelect));
     // register actions
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GrowSelectionAction, GrowSelectionAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GrowSelectionAction, GrowSelectionAction.ID, nls.localize('smartSelect.grow', "Expand Select"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.RightArrow,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.RightArrow }
     }));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShrinkSelectionAction, ShrinkSelectionAction.ID, nls.localize(1, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShrinkSelectionAction, ShrinkSelectionAction.ID, nls.localize('smartSelect.shrink', "Shrink Select"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.LeftArrow,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.LeftArrow }

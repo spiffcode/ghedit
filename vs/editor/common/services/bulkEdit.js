@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/common/services/bulkEdit', 'vs/base/common/arrays', 'vs/base/common/collections', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/files/common/files', 'vs/editor/common/core/editOperation', 'vs/editor/common/core/range', 'vs/editor/common/core/selection'], function (require, exports, nls, arrays_1, collections_1, uri_1, winjs_base_1, files_1, editOperation_1, range_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/collections', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/files/common/files', 'vs/editor/common/core/editOperation', 'vs/editor/common/core/range', 'vs/editor/common/core/selection'], function (require, exports, nls, arrays_1, collections_1, uri_1, winjs_base_1, files_1, editOperation_1, range_1, selection_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -187,7 +187,7 @@ define(["require", "exports", 'vs/nls!vs/editor/common/services/bulkEdit', 'vs/b
                 }
             }
             if (names) {
-                return nls.localize(0, null, names.join(', '));
+                return nls.localize('conflict', "These files have changed in the meantime: {0}", names.join(', '));
             }
         }
         function finish() {

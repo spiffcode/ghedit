@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'path', 'child_process', 'stream', './stdFork', 'vs/nls!vs/base/node/processes', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/uri', 'vs/base/common/objects', 'vs/base/common/paths', 'vs/base/common/platform', 'vs/base/node/decoder', 'vs/base/common/processes'], function (require, exports, path, cp, stream_1, stdFork_1, nls, winjs_base_1, Types, uri_1, Objects, TPath, Platform, decoder_1, processes_1) {
+define(["require", "exports", 'path', 'child_process', 'stream', './stdFork', 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/uri', 'vs/base/common/objects', 'vs/base/common/paths', 'vs/base/common/platform', 'vs/base/node/decoder', 'vs/base/common/processes'], function (require, exports, path, cp, stream_1, stdFork_1, nls, winjs_base_1, Types, uri_1, Objects, TPath, Platform, decoder_1, processes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -101,7 +101,7 @@ define(["require", "exports", 'path', 'child_process', 'stream', './stdFork', 'v
         AbstractProcess.prototype.start = function () {
             var _this = this;
             if (Platform.isWindows && ((this.options && this.options.cwd && TPath.isUNC(this.options.cwd)) || !this.options && !this.options.cwd && TPath.isUNC(process.cwd()))) {
-                return winjs_base_1.Promise.wrapError(nls.localize(0, null));
+                return winjs_base_1.Promise.wrapError(nls.localize('TaskRunner.UNC', 'Can\'t execute a shell command on an UNC drive.'));
             }
             return this.useExec().then(function (useExec) {
                 var cc;

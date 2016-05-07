@@ -16,9 +16,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-browser/extensionsActions', 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/base/common/objects', 'vs/base/common/severity', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message', 'vs/workbench/electron-browser/actions', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/common/extensionsUtil', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, nls, winjs_base_1, actions_1, objects_1, severity_1, instantiation_1, telemetry_1, message_1, actions_2, extensions_1, extensionsUtil_1, quickOpenService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/base/common/objects', 'vs/base/common/severity', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message', 'vs/workbench/electron-browser/actions', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/common/extensionsUtil', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, nls, winjs_base_1, actions_1, objects_1, severity_1, instantiation_1, telemetry_1, message_1, actions_2, extensions_1, extensionsUtil_1, quickOpenService_1) {
     "use strict";
-    var CloseAction = new actions_1.Action('action.close', nls.localize(0, null));
+    var CloseAction = new actions_1.Action('action.close', nls.localize('close', "Close"));
     var ListExtensionsAction = (function (_super) {
         __extends(ListExtensionsAction, _super);
         function ListExtensionsAction(id, label, extensionsService, quickOpenService) {
@@ -33,7 +33,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             return true;
         };
         ListExtensionsAction.ID = 'workbench.extensions.action.listExtensions';
-        ListExtensionsAction.LABEL = nls.localize(1, null);
+        ListExtensionsAction.LABEL = nls.localize('showInstalledExtensions', "Show Installed Extensions");
         ListExtensionsAction = __decorate([
             __param(2, extensions_1.IExtensionsService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -55,7 +55,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             return true;
         };
         InstallExtensionAction.ID = 'workbench.extensions.action.installExtension';
-        InstallExtensionAction.LABEL = nls.localize(2, null);
+        InstallExtensionAction.LABEL = nls.localize('installExtension', "Install Extension");
         InstallExtensionAction = __decorate([
             __param(2, extensions_1.IExtensionsService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -77,7 +77,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             return true;
         };
         ListOutdatedExtensionsAction.ID = 'workbench.extensions.action.listOutdatedExtensions';
-        ListOutdatedExtensionsAction.LABEL = nls.localize(3, null);
+        ListOutdatedExtensionsAction.LABEL = nls.localize('showOutdatedExtensions', "Show Outdated Extensions");
         ListOutdatedExtensionsAction = __decorate([
             __param(2, extensions_1.IExtensionsService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -99,7 +99,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             return true;
         };
         ListSuggestedExtensionsAction.ID = 'workbench.extensions.action.listSuggestedExtensions';
-        ListSuggestedExtensionsAction.LABEL = nls.localize(4, null);
+        ListSuggestedExtensionsAction.LABEL = nls.localize('showExtensionRecommendations', "Show Extension Recommendations");
         ListSuggestedExtensionsAction = __decorate([
             __param(2, extensions_1.IExtensionsService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -133,10 +133,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
         InstallAction.prototype.onSuccess = function (extension, isUpdate) {
             this.reportTelemetry(extension, isUpdate, true);
             this.messageService.show(severity_1.default.Info, {
-                message: nls.localize(5, null, extension.displayName),
+                message: nls.localize('success-installed', "'{0}' was successfully installed. Restart to enable it.", extension.displayName),
                 actions: [
                     CloseAction,
-                    this.instantiationService.createInstance(actions_2.ReloadWindowAction, actions_2.ReloadWindowAction.ID, nls.localize(6, null))
+                    this.instantiationService.createInstance(actions_2.ReloadWindowAction, actions_2.ReloadWindowAction.ID, nls.localize('restartNow', "Restart Now"))
                 ]
             });
         };
@@ -162,7 +162,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
     var UninstallAction = (function (_super) {
         __extends(UninstallAction, _super);
         function UninstallAction(quickOpenService, extensionsService, messageService, telemetryService, instantiationService) {
-            _super.call(this, 'extensions.uninstall', nls.localize(7, null), 'octicon octicon-x', true);
+            _super.call(this, 'extensions.uninstall', nls.localize('uninstall', "Uninstall Extension"), 'octicon octicon-x', true);
             this.quickOpenService = quickOpenService;
             this.extensionsService = extensionsService;
             this.messageService = messageService;
@@ -171,7 +171,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
         }
         UninstallAction.prototype.run = function (extension) {
             var _this = this;
-            if (!window.confirm(nls.localize(8, null, extension.displayName))) {
+            if (!window.confirm(nls.localize('deleteSure', "Are you sure you want to uninstall '{0}'?", extension.displayName))) {
                 return winjs_base_1.TPromise.as(null);
             }
             this.enabled = false;
@@ -183,10 +183,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
         UninstallAction.prototype.onSuccess = function (extension) {
             this.reportTelemetry(extension, true);
             this.messageService.show(severity_1.default.Info, {
-                message: nls.localize(9, null, extension.displayName),
+                message: nls.localize('success-uninstalled', "'{0}' was successfully uninstalled. Restart to deactivate it.", extension.displayName),
                 actions: [
                     CloseAction,
-                    this.instantiationService.createInstance(actions_2.ReloadWindowAction, actions_2.ReloadWindowAction.ID, nls.localize(10, null))
+                    this.instantiationService.createInstance(actions_2.ReloadWindowAction, actions_2.ReloadWindowAction.ID, nls.localize('restartNow2', "Restart Now"))
                 ]
             });
         };

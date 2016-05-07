@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/workbench/services/files/electron-browser/fileService', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/node/encoding', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/timer', 'vs/platform/files/common/files', 'vs/workbench/services/files/node/fileService', 'vs/platform/configuration/common/configuration', 'vs/base/common/actions', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, winjs_base_1, paths, encoding, errors, strings, uri_1, timer, files_1, fileService_1, configuration_1, actions_1, message_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/node/encoding', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/timer', 'vs/platform/files/common/files', 'vs/workbench/services/files/node/fileService', 'vs/platform/configuration/common/configuration', 'vs/base/common/actions', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, winjs_base_1, paths, encoding, errors, strings, uri_1, timer, files_1, fileService_1, configuration_1, actions_1, message_1, electron_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -44,9 +44,9 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/files/electron-brows
             // Detect if we run < .NET Framework 4.5
             if (msg && msg.indexOf(NET_VERSION_ERROR) >= 0) {
                 this.messageService.show(message_1.Severity.Warning, {
-                    message: nls.localize(0, null),
+                    message: nls.localize('netVersionError', "The Microsoft .NET Framework 4.5 is required. Please follow the link to install it."),
                     actions: [
-                        new actions_1.Action('install.net', nls.localize(1, null), null, true, function () {
+                        new actions_1.Action('install.net', nls.localize('installNet', "Download .NET Framework 4.5"), null, true, function () {
                             electron_1.shell.openExternal('http://go.microsoft.com/fwlink/?LinkId=786533');
                             return winjs_base_1.TPromise.as(true);
                         })
@@ -118,7 +118,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/files/electron-brows
             var absolutePath = resource.fsPath;
             var result = electron_1.shell.moveItemToTrash(absolutePath);
             if (!result) {
-                return winjs_base_1.TPromise.wrapError(new Error(nls.localize(2, null, paths.basename(absolutePath))));
+                return winjs_base_1.TPromise.wrapError(new Error(nls.localize('trashFailed', "Failed to move '{0}' to the trash", paths.basename(absolutePath))));
             }
             return winjs_base_1.TPromise.as(null);
         };

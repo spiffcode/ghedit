@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/debug/common/debugModel', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/common/arrays', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugSource'], function (require, exports, winjs_base_1, nls, lifecycle, ee, uuid, types, arrays, debug, debugSource_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/common/arrays', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugSource'], function (require, exports, winjs_base_1, nls, lifecycle, ee, uuid, types, arrays, debug, debugSource_1) {
     "use strict";
     var MAX_REPL_LENGTH = 10000;
     function resolveChildren(debugService, parent) {
@@ -25,7 +25,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }
     function evaluateExpression(session, stackFrame, expression, context) {
         if (!session) {
-            expression.value = context === 'repl' ? nls.localize(0, null) : Expression.DEFAULT_VALUE;
+            expression.value = context === 'repl' ? nls.localize('startDebugFirst', "Please start a debug session to evaluate") : Expression.DEFAULT_VALUE;
             expression.available = false;
             expression.reference = 0;
             return winjs_base_1.TPromise.as(expression);
@@ -123,7 +123,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 _this.stoppedDetails.totalFrames = response.body.totalFrames || response.body.stackFrames.length;
                 return response.body.stackFrames.map(function (rsf, level) {
                     if (!rsf) {
-                        return new StackFrame(_this.threadId, 0, new debugSource_1.Source({ name: 'unknown' }, false), nls.localize(1, null), undefined, undefined);
+                        return new StackFrame(_this.threadId, 0, new debugSource_1.Source({ name: 'unknown' }, false), nls.localize('unknownStack', "Unknown stack location"), undefined, undefined);
                     }
                     return new StackFrame(_this.threadId, rsf.id, rsf.source ? new debugSource_1.Source(rsf.source) : new debugSource_1.Source({ name: 'unknown' }, false), rsf.name, rsf.line, rsf.column);
                 });
@@ -537,7 +537,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
             }
             else {
-                elements.push(new KeyValueOutputElement(value.prototype, value, nls.localize(2, null)));
+                elements.push(new KeyValueOutputElement(value.prototype, value, nls.localize('snapshotObj', "Only primitive values are shown for this object.")));
             }
             if (elements.length) {
                 this.addReplElements(elements);

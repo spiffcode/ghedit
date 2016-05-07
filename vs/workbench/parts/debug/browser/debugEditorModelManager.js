@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugEditorModelManager', 'vs/base/common/objects', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/common/debug', 'vs/editor/common/services/modelService'], function (require, exports, nls, objects, lifecycle, editorcommon, debug_1, modelService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/common/debug', 'vs/editor/common/services/modelService'], function (require, exports, nls, objects, lifecycle, editorcommon, debug_1, modelService_1) {
     "use strict";
     function toMap(arr) {
         var result = {};
@@ -249,27 +249,27 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugEdit
         // editor decorations
         DebugEditorModelManager.BREAKPOINT_DECORATION = {
             glyphMarginClassName: 'debug-breakpoint-glyph',
-            hoverMessage: nls.localize(0, null),
+            hoverMessage: nls.localize('breakpointHover', "Breakpoint"),
             stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
         };
         DebugEditorModelManager.BREAKPOINT_DISABLED_DECORATION = {
             glyphMarginClassName: 'debug-breakpoint-disabled-glyph',
-            hoverMessage: nls.localize(1, null),
+            hoverMessage: nls.localize('breakpointDisabledHover', "Disabled Breakpoint"),
             stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
         };
         DebugEditorModelManager.BREAKPOINT_UNVERIFIED_DECORATION = {
             glyphMarginClassName: 'debug-breakpoint-unverified-glyph',
-            hoverMessage: nls.localize(2, null),
+            hoverMessage: nls.localize('breakpointUnverifieddHover', "Unverified Breakpoint"),
             stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
         };
         DebugEditorModelManager.BREAKPOINT_DIRTY_DECORATION = {
             glyphMarginClassName: 'debug-breakpoint-unverified-glyph',
-            hoverMessage: nls.localize(3, null),
+            hoverMessage: nls.localize('breakpointDirtydHover', "Unverified breakpoint. File is modified, please restart debug session."),
             stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
         };
         DebugEditorModelManager.BREAKPOINT_UNSUPPORTED_DECORATION = {
             glyphMarginClassName: 'debug-breakpoint-unsupported-glyph',
-            hoverMessage: nls.localize(4, null),
+            hoverMessage: nls.localize('breakpointUnsupported', "Conditional breakpoints not supported by this debug type"),
             stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
         };
         // we need a separate decoration for glyph margin, since we do not want it on each line of a multi line statement.

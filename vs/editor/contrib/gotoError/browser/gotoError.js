@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/gotoError/browser/gotoError', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/core/position', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/bulkEdit', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/zoneWidget/browser/zoneWidget', 'vs/css!./gotoError'], function (require, exports, nls, errors_1, event_1, keyCodes_1, lifecycle_1, severity_1, strings, winjs_base_1, dom, htmlContentRenderer_1, editor_1, event_2, keybindingService_1, markers_1, telemetry_1, position_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, bulkEdit_1, editorBrowserExtensions_1, zoneWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/core/position', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/services/bulkEdit', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/zoneWidget/browser/zoneWidget', 'vs/css!./gotoError'], function (require, exports, nls, errors_1, event_1, keyCodes_1, lifecycle_1, severity_1, strings, winjs_base_1, dom, htmlContentRenderer_1, editor_1, event_2, keybindingService_1, markers_1, telemetry_1, position_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, bulkEdit_1, editorBrowserExtensions_1, zoneWidget_1) {
     'use strict';
     var MarkerModel = (function () {
         function MarkerModel(editor, markers) {
@@ -267,7 +267,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/gotoError/browser/gotoEr
                         });
                         var quickfixhead = document.createElement('span');
                         quickfixhead.className = 'quickfixhead';
-                        quickfixhead.appendChild(document.createTextNode(result.length > 1 ? nls.localize(0, null) : nls.localize(1, null)));
+                        quickfixhead.appendChild(document.createTextNode(result.length > 1 ? nls.localize('quickfix.multiple.label', 'Suggested fixes: ') : nls.localize('quickfix.single.label', 'Suggested fix: ')));
                         _this._quickFixSection.appendChild(quickfixhead);
                         _this._quickFixEntries = [];
                         var quickfixcontainer_1 = document.createElement('span');
@@ -437,11 +437,11 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/gotoError/browser/gotoEr
     }(MarkerNavigationAction));
     var CONTEXT_MARKERS_NAVIGATION_VISIBLE = 'markersNavigationVisible';
     // register actions
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(NextMarkerAction, NextMarkerAction.ID, nls.localize(2, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(NextMarkerAction, NextMarkerAction.ID, nls.localize('markerAction.next.label', "Go to Next Error or Warning"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyCode.F8
     }));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PrevMarkerAction, PrevMarkerAction.ID, nls.localize(3, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PrevMarkerAction, PrevMarkerAction.ID, nls.localize('markerAction.previous.label', "Go to Previous Error or Warning"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F8
     }));

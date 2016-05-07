@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/search/browser/openFileHandler', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/search/common/searchQuery', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/search/common/search', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, labels, quickOpenModel_1, quickopen_1, searchQuery_1, files_1, editorService_1, configuration_1, instantiation_1, message_1, search_1, workspace_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/search/common/searchQuery', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/search/common/search', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, labels, quickOpenModel_1, quickopen_1, searchQuery_1, files_1, editorService_1, configuration_1, instantiation_1, message_1, search_1, workspace_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.name;
         };
         FileEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, file picker", this.getLabel());
         };
         FileEntry.prototype.getDescription = function () {
             return this.description;
@@ -108,7 +108,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
         };
         OpenFileHandler.prototype.getGroupLabel = function () {
-            return nls.localize(1, null);
+            return nls.localize('searchResults', "search results");
         };
         OpenFileHandler.prototype.getAutoFocus = function (searchValue) {
             return {

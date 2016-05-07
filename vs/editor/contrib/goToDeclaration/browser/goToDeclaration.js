@@ -16,12 +16,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/goToDeclaration/browser/goToDeclaration', 'vs/base/common/arrays', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/browser', 'vs/platform/editor/common/editor', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/common/modes/textToHtmlTokenizer', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/goToDeclaration/common/goToDeclaration', 'vs/editor/contrib/referenceSearch/browser/referenceSearch', 'vs/css!./goToDeclaration'], function (require, exports, nls, arrays_1, async_1, errors_1, keyCodes_1, platform, severity_1, strings, winjs_base_1, browser, editor_1, message_1, request_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, modes_1, textToHtmlTokenizer_1, editorBrowserExtensions_1, goToDeclaration_1, referenceSearch_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/browser/browser', 'vs/platform/editor/common/editor', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes', 'vs/editor/common/modes/textToHtmlTokenizer', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/goToDeclaration/common/goToDeclaration', 'vs/editor/contrib/referenceSearch/browser/referenceSearch', 'vs/css!./goToDeclaration'], function (require, exports, nls, arrays_1, async_1, errors_1, keyCodes_1, platform, severity_1, strings, winjs_base_1, browser, editor_1, message_1, request_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, modes_1, textToHtmlTokenizer_1, editorBrowserExtensions_1, goToDeclaration_1, referenceSearch_1) {
     'use strict';
     var DEFAULT_BEHAVIOR = editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu | editorActionEnablement_1.Behaviour.UpdateOnCursorPositionChange;
     function metaTitle(references) {
         if (references.length > 1) {
-            return nls.localize(0, null, references.length);
+            return nls.localize('meta.title', " – {0} definitions", references.length);
         }
     }
     var GoToTypeAction = (function (_super) {
@@ -250,7 +250,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/goToDeclaration/browser/
                         startColumn: word.startColumn,
                         endLineNumber: position.lineNumber,
                         endColumn: word.endColumn
-                    }, nls.localize(1, null, results.length), false);
+                    }, nls.localize('multipleResults', "Click to show the {0} definitions found.", results.length), false);
                 }
                 else {
                     var result_1 = results[0];
@@ -435,7 +435,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/goToDeclaration/browser/
         return GotoDefinitionWithMouseEditorContribution;
     }());
     // register actions
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PreviewDeclarationAction, PreviewDeclarationAction.ID, nls.localize(2, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PreviewDeclarationAction, PreviewDeclarationAction.ID, nls.localize('actions.previewDecl.label', "Peek Definition"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.F12,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F10 },
@@ -447,15 +447,15 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/goToDeclaration/browser/
     else {
         goToDeclarationKb = keyCodes_1.KeyCode.F12;
     }
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GoToDeclarationAction, GoToDeclarationAction.ID, nls.localize(3, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GoToDeclarationAction, GoToDeclarationAction.ID, nls.localize('actions.goToDecl.label', "Go to Definition"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: goToDeclarationKb
     }));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenDeclarationToTheSideAction, OpenDeclarationToTheSideAction.ID, nls.localize(4, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenDeclarationToTheSideAction, OpenDeclarationToTheSideAction.ID, nls.localize('actions.goToDeclToSide.label', "Open Definition to the Side"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, goToDeclarationKb)
     }));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GoToTypeDeclarationActions, GoToTypeDeclarationActions.ID, nls.localize(5, null)));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(GoToTypeDeclarationActions, GoToTypeDeclarationActions.ID, nls.localize('actions.gotoTypeDecl.label', "Go to Type Definition")));
     editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(GotoDefinitionWithMouseEditorContribution);
 });
 //# sourceMappingURL=goToDeclaration.js.map

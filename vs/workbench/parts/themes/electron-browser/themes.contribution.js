@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/themes/electron-browser/themes.contribution', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/platform/message/common/message', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/themes/common/themeService', 'vs/base/common/async'], function (require, exports, nls, actions, actions_1, message_1, platform, workbenchActionRegistry, quickOpenService_1, workspace_1, themeService_1, async_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/platform/message/common/message', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/themes/common/themeService', 'vs/base/common/async'], function (require, exports, nls, actions, actions_1, message_1, platform, workbenchActionRegistry, quickOpenService_1, workspace_1, themeService_1, async_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -47,7 +47,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/themes/electron-browser
                     if (pick) {
                         var themeId = pick.id;
                         _this.themeService.setTheme(themeId, broadcast).then(null, function (error) {
-                            _this.messageService.show(message_1.Severity.Info, nls.localize(1, null, error.message));
+                            _this.messageService.show(message_1.Severity.Info, nls.localize('problemChangingTheme', "Problem loading theme: {0}", error.message));
                         });
                     }
                     else {
@@ -66,11 +66,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/themes/electron-browser
                     previewThemeScheduler.dispose();
                     selectTheme(pick, true);
                 };
-                return _this.quickOpenService.pick(picks, { placeHolder: nls.localize(2, null), autoFocus: { autoFocusIndex: selectedPickIndex } }).then(pickTheme, null, previewTheme);
+                return _this.quickOpenService.pick(picks, { placeHolder: nls.localize('themes.selectTheme', "Select Color Theme"), autoFocus: { autoFocusIndex: selectedPickIndex } }).then(pickTheme, null, previewTheme);
             });
         };
         SelectThemeAction.ID = 'workbench.action.selectTheme';
-        SelectThemeAction.LABEL = nls.localize(0, null);
+        SelectThemeAction.LABEL = nls.localize('selectTheme.label', 'Color Theme');
         SelectThemeAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, quickOpenService_1.IQuickOpenService),
@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/themes/electron-browser
         ], SelectThemeAction);
         return SelectThemeAction;
     }(actions.Action));
-    var category = nls.localize(3, null);
+    var category = nls.localize('preferences', "Preferences");
     var workbenchActionsRegistry = platform.Registry.as(workbenchActionRegistry.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(SelectThemeAction, SelectThemeAction.ID, SelectThemeAction.LABEL), category);
 });

@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/empty/emptyView', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/dom', 'vs/base/browser/ui/button/button', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/selection/common/selection', 'vs/css!./emptyView'], function (require, exports, nls, Lifecycle, EventEmitter, DOM, button_1, WinJS, Builder, git, GitActions, files_1, instantiation_1, message_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/dom', 'vs/base/browser/ui/button/button', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/selection/common/selection', 'vs/css!./emptyView'], function (require, exports, nls, Lifecycle, EventEmitter, DOM, button_1, WinJS, Builder, git, GitActions, files_1, instantiation_1, message_1, selection_1) {
     'use strict';
     var IGitService = git.IGitService;
     var $ = Builder.$;
@@ -63,7 +63,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/empty
             $('p').appendTo(this.$el).text(EmptyView.EMPTY_MESSAGE);
             var initSection = $('.section').appendTo(this.$el);
             this.initButton = new button_1.Button(initSection);
-            this.initButton.label = nls.localize(1, null);
+            this.initButton.label = nls.localize('gitinit', 'Initialize git repository');
             this.initButton.on('click', function (e) {
                 DOM.EventHelper.stop(e);
                 _this.disableUI();
@@ -131,7 +131,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/empty
             this.toDispose = Lifecycle.dispose(this.toDispose);
             _super.prototype.dispose.call(this);
         };
-        EmptyView.EMPTY_MESSAGE = nls.localize(0, null);
+        EmptyView.EMPTY_MESSAGE = nls.localize('noGit', "This workspace isn't yet under git source control.");
         EmptyView = __decorate([
             __param(2, IGitService),
             __param(3, instantiation_1.IInstantiationService),

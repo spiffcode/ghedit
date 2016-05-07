@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/editor/common/editorService', 'vs/nls!vs/workbench/electron-browser/actions', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/configuration/common/configuration', 'vs/platform/keybinding/common/keybindingsRegistry', 'electron'], function (require, exports, winjs_base_1, timer, paths, actions_1, windowService_1, editorService_1, nls, message_1, workspace_1, quickOpenService_1, configuration_1, keybindingsRegistry_1, electron_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/editor/common/editorService', 'vs/nls', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/configuration/common/configuration', 'vs/platform/keybinding/common/keybindingsRegistry', 'electron'], function (require, exports, winjs_base_1, timer, paths, actions_1, windowService_1, editorService_1, nls, message_1, workspace_1, quickOpenService_1, configuration_1, keybindingsRegistry_1, electron_1) {
     'use strict';
     // --- actions
     var CloseEditorAction = (function (_super) {
@@ -35,7 +35,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(false);
         };
         CloseEditorAction.ID = 'workbench.action.closeActiveEditor';
-        CloseEditorAction.LABEL = nls.localize(0, null);
+        CloseEditorAction.LABEL = nls.localize('closeActiveEditor', "Close Editor");
         CloseEditorAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, windowService_1.IWindowService)
@@ -54,7 +54,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         CloseWindowAction.ID = 'workbench.action.closeWindow';
-        CloseWindowAction.LABEL = nls.localize(1, null);
+        CloseWindowAction.LABEL = nls.localize('closeWindow', "Close Window");
         CloseWindowAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], CloseWindowAction);
@@ -74,12 +74,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
                 electron_1.ipcRenderer.send('vscode:closeFolder', this.windowService.getWindowId()); // handled from browser process
             }
             else {
-                this.messageService.show(message_1.Severity.Info, nls.localize(3, null));
+                this.messageService.show(message_1.Severity.Info, nls.localize('noFolderOpened', "There is currently no folder opened in this instance to close."));
             }
             return winjs_base_1.TPromise.as(true);
         };
         CloseFolderAction.ID = 'workbench.action.closeFolder';
-        CloseFolderAction.LABEL = nls.localize(2, null);
+        CloseFolderAction.LABEL = nls.localize('closeFolder', "Close Folder");
         CloseFolderAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, message_1.IMessageService),
@@ -99,7 +99,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         NewWindowAction.ID = 'workbench.action.newWindow';
-        NewWindowAction.LABEL = nls.localize(4, null);
+        NewWindowAction.LABEL = nls.localize('newWindow', "New Window");
         NewWindowAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], NewWindowAction);
@@ -117,7 +117,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ToggleFullScreenAction.ID = 'workbench.action.toggleFullScreen';
-        ToggleFullScreenAction.LABEL = nls.localize(5, null);
+        ToggleFullScreenAction.LABEL = nls.localize('toggleFullScreen', "Toggle Full Screen");
         ToggleFullScreenAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], ToggleFullScreenAction);
@@ -135,7 +135,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ToggleMenuBarAction.ID = 'workbench.action.toggleMenuBar';
-        ToggleMenuBarAction.LABEL = nls.localize(6, null);
+        ToggleMenuBarAction.LABEL = nls.localize('toggleMenuBar', "Toggle Menu Bar");
         ToggleMenuBarAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], ToggleMenuBarAction);
@@ -153,7 +153,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ToggleDevToolsAction.ID = 'workbench.action.toggleDevTools';
-        ToggleDevToolsAction.LABEL = nls.localize(7, null);
+        ToggleDevToolsAction.LABEL = nls.localize('toggleDevTools', "Toggle Developer Tools");
         ToggleDevToolsAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], ToggleDevToolsAction);
@@ -170,7 +170,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ZoomInAction.ID = 'workbench.action.zoomIn';
-        ZoomInAction.LABEL = nls.localize(8, null);
+        ZoomInAction.LABEL = nls.localize('zoomIn', "Zoom in");
         return ZoomInAction;
     }(actions_1.Action));
     exports.ZoomInAction = ZoomInAction;
@@ -211,7 +211,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ZoomOutAction.ID = 'workbench.action.zoomOut';
-        ZoomOutAction.LABEL = nls.localize(9, null);
+        ZoomOutAction.LABEL = nls.localize('zoomOut', "Zoom out");
         ZoomOutAction = __decorate([
             __param(2, configuration_1.IConfigurationService)
         ], ZoomOutAction);
@@ -229,7 +229,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ZoomResetAction.ID = 'workbench.action.zoomReset';
-        ZoomResetAction.LABEL = nls.localize(10, null);
+        ZoomResetAction.LABEL = nls.localize('zoomReset', "Reset Zoom");
         ZoomResetAction = __decorate([
             __param(2, configuration_1.IConfigurationService)
         ], ZoomResetAction);
@@ -322,7 +322,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ShowStartupPerformance.ID = 'workbench.action.appPerf';
-        ShowStartupPerformance.LABEL = nls.localize(11, null);
+        ShowStartupPerformance.LABEL = nls.localize('appPerf', "Startup Performance");
         ShowStartupPerformance = __decorate([
             __param(2, windowService_1.IWindowService),
             __param(3, workspace_1.IWorkspaceContextService)
@@ -341,7 +341,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         ReloadWindowAction.ID = 'workbench.action.reloadWindow';
-        ReloadWindowAction.LABEL = nls.localize(12, null);
+        ReloadWindowAction.LABEL = nls.localize('reloadWindow', "Reload Window");
         ReloadWindowAction = __decorate([
             __param(2, windowService_1.IWindowService)
         ], ReloadWindowAction);
@@ -363,7 +363,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
                     label: paths.basename(p),
                     description: paths.dirname(p),
                     path: p,
-                    separator: index === 0 ? { label: nls.localize(14, null) } : void 0
+                    separator: index === 0 ? { label: nls.localize('folders', "folders") } : void 0
                 };
             });
             var filePicks = recentFiles.map(function (p, index) {
@@ -371,13 +371,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
                     label: paths.basename(p),
                     description: paths.dirname(p),
                     path: p,
-                    separator: index === 0 ? { label: nls.localize(15, null), border: true } : void 0
+                    separator: index === 0 ? { label: nls.localize('files', "files"), border: true } : void 0
                 };
             });
             var hasWorkspace = !!this.contextService.getWorkspace();
             return this.quickOpenService.pick(folderPicks.concat.apply(folderPicks, filePicks), {
                 autoFocus: { autoFocusFirstEntry: !hasWorkspace, autoFocusSecondEntry: hasWorkspace },
-                placeHolder: nls.localize(16, null),
+                placeHolder: nls.localize('openRecentPlaceHolder', "Select a path to open"),
                 matchOnDescription: true
             }).then(function (p) {
                 if (p) {
@@ -387,7 +387,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             });
         };
         OpenRecentAction.ID = 'workbench.action.openRecent';
-        OpenRecentAction.LABEL = nls.localize(13, null);
+        OpenRecentAction.LABEL = nls.localize('openRecent', "Open Recent");
         OpenRecentAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, quickOpenService_1.IQuickOpenService)
@@ -413,7 +413,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
             return winjs_base_1.TPromise.as(true);
         };
         CloseMessagesAction.ID = 'workbench.action.closeMessages';
-        CloseMessagesAction.LABEL = nls.localize(17, null);
+        CloseMessagesAction.LABEL = nls.localize('closeMessages', "Close Notification Messages");
         CloseMessagesAction = __decorate([
             __param(2, message_1.IMessageService),
             __param(3, editorService_1.IWorkbenchEditorService)

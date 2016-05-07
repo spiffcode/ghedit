@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedback', 'vs/base/browser/builder', 'vs/base/browser/ui/dropdown/dropdown', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/workspace/common/contextService', 'vs/css!./media/feedback'], function (require, exports, nls, builder_1, dropdown_1, telemetry_1, contextService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/browser/ui/dropdown/dropdown', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/workspace/common/contextService', 'vs/css!./media/feedback'], function (require, exports, nls, builder_1, dropdown_1, telemetry_1, contextService_1) {
     'use strict';
     var FormEvent;
     (function (FormEvent) {
@@ -37,7 +37,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
             this.telemetryService = telemetryService;
             this.contextService = contextService;
             this.$el.addClass('send-feedback');
-            this.$el.title(nls.localize(0, null));
+            this.$el.title(nls.localize('sendFeedback', "Tweet Feedback"));
             this.feedbackService = options.feedbackService;
             this.feedback = '';
             this.sentiment = 1;
@@ -59,24 +59,24 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
             }).appendTo(container);
             builder_1.$(container).addClass('monaco-menu-container');
             this.feedbackForm = $form.getHTMLElement();
-            builder_1.$('h2.title').text(nls.localize(1, null)).appendTo($form);
+            builder_1.$('h2.title').text(nls.localize("label.sendASmile", "Tweet us your feedback.")).appendTo($form);
             this.invoke(builder_1.$('div.cancel').attr('tabindex', '0'), function () {
                 _this.hide();
             }).appendTo($form);
             var $content = builder_1.$('div.content').appendTo($form);
             var $sentimentContainer = builder_1.$('div').appendTo($content);
-            builder_1.$('span').text(nls.localize(2, null)).appendTo($sentimentContainer);
+            builder_1.$('span').text(nls.localize("sentiment", "How was your experience?")).appendTo($sentimentContainer);
             var $feedbackSentiment = builder_1.$('div.feedback-sentiment').appendTo($sentimentContainer);
             this.smileyInput = builder_1.$('div').addClass('sentiment smile').attr({
                 'aria-checked': 'false',
-                'aria-label': nls.localize(3, null),
+                'aria-label': nls.localize('smileCaption', "Happy"),
                 'tabindex': 0,
                 'role': 'checkbox'
             });
             this.invoke(this.smileyInput, function () { _this.setSentiment(true); }).appendTo($feedbackSentiment);
             this.frownyInput = builder_1.$('div').addClass('sentiment frown').attr({
                 'aria-checked': 'false',
-                'aria-label': nls.localize(4, null),
+                'aria-label': nls.localize('frownCaption', "Sad"),
                 'tabindex': 0,
                 'role': 'checkbox'
             });
@@ -88,20 +88,20 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
                 this.frownyInput.addClass('checked').attr('aria-checked', 'true');
             }
             var $contactUs = builder_1.$('div.contactus').appendTo($content);
-            builder_1.$('span').text(nls.localize(5, null)).appendTo($contactUs);
+            builder_1.$('span').text(nls.localize("other ways to contact us", "Other ways to contact us")).appendTo($contactUs);
             var $contactUsContainer = builder_1.$('div.channels').appendTo($contactUs);
-            builder_1.$('div').append(builder_1.$('a').attr('target', '_blank').attr('href', this.reportIssueLink).text(nls.localize(6, null)).attr('tabindex', '0'))
+            builder_1.$('div').append(builder_1.$('a').attr('target', '_blank').attr('href', this.reportIssueLink).text(nls.localize("submit a bug", "Submit a bug")).attr('tabindex', '0'))
                 .appendTo($contactUsContainer);
-            builder_1.$('div').append(builder_1.$('a').attr('target', '_blank').attr('href', this.requestFeatureLink).text(nls.localize(7, null)).attr('tabindex', '0'))
+            builder_1.$('div').append(builder_1.$('a').attr('target', '_blank').attr('href', this.requestFeatureLink).text(nls.localize("request a missing feature", "Request a missing feature")).attr('tabindex', '0'))
                 .appendTo($contactUsContainer);
             this.remainingCharacterCount = builder_1.$('span.char-counter').text(this.getCharCountText(0));
-            builder_1.$('h3').text(nls.localize(8, null))
+            builder_1.$('h3').text(nls.localize("tell us why?", "Tell us why?"))
                 .append(this.remainingCharacterCount)
                 .appendTo($form);
             this.feedbackDescriptionInput = builder_1.$('textarea.feedback-description').attr({
                 rows: 3,
                 maxlength: this.maxFeedbackCharacters,
-                'aria-label': nls.localize(9, null)
+                'aria-label': nls.localize("commentsHeader", "Comments")
             })
                 .text(this.feedback).attr('required', 'required')
                 .on('keyup', function () {
@@ -109,7 +109,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
             })
                 .appendTo($form).domFocus().getHTMLElement();
             var $buttons = builder_1.$('div.form-buttons').appendTo($form);
-            this.sendButton = this.invoke(builder_1.$('input.send').type('submit').attr('disabled', '').value(nls.localize(10, null)).appendTo($buttons), function () {
+            this.sendButton = this.invoke(builder_1.$('input.send').type('submit').attr('disabled', '').value(nls.localize('tweet', "Tweet")).appendTo($buttons), function () {
                 if (_this.isSendingFeedback) {
                     return;
                 }
@@ -127,8 +127,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
         FeedbackDropdown.prototype.getCharCountText = function (charCount) {
             var remaining = this.maxFeedbackCharacters - charCount;
             var text = (remaining === 1)
-                ? nls.localize(11, null)
-                : nls.localize(12, null);
+                ? nls.localize("character left", "character left")
+                : nls.localize("characters left", "characters left");
             return '(' + remaining + ' ' + text + ')';
         };
         FeedbackDropdown.prototype.updateCharCountText = function () {
@@ -200,11 +200,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
                 case FormEvent.SENDING:
                     this.isSendingFeedback = true;
                     this.sendButton.setClass('send in-progress');
-                    this.sendButton.value(nls.localize(13, null));
+                    this.sendButton.value(nls.localize('feedbackSending', "Sending"));
                     break;
                 case FormEvent.SENT:
                     this.isSendingFeedback = false;
-                    this.sendButton.setClass('send success').value(nls.localize(14, null));
+                    this.sendButton.setClass('send success').value(nls.localize('feedbackSent', "Thanks"));
                     this.resetForm();
                     this.autoHideTimeout = setTimeout(function () {
                         _this.hide();
@@ -217,7 +217,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/feedback/browser/feedba
                     break;
                 case FormEvent.SEND_ERROR:
                     this.isSendingFeedback = false;
-                    this.sendButton.setClass('send error').value(nls.localize(15, null));
+                    this.sendButton.setClass('send error').value(nls.localize('feedbackSendingError', "Try again"));
                     break;
             }
         };

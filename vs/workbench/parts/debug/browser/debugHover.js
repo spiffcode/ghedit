@@ -7,13 +7,13 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/browser/dom', 'vs/nls!vs/workbench/parts/debug/browser/debugHover', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/parts/tree/browser/treeDefaults', 'vs/editor/browser/editorBrowser', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer'], function (require, exports, lifecycle, winjs_base_1, errors, keyCodes_1, dom, nls, treeImpl_1, treeDefaults_1, editorbrowser, debugModel_1, viewer) {
+define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/browser/dom', 'vs/nls', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/parts/tree/browser/treeDefaults', 'vs/editor/browser/editorBrowser', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer'], function (require, exports, lifecycle, winjs_base_1, errors, keyCodes_1, dom, nls, treeImpl_1, treeDefaults_1, editorbrowser, debugModel_1, viewer) {
     "use strict";
     var $ = dom.emmet;
     var debugTreeOptions = {
         indentPixels: 6,
         twistiePixels: 15,
-        ariaLabel: nls.localize(0, null)
+        ariaLabel: nls.localize('treeAriaLabel', "Debug Hover")
     };
     var MAX_ELEMENTS_SHOWN = 18;
     var DebugHoverWidget = (function () {

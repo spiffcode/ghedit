@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/node/extensionPoints', 'vs/base/common/platform', 'vs/base/node/pfs', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/common/collections', 'vs/base/common/paths', 'vs/base/common/json', 'vs/base/common/types', 'vs/platform/extensions/node/extensionValidator', 'semver'], function (require, exports, nls, Platform, pfs, severity_1, winjs_base_1, collections_1, paths, json, Types, extensionValidator_1, semver) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/node/pfs', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/common/collections', 'vs/base/common/paths', 'vs/base/common/json', 'vs/base/common/types', 'vs/platform/extensions/node/extensionValidator', 'semver'], function (require, exports, nls, Platform, pfs, severity_1, winjs_base_1, collections_1, paths, json, Types, extensionValidator_1, semver) {
     'use strict';
     var MANIFEST_FILE = 'package.json';
     var devMode = !!process.env['VSCODE_DEV'];
@@ -63,13 +63,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/node/extensionPoints', 'vs/ba
                 var extensionDescription = json.parse(manifestContents.toString(), errors);
                 if (errors.length > 0) {
                     errors.forEach(function (error) {
-                        _this._collector.error(_this._absoluteFolderPath, nls.localize(0, null, _this._absoluteManifestPath, error));
+                        _this._collector.error(_this._absoluteFolderPath, nls.localize('jsonParseFail', "Failed to parse {0}: {1}.", _this._absoluteManifestPath, error));
                     });
                     return null;
                 }
                 return extensionDescription;
             }, function (err) {
-                _this._collector.error(_this._absoluteFolderPath, nls.localize(1, null, _this._absoluteManifestPath, err.message));
+                _this._collector.error(_this._absoluteFolderPath, nls.localize('fileReadFail', "Cannot read file {0}: {1}.", _this._absoluteManifestPath, err.message));
                 return null;
             });
         };
@@ -97,14 +97,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/node/extensionPoints', 'vs/ba
                         var messages = json.parse(messageBundleContent.toString(), errors);
                         if (errors.length > 0) {
                             errors.forEach(function (error) {
-                                _this._collector.error(_this._absoluteFolderPath, nls.localize(2, null, messageBundle, error));
+                                _this._collector.error(_this._absoluteFolderPath, nls.localize('jsonParseFail', "Failed to parse {0}: {1}.", messageBundle, error));
                             });
                             return extensionDescription;
                         }
                         ExtensionManifestNLSReplacer._replaceNLStrings(extensionDescription, messages, _this._collector, _this._absoluteFolderPath);
                         return extensionDescription;
                     }, function (err) {
-                        _this._collector.error(_this._absoluteFolderPath, nls.localize(3, null, messageBundle, err.message));
+                        _this._collector.error(_this._absoluteFolderPath, nls.localize('fileReadFail', "Cannot read file {0}: {1}.", messageBundle, err.message));
                         return null;
                     });
                 });
@@ -158,7 +158,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/node/extensionPoints', 'vs/ba
                                 literal[key] = message;
                             }
                             else {
-                                collector.warn(messageScope, nls.localize(4, null, messageKey));
+                                collector.warn(messageScope, nls.localize('missingNLSKey', "Couldn't find message for key {0}.", messageKey));
                             }
                         }
                     }

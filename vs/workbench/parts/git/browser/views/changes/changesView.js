@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/changes/changesView', 'vs/base/common/platform', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/keyboardEvent', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/events', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/views/changes/changesViewer', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/output/common/output', 'vs/workbench/common/editor', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/severity', 'vs/workbench/services/editor/common/editorService', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/platform/event/common/event', 'vs/base/common/keyCodes', 'vs/css!./changesView'], function (require, exports, nls, Platform, Lifecycle, EventEmitter, Strings, Errors, paths, WinJS, Builder, keyboardEvent_1, Actions, ActionBar, TreeImpl, WorkbenchEvents, git, GitActions, GitModel, Viewer, GitEditorInputs, Files, output_1, WorkbenchEditorCommon, InputBox, severity_1, editorService_1, contextView_1, instantiation_1, message_1, workspace_1, selection_1, event_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/keyboardEvent', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/common/events', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/views/changes/changesViewer', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/output/common/output', 'vs/workbench/common/editor', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/severity', 'vs/workbench/services/editor/common/editorService', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/platform/event/common/event', 'vs/base/common/keyCodes', 'vs/css!./changesView'], function (require, exports, nls, Platform, Lifecycle, EventEmitter, Strings, Errors, paths, WinJS, Builder, keyboardEvent_1, Actions, ActionBar, TreeImpl, WorkbenchEvents, git, GitActions, GitModel, Viewer, GitEditorInputs, Files, output_1, WorkbenchEditorCommon, InputBox, severity_1, editorService_1, contextView_1, instantiation_1, message_1, workspace_1, selection_1, event_1, keyCodes_1) {
     'use strict';
     var IGitService = git.IGitService;
     var $ = Builder.$;
@@ -62,12 +62,12 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/chang
             this.$commitView = $('.commit-view').appendTo(this.$el);
             // Commit view
             this.commitInputBox = new InputBox.InputBox(this.$commitView.getHTMLElement(), this.contextViewService, {
-                placeholder: nls.localize(2, null, ChangesView.COMMIT_KEYBINDING),
+                placeholder: nls.localize('commitMessage', "Message (press {0} to commit)", ChangesView.COMMIT_KEYBINDING),
                 validationOptions: {
                     showMessage: true,
                     validation: function () { return null; }
                 },
-                ariaLabel: nls.localize(3, null, ChangesView.COMMIT_KEYBINDING),
+                ariaLabel: nls.localize('commitMessageAriaLabel', "Git: Type commit message and press {0} to commit", ChangesView.COMMIT_KEYBINDING),
                 flexibleHeight: true
             });
             this.commitInputBox.onDidChange(function (value) { return _this.emit('change', value); });
@@ -102,7 +102,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/chang
             }, {
                 indentPixels: 0,
                 twistiePixels: 20,
-                ariaLabel: nls.localize(4, null)
+                ariaLabel: nls.localize('treeAriaLabel', "Git Changes View")
             });
             this.tree.setInput(this.gitService.getModel().getStatus());
             this.tree.expandAll(this.gitService.getModel().getStatus().getGroups());
@@ -179,7 +179,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/chang
                     this.instantiationService.createInstance(GitActions.GlobalUnstageAction),
                     this.instantiationService.createInstance(GitActions.GlobalUndoAction),
                     new ActionBar.Separator(),
-                    new Actions.Action('show.gitOutput', nls.localize(5, null), null, true, function () { return _this.outputService.getChannel('Git').show(); })
+                    new Actions.Action('show.gitOutput', nls.localize('showOutput', "Show Git Output"), null, true, function () { return _this.outputService.getChannel('Git').show(); })
                 ];
                 this.secondaryActions.forEach(function (a) { return _this.toDispose.push(a); });
             }
@@ -319,8 +319,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/chang
             _super.prototype.dispose.call(this);
         };
         ChangesView.COMMIT_KEYBINDING = Platform.isMacintosh ? 'Cmd+Enter' : 'Ctrl+Enter';
-        ChangesView.NEED_MESSAGE = nls.localize(0, null, ChangesView.COMMIT_KEYBINDING);
-        ChangesView.NOTHING_TO_COMMIT = nls.localize(1, null, ChangesView.COMMIT_KEYBINDING);
+        ChangesView.NEED_MESSAGE = nls.localize('needMessage', "Please provide a commit message. You can always press **{0}** to commit changes. If there are any staged changes, only those will be committed; otherwise, all changes will.", ChangesView.COMMIT_KEYBINDING);
+        ChangesView.NOTHING_TO_COMMIT = nls.localize('nothingToCommit', "Once there are some changes to commit, type in the commit message and either press **{0}** to commit changes. If there are any staged changes, only those will be committed; otherwise, all changes will.", ChangesView.COMMIT_KEYBINDING);
         ChangesView = __decorate([
             __param(1, instantiation_1.IInstantiationService),
             __param(2, editorService_1.IWorkbenchEditorService),

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/editors/binaryFileEditor', 'vs/workbench/browser/parts/editor/binaryEditor', 'vs/workbench/parts/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/editor/common/editorService'], function (require, exports, nls, binaryEditor_1, files_1, telemetry_1, editorService_1) {
+define(["require", "exports", 'vs/nls', 'vs/workbench/browser/parts/editor/binaryEditor', 'vs/workbench/parts/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/editor/common/editorService'], function (require, exports, nls, binaryEditor_1, files_1, telemetry_1, editorService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -27,7 +27,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/editors/b
             _super.call(this, BinaryFileEditor.ID, telemetryService, editorService);
         }
         BinaryFileEditor.prototype.getTitle = function () {
-            return this.getInput() ? this.getInput().getName() : nls.localize(0, null);
+            return this.getInput() ? this.getInput().getName() : nls.localize('binaryFileEditor', "Binary File Viewer");
         };
         BinaryFileEditor.prototype.supportsSplitEditor = function () {
             return true; // yes, we can!

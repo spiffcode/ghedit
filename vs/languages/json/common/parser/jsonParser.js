@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/json', './jsonLocation'], function (require, exports, nls, Arrays, Types, Json, jsonLocation_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/json', './jsonLocation'], function (require, exports, nls, Arrays, Types, Json, jsonLocation_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -80,7 +80,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (Arrays.contains(schema.type, this.type) === false) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: schema.errorMessage || nls.localize(0, null, schema.type.join())
+                        message: schema.errorMessage || nls.localize('typeArrayMismatchWarning', 'Incorrect type. Expected one of {0}', schema.type.join())
                     });
                 }
             }
@@ -88,7 +88,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (this.type !== schema.type) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: schema.errorMessage || nls.localize(1, null, schema.type)
+                        message: schema.errorMessage || nls.localize('typeMismatchWarning', 'Incorrect type. Expected "{0}"', schema.type)
                     });
                 }
             }
@@ -104,7 +104,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (!subValidationResult.hasErrors()) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(2, null)
+                        message: nls.localize('notSchemaWarning', "Matches a schema that is not allowed.")
                     });
                 }
                 if (matchingSchemas) {
@@ -151,7 +151,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (matches.length > 1 && maxOneMatch) {
                     validationResult.warnings.push({
                         location: { start: _this.start, end: _this.start + 1 },
-                        message: nls.localize(3, null)
+                        message: nls.localize('oneOfWarning', "Matches multiple schemas when only one must validate.")
                     });
                 }
                 if (bestMatch !== null) {
@@ -174,7 +174,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (Arrays.contains(schema.enum, this.getValue()) === false) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(4, null, JSON.stringify(schema.enum))
+                        message: nls.localize('enumWarning', 'Value is not an accepted value. Valid values: {0}', JSON.stringify(schema.enum))
                     });
                 }
                 else {
@@ -260,7 +260,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (schema.additionalItems === false && this.items.length > subSchemas.length) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(5, null, subSchemas.length)
+                        message: nls.localize('additionalItemsWarning', 'Array has too many items according to schema. Expected {0} or fewer', subSchemas.length)
                     });
                 }
                 else if (this.items.length >= subSchemas.length) {
@@ -277,13 +277,13 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
             if (schema.minItems && this.items.length < schema.minItems) {
                 validationResult.warnings.push({
                     location: { start: this.start, end: this.end },
-                    message: nls.localize(6, null, schema.minItems)
+                    message: nls.localize('minItemsWarning', 'Array has too few items. Expected {0} or more', schema.minItems)
                 });
             }
             if (schema.maxItems && this.items.length > schema.maxItems) {
                 validationResult.warnings.push({
                     location: { start: this.start, end: this.end },
-                    message: nls.localize(7, null, schema.minItems)
+                    message: nls.localize('maxItemsWarning', 'Array has too many items. Expected {0} or fewer', schema.minItems)
                 });
             }
             if (schema.uniqueItems === true) {
@@ -296,7 +296,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (duplicates) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(8, null)
+                        message: nls.localize('uniqueItemsWarning', 'Array has duplicate items')
                     });
                 }
             }
@@ -334,7 +334,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (val % schema.multipleOf !== 0) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(9, null, schema.multipleOf)
+                        message: nls.localize('multipleOfWarning', 'Value is not divisible by {0}', schema.multipleOf)
                     });
                 }
             }
@@ -342,13 +342,13 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (schema.exclusiveMinimum && val <= schema.minimum) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(10, null, schema.minimum)
+                        message: nls.localize('exclusiveMinimumWarning', 'Value is below the exclusive minimum of {0}', schema.minimum)
                     });
                 }
                 if (!schema.exclusiveMinimum && val < schema.minimum) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(11, null, schema.minimum)
+                        message: nls.localize('minimumWarning', 'Value is below the minimum of {0}', schema.minimum)
                     });
                 }
             }
@@ -356,13 +356,13 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (schema.exclusiveMaximum && val >= schema.maximum) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(12, null, schema.maximum)
+                        message: nls.localize('exclusiveMaximumWarning', 'Value is above the exclusive maximum of {0}', schema.maximum)
                     });
                 }
                 if (!schema.exclusiveMaximum && val > schema.maximum) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(13, null, schema.maximum)
+                        message: nls.localize('maximumWarning', 'Value is above the maximum of {0}', schema.maximum)
                     });
                 }
             }
@@ -389,13 +389,13 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
             if (schema.minLength && this.value.length < schema.minLength) {
                 validationResult.warnings.push({
                     location: { start: this.start, end: this.end },
-                    message: nls.localize(14, null, schema.minLength)
+                    message: nls.localize('minLengthWarning', 'String is shorter than the minimum length of ', schema.minLength)
                 });
             }
             if (schema.maxLength && this.value.length > schema.maxLength) {
                 validationResult.warnings.push({
                     location: { start: this.start, end: this.end },
-                    message: nls.localize(15, null, schema.maxLength)
+                    message: nls.localize('maxLengthWarning', 'String is shorter than the maximum length of ', schema.maxLength)
                 });
             }
             if (schema.pattern) {
@@ -403,7 +403,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (!regex.test(this.value)) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: schema.errorMessage || nls.localize(16, null, schema.pattern)
+                        message: schema.errorMessage || nls.localize('patternWarning', 'String does not match the pattern of "{0}"', schema.pattern)
                     });
                 }
             }
@@ -507,7 +507,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                         var location = key ? { start: key.start, end: key.end } : { start: _this.start, end: _this.start + 1 };
                         validationResult.warnings.push({
                             location: location,
-                            message: nls.localize(17, null, propertyName)
+                            message: nls.localize('MissingRequiredPropWarning', 'Missing property "{0}"', propertyName)
                         });
                     }
                 });
@@ -565,7 +565,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                             var propertyNode = child.parent;
                             validationResult.warnings.push({
                                 location: { start: propertyNode.key.start, end: propertyNode.key.end },
-                                message: nls.localize(18, null, propertyName)
+                                message: nls.localize('DisallowedExtraPropWarning', 'Property {0} is not allowed', propertyName)
                             });
                         }
                     });
@@ -575,7 +575,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (this.properties.length > schema.maxProperties) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(19, null, schema.maxProperties)
+                        message: nls.localize('MaxPropWarning', 'Object has more properties than limit of {0}', schema.maxProperties)
                     });
                 }
             }
@@ -583,7 +583,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (this.properties.length < schema.minProperties) {
                     validationResult.warnings.push({
                         location: { start: this.start, end: this.end },
-                        message: nls.localize(20, null, schema.minProperties)
+                        message: nls.localize('MinPropWarning', 'Object has fewer properties than the required number of {0}', schema.minProperties)
                     });
                 }
             }
@@ -597,7 +597,7 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                                 if (!seenKeys[requiredProp]) {
                                     validationResult.warnings.push({
                                         location: { start: _this.start, end: _this.end },
-                                        message: nls.localize(21, null, requiredProp, key)
+                                        message: nls.localize('RequiredDependentPropWarning', 'Object is missing property {0} required by property {1}', requiredProp, key)
                                     });
                                 }
                                 else {
@@ -753,19 +753,19 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
             function _checkScanError() {
                 switch (_scanner.getTokenError()) {
                     case Json.ScanError.InvalidUnicode:
-                        _error(nls.localize(22, null));
+                        _error(nls.localize('InvalidUnicode', 'Invalid unicode sequence in string'));
                         return true;
                     case Json.ScanError.InvalidEscapeCharacter:
-                        _error(nls.localize(23, null));
+                        _error(nls.localize('InvalidEscapeCharacter', 'Invalid escape character in string'));
                         return true;
                     case Json.ScanError.UnexpectedEndOfNumber:
-                        _error(nls.localize(24, null));
+                        _error(nls.localize('UnexpectedEndOfNumber', 'Unexpected end of number'));
                         return true;
                     case Json.ScanError.UnexpectedEndOfComment:
-                        _error(nls.localize(25, null));
+                        _error(nls.localize('UnexpectedEndOfComment', 'Unexpected end of comment'));
                         return true;
                     case Json.ScanError.UnexpectedEndOfString:
-                        _error(nls.localize(26, null));
+                        _error(nls.localize('UnexpectedEndOfString', 'Unexpected end of string'));
                         return true;
                 }
                 return false;
@@ -787,12 +787,12 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (node.addItem(_parseValue(node, '' + count++))) {
                     while (_accept(Json.SyntaxKind.CommaToken)) {
                         if (!node.addItem(_parseValue(node, '' + count++)) && !_doc.config.ignoreDanglingComma) {
-                            _error(nls.localize(27, null));
+                            _error(nls.localize('ValueExpected', 'Value expected'));
                         }
                     }
                 }
                 if (_scanner.getToken() !== Json.SyntaxKind.CloseBracketToken) {
-                    return _error(nls.localize(28, null), node);
+                    return _error(nls.localize('ExpectedCloseBracket', 'Expected comma or closing bracket'), node);
                 }
                 return _finalize(node, true);
             }
@@ -803,25 +803,25 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                         // give a more helpful error message
                         var value = _scanner.getTokenValue();
                         if (value.length > 0 && (value.charAt(0) === '\'' || Json.isLetter(value.charAt(0).charCodeAt(0)))) {
-                            _error(nls.localize(29, null));
+                            _error(nls.localize('DoubleQuotesExpected', 'Property keys must be doublequoted'));
                         }
                     }
                     return null;
                 }
                 var node = new PropertyASTNode(parent, key);
                 if (keysSeen[key.value]) {
-                    _doc.warnings.push({ location: { start: node.key.start, end: node.key.end }, message: nls.localize(30, null) });
+                    _doc.warnings.push({ location: { start: node.key.start, end: node.key.end }, message: nls.localize('DuplicateKeyWarning', "Duplicate object key") });
                 }
                 keysSeen[key.value] = true;
                 if (_scanner.getToken() === Json.SyntaxKind.ColonToken) {
                     node.colonOffset = _scanner.getTokenOffset();
                 }
                 else {
-                    return _error(nls.localize(31, null), node, [], [Json.SyntaxKind.CloseBraceToken, Json.SyntaxKind.CommaToken]);
+                    return _error(nls.localize('ColonExpected', 'Colon expected'), node, [], [Json.SyntaxKind.CloseBraceToken, Json.SyntaxKind.CommaToken]);
                 }
                 _scanner.scan(); // consume ColonToken
                 if (!node.setValue(_parseValue(node, key.value))) {
-                    return _error(nls.localize(32, null), node, [], [Json.SyntaxKind.CloseBraceToken, Json.SyntaxKind.CommaToken]);
+                    return _error(nls.localize('ValueExpected', 'Value expected'), node, [], [Json.SyntaxKind.CloseBraceToken, Json.SyntaxKind.CommaToken]);
                 }
                 node.end = node.value.end;
                 return node;
@@ -836,12 +836,12 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                 if (node.addProperty(_parseProperty(node, keysSeen))) {
                     while (_accept(Json.SyntaxKind.CommaToken)) {
                         if (!node.addProperty(_parseProperty(node, keysSeen)) && !_doc.config.ignoreDanglingComma) {
-                            _error(nls.localize(33, null));
+                            _error(nls.localize('PropertyExpected', 'Property expected'));
                         }
                     }
                 }
                 if (_scanner.getToken() !== Json.SyntaxKind.CloseBraceToken) {
-                    return _error(nls.localize(34, null), node);
+                    return _error(nls.localize('ExpectedCloseBrace', 'Expected comma or closing brace'), node);
                 }
                 return _finalize(node, true);
             }
@@ -864,12 +864,12 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
                     try {
                         var numberValue = JSON.parse(tokenValue);
                         if (typeof numberValue !== 'number') {
-                            return _error(nls.localize(35, null), node);
+                            return _error(nls.localize('InvalidNumberFormat', 'Invalid number format'), node);
                         }
                         node.value = numberValue;
                     }
                     catch (e) {
-                        return _error(nls.localize(36, null), node);
+                        return _error(nls.localize('InvalidNumberFormat', 'Invalid number format'), node);
                     }
                     node.isInteger = tokenValue.indexOf('.') === -1;
                 }
@@ -898,10 +898,10 @@ define(["require", "exports", 'vs/nls!vs/languages/json/common/parser/jsonParser
             _scanner.scan();
             _doc.root = _parseValue(null, null);
             if (!_doc.root) {
-                _error(nls.localize(37, null));
+                _error(nls.localize('Invalid symbol', 'Expected a JSON object, array or literal'));
             }
             else if (_scanner.getToken() !== Json.SyntaxKind.EOF) {
-                _error(nls.localize(38, null));
+                _error(nls.localize('End of file expected', 'End of file expected'));
             }
             return _doc;
         };

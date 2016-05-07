@@ -11,11 +11,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debugConfigurationManager', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/objects', 'vs/base/common/uri', 'vs/base/common/network', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/platform', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/debug/node/debugAdapter', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, path, nls, winjs_base_1, strings, objects, uri_1, network_1, paths, extensionsRegistry, platform, jsonContributionRegistry, configuration_1, files_1, telemetry_1, systemVariables_1, debugAdapter_1, contextService_1, editorService_1, quickOpenService_1) {
+define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/objects', 'vs/base/common/uri', 'vs/base/common/network', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/platform', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/debug/node/debugAdapter', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, path, nls, winjs_base_1, strings, objects, uri_1, network_1, paths, extensionsRegistry, platform, jsonContributionRegistry, configuration_1, files_1, telemetry_1, systemVariables_1, debugAdapter_1, contextService_1, editorService_1, quickOpenService_1) {
     "use strict";
     // debuggers extension point
     exports.debuggersExtPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint('debuggers', {
-        description: nls.localize(0, null),
+        description: nls.localize('vscode.extension.contributes.debuggers', 'Contributes debug adapters.'),
         type: 'array',
         defaultSnippets: [{ body: [{ type: '', extensions: [] }] }],
         items: {
@@ -23,19 +23,19 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
             defaultSnippets: [{ body: { type: '', program: '', runtime: '', enableBreakpointsFor: { languageIds: [''] } } }],
             properties: {
                 type: {
-                    description: nls.localize(1, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.type', "Unique identifier for this debug adapter."),
                     type: 'string'
                 },
                 label: {
-                    description: nls.localize(2, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.label', "Display name for this debug adapter."),
                     type: 'string'
                 },
                 enableBreakpointsFor: {
-                    description: nls.localize(3, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.enableBreakpointsFor', "Allow breakpoints for these languages."),
                     type: 'object',
                     properties: {
                         languageIds: {
-                            description: nls.localize(4, null),
+                            description: nls.localize('vscode.extension.contributes.debuggers.enableBreakpointsFor.languageIds', "List of languages."),
                             type: 'array',
                             items: {
                                 type: 'string'
@@ -44,55 +44,55 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
                     }
                 },
                 program: {
-                    description: nls.localize(5, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.program', "Path to the debug adapter program. Path is either absolute or relative to the extension folder."),
                     type: 'string'
                 },
                 args: {
-                    description: nls.localize(6, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.args', "Optional arguments to pass to the adapter."),
                     type: 'array'
                 },
                 runtime: {
-                    description: nls.localize(7, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.runtime', "Optional runtime in case the program attribute is not an executable but requires a runtime."),
                     type: 'string'
                 },
                 runtimeArgs: {
-                    description: nls.localize(8, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.runtimeArgs', "Optional runtime arguments."),
                     type: 'array'
                 },
                 initialConfigurations: {
-                    description: nls.localize(9, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.initialConfigurations', "Configurations for generating the initial \'launch.json\'."),
                     type: 'array',
                 },
                 configurationAttributes: {
-                    description: nls.localize(10, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.configurationAttributes', "JSON schema configurations for validating \'launch.json\'."),
                     type: 'object'
                 },
                 windows: {
-                    description: nls.localize(11, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.windows', "Windows specific settings."),
                     type: 'object',
                     properties: {
                         runtime: {
-                            description: nls.localize(12, null),
+                            description: nls.localize('vscode.extension.contributes.debuggers.windows.runtime', "Runtime used for Windows."),
                             type: 'string'
                         }
                     }
                 },
                 osx: {
-                    description: nls.localize(13, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.osx', "OS X specific settings."),
                     type: 'object',
                     properties: {
                         runtime: {
-                            description: nls.localize(14, null),
+                            description: nls.localize('vscode.extension.contributes.debuggers.osx.runtime', "Runtime used for OSX."),
                             type: 'string'
                         }
                     }
                 },
                 linux: {
-                    description: nls.localize(15, null),
+                    description: nls.localize('vscode.extension.contributes.debuggers.linux', "Linux specific settings."),
                     type: 'object',
                     properties: {
                         runtime: {
-                            description: nls.localize(16, null),
+                            description: nls.localize('vscode.extension.contributes.debuggers.linux.runtime', "Runtime used for Linux."),
                             type: 'string'
                         }
                     }
@@ -105,17 +105,17 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
     var schema = {
         id: exports.schemaId,
         type: 'object',
-        title: nls.localize(17, null),
+        title: nls.localize('app.launch.json.title', "Launch configuration"),
         required: ['version', 'configurations'],
         properties: {
             version: {
                 type: 'string',
-                description: nls.localize(18, null),
+                description: nls.localize('app.launch.json.version', "Version of this file format."),
                 default: '0.2.0'
             },
             configurations: {
                 type: 'array',
-                description: nls.localize(19, null),
+                description: nls.localize('app.launch.json.configurations', "List of configurations. Add new configurations or edit existing ones."),
                 items: {
                     oneOf: []
                 }
@@ -147,7 +147,7 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
                         var adapter = new debugAdapter_1.Adapter(rawAdapter, _this.systemVariables, extension.description.extensionFolderPath);
                         var duplicate = _this.adapters.filter(function (a) { return a.type === adapter.type; })[0];
                         if (!rawAdapter.type || (typeof rawAdapter.type !== 'string')) {
-                            extension.collector.error(nls.localize(20, null));
+                            extension.collector.error(nls.localize('debugNoType', "Debug adapter 'type' can not be omitted and must be of type 'string'."));
                         }
                         if (duplicate) {
                             Object.keys(adapter).forEach(function (attribute) {
@@ -158,7 +158,7 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
                                     else if (duplicate[attribute] && attribute !== 'type') {
                                         // give priority to the later registered extension.
                                         duplicate[attribute] = adapter[attribute];
-                                        extension.collector.error(nls.localize(21, null, adapter.type, attribute));
+                                        extension.collector.error(nls.localize('duplicateDebuggerType', "Debug type '{0}' is already registered and has attribute '{1}', ignoring attribute '{1}'.", adapter.type, attribute));
                                     }
                                     else {
                                         duplicate[attribute] = adapter[attribute];
@@ -240,12 +240,12 @@ define(["require", "exports", 'path', 'vs/nls!vs/workbench/parts/debug/node/debu
                     }
                 }, sideBySide).then(function () { return true; });
             }, function (error) {
-                throw new Error(nls.localize(22, null, error));
+                throw new Error(nls.localize('DebugConfig.failed', "Unable to create 'launch.json' file inside the '.vscode' folder ({0}).", error));
             });
         };
         ConfigurationManager.prototype.getInitialConfigFileContent = function () {
             var _this = this;
-            return this.quickOpenService.pick(this.adapters, { placeHolder: nls.localize(23, null) })
+            return this.quickOpenService.pick(this.adapters, { placeHolder: nls.localize('selectDebug', "Select Environment") })
                 .then(function (adapter) {
                 if (!adapter) {
                     return null;

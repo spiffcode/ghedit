@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/contextmenu/browser/contextmenu', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/sortedList', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions'], function (require, exports, nls, keyCodes_1, lifecycle_1, sortedList_1, winjs_base_1, dom, actionbar_1, contextView_1, keybindingService_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, editorBrowserExtensions_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/sortedList', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions'], function (require, exports, nls, keyCodes_1, lifecycle_1, sortedList_1, winjs_base_1, dom, actionbar_1, contextView_1, keybindingService_1, editorAction_1, editorActionEnablement_1, editorCommon_1, editorCommonExtensions_1, editorBrowserExtensions_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -215,7 +215,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/contextmenu/browser/cont
         return ShowContextMenu;
     }(editorAction_1.EditorAction));
     editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(ContextMenuController);
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShowContextMenu, ShowContextMenu.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShowContextMenu, ShowContextMenu.ID, nls.localize('action.showContextMenu.label', "Show Editor Context Menu"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F10
     }));

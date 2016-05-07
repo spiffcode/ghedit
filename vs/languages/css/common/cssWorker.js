@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/languages/css/common/cssWorker', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/languages/css/common/services/cssLanguageService', 'vs/languages/css/common/services/languageFacts', './services/occurrences', 'vs/languages/css/common/services/intelliSense', 'vs/languages/css/common/parser/cssNodes', 'vs/languages/css/common/level', 'vs/languages/css/common/parser/cssParser', 'vs/languages/css/common/services/selectorPrinting', 'vs/languages/css/common/services/lint', 'vs/languages/css/common/services/lintRules', 'vs/platform/markers/common/markers', 'vs/editor/common/services/resourceService', 'vs/editor/common/modes/supports/suggestSupport', 'vs/editor/common/worker/validationHelper'], function (require, exports, nls, severity_1, strings, winjs, languageService, languageFacts, occurrences, cssIntellisense, nodes, _level, parser, selectorPrinting, lint, lintRules, markers_1, resourceService_1, suggestSupport_1, validationHelper_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/languages/css/common/services/cssLanguageService', 'vs/languages/css/common/services/languageFacts', './services/occurrences', 'vs/languages/css/common/services/intelliSense', 'vs/languages/css/common/parser/cssNodes', 'vs/languages/css/common/level', 'vs/languages/css/common/parser/cssParser', 'vs/languages/css/common/services/selectorPrinting', 'vs/languages/css/common/services/lint', 'vs/languages/css/common/services/lintRules', 'vs/platform/markers/common/markers', 'vs/editor/common/services/resourceService', 'vs/editor/common/modes/supports/suggestSupport', 'vs/editor/common/worker/validationHelper'], function (require, exports, nls, severity_1, strings, winjs, languageService, languageFacts, occurrences, cssIntellisense, nodes, _level, parser, selectorPrinting, lint, lintRules, markers_1, resourceService_1, suggestSupport_1, validationHelper_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -198,10 +198,10 @@ define(["require", "exports", 'vs/nls!vs/languages/css/common/cssWorker', 'vs/ba
                         entry.type = 'function';
                     }
                     else if (node instanceof nodes.Keyframe) {
-                        entry.label = nls.localize(0, null, node.getName());
+                        entry.label = nls.localize('literal.keyframes', "@keyframes {0}", node.getName());
                     }
                     else if (node instanceof nodes.FontFace) {
-                        entry.label = nls.localize(1, null);
+                        entry.label = nls.localize('literal.fontface', "@font-face");
                     }
                     if (entry.label) {
                         entry.range = _this._range(node, model, true);
@@ -321,7 +321,7 @@ define(["require", "exports", 'vs/nls!vs/languages/css/common/cssWorker', 'vs/ba
                     result.push({
                         command: {
                             id: 'css.renameProptery',
-                            title: nls.localize(2, null, p),
+                            title: nls.localize('css.quickfix.rename', "Rename to '{0}'", p),
                             arguments: [{ type: 'rename', name: p }]
                         },
                         score: score

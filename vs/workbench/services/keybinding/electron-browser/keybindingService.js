@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-browser/keybindingService', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/keybinding/browser/keybindingServiceImpl', 'vs/platform/keybinding/common/keybindingResolver', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/platform', 'vs/workbench/common/events', 'vs/workbench/services/keybinding/electron-browser/nativeKeymap'], function (require, exports, nls, platform, winjs_base_1, extensionsRegistry_1, jsonContributionRegistry_1, keybindingServiceImpl_1, keybindingResolver_1, keybindingsRegistry_1, platform_1, events_1, nativeKeymap_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/keybinding/browser/keybindingServiceImpl', 'vs/platform/keybinding/common/keybindingResolver', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/platform', 'vs/workbench/common/events', 'vs/workbench/services/keybinding/electron-browser/nativeKeymap'], function (require, exports, nls, platform, winjs_base_1, extensionsRegistry_1, jsonContributionRegistry_1, keybindingServiceImpl_1, keybindingResolver_1, keybindingsRegistry_1, platform_1, events_1, nativeKeymap_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -14,31 +14,31 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-
     }
     function isValidContributedKeyBinding(keyBinding, rejects) {
         if (!keyBinding) {
-            rejects.push(nls.localize(0, null));
+            rejects.push(nls.localize('nonempty', "expected non-empty value."));
             return false;
         }
         if (typeof keyBinding.command !== 'string') {
-            rejects.push(nls.localize(1, null, 'command'));
+            rejects.push(nls.localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'command'));
             return false;
         }
         if (typeof keyBinding.key !== 'string') {
-            rejects.push(nls.localize(2, null, 'key'));
+            rejects.push(nls.localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'key'));
             return false;
         }
         if (keyBinding.when && typeof keyBinding.when !== 'string') {
-            rejects.push(nls.localize(3, null, 'when'));
+            rejects.push(nls.localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'when'));
             return false;
         }
         if (keyBinding.mac && typeof keyBinding.mac !== 'string') {
-            rejects.push(nls.localize(4, null, 'mac'));
+            rejects.push(nls.localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'mac'));
             return false;
         }
         if (keyBinding.linux && typeof keyBinding.linux !== 'string') {
-            rejects.push(nls.localize(5, null, 'linux'));
+            rejects.push(nls.localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'linux'));
             return false;
         }
         if (keyBinding.win && typeof keyBinding.win !== 'string') {
-            rejects.push(nls.localize(6, null, 'win'));
+            rejects.push(nls.localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'win'));
             return false;
         }
         return true;
@@ -48,33 +48,33 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-
         default: { command: '', key: '' },
         properties: {
             command: {
-                description: nls.localize(7, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.command', 'Identifier of the command to run when keybinding is triggered.'),
                 type: 'string'
             },
             key: {
-                description: nls.localize(8, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.key', 'Key or key sequence (separate keys with plus-sign and sequences with space, e.g Ctrl+O and Ctrl+L L for a chord'),
                 type: 'string'
             },
             mac: {
-                description: nls.localize(9, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.mac', 'Mac specific key or key sequence.'),
                 type: 'string'
             },
             linux: {
-                description: nls.localize(10, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.linux', 'Linux specific key or key sequence.'),
                 type: 'string'
             },
             win: {
-                description: nls.localize(11, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.win', 'Windows specific key or key sequence.'),
                 type: 'string'
             },
             when: {
-                description: nls.localize(12, null),
+                description: nls.localize('vscode.extension.contributes.keybindings.when', 'Condition when the key is active.'),
                 type: 'string'
             }
         }
     };
     var keybindingsExtPoint = extensionsRegistry_1.ExtensionsRegistry.registerExtensionPoint('keybindings', {
-        description: nls.localize(13, null),
+        description: nls.localize('vscode.extension.contributes.keybindings', "Contributes keybindings."),
         oneOf: [
             keybindingType,
             {
@@ -188,7 +188,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-
                 }
             }
             if (rejects.length > 0) {
-                collector.error(nls.localize(14, null, keybindingsExtPoint.name, rejects.join('\n')));
+                collector.error(nls.localize('invalid.keybindings', "Invalid `contributes.{0}`: {1}", keybindingsExtPoint.name, rejects.join('\n')));
             }
             return commandAdded;
         };
@@ -231,7 +231,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-
     var schema = {
         'id': schemaId,
         'type': 'array',
-        'title': nls.localize(15, null),
+        'title': nls.localize('keybindings.json.title', "Keybindings configuration"),
         'items': {
             'required': ['key'],
             'type': 'object',
@@ -239,14 +239,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/keybinding/electron-
             'properties': {
                 'key': {
                     'type': 'string',
-                    'description': nls.localize(16, null),
+                    'description': nls.localize('keybindings.json.key', 'Key or key sequence (separated by space)'),
                 },
                 'command': {
-                    'description': nls.localize(17, null),
+                    'description': nls.localize('keybindings.json.command', 'Name of the command to execute'),
                 },
                 'when': {
                     'type': 'string',
-                    'description': nls.localize(18, null)
+                    'description': nls.localize('keybindings.json.when', 'Condition when the key is active.')
                 }
             }
         }

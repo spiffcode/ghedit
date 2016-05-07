@@ -7,14 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/node/textMate/TMSyntax', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/editor/common/modes/TMState', 'vs/editor/common/modes/supports', 'vs/editor/common/services/modeService', 'vscode-textmate', 'vs/editor/common/core/modeTransition'], function (require, exports, nls, errors_1, paths, extensionsRegistry_1, TMState_1, supports_1, modeService_1, vscode_textmate_1, modeTransition_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/editor/common/modes/TMState', 'vs/editor/common/modes/supports', 'vs/editor/common/services/modeService', 'vscode-textmate', 'vs/editor/common/core/modeTransition'], function (require, exports, nls, errors_1, paths, extensionsRegistry_1, TMState_1, supports_1, modeService_1, vscode_textmate_1, modeTransition_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var grammarsExtPoint = extensionsRegistry_1.ExtensionsRegistry.registerExtensionPoint('grammars', {
-        description: nls.localize(0, null),
+        description: nls.localize('vscode.extension.contributes.grammars', 'Contributes textmate tokenizers.'),
         type: 'array',
         defaultSnippets: [{ body: [{ id: '', extensions: [] }] }],
         items: {
@@ -22,15 +22,15 @@ define(["require", "exports", 'vs/nls!vs/editor/node/textMate/TMSyntax', 'vs/bas
             defaultSnippets: [{ body: { language: '{{id}}', scopeName: 'source.{{id}}', path: './syntaxes/{{id}}.tmLanguage.' } }],
             properties: {
                 language: {
-                    description: nls.localize(1, null),
+                    description: nls.localize('vscode.extension.contributes.grammars.language', 'Language id for which this syntax is contributed to.'),
                     type: 'string'
                 },
                 scopeName: {
-                    description: nls.localize(2, null),
+                    description: nls.localize('vscode.extension.contributes.grammars.scopeName', 'Textmate scope name used by the tmLanguage file.'),
                     type: 'string'
                 },
                 path: {
-                    description: nls.localize(3, null),
+                    description: nls.localize('vscode.extension.contributes.grammars.path', 'Path of the tmLanguage file. The path is relative to the extension folder and typically starts with \'./syntaxes/\'.'),
                     type: 'string'
                 }
             }
@@ -58,20 +58,20 @@ define(["require", "exports", 'vs/nls!vs/editor/node/textMate/TMSyntax', 'vs/bas
         MainProcessTextMateSyntax.prototype._handleGrammarExtensionPointUser = function (extensionFolderPath, syntax, collector) {
             var _this = this;
             if (syntax.language && ((typeof syntax.language !== 'string') || !this._modeService.isRegisteredMode(syntax.language))) {
-                collector.error(nls.localize(4, null, grammarsExtPoint.name, String(syntax.language)));
+                collector.error(nls.localize('invalid.language', "Unknown language in `contributes.{0}.language`. Provided value: {1}", grammarsExtPoint.name, String(syntax.language)));
                 return;
             }
             if (!syntax.scopeName || (typeof syntax.scopeName !== 'string')) {
-                collector.error(nls.localize(5, null, grammarsExtPoint.name, String(syntax.scopeName)));
+                collector.error(nls.localize('invalid.scopeName', "Expected string in `contributes.{0}.scopeName`. Provided value: {1}", grammarsExtPoint.name, String(syntax.scopeName)));
                 return;
             }
             if (!syntax.path || (typeof syntax.path !== 'string')) {
-                collector.error(nls.localize(6, null, grammarsExtPoint.name, String(syntax.path)));
+                collector.error(nls.localize('invalid.path.0', "Expected string in `contributes.{0}.path`. Provided value: {1}", grammarsExtPoint.name, String(syntax.path)));
                 return;
             }
             var normalizedAbsolutePath = paths.normalize(paths.join(extensionFolderPath, syntax.path));
             if (normalizedAbsolutePath.indexOf(extensionFolderPath) !== 0) {
-                collector.warn(nls.localize(7, null, grammarsExtPoint.name, normalizedAbsolutePath, extensionFolderPath));
+                collector.warn(nls.localize('invalid.path.1', "Expected `contributes.{0}.path` ({1}) to be included inside extension's folder ({2}). This might make the extension non-portable.", grammarsExtPoint.name, normalizedAbsolutePath, extensionFolderPath));
             }
             this._scopeNameToFilePath[syntax.scopeName] = normalizedAbsolutePath;
             var modeId = syntax.language;

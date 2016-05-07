@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/gotoLine', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/editor/common/editorCommon', './editorQuickOpen', 'vs/css!./gotoLine'], function (require, exports, nls, quickOpenModel_1, quickOpen_1, editorCommon, editorQuickOpen_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/editor/common/editorCommon', './editorQuickOpen', 'vs/css!./gotoLine'], function (require, exports, nls, quickOpenModel_1, quickOpen_1, editorCommon, editorQuickOpen_1) {
     'use strict';
     var GotoLineEntry = (function (_super) {
         __extends(GotoLineEntry, _super);
@@ -42,17 +42,17 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/gotoLi
             var isValid = model.validatePosition(position).equals(position), label;
             if (isValid) {
                 if (position.column && position.column > 1) {
-                    label = nls.localize(0, null, position.lineNumber, position.column);
+                    label = nls.localize('gotoLineLabelValidLineAndColumn', "Go to line {0} and column {1}", position.lineNumber, position.column);
                 }
                 else {
-                    label = nls.localize(1, null, position.lineNumber, position.column);
+                    label = nls.localize('gotoLineLabelValidLine', "Go to line {0}", position.lineNumber, position.column);
                 }
             }
             else if (position.lineNumber < 1 || position.lineNumber > model.getLineCount()) {
-                label = nls.localize(2, null, model.getLineCount());
+                label = nls.localize('gotoLineLabelEmptyWithLineLimit', "Type a line number between 1 and {0} to navigate to", model.getLineCount());
             }
             else {
-                label = nls.localize(3, null, model.getLineMaxColumn(position.lineNumber));
+                label = nls.localize('gotoLineLabelEmptyWithLineAndColumnLimit', "Type a column between 1 and {0} to navigate to", model.getLineMaxColumn(position.lineNumber));
             }
             return {
                 position: position,
@@ -64,7 +64,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/gotoLi
             return this._parseResult.label;
         };
         GotoLineEntry.prototype.getAriaLabel = function () {
-            return nls.localize(4, null, this._parseResult.label);
+            return nls.localize('gotoLineAriaLabel', "Go to line {0}", this._parseResult.label);
         };
         GotoLineEntry.prototype.run = function (mode, context) {
             if (mode === quickOpen_1.Mode.OPEN) {
@@ -111,7 +111,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/gotoLi
     var GotoLineAction = (function (_super) {
         __extends(GotoLineAction, _super);
         function GotoLineAction(descriptor, editor) {
-            _super.call(this, descriptor, editor, nls.localize(5, null));
+            _super.call(this, descriptor, editor, nls.localize('GotoLineAction.label', "Go to Line..."));
         }
         GotoLineAction.prototype._getModel = function (value) {
             return new quickOpenModel_1.QuickOpenModel([new GotoLineEntry(value, this.editor, this)]);
@@ -122,7 +122,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/gotoLi
             };
         };
         GotoLineAction.prototype._getInputAriaLabel = function () {
-            return nls.localize(6, null);
+            return nls.localize('gotoLineActionInput', "Type a line number, followed by an optional colon and a column number to navigate to");
         };
         GotoLineAction.ID = 'editor.action.gotoLine';
         return GotoLineAction;

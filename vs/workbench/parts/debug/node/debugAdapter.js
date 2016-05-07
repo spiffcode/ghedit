@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/debugAdapter', 'vs/base/common/paths', 'vs/base/common/platform'], function (require, exports, nls, paths, platform) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/paths', 'vs/base/common/platform'], function (require, exports, nls, paths, platform) {
     "use strict";
     var Adapter = (function () {
         function Adapter(rawAdapter, systemVariables, extensionFolderPath) {
@@ -75,21 +75,21 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/debugAdapter
                     var properties = attributes.properties;
                     properties.type = {
                         enum: [_this.type],
-                        description: nls.localize(0, null)
+                        description: nls.localize('debugType', "Type of configuration.")
                     };
                     properties.name = {
                         type: 'string',
-                        description: nls.localize(1, null),
+                        description: nls.localize('debugName', "Name of configuration; appears in the launch configuration drop down menu."),
                         default: 'Launch'
                     };
                     properties.request = {
                         enum: [request],
-                        description: nls.localize(2, null),
+                        description: nls.localize('debugRequest', "Request type of configuration. Can be \"launch\" or \"attach\"."),
                     };
                     properties.preLaunchTask = {
                         type: ['string', 'null'],
                         default: null,
-                        description: nls.localize(3, null)
+                        description: nls.localize('debugPrelaunchTask', "Task to run before debug session starts.")
                     };
                     _this.warnRelativePaths(properties.outDir);
                     _this.warnRelativePaths(properties.program);
@@ -103,7 +103,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/node/debugAdapter
         Adapter.prototype.warnRelativePaths = function (attribute) {
             if (attribute) {
                 attribute.pattern = '^\\${.*}.*|' + paths.isAbsoluteRegex.source;
-                attribute.errorMessage = nls.localize(4, null);
+                attribute.errorMessage = nls.localize('relativePathsNotConverted', "Relative paths will no longer be automatically converted to absolute ones. Consider using ${workspaceRoot} as a prefix.");
             }
         };
         return Adapter;

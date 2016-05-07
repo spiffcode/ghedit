@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/execution/electron-browser/terminal.contribution', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/base/common/paths', 'vs/workbench/browser/actionBarRegistry', 'vs/base/common/uri', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/parts/execution/common/execution', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, nls, winjs_base_1, platform_1, baseplatform, actions_1, actionRegistry_1, paths, actionBarRegistry_1, uri_1, files_1, contextService_1, execution_1, actions_2, instantiation_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/base/common/paths', 'vs/workbench/browser/actionBarRegistry', 'vs/base/common/uri', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/parts/execution/common/execution', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, nls, winjs_base_1, platform_1, baseplatform, actions_1, actionRegistry_1, paths, actionBarRegistry_1, uri_1, files_1, contextService_1, execution_1, actions_2, instantiation_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40,10 +40,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/execution/electron-brow
             return winjs_base_1.TPromise.as(null);
         };
         OpenConsoleAction.ID = 'workbench.action.terminal.openNativeConsole';
-        OpenConsoleAction.Label = baseplatform.isWindows ? nls.localize(0, null) :
-            nls.localize(1, null);
-        OpenConsoleAction.ScopedLabel = baseplatform.isWindows ? nls.localize(2, null) :
-            nls.localize(3, null);
+        OpenConsoleAction.Label = baseplatform.isWindows ? nls.localize('globalConsoleActionWin', "Open New Command Prompt") :
+            nls.localize('globalConsoleActionMacLinux', "Open New Terminal");
+        OpenConsoleAction.ScopedLabel = baseplatform.isWindows ? nls.localize('scopedConsoleActionWin', "Open in Command Prompt") :
+            nls.localize('scopedConsoleActionMacLinux', "Open in Terminal");
         OpenConsoleAction = __decorate([
             __param(2, execution_1.ITerminalService),
             __param(3, contextService_1.IWorkspaceContextService)

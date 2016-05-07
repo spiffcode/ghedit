@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/electron-browser/files.electron.contribution', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', 'vs/base/common/platform', 'vs/workbench/parts/files/common/files', 'vs/workbench/common/contributions', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/electron-browser/electronFileTracker', 'vs/workbench/parts/files/electron-browser/textFileServices', 'vs/workbench/parts/files/electron-browser/electronFileActions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/extensions', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actionBarRegistry_1, actionRegistry_1, actions_1, env, files_1, contributions_1, fileActions_1, electronFileTracker_1, textFileServices_1, electronFileActions_1, instantiation_1, extensions_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', 'vs/base/common/platform', 'vs/workbench/parts/files/common/files', 'vs/workbench/common/contributions', 'vs/workbench/parts/files/browser/fileActions', 'vs/workbench/parts/files/electron-browser/electronFileTracker', 'vs/workbench/parts/files/electron-browser/textFileServices', 'vs/workbench/parts/files/electron-browser/electronFileActions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/extensions', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actionBarRegistry_1, actionRegistry_1, actions_1, env, files_1, contributions_1, fileActions_1, electronFileTracker_1, textFileServices_1, electronFileActions_1, instantiation_1, extensions_1, keyCodes_1) {
     'use strict';
     var FileViewerActionContributor = (function (_super) {
         __extends(FileViewerActionContributor, _super);
@@ -46,7 +46,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/electron-browser/
         return FileViewerActionContributor;
     }(actionBarRegistry_1.ActionBarContributor));
     // Contribute Actions
-    var category = nls.localize(0, null);
+    var category = nls.localize('filesCategory', "Files");
     var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(fileActions_1.SaveFileAsAction, fileActions_1.SaveFileAsAction.ID, fileActions_1.SaveFileAsAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_S }), category);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(fileActions_1.GlobalNewFileAction, fileActions_1.GlobalNewFileAction.ID, fileActions_1.GlobalNewFileAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_N }), category);

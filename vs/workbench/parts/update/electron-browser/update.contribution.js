@@ -11,10 +11,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/update/electron-browser/update.contribution', 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/workbench/common/contributions', 'vs/platform/storage/common/storage', 'vs/platform/workspace/common/workspace', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/electron-browser/update', 'vs/base/common/actions', 'electron', 'semver'], function (require, exports, nls, platform_1, winjs_base_1, contributions_1, storage_1, workspace_1, message_1, severity_1, update_1, actions_1, electron_1, semver) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/workbench/common/contributions', 'vs/platform/storage/common/storage', 'vs/platform/workspace/common/workspace', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/electron-browser/update', 'vs/base/common/actions', 'electron', 'semver'], function (require, exports, nls, platform_1, winjs_base_1, contributions_1, storage_1, workspace_1, message_1, severity_1, update_1, actions_1, electron_1, semver) {
     'use strict';
-    var CloseAction = new actions_1.Action('close', nls.localize(0, null), '', true, function () { return null; });
-    var ShowLicenseAction = function (licenseUrl) { return new actions_1.Action('update.showLicense', nls.localize(1, null), null, true, function () { electron_1.shell.openExternal(licenseUrl); return winjs_base_1.TPromise.as(null); }); };
+    var CloseAction = new actions_1.Action('close', nls.localize('close', "Close"), '', true, function () { return null; });
+    var ShowLicenseAction = function (licenseUrl) { return new actions_1.Action('update.showLicense', nls.localize('license', "Read License"), null, true, function () { electron_1.shell.openExternal(licenseUrl); return winjs_base_1.TPromise.as(null); }); };
     var UpdateContribution = (function () {
         function UpdateContribution(storageService, contextService, messageService) {
             var env = contextService.getConfiguration().env;
@@ -23,7 +23,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/update/electron-browser
             if (env.releaseNotesUrl && lastVersion && env.version !== lastVersion) {
                 setTimeout(function () {
                     messageService.show(severity_1.default.Info, {
-                        message: nls.localize(2, null, env.appName, env.version),
+                        message: nls.localize('releaseNotes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", env.appName, env.version),
                         actions: [
                             CloseAction,
                             update_1.ShowReleaseNotesAction(env.releaseNotesUrl, true)
@@ -35,7 +35,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/update/electron-browser
             if (env.licenseUrl && lastVersion && semver.satisfies(lastVersion, '<1.0.0') && semver.satisfies(env.version, '>=1.0.0')) {
                 setTimeout(function () {
                     messageService.show(severity_1.default.Info, {
-                        message: nls.localize(3, null, env.appName, env.version),
+                        message: nls.localize('licenseChanged', "Our license terms have changed, please go through them.", env.appName, env.version),
                         actions: [
                             CloseAction,
                             ShowLicenseAction(env.licenseUrl)

@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickOutline', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/filters', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/editor/common/editorActionEnablement', './editorQuickOpen', 'vs/css!./quickOutline'], function (require, exports, nls, arrays, errors_1, filters_1, strings, winjs_base_1, quickOpenModel_1, quickOpen_1, editorActionEnablement_1, editorQuickOpen_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/filters', 'vs/base/common/strings', 'vs/base/common/winjs.base', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/common/quickOpen', 'vs/editor/common/editorActionEnablement', './editorQuickOpen', 'vs/css!./quickOutline'], function (require, exports, nls, arrays, errors_1, filters_1, strings, winjs_base_1, quickOpenModel_1, quickOpen_1, editorActionEnablement_1, editorQuickOpen_1) {
     'use strict';
     var SCOPE_PREFIX = ':';
     var SymbolEntry = (function (_super) {
@@ -26,7 +26,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickO
             return this.name;
         };
         SymbolEntry.prototype.getAriaLabel = function () {
-            return nls.localize(0, null, this.name);
+            return nls.localize('entryAriaLabel', "{0}, symbols", this.name);
         };
         SymbolEntry.prototype.getIcon = function () {
             return this.type;
@@ -75,7 +75,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickO
     var QuickOutlineAction = (function (_super) {
         __extends(QuickOutlineAction, _super);
         function QuickOutlineAction(descriptor, editor) {
-            _super.call(this, descriptor, editor, nls.localize(1, null), editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu);
+            _super.call(this, descriptor, editor, nls.localize('QuickOutlineAction.label', "Go to Symbol..."), editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu);
         }
         QuickOutlineAction.prototype.getGroupId = function () {
             return '1_goto/5_visitSymbol';
@@ -121,7 +121,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickO
             };
         };
         QuickOutlineAction.prototype._getInputAriaLabel = function () {
-            return nls.localize(2, null);
+            return nls.localize('quickOutlineActionInput', "Type the name of an identifier you wish to navigate to");
         };
         QuickOutlineAction.prototype.toQuickOpenEntries = function (outline, searchValue) {
             var results = [];
@@ -187,22 +187,22 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickOpen/browser/quickO
                 }
             }
             else if (results.length > 0) {
-                results[0].setGroupLabel(nls.localize(3, null, results.length));
+                results[0].setGroupLabel(nls.localize('symbols', "symbols ({0})", results.length));
             }
             return results;
         };
         QuickOutlineAction.prototype.typeToLabel = function (type, count) {
             switch (type) {
-                case 'module': return nls.localize(4, null, count);
-                case 'class': return nls.localize(5, null, count);
-                case 'interface': return nls.localize(6, null, count);
-                case 'method': return nls.localize(7, null, count);
-                case 'function': return nls.localize(8, null, count);
-                case 'property': return nls.localize(9, null, count);
-                case 'variable': return nls.localize(10, null, count);
-                case 'var': return nls.localize(11, null, count);
-                case 'constructor': return nls.localize(12, null, count);
-                case 'call': return nls.localize(13, null, count);
+                case 'module': return nls.localize('modules', "modules ({0})", count);
+                case 'class': return nls.localize('class', "classes ({0})", count);
+                case 'interface': return nls.localize('interface', "interfaces ({0})", count);
+                case 'method': return nls.localize('method', "methods ({0})", count);
+                case 'function': return nls.localize('function', "functions ({0})", count);
+                case 'property': return nls.localize('property', "properties ({0})", count);
+                case 'variable': return nls.localize('variable', "variables ({0})", count);
+                case 'var': return nls.localize('variable2', "variables ({0})", count);
+                case 'constructor': return nls.localize('_constructor', "constructors ({0})", count);
+                case 'call': return nls.localize('call', "calls ({0})", count);
             }
             return type;
         };

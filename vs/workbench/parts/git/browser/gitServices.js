@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/common/types', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/eventEmitter', 'vs/workbench/common/events', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/git/browser/gitOperations', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/base/common/async', 'vs/base/common/severity', 'vs/workbench/parts/output/common/output', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/platform/lifecycle/common/lifecycle', 'vs/base/common/uri', 'semver', 'electron', 'vs/platform/storage/common/storage'], function (require, exports, nls, platform, winjs, lifecycle, types, actions, errors, mime, paths, ee, wbevents, git, model, giteditorinputs, operations, filesCommon, files_1, async, severity_1, output_1, editorService_1, configuration_1, event_1, instantiation_1, message_1, workspace_1, lifecycle_1, uri_1, semver, electron_1, storage_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/common/types', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/eventEmitter', 'vs/workbench/common/events', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/gitModel', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/git/browser/gitOperations', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/base/common/async', 'vs/base/common/severity', 'vs/workbench/parts/output/common/output', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/platform/lifecycle/common/lifecycle', 'vs/base/common/uri', 'semver', 'electron', 'vs/platform/storage/common/storage'], function (require, exports, nls, platform, winjs, lifecycle, types, actions, errors, mime, paths, ee, wbevents, git, model, giteditorinputs, operations, filesCommon, files_1, async, severity_1, output_1, editorService_1, configuration_1, event_1, instantiation_1, message_1, workspace_1, lifecycle_1, uri_1, semver, electron_1, storage_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -65,7 +65,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
                 }
                 if (!leftInput) {
                     if (!rightInput) {
-                        var error = new Error(nls.localize(0, null));
+                        var error = new Error(nls.localize('cantOpen', "Can't open this git resource."));
                         error.gitErrorCode = git.GitErrorCodes.CantOpenResource;
                         return winjs.Promise.wrapError(error);
                     }
@@ -73,13 +73,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
                 }
                 switch (status.getStatus()) {
                     case git.Status.INDEX_MODIFIED:
-                        return winjs.TPromise.as(new giteditorinputs.GitIndexDiffEditorInput(fileSegment, nls.localize(1, null, folderSegment), leftInput, rightInput, status));
+                        return winjs.TPromise.as(new giteditorinputs.GitIndexDiffEditorInput(fileSegment, nls.localize('gitIndexChanges', "{0} - Changes on index", folderSegment), leftInput, rightInput, status));
                     case git.Status.INDEX_RENAMED:
-                        return winjs.TPromise.as(new giteditorinputs.GitIndexDiffEditorInput(fileSegment, nls.localize(2, null, folderSegment), leftInput, rightInput, status));
+                        return winjs.TPromise.as(new giteditorinputs.GitIndexDiffEditorInput(fileSegment, nls.localize('gitIndexChangesRenamed', "{0} - Renamed - Changes on index", folderSegment), leftInput, rightInput, status));
                     case git.Status.MODIFIED:
-                        return winjs.TPromise.as(new giteditorinputs.GitWorkingTreeDiffEditorInput(fileSegment, nls.localize(3, null, folderSegment), leftInput, rightInput, status));
+                        return winjs.TPromise.as(new giteditorinputs.GitWorkingTreeDiffEditorInput(fileSegment, nls.localize('workingTreeChanges', "{0} - Changes on working tree", folderSegment), leftInput, rightInput, status));
                     default:
-                        return winjs.TPromise.as(new giteditorinputs.GitDiffEditorInput(fileSegment, nls.localize(4, null, folderSegment), leftInput, rightInput, status));
+                        return winjs.TPromise.as(new giteditorinputs.GitDiffEditorInput(fileSegment, nls.localize('gitMergeChanges', "{0} - Merge changes", folderSegment), leftInput, rightInput, status));
                 }
             }).then(function (editorInput) {
                 return editorInput;
@@ -324,14 +324,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
                     version = semver.valid(version);
                     if (version && semver.satisfies(version, '<2.0.0')) {
                         messageService.show(severity_1.default.Warning, {
-                            message: nls.localize(5, null, version),
+                            message: nls.localize('updateGit', "You seem to have git {0} installed. Code works best with git >=2.0.0.", version),
                             actions: [
                                 message_1.CloseAction,
-                                new actions.Action('neverShowAgain', nls.localize(6, null), null, true, function () {
+                                new actions.Action('neverShowAgain', nls.localize('neverShowAgain', "Don't show again"), null, true, function () {
                                     storageService.store(IgnoreOldGitStorageKey, true, storage_1.StorageScope.GLOBAL);
                                     return null;
                                 }),
-                                new actions.Action('downloadLatest', nls.localize(7, null), '', true, function () {
+                                new actions.Action('downloadLatest', nls.localize('download', "Download"), '', true, function () {
                                     electron_1.shell.openExternal('https://git-scm.com/');
                                     return null;
                                 })
@@ -539,21 +539,21 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
                 _this.emit(git.ServiceEvents.ERROR, e);
                 _this.transition(git.ServiceState.OK);
                 if (gitErrorCode === git.GitErrorCodes.NoUserNameConfigured || gitErrorCode === git.GitErrorCodes.NoUserEmailConfigured) {
-                    _this.messageService.show(severity_1.default.Warning, nls.localize(8, null));
+                    _this.messageService.show(severity_1.default.Warning, nls.localize('configureUsernameEmail', "Please configure your git user name and e-mail."));
                     return winjs.TPromise.as(null);
                 }
                 else if (gitErrorCode === git.GitErrorCodes.BadConfigFile) {
-                    _this.messageService.show(severity_1.default.Error, nls.localize(9, null, e.message));
+                    _this.messageService.show(severity_1.default.Error, nls.localize('badConfigFile', "Git {0}", e.message));
                     return winjs.TPromise.as(null);
                 }
                 else if (gitErrorCode === git.GitErrorCodes.UnmergedChanges) {
-                    _this.messageService.show(severity_1.default.Warning, nls.localize(10, null));
+                    _this.messageService.show(severity_1.default.Warning, nls.localize('unmergedChanges', "You should first resolve the unmerged changes before committing your changes."));
                     return winjs.TPromise.as(null);
                 }
                 var error;
-                var showOutputAction = new actions.Action('show.gitOutput', nls.localize(11, null), null, true, function () { return _this.outputService.getChannel('Git').show(); });
-                var cancelAction = new actions.Action('close.message', nls.localize(12, null), null, true, function () { return winjs.TPromise.as(true); });
-                error = errors.create(nls.localize(13, null), { actions: [showOutputAction, cancelAction] });
+                var showOutputAction = new actions.Action('show.gitOutput', nls.localize('showOutput', "Show Output"), null, true, function () { return _this.outputService.getChannel('Git').show(); });
+                var cancelAction = new actions.Action('close.message', nls.localize('cancel', "Cancel"), null, true, function () { return winjs.TPromise.as(true); });
+                error = errors.create(nls.localize('checkNativeConsole', "There was an issue running a git operation. Please review the output or use a console to check the state of your repository."), { actions: [showOutputAction, cancelAction] });
                 error.gitErrorCode = gitErrorCode;
                 return winjs.Promise.wrapError(error);
             });
@@ -579,10 +579,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
                 var folderSegment = toReadablePath(pathComponents.slice(0, pathComponents.length - 1).join('/'));
                 var description;
                 if (treeish === '~') {
-                    description = nls.localize(14, null, folderSegment);
+                    description = nls.localize('changesFromIndex', "{0} - Changes on index", folderSegment);
                 }
                 else {
-                    description = nls.localize(15, null, folderSegment, treeish);
+                    description = nls.localize('changesFromTree', "{0} - Changes on {1}", folderSegment, treeish);
                 }
                 if (mime.isUnspecific(mimetypes)) {
                     mimetypes = mime.guessMimeTypes(path); // guess from path if our detection did not yield results
@@ -603,7 +603,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitServices
             var _this = this;
             return this.inputCache.getInput(status).then(null, function (err) {
                 if (err.gitErrorCode = git.GitErrorCodes.CantOpenResource) {
-                    _this.messageService.show(severity_1.default.Warning, nls.localize(16, null));
+                    _this.messageService.show(severity_1.default.Warning, nls.localize('cantOpenResource', "Can't open this git resource."));
                     return winjs.TPromise.as(null);
                 }
                 return winjs.Promise.wrapError(err);

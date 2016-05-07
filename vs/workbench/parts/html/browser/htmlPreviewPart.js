@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/html/browser/htmlPreviewPart', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/editor/common/editorCommon', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/platform/telemetry/common/telemetry', 'vs/platform/workspace/common/workspace', 'vs/platform/theme/common/themes', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/common/editor/textEditorModel', 'vs/workbench/parts/html/common/htmlInput', 'vs/workbench/services/themes/common/themeService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/opener/common/opener', 'vs/text!./webview.html'], function (require, exports, nls_1, uri_1, winjs_base_1, editorCommon_1, lifecycle_1, dom_1, baseEditor_1, telemetry_1, workspace_1, themes_1, editorService_1, textEditorModel_1, htmlInput_1, themeService_1, keybindingsRegistry_1, opener_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/editor/common/editorCommon', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/platform/telemetry/common/telemetry', 'vs/platform/workspace/common/workspace', 'vs/platform/theme/common/themes', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/common/editor/textEditorModel', 'vs/workbench/parts/html/common/htmlInput', 'vs/workbench/services/themes/common/themeService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/platform/opener/common/opener', 'vs/text!./webview.html'], function (require, exports, nls_1, uri_1, winjs_base_1, editorCommon_1, lifecycle_1, dom_1, baseEditor_1, telemetry_1, workspace_1, themes_1, editorService_1, textEditorModel_1, htmlInput_1, themeService_1, keybindingsRegistry_1, opener_1) {
     'use strict';
     keybindingsRegistry_1.KeybindingsRegistry.registerCommandDesc({
         id: '_webview.openDevTools',
@@ -206,7 +206,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/html/browser/htmlPrevie
                     _this._model = model.textEditorModel;
                 }
                 if (!_this._model) {
-                    return winjs_base_1.TPromise.wrapError(nls_1.localize(0, null));
+                    return winjs_base_1.TPromise.wrapError(nls_1.localize('html.voidInput', "Invalid editor input."));
                 }
                 _this._modelChangeSubscription = _this._model.addListener2(editorCommon_1.EventType.ModelContentChanged2, function () { return _this.webview.contents = _this._model.getLinesContent(); });
                 _this.webview.contents = _this._model.getLinesContent();

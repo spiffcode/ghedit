@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/languages/css/common/services/lintRules', 'vs/languages/css/common/level'], function (require, exports, nls, _level) {
+define(["require", "exports", 'vs/nls', 'vs/languages/css/common/level'], function (require, exports, nls, _level) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -26,31 +26,31 @@ define(["require", "exports", 'vs/nls!vs/languages/css/common/services/lintRules
     }());
     exports.Rule = Rule;
     exports.Rules = {
-        AllVendorPrefixes: new Rule('compatibleVendorPrefixes', nls.localize(0, null), Ignore),
-        IncludeStandardPropertyWhenUsingVendorPrefix: new Rule('vendorPrefix', nls.localize(1, null), Warning),
-        DuplicateDeclarations: new Rule('duplicateProperties', nls.localize(2, null), Ignore),
-        EmptyRuleSet: new Rule('emptyRules', nls.localize(3, null), Warning),
-        ImportStatemement: new Rule('importStatement', nls.localize(4, null), Ignore),
-        NoWidthOrHeightWhenPaddingOrBorder: new Rule('boxModel', nls.localize(5, null), Ignore),
-        UniversalSelector: new Rule('universalSelector', nls.localize(6, null), Ignore),
-        ZeroWithUnit: new Rule('zeroUnits', nls.localize(7, null), Ignore),
-        RequiredPropertiesForFontFace: new Rule('fontFaceProperties', nls.localize(8, null), Warning),
-        HexColorLength: new Rule('hexColorLength', nls.localize(9, null), Error),
-        ArgsInColorFunction: new Rule('argumentsInColorFunction', nls.localize(10, null), Error),
-        UnknownProperty: new Rule('unknownProperties', nls.localize(11, null), Warning),
-        IEStarHack: new Rule('ieHack', nls.localize(12, null), Ignore),
-        UnknownVendorSpecificProperty: new Rule('unknownVendorSpecificProperties', nls.localize(13, null), Ignore),
-        PropertyIgnoredDueToDisplay: new Rule('propertyIgnoredDueToDisplay', nls.localize(14, null), Warning),
-        AvoidImportant: new Rule('important', nls.localize(15, null), Ignore),
-        AvoidFloat: new Rule('float', nls.localize(16, null), Ignore),
-        AvoidIdSelector: new Rule('idSelector', nls.localize(17, null), Ignore),
+        AllVendorPrefixes: new Rule('compatibleVendorPrefixes', nls.localize('rule.vendorprefixes.all', "When using a vendor-specific prefix make sure to also include all other vendor-specific properties"), Ignore),
+        IncludeStandardPropertyWhenUsingVendorPrefix: new Rule('vendorPrefix', nls.localize('rule.standardvendorprefix.all', "When using a vendor-specific prefix also include the standard property"), Warning),
+        DuplicateDeclarations: new Rule('duplicateProperties', nls.localize('rule.duplicateDeclarations', "Do not use duplicate style definitions"), Ignore),
+        EmptyRuleSet: new Rule('emptyRules', nls.localize('rule.emptyRuleSets', "Do not use empty rulesets"), Warning),
+        ImportStatemement: new Rule('importStatement', nls.localize('rule.importDirective', "Import statements do not load in parallel"), Ignore),
+        NoWidthOrHeightWhenPaddingOrBorder: new Rule('boxModel', nls.localize('rule.withHeightAndBorderPadding', "Do not use width or height when using padding or border"), Ignore),
+        UniversalSelector: new Rule('universalSelector', nls.localize('rule.universalSelector', "The universal selector (*) is known to be slow"), Ignore),
+        ZeroWithUnit: new Rule('zeroUnits', nls.localize('rule.zeroWidthUnit', "No unit for zero needed"), Ignore),
+        RequiredPropertiesForFontFace: new Rule('fontFaceProperties', nls.localize('rule.fontFaceProperties', "@font-face rule must define 'src' and 'font-family' properties"), Warning),
+        HexColorLength: new Rule('hexColorLength', nls.localize('rule.hexColor', "Hex colors must consist of three or six hex numbers"), Error),
+        ArgsInColorFunction: new Rule('argumentsInColorFunction', nls.localize('rule.colorFunction', "Invalid number of parameters"), Error),
+        UnknownProperty: new Rule('unknownProperties', nls.localize('rule.unknownProperty', "Unknown property."), Warning),
+        IEStarHack: new Rule('ieHack', nls.localize('rule.ieHack', "IE hacks are only necessary when supporting IE7 and older"), Ignore),
+        UnknownVendorSpecificProperty: new Rule('unknownVendorSpecificProperties', nls.localize('rule.unknownVendorSpecificProperty', "Unknown vendor specific property."), Ignore),
+        PropertyIgnoredDueToDisplay: new Rule('propertyIgnoredDueToDisplay', nls.localize('rule.propertyIgnoredDueToDisplay', "Property is ignored due to the display. E.g. with 'display: inline', the width, height, margin-top, margin-bottom, and float properties have no effect"), Warning),
+        AvoidImportant: new Rule('important', nls.localize('rule.avoidImportant', "Avoid using !important. It is an indication that the specificity of the entire CSS has gotten out of control and needs to be refactored."), Ignore),
+        AvoidFloat: new Rule('float', nls.localize('rule.avoidFloat', "Avoid using 'float'. Floats lead to fragile CSS that is easy to break if one aspect of the layout changes."), Ignore),
+        AvoidIdSelector: new Rule('idSelector', nls.localize('rule.avoidIdSelector', "Selectors should not contain IDs because these rules are too tightly coupled with the HTML."), Ignore),
     };
     function getConfigurationProperties(keyPrefix) {
         var properties = {};
         properties[keyPrefix + '.validate'] = {
             type: 'boolean',
             default: true,
-            description: nls.localize(18, null)
+            description: nls.localize('enableValidation', 'Enables or disables all validations')
         };
         for (var ruleName in exports.Rules) {
             var rule = exports.Rules[ruleName];

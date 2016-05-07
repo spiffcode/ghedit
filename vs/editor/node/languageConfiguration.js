@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/node/languageConfiguration', 'vs/base/common/json', 'vs/base/node/pfs', 'vs/editor/common/services/modeService'], function (require, exports, nls, json_1, pfs_1, modeService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/json', 'vs/base/node/pfs', 'vs/editor/common/services/modeService'], function (require, exports, nls, json_1, pfs_1, modeService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls!vs/editor/node/languageConfiguration', 'vs
                 var errors = [];
                 var configuration = json_1.parse(fileContents.toString(), errors);
                 if (errors.length) {
-                    console.error(nls.localize(0, null, configFilePath, errors.join('\n')));
+                    console.error(nls.localize('parseErrors', "Errors parsing {0}: {1}", configFilePath, errors.join('\n')));
                 }
                 _this._handleConfig(modeId, configuration);
             }, function (err) {

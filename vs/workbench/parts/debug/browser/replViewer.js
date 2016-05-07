@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/replViewer', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/platform', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/browser/mouseEvent', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/services/editor/common/editorService', 'vs/platform/workspace/common/workspace'], function (require, exports, nls, winjs_base_1, strings, uri_1, platform_1, actionbar, dom, errors, severity_1, mouse, model, debugviewer, debugactions, editorService_1, workspace_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/platform', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/browser/mouseEvent', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/services/editor/common/editorService', 'vs/platform/workspace/common/workspace'], function (require, exports, nls, winjs_base_1, strings, uri_1, platform_1, actionbar, dom, errors, severity_1, mouse, model, debugviewer, debugactions, editorService_1, workspace_1) {
     "use strict";
     var $ = dom.emmet;
     function getExpressionClassName() {
@@ -145,7 +145,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/replViewe
             debugviewer.renderExpressionValue(expression, templateData.value, false);
             if (expression.reference > 0) {
                 templateData.annotation.className = 'annotation octicon octicon-info';
-                templateData.annotation.title = nls.localize(0, null);
+                templateData.annotation.title = nls.localize('stateCapture', "Object state is captured from first evaluation");
             }
         };
         ReplExpressionsRenderer.prototype.renderOutputValue = function (output, templateData) {
@@ -260,7 +260,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/replViewe
                     }
                     var link = document.createElement('a');
                     link.textContent = text.substr(match.index, match[0].length);
-                    link.title = platform_1.isMacintosh ? nls.localize(1, null) : nls.localize(2, null);
+                    link.title = platform_1.isMacintosh ? nls.localize('fileLinkMac', "Click to follow (Cmd + click opens to the side)") : nls.localize('fileLink', "Click to follow (Ctrl + click opens to the side)");
                     linkContainer.appendChild(link);
                     link.onclick = function (e) { return _this.onLinkClick(new mouse.StandardMouseEvent(e), resource, Number(match[3]), Number(match[4])); };
                     var textAfterLink = text.substr(match.index + match[0].length);
@@ -338,16 +338,16 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/replViewe
         }
         ReplExpressionsAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof model.Variable) {
-                return nls.localize(3, null, element.name, element.value);
+                return nls.localize('replVariableAriaLabel', "Variable {0} has value {1}, read eval print loop, debug", element.name, element.value);
             }
             if (element instanceof model.Expression) {
-                return nls.localize(4, null, element.name, element.value);
+                return nls.localize('replExpressionAriaLabel', "Expression {0} has value {1}, read eval print loop, debug", element.name, element.value);
             }
             if (element instanceof model.ValueOutputElement) {
-                return nls.localize(5, null, element.value);
+                return nls.localize('replValueOutputAriaLabel', "{0}, read eval print loop, debug", element.value);
             }
             if (element instanceof model.KeyValueOutputElement) {
-                return nls.localize(6, null, element.key, element.value);
+                return nls.localize('replKeyValueOutputAriaLabel', "Output variable {0} has value {1}, read eval print loop, debug", element.key, element.value);
             }
             return null;
         };

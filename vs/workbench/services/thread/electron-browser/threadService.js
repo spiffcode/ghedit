@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/services/thread/electron-browser/threadService', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/marshalling', 'vs/base/common/objects', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/node/ports', 'vs/platform/extensions/common/ipcRemoteCom', 'vs/platform/message/common/message', 'vs/platform/thread/common/mainThreadService', 'child_process', 'electron'], function (require, exports, nls, actions_1, errors_1, marshalling_1, objects, strings, uri_1, winjs_base_1, ports_1, ipcRemoteCom_1, message_1, mainThreadService_1, child_process_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/marshalling', 'vs/base/common/objects', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/node/ports', 'vs/platform/extensions/common/ipcRemoteCom', 'vs/platform/message/common/message', 'vs/platform/thread/common/mainThreadService', 'child_process', 'electron'], function (require, exports, nls, actions_1, errors_1, marshalling_1, objects, strings, uri_1, winjs_base_1, ports_1, ipcRemoteCom_1, message_1, mainThreadService_1, child_process_1, electron_1) {
     'use strict';
     exports.EXTENSION_LOG_BROADCAST_CHANNEL = 'vscode:extensionLog';
     exports.EXTENSION_ATTACH_BROADCAST_CHANNEL = 'vscode:extensionAttach';
@@ -71,7 +71,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/thread/electron-brow
             // Help in case we fail to start it
             if (!config.env.isBuilt || this.isExtensionDevelopmentHost) {
                 this.initializeTimer = setTimeout(function () {
-                    var msg = _this.isExtensionDevelopmentDebugging ? nls.localize(0, null) : nls.localize(1, null);
+                    var msg = _this.isExtensionDevelopmentDebugging ? nls.localize('extensionHostProcess.startupFailDebug', "Extension host did not start in 10 seconds, it might be stopped on the first line and needs a debugger to continue.") : nls.localize('extensionHostProcess.startupFail', "Extension host did not start in 10 seconds, that might be a problem.");
                     _this.messageService.show(message_1.Severity.Warning, msg);
                 }, 10000);
             }
@@ -164,7 +164,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/thread/electron-brow
                             return; // prevent error spam
                         }
                         _this.lastExtensionHostError = errorMessage;
-                        _this.messageService.show(message_1.Severity.Error, nls.localize(2, null, errorMessage));
+                        _this.messageService.show(message_1.Severity.Error, nls.localize('extensionHostProcess.error', "Error from the extension host: {0}", errorMessage));
                     });
                     _this.extensionHostProcessHandle.on('exit', function (code, signal) {
                         process.removeListener('exit', onExit);
@@ -172,8 +172,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/thread/electron-brow
                             // Unexpected termination
                             if (!_this.isExtensionDevelopmentHost) {
                                 _this.messageService.show(message_1.Severity.Error, {
-                                    message: nls.localize(3, null),
-                                    actions: [new actions_1.Action('reloadWindow', nls.localize(4, null), null, true, function () { _this.windowService.getWindow().reload(); return winjs_base_1.TPromise.as(null); })]
+                                    message: nls.localize('extensionHostProcess.crash', "Extension host terminated unexpectedly. Please reload the window to recover."),
+                                    actions: [new actions_1.Action('reloadWindow', nls.localize('reloadWindow', "Reload Window"), null, true, function () { _this.windowService.getWindow().reload(); return winjs_base_1.TPromise.as(null); })]
                                 });
                                 console.error('Extension host terminated unexpectedly. Code: ', code, ' Signal: ', signal);
                             }

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/electron-main/askpassService', 'electron', 'vs/base/common/platform', 'vs/base/common/winjs.base'], function (require, exports, nls, electron_1, platform, winjs_base_1) {
+define(["require", "exports", 'vs/nls', 'electron', 'vs/base/common/platform', 'vs/base/common/winjs.base'], function (require, exports, nls, electron_1, platform, winjs_base_1) {
     "use strict";
     var GitAskpassService = (function () {
         function GitAskpassService() {
@@ -29,7 +29,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/electron-main/askpa
                     width: 450,
                     height: platform.isWindows ? 280 : 260,
                     show: true,
-                    title: nls.localize(0, null)
+                    title: nls.localize('git', "Git")
                 });
                 win.setMenuBarVisibility(false);
                 _this.askpassCache[id] = {

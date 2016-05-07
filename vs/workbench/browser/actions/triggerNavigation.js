@@ -12,14 +12,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/browser/actions/triggerNavigation', 'vs/platform/platform', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/base/common/keyCodes', 'vs/workbench/services/history/common/history'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, actions_2, actionRegistry_1, keyCodes_1, history_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/base/common/keyCodes', 'vs/workbench/services/history/common/history'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, actions_2, actionRegistry_1, keyCodes_1, history_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var NAVIGATE_FORWARD_ID = 'workbench.action.navigateForward';
-    var NAVIGATE_FORWARD_LABEL = nls.localize(0, null);
+    var NAVIGATE_FORWARD_LABEL = nls.localize('navigateNext', "Go Forward");
     var NavigateForwardAction = (function (_super) {
         __extends(NavigateForwardAction, _super);
         function NavigateForwardAction(id, label, historyService) {
@@ -37,7 +37,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     }(actions_1.Action));
     exports.NavigateForwardAction = NavigateForwardAction;
     var NAVIGATE_BACKWARDS_ID = 'workbench.action.navigateBack';
-    var NAVIGATE_BACKWARDS_LABEL = nls.localize(1, null);
+    var NAVIGATE_BACKWARDS_LABEL = nls.localize('navigatePrevious', "Go Back");
     var NavigateBackwardsAction = (function (_super) {
         __extends(NavigateBackwardsAction, _super);
         function NavigateBackwardsAction(id, label, historyService) {

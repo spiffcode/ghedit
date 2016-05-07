@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/quickopen/browser/gotoLineHandler', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/editor/common/editorCommon', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, winjs_base_1, nls, types, errors, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenAction_1, editor_1, textEditor_1, editorCommon_1, editorService_1, quickOpenService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/editor/common/editorCommon', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, winjs_base_1, nls, types, errors, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenAction_1, editor_1, textEditor_1, editorCommon_1, editorService_1, quickOpenService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -25,7 +25,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             _super.call(this, actionId, actionLabel, exports.GOTO_LINE_PREFIX, quickOpenService);
         }
         GotoLineAction.ID = 'workbench.action.gotoLine';
-        GotoLineAction.LABEL = nls.localize(0, null);
+        GotoLineAction.LABEL = nls.localize('gotoLine', "Go to Line...");
         GotoLineAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], GotoLineAction);
@@ -49,12 +49,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             var maxLineNumber = this.getMaxLineNumber();
             if (this.invalidRange(maxLineNumber)) {
                 if (maxLineNumber > 0) {
-                    return nls.localize(1, null, maxLineNumber);
+                    return nls.localize('gotoLineLabelEmptyWithLimit', "Type a line number between 1 and {0} to navigate to", maxLineNumber);
                 }
-                return nls.localize(2, null);
+                return nls.localize('gotoLineLabelEmpty', "Type a line number to navigate to");
             }
             // Input valid, indicate action
-            return this.column ? nls.localize(3, null, this.line, this.column) : nls.localize(4, null, this.line);
+            return this.column ? nls.localize('gotoLineColumnLabel', "Go to line {0} and column {1}", this.line, this.column) : nls.localize('gotoLineLabel', "Go to line {0}", this.line);
         };
         GotoLineEntry.prototype.invalidRange = function (maxLineNumber) {
             if (maxLineNumber === void 0) { maxLineNumber = this.getMaxLineNumber(); }
@@ -141,7 +141,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             this.editorService = editorService;
         }
         GotoLineHandler.prototype.getAriaLabel = function () {
-            return nls.localize(5, null);
+            return nls.localize('gotoLineHandlerAriaLabel', "Type a line number to navigate to.");
         };
         GotoLineHandler.prototype.getResults = function (searchValue) {
             searchValue = searchValue.trim();
@@ -154,7 +154,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         };
         GotoLineHandler.prototype.canRun = function () {
             var canRun = this.editorService.getActiveEditor() instanceof textEditor_1.BaseTextEditor;
-            return canRun ? true : nls.localize(6, null);
+            return canRun ? true : nls.localize('cannotRunGotoLine', "Open a text file first to go to a line");
         };
         GotoLineHandler.prototype.decorateOutline = function (range, editor, position) {
             var _this = this;

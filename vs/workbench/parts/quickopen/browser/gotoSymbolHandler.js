@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/quickopen/browser/gotoSymbolHandler', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/common/editor', 'vs/base/common/filters', 'vs/editor/common/editorCommon', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/editor/contrib/quickOpen/common/quickOpen', 'vs/editor/common/modes', 'vs/css!./media/gotoSymbolHandler'], function (require, exports, winjs_base_1, nls, arrays, errors, types, strings, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenAction_1, textEditor_1, editor_1, filters, editorCommon_1, editorService_1, quickOpenService_1, workspace_1, quickOpen_2, modes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/errors', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/common/editor', 'vs/base/common/filters', 'vs/editor/common/editorCommon', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/editor/contrib/quickOpen/common/quickOpen', 'vs/editor/common/modes', 'vs/css!./media/gotoSymbolHandler'], function (require, exports, winjs_base_1, nls, arrays, errors, types, strings, quickOpen_1, quickOpenModel_1, quickopen_1, quickOpenAction_1, textEditor_1, editor_1, filters, editorCommon_1, editorService_1, quickOpenService_1, workspace_1, quickOpen_2, modes_1) {
     'use strict';
     exports.GOTO_SYMBOL_PREFIX = '@';
     exports.SCOPE_PREFIX = ':';
@@ -26,7 +26,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             _super.call(this, actionId, actionLabel, exports.GOTO_SYMBOL_PREFIX, quickOpenService);
         }
         GotoSymbolAction.ID = 'workbench.action.gotoSymbol';
-        GotoSymbolAction.LABEL = nls.localize(0, null);
+        GotoSymbolAction.LABEL = nls.localize('gotoSymbol', "Go to Symbol...");
         GotoSymbolAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], GotoSymbolAction);
@@ -105,7 +105,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
             }
             else if (visibleResults.length > 0) {
-                visibleResults[0].setGroupLabel(nls.localize(1, null, visibleResults.length));
+                visibleResults[0].setGroupLabel(nls.localize('symbols', "symbols ({0})", visibleResults.length));
             }
         };
         OutlineModel.prototype.sortNormal = function (searchValue, elementA, elementB) {
@@ -175,25 +175,25 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         };
         OutlineModel.getDefaultGroupLabelPatterns = function () {
             var result = Object.create(null);
-            result['method'] = nls.localize(2, null);
-            result['function'] = nls.localize(3, null);
-            result['constructor'] = nls.localize(4, null);
-            result['variable'] = nls.localize(5, null);
-            result['class'] = nls.localize(6, null);
-            result['interface'] = nls.localize(7, null);
-            result['namespace'] = nls.localize(8, null);
-            result['package'] = nls.localize(9, null);
-            result['module'] = nls.localize(10, null);
-            result['property'] = nls.localize(11, null);
-            result['enum'] = nls.localize(12, null);
-            result['string'] = nls.localize(13, null);
-            result['rule'] = nls.localize(14, null);
-            result['file'] = nls.localize(15, null);
-            result['array'] = nls.localize(16, null);
-            result['number'] = nls.localize(17, null);
-            result['boolean'] = nls.localize(18, null);
-            result['object'] = nls.localize(19, null);
-            result['key'] = nls.localize(20, null);
+            result['method'] = nls.localize('method', "methods ({0})");
+            result['function'] = nls.localize('function', "functions ({0})");
+            result['constructor'] = nls.localize('_constructor', "constructors ({0})");
+            result['variable'] = nls.localize('variable', "variables ({0})");
+            result['class'] = nls.localize('class', "classes ({0})");
+            result['interface'] = nls.localize('interface', "interfaces ({0})");
+            result['namespace'] = nls.localize('namespace', "namespaces ({0})");
+            result['package'] = nls.localize('package', "packages ({0})");
+            result['module'] = nls.localize('modules', "modules ({0})");
+            result['property'] = nls.localize('property', "properties ({0})");
+            result['enum'] = nls.localize('enum', "enumerations ({0})");
+            result['string'] = nls.localize('string', "strings ({0})");
+            result['rule'] = nls.localize('rule', "rules ({0})");
+            result['file'] = nls.localize('file', "files ({0})");
+            result['array'] = nls.localize('array', "arrays ({0})");
+            result['number'] = nls.localize('number', "numbers ({0})");
+            result['boolean'] = nls.localize('boolean', "booleans ({0})");
+            result['object'] = nls.localize('object', "objects ({0})");
+            result['key'] = nls.localize('key', "keys ({0})");
             return result;
         };
         return OutlineModel;
@@ -219,7 +219,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             return this.name;
         };
         SymbolEntry.prototype.getAriaLabel = function () {
-            return nls.localize(21, null, this.getLabel());
+            return nls.localize('entryAriaLabel', "{0}, symbols", this.getLabel());
         };
         SymbolEntry.prototype.getIcon = function () {
             return this.icon;
@@ -313,12 +313,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         };
         GotoSymbolHandler.prototype.getEmptyLabel = function (searchString) {
             if (searchString.length > 0) {
-                return nls.localize(22, null);
+                return nls.localize('noSymbolsMatching', "No symbols matching");
             }
-            return nls.localize(23, null);
+            return nls.localize('noSymbolsFound', "No symbols found");
         };
         GotoSymbolHandler.prototype.getAriaLabel = function () {
-            return nls.localize(24, null);
+            return nls.localize('gotoSymbolHandlerAriaLabel', "Type to narrow down symbols of the currently active editor.");
         };
         GotoSymbolHandler.prototype.canRun = function () {
             var canRun = false;
@@ -333,7 +333,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     canRun = modes_1.OutlineRegistry.has(model);
                 }
             }
-            return canRun ? true : editor instanceof textEditor_1.BaseTextEditor ? nls.localize(25, null) : nls.localize(26, null);
+            return canRun ? true : editor instanceof textEditor_1.BaseTextEditor ? nls.localize('cannotRunGotoSymbolInFile', "Unfortunately we have no symbol information for the file") : nls.localize('cannotRunGotoSymbol', "Open a text file first to go to a symbol");
         };
         GotoSymbolHandler.prototype.getAutoFocus = function (searchValue) {
             searchValue = searchValue.trim();

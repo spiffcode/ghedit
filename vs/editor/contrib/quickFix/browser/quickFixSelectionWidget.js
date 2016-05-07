@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFixSelectionWidget', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/treeImpl', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/base/browser/ui/aria/aria', 'vs/css!./quickFix'], function (require, exports, nls, errors_1, winjs_base_1, dom, treeDefaults_1, treeImpl_1, editorCommon_1, editorBrowser_1, aria_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/treeImpl', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/base/browser/ui/aria/aria', 'vs/css!./quickFix'], function (require, exports, nls, errors_1, winjs_base_1, dom, treeDefaults_1, treeImpl_1, editorCommon_1, editorBrowser_1, aria_1) {
     'use strict';
     var $ = dom.emmet;
     function isQuickFix(quickfix) {
@@ -16,7 +16,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFi
             && typeof quickfix.command.title === 'string';
     }
     function getAriaAlertLabel(item) {
-        return nls.localize(0, null, item.command.title);
+        return nls.localize('ariaCurrentFix', "{0}, quick fix suggestion", item.command.title);
     }
     // To be used as a tree element when we want to show a message
     var Message = (function () {
@@ -193,7 +193,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFi
                 alwaysFocused: true,
                 verticalScrollMode: 'visible',
                 useShadows: false,
-                ariaLabel: nls.localize(3, null)
+                ariaLabel: nls.localize('treeAriaLabel', "Quick Fix")
             });
             this.listenersToRemove.push(this.tree.addListener('selection', function (e) {
                 if (e.selection && e.selection.length > 0) {
@@ -202,7 +202,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFi
                         _this.telemetryData.selectedIndex = _this.tree.getInput().indexOf(element);
                         _this.telemetryData.wasCancelled = false;
                         _this.submitTelemetryData();
-                        aria_1.alert(nls.localize(4, null, element.command.title));
+                        aria_1.alert(nls.localize('quickFixAriaAccepted', "{0}, accepted", element.command.title));
                         _this.model.accept(element, _this.range);
                         _this.editor.focus();
                     }
@@ -487,8 +487,8 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/quickFix/browser/quickFi
         };
         QuickFixSelectionWidget.ID = 'editor.widget.QuickFixSelectionWidget';
         QuickFixSelectionWidget.WIDTH = 360;
-        QuickFixSelectionWidget.LOADING_MESSAGE = new MessageRoot(nls.localize(1, null));
-        QuickFixSelectionWidget.NO_SUGGESTIONS_MESSAGE = new MessageRoot(nls.localize(2, null));
+        QuickFixSelectionWidget.LOADING_MESSAGE = new MessageRoot(nls.localize('QuickFixSelectionWidget.loading', "Loading..."));
+        QuickFixSelectionWidget.NO_SUGGESTIONS_MESSAGE = new MessageRoot(nls.localize('QuickFixSelectionWidget.noSuggestions', "No fix suggestions."));
         return QuickFixSelectionWidget;
     }());
     exports.QuickFixSelectionWidget = QuickFixSelectionWidget;

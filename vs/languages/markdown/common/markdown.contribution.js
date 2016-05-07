@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/languages/markdown/common/markdown.contribution', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/platform'], function (require, exports, nls, modesRegistry_1, ConfigurationRegistry, Platform) {
+define(["require", "exports", 'vs/nls', 'vs/editor/common/modes/modesRegistry', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/platform'], function (require, exports, nls, modesRegistry_1, ConfigurationRegistry, Platform) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18,11 +18,11 @@ define(["require", "exports", 'vs/nls!vs/languages/markdown/common/markdown.cont
         'id': 'markdown',
         'order': 20,
         'type': 'object',
-        'title': nls.localize(0, null),
+        'title': nls.localize('markdownConfigurationTitle', "Markdown preview configuration"),
         'properties': {
             'markdown.styles': {
                 'type': 'array',
-                'description': nls.localize(1, null),
+                'description': nls.localize('styles', "A list of URLs or local paths to CSS style sheets to use from the markdown preview."),
                 'items': {
                     'type': 'string'
                 }

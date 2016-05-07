@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/triggerQuickOpen', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/base/common/actions', 'vs/base/common/winjs.base', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/actions/common/actions', 'vs/base/common/keyCodes'], function (require, exports, nls, actionRegistry_1, platform_1, actions_1, winjs_base_1, keybindingsRegistry_1, quickOpenService_1, keybindingService_1, actions_2, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/base/common/actions', 'vs/base/common/winjs.base', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/actions/common/actions', 'vs/base/common/keyCodes'], function (require, exports, nls, actionRegistry_1, platform_1, actions_1, winjs_base_1, keybindingsRegistry_1, quickOpenService_1, keybindingService_1, actions_2, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -32,7 +32,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/triggerQuickO
             return winjs_base_1.TPromise.as(true);
         };
         GlobalQuickOpenAction.ID = 'workbench.action.quickOpen';
-        GlobalQuickOpenAction.LABEL = nls.localize(0, null);
+        GlobalQuickOpenAction.LABEL = nls.localize('quickOpen', "Go to File...");
         GlobalQuickOpenAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], GlobalQuickOpenAction);
@@ -54,7 +54,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/triggerQuickO
             return winjs_base_1.TPromise.as(true);
         };
         OpenPreviousEditorAction.ID = 'workbench.action.openPreviousEditor';
-        OpenPreviousEditorAction.LABEL = nls.localize(1, null);
+        OpenPreviousEditorAction.LABEL = nls.localize('navigateEditorHistoryByInput', "Navigate History");
         OpenPreviousEditorAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -88,7 +88,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/triggerQuickO
             _super.call(this, id, label, true, quickOpenService, keybindingService);
         }
         QuickOpenNavigateNextAction.ID = 'workbench.action.quickOpenNavigateNext';
-        QuickOpenNavigateNextAction.LABEL = nls.localize(2, null);
+        QuickOpenNavigateNextAction.LABEL = nls.localize('quickNavigateNext', "Navigate Next in Quick Open");
         QuickOpenNavigateNextAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService),
             __param(3, keybindingService_1.IKeybindingService)
@@ -101,7 +101,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/actions/triggerQuickO
             _super.call(this, id, label, false, quickOpenService, keybindingService);
         }
         QuickOpenNavigatePreviousAction.ID = 'workbench.action.quickOpenNavigatePrevious';
-        QuickOpenNavigatePreviousAction.LABEL = nls.localize(3, null);
+        QuickOpenNavigatePreviousAction.LABEL = nls.localize('quickNavigatePrevious', "Navigate Previous in Quick Open");
         QuickOpenNavigatePreviousAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService),
             __param(3, keybindingService_1.IKeybindingService)

@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunnerSystem', 'vs/base/common/objects', 'vs/base/common/types', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/async', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/eventEmitter', 'vs/base/node/processes', 'vs/workbench/parts/tasks/common/problemCollectors', 'vs/workbench/parts/tasks/common/taskSystem', './processRunnerConfiguration'], function (require, exports, nls, Objects, Types, Platform, winjs_base_1, Async, severity_1, Strings, eventEmitter_1, processes_1, problemCollectors_1, taskSystem_1, FileConfig) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/types', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/async', 'vs/base/common/severity', 'vs/base/common/strings', 'vs/base/common/eventEmitter', 'vs/base/node/processes', 'vs/workbench/parts/tasks/common/problemCollectors', 'vs/workbench/parts/tasks/common/taskSystem', './processRunnerConfiguration'], function (require, exports, nls, Objects, Types, Platform, winjs_base_1, Async, severity_1, Strings, eventEmitter_1, processes_1, problemCollectors_1, taskSystem_1, FileConfig) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40,7 +40,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
         }
         ProcessRunnerSystem.prototype.build = function () {
             if (!this.defaultBuildTaskIdentifier) {
-                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize(0, null), taskSystem_1.TaskErrors.NoBuildTask);
+                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize('TaskRunnerSystem.noBuildTask', 'No build task configured.'), taskSystem_1.TaskErrors.NoBuildTask);
             }
             return this.executeTask(this.defaultBuildTaskIdentifier, taskSystem_1.Triggers.shortcut);
         };
@@ -52,7 +52,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
         };
         ProcessRunnerSystem.prototype.runTest = function () {
             if (!this.defaultTestTaskIdentifier) {
-                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize(1, null), taskSystem_1.TaskErrors.NoTestTask);
+                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize('TaskRunnerSystem.noTestTask', 'No test task configured.'), taskSystem_1.TaskErrors.NoTestTask);
             }
             return this.executeTask(this.defaultTestTaskIdentifier, taskSystem_1.Triggers.shortcut);
         };
@@ -98,11 +98,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             var _this = this;
             if (trigger === void 0) { trigger = taskSystem_1.Triggers.command; }
             if (this.validationStatus.isFatal()) {
-                throw new taskSystem_1.TaskError(severity_1.default.Error, nls.localize(2, null), taskSystem_1.TaskErrors.ConfigValidationError);
+                throw new taskSystem_1.TaskError(severity_1.default.Error, nls.localize('TaskRunnerSystem.fatalError', 'The provided task configuration has validation errors. See tasks output log for details.'), taskSystem_1.TaskErrors.ConfigValidationError);
             }
             var task = this.configuration.tasks[taskIdentifier];
             if (!task) {
-                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize(3, null), taskSystem_1.TaskErrors.TaskNotFound);
+                throw new taskSystem_1.TaskError(severity_1.default.Info, nls.localize('TaskRunnerSystem.norebuild', 'No task to execute found.'), taskSystem_1.TaskErrors.TaskNotFound);
             }
             var telemetryEvent = {
                 trigger: trigger,
@@ -134,7 +134,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 }
                 else {
                     this.outputChannel.append(err.toString());
-                    throw new taskSystem_1.TaskError(severity_1.default.Error, nls.localize(4, null), taskSystem_1.TaskErrors.UnknownError);
+                    throw new taskSystem_1.TaskError(severity_1.default.Error, nls.localize('TaskRunnerSystem.unknownError', 'A unknown error has occurred while executing a task. See task output log for details.'), taskSystem_1.TaskErrors.UnknownError);
                 }
             }
         };
@@ -201,7 +201,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                     }
                     eventCounter_1 = 0;
                     if (!_this.checkTerminated(task, success)) {
-                        _this.log(nls.localize(5, null));
+                        _this.log(nls.localize('TaskRunnerSystem.watchingBuildTaskFinished', '\nWatching build tasks has finished.'));
                     }
                     if (success.cmdCode && success.cmdCode === 1 && watchingProblemMatcher_1.numberOfMatches === 0 && task.showOutput !== taskSystem_1.ShowOutput.Never) {
                         _this.showOutput();
@@ -272,7 +272,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             var makeVisible = false;
             if (error.error && !error.terminated) {
                 var args = this.configuration.args ? this.configuration.args.join(' ') : '';
-                this.log(nls.localize(6, null, this.configuration.command, args));
+                this.log(nls.localize('TaskRunnerSystem.childProcessError', 'Failed to launch external program {0} {1}.', this.configuration.command, args));
                 this.outputChannel.append(error.error.message);
                 makeVisible = true;
             }
@@ -292,7 +292,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
         };
         ProcessRunnerSystem.prototype.checkTerminated = function (task, data) {
             if (data.terminated) {
-                this.log(nls.localize(7, null, task.name));
+                this.log(nls.localize('TaskRunnerSystem.cancelRequested', '\nThe task \'{0}\' was terminated per user request.', task.name));
                 return true;
             }
             return false;

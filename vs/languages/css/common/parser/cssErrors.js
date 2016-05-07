@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/languages/css/common/parser/cssErrors'], function (require, exports, nls) {
+define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -13,34 +13,34 @@ define(["require", "exports", 'vs/nls!vs/languages/css/common/parser/cssErrors']
     }());
     exports.CSSIssueType = CSSIssueType;
     exports.ParseError = {
-        NumberExpected: new CSSIssueType('css-numberexpected', nls.localize(0, null)),
-        ConditionExpected: new CSSIssueType('css-conditionexpected', nls.localize(1, null)),
-        RuleOrSelectorExpected: new CSSIssueType('css-ruleorselectorexpected', nls.localize(2, null)),
-        DotExpected: new CSSIssueType('css-dotexpected', nls.localize(3, null)),
-        ColonExpected: new CSSIssueType('css-colonexpected', nls.localize(4, null)),
-        SemiColonExpected: new CSSIssueType('css-semicolonexpected', nls.localize(5, null)),
-        TermExpected: new CSSIssueType('css-termexpected', nls.localize(6, null)),
-        ExpressionExpected: new CSSIssueType('css-expressionexpected', nls.localize(7, null)),
-        OperatorExpected: new CSSIssueType('css-operatorexpected', nls.localize(8, null)),
-        IdentifierExpected: new CSSIssueType('css-identifierexpected', nls.localize(9, null)),
-        PercentageExpected: new CSSIssueType('css-percentageexpected', nls.localize(10, null)),
-        URIOrStringExpected: new CSSIssueType('css-uriorstringexpected', nls.localize(11, null)),
-        URIExpected: new CSSIssueType('css-uriexpected', nls.localize(12, null)),
-        VariableNameExpected: new CSSIssueType('css-varnameexpected', nls.localize(13, null)),
-        VariableValueExpected: new CSSIssueType('css-varvalueexpected', nls.localize(14, null)),
-        PropertyValueExpected: new CSSIssueType('css-propertyvalueexpected', nls.localize(15, null)),
-        LeftCurlyExpected: new CSSIssueType('css-lcurlyexpected', nls.localize(16, null)),
-        RightCurlyExpected: new CSSIssueType('css-rcurlyexpected', nls.localize(17, null)),
-        LeftSquareBracketExpected: new CSSIssueType('css-rbracketexpected', nls.localize(18, null)),
-        RightSquareBracketExpected: new CSSIssueType('css-lbracketexpected', nls.localize(19, null)),
-        LeftParenthesisExpected: new CSSIssueType('css-lparentexpected', nls.localize(20, null)),
-        RightParenthesisExpected: new CSSIssueType('css-rparentexpected', nls.localize(21, null)),
-        CommaExpected: new CSSIssueType('css-commaexpected', nls.localize(22, null)),
-        PageDirectiveOrDeclarationExpected: new CSSIssueType('css-pagedirordeclexpected', nls.localize(23, null)),
-        UnknownAtRule: new CSSIssueType('css-unknownatrule', nls.localize(24, null)),
-        UnknownKeyword: new CSSIssueType('css-unknownkeyword', nls.localize(25, null)),
-        SelectorExpected: new CSSIssueType('css-selectorexpected', nls.localize(26, null)),
-        StringLiteralExpected: new CSSIssueType('css-stringliteralexpected', nls.localize(27, null)),
+        NumberExpected: new CSSIssueType('css-numberexpected', nls.localize('expected.number', "number expected")),
+        ConditionExpected: new CSSIssueType('css-conditionexpected', nls.localize('expected.condt', "condition expected")),
+        RuleOrSelectorExpected: new CSSIssueType('css-ruleorselectorexpected', nls.localize('expected.ruleorselector', "at-rule or selector expected")),
+        DotExpected: new CSSIssueType('css-dotexpected', nls.localize('expected.dot', "dot expected")),
+        ColonExpected: new CSSIssueType('css-colonexpected', nls.localize('expected.colon', "colon expected")),
+        SemiColonExpected: new CSSIssueType('css-semicolonexpected', nls.localize('expected.semicolon', "semi-colon expected")),
+        TermExpected: new CSSIssueType('css-termexpected', nls.localize('expected.term', "term expected")),
+        ExpressionExpected: new CSSIssueType('css-expressionexpected', nls.localize('expected.expression', "expression expected")),
+        OperatorExpected: new CSSIssueType('css-operatorexpected', nls.localize('expected.operator', "operator expected")),
+        IdentifierExpected: new CSSIssueType('css-identifierexpected', nls.localize('expected.ident', "identifier expected")),
+        PercentageExpected: new CSSIssueType('css-percentageexpected', nls.localize('expected.percentage', "percentage expected")),
+        URIOrStringExpected: new CSSIssueType('css-uriorstringexpected', nls.localize('expected.uriorstring', "uri or string expected")),
+        URIExpected: new CSSIssueType('css-uriexpected', nls.localize('expected.uri', "URI expected")),
+        VariableNameExpected: new CSSIssueType('css-varnameexpected', nls.localize('expected.varname', "variable name expected")),
+        VariableValueExpected: new CSSIssueType('css-varvalueexpected', nls.localize('expected.varvalue', "variable value expected")),
+        PropertyValueExpected: new CSSIssueType('css-propertyvalueexpected', nls.localize('expected.propvalue', "property value expected")),
+        LeftCurlyExpected: new CSSIssueType('css-lcurlyexpected', nls.localize('expected.lcurly', "{ expected")),
+        RightCurlyExpected: new CSSIssueType('css-rcurlyexpected', nls.localize('expected.rcurly', "} expected")),
+        LeftSquareBracketExpected: new CSSIssueType('css-rbracketexpected', nls.localize('expected.lsquare', "[ expected")),
+        RightSquareBracketExpected: new CSSIssueType('css-lbracketexpected', nls.localize('expected.rsquare', "] expected")),
+        LeftParenthesisExpected: new CSSIssueType('css-lparentexpected', nls.localize('expected.lparen', "( expected")),
+        RightParenthesisExpected: new CSSIssueType('css-rparentexpected', nls.localize('expected.rparent', ") expected")),
+        CommaExpected: new CSSIssueType('css-commaexpected', nls.localize('expected.comma', "comma expected")),
+        PageDirectiveOrDeclarationExpected: new CSSIssueType('css-pagedirordeclexpected', nls.localize('expected.pagedirordecl', "page directive or declaraton expected")),
+        UnknownAtRule: new CSSIssueType('css-unknownatrule', nls.localize('unknown.atrule', "at-rule unknown")),
+        UnknownKeyword: new CSSIssueType('css-unknownkeyword', nls.localize('unknown.keyword', "unknown keyword")),
+        SelectorExpected: new CSSIssueType('css-selectorexpected', nls.localize('expected.selector', "selector expected")),
+        StringLiteralExpected: new CSSIssueType('css-stringliteralexpected', nls.localize('expected.stringliteral', "string literal expected")),
     };
 });
 //# sourceMappingURL=cssErrors.js.map

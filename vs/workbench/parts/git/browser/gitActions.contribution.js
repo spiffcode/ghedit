@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.contribution', 'vs/base/common/lifecycle', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/base/common/winjs.base', 'vs/editor/common/editorCommon', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textDiffEditor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/git/browser/gitWorkbenchContributions', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/git/common/stageRanges', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', './gitActions', 'vs/base/common/paths', 'vs/base/common/uri'], function (require, exports, nls, lifecycle, platform, abr, winjs_base_1, editorcommon, baseeditor, WorkbenchEditorCommon, tdeditor, teditor, filesCommon, gitcontrib, git_1, gitei, stageranges, editorService_1, viewletService_1, partService_1, contextService_1, files_1, instantiation_1, wbar, actions_1, gitActions_1, paths, uri_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/base/common/winjs.base', 'vs/editor/common/editorCommon', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textDiffEditor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/git/browser/gitWorkbenchContributions', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitEditorInputs', 'vs/workbench/parts/git/common/stageRanges', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', './gitActions', 'vs/base/common/paths', 'vs/base/common/uri'], function (require, exports, nls, lifecycle, platform, abr, winjs_base_1, editorcommon, baseeditor, WorkbenchEditorCommon, tdeditor, teditor, filesCommon, gitcontrib, git_1, gitei, stageranges, editorService_1, viewletService_1, partService_1, contextService_1, files_1, instantiation_1, wbar, actions_1, gitActions_1, paths, uri_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -90,7 +90,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
             this.toDispose = lifecycle.dispose(this.toDispose);
         };
         OpenInDiffAction.ID = 'workbench.action.git.openInDiff';
-        OpenInDiffAction.Label = nls.localize(0, null);
+        OpenInDiffAction.Label = nls.localize('switchToChangesView', "Switch to Changes View");
         OpenInDiffAction = __decorate([
             __param(0, editorService_1.IWorkbenchEditorService),
             __param(1, git_1.IGitService),
@@ -187,7 +187,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
         };
         OpenInEditorAction.DELETED_STATES = [git_1.Status.BOTH_DELETED, git_1.Status.DELETED, git_1.Status.DELETED_BY_US, git_1.Status.INDEX_DELETED];
         OpenInEditorAction.ID = 'workbench.action.git.openInEditor';
-        OpenInEditorAction.LABEL = nls.localize(1, null);
+        OpenInEditorAction.LABEL = nls.localize('openInEditor', "Switch to Editor View");
         OpenInEditorAction = __decorate([
             __param(0, files_1.IFileService),
             __param(1, editorService_1.IWorkbenchEditorService),
@@ -201,7 +201,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
     var StageRangesAction = (function (_super) {
         __extends(StageRangesAction, _super);
         function StageRangesAction(editor, gitService, editorService) {
-            _super.call(this, 'workbench.action.git.stageRanges', nls.localize(2, null));
+            _super.call(this, 'workbench.action.git.stageRanges', nls.localize('stageSelectedLines', "Stage Selected Lines"));
             this.editorService = editorService;
             this.gitService = gitService;
             this.editor = editor.getControl();
@@ -351,7 +351,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
             });
         };
         GlobalOpenChangeAction.ID = 'workbench.action.git.globalOpenChange';
-        GlobalOpenChangeAction.LABEL = nls.localize(3, null);
+        GlobalOpenChangeAction.LABEL = nls.localize('openChange', "Open Change");
         GlobalOpenChangeAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, git_1.IGitService),
@@ -380,7 +380,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
             return _super.prototype.run.call(this, status);
         };
         GlobalOpenInEditorAction.ID = 'workbench.action.git.globalOpenFile';
-        GlobalOpenInEditorAction.LABEL = nls.localize(4, null);
+        GlobalOpenInEditorAction.LABEL = nls.localize('openFile', "Open File");
         GlobalOpenInEditorAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, files_1.IFileService),
@@ -395,7 +395,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActions.
     actionBarRegistry.registerActionBarContributor(abr.Scope.EDITOR, GitWorkingTreeDiffEditorActionContributor);
     var workbenchActionRegistry = platform.Registry.as(wbar.Extensions.WorkbenchActions);
     // Register Actions
-    var category = nls.localize(5, null);
+    var category = nls.localize('git', "Git");
     workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenChangeAction, GlobalOpenChangeAction.ID, GlobalOpenChangeAction.LABEL), category);
     workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenInEditorAction, GlobalOpenInEditorAction.ID, GlobalOpenInEditorAction.LABEL), category);
     workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PullAction, gitActions_1.PullAction.ID, gitActions_1.PullAction.LABEL), category);

@@ -16,13 +16,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/defineKeybinding/browser/defineKeybinding', 'vs/base/common/async', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/base/browser/keyboardEvent', 'vs/base/browser/styleMutator', 'vs/platform/keybinding/common/keybindingResolver', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowser', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/snippet/common/snippet', 'vs/css!./defineKeybinding'], function (require, exports, nls, async_1, keyCodes_1, lifecycle_1, winjs_base_1, dom, htmlContentRenderer_1, keyboardEvent_1, styleMutator_1, keybindingResolver_1, keybindingService_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorBrowser_1, editorBrowserExtensions_1, snippet_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/keyCodes', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/browser/htmlContentRenderer', 'vs/base/browser/keyboardEvent', 'vs/base/browser/styleMutator', 'vs/platform/keybinding/common/keybindingResolver', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowser', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/snippet/common/snippet', 'vs/css!./defineKeybinding'], function (require, exports, nls, async_1, keyCodes_1, lifecycle_1, winjs_base_1, dom, htmlContentRenderer_1, keyboardEvent_1, styleMutator_1, keybindingResolver_1, keybindingService_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorBrowser_1, editorBrowserExtensions_1, snippet_1) {
     'use strict';
-    var NLS_LAUNCH_MESSAGE = nls.localize(0, null);
-    var NLS_DEFINE_MESSAGE = nls.localize(1, null);
-    var NLS_DEFINE_ACTION_LABEL = nls.localize(2, null);
-    var NLS_KB_LAYOUT_INFO_MESSAGE = nls.localize(3, null);
-    var NLS_KB_LAYOUT_ERROR_MESSAGE = nls.localize(4, null);
+    var NLS_LAUNCH_MESSAGE = nls.localize('defineKeybinding.start', "Define Keybinding");
+    var NLS_DEFINE_MESSAGE = nls.localize('defineKeybinding.initial', "Press desired key combination and ENTER");
+    var NLS_DEFINE_ACTION_LABEL = nls.localize('DefineKeybindingAction', "Define Keybinding");
+    var NLS_KB_LAYOUT_INFO_MESSAGE = nls.localize('defineKeybinding.kbLayoutInfoMessage', "For your current keyboard layout press ");
+    var NLS_KB_LAYOUT_ERROR_MESSAGE = nls.localize('defineKeybinding.kbLayoutErrorMessage', "You won't be able to produce this key combination under your current keyboard layout.");
     var INTERESTING_FILE = /keybindings\.json$/;
     var DefineKeybindingController = (function () {
         function DefineKeybindingController(editor, keybindingService) {

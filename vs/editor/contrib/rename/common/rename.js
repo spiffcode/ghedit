@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/common/rename', 'vs/base/common/async', 'vs/base/common/errors', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes'], function (require, exports, nls_1, async_1, errors_1, editorCommonExtensions_1, modes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/errors', 'vs/editor/common/editorCommonExtensions', 'vs/editor/common/modes'], function (require, exports, nls_1, async_1, errors_1, editorCommonExtensions_1, modes_1) {
     'use strict';
     function rename(model, position, newName) {
         var supports = modes_1.RenameRegistry.ordered(model);
@@ -39,7 +39,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/rename/common/rename', '
                 return {
                     currentName: undefined,
                     edits: undefined,
-                    rejectReason: nls_1.localize(0, null)
+                    rejectReason: nls_1.localize('no result', "No result.")
                 };
             }
             else {

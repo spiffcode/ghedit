@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/zoneWidget/browser/peekViewWidget', 'vs/base/common/actions', 'vs/base/common/strings', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/services/codeEditorService', './zoneWidget', 'vs/css!./peekViewWidget'], function (require, exports, nls, actions_1, strings, builder_1, dom, actionbar_1, instantiation_1, codeEditorService_1, zoneWidget_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/strings', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/services/codeEditorService', './zoneWidget', 'vs/css!./peekViewWidget'], function (require, exports, nls, actions_1, strings, builder_1, dom, actionbar_1, instantiation_1, codeEditorService_1, zoneWidget_1) {
     'use strict';
     exports.IPeekViewService = instantiation_1.createDecorator('peekViewService');
     var Events;
@@ -70,7 +70,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/zoneWidget/browser/peekV
             this._metaHeading = builder_1.$('span.meta').appendTo(titleElement).getHTMLElement();
             this._actionbarWidget = new actionbar_1.ActionBar(builder_1.$('.peekview-actions').
                 appendTo(this._headElement));
-            this._actionbarWidget.push(new actions_1.Action('peekview.close', nls.localize(0, null), 'close-peekview-action', true, function () {
+            this._actionbarWidget.push(new actions_1.Action('peekview.close', nls.localize('label.close', "Close"), 'close-peekview-action', true, function () {
                 _this.dispose();
                 _this.emit(Events.Closed, _this);
                 return null;

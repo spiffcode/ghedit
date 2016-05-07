@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/markdown/browser/markdownActions.contribution', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/parts/files/common/files', 'vs/base/common/mime', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/parts/markdown/browser/markdownActions', 'vs/workbench/parts/markdown/common/markdown', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actions_1, actionBarRegistry_1, files_1, mime, baseEditor_1, markdownActions_1, markdown_1, actionRegistry_1, instantiation_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/parts/files/common/files', 'vs/base/common/mime', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/parts/markdown/browser/markdownActions', 'vs/workbench/parts/markdown/common/markdown', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, nls, platform_1, actions_1, actionBarRegistry_1, files_1, mime, baseEditor_1, markdownActions_1, markdown_1, actionRegistry_1, instantiation_1, keyCodes_1) {
     'use strict';
     var ExplorerViewerActionContributor = (function (_super) {
         __extends(ExplorerViewerActionContributor, _super);
@@ -96,7 +96,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/markdown/browser/markdo
     var actionBarRegistry = platform_1.Registry.as(actionBarRegistry_1.Extensions.Actionbar);
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.VIEWER, ExplorerViewerActionContributor);
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.EDITOR, MarkdownFilesActionContributor);
-    var category = nls.localize(0, null);
+    var category = nls.localize('markdown', "Markdown");
     var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.GlobalTogglePreviewMarkdownAction, markdownActions_1.GlobalTogglePreviewMarkdownAction.ID, markdownActions_1.GlobalTogglePreviewMarkdownAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_V }), category);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.OpenPreviewToSideAction, markdownActions_1.OpenPreviewToSideAction.ID, markdownActions_1.OpenPreviewToSideAction.LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.KEY_V) }), category);

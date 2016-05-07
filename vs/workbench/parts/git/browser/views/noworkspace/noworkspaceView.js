@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/noworkspace/noworkspaceView', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./noworkspaceView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./noworkspaceView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
     'use strict';
     var $ = builder.$;
     var NoWorkspaceView = (function (_super) {
@@ -29,8 +29,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/nowor
         NoWorkspaceView.prototype.render = function () {
             this._element = $([
                 '<div class="noworkspace-view">',
-                '<p>', nls.localize(0, null), '</p>',
-                '<p>', nls.localize(1, null), '</p>',
+                '<p>', nls.localize('noWorkspace', "There is no currently opened folder."), '</p>',
+                '<p>', nls.localize('pleaseRestart', "Open a folder with a Git repository in order to access Git features."), '</p>',
                 '</div>'
             ].join('')).getHTMLElement();
         };

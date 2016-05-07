@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/markdown/common/markdownEditorInput', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/workbench/common/editor/iframeEditorInput', 'vs/workbench/parts/markdown/common/markdownEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace'], function (require, exports, nls, paths, labels, iframeEditorInput_1, markdownEditorModel_1, instantiation_1, workspace_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/workbench/common/editor/iframeEditorInput', 'vs/workbench/parts/markdown/common/markdownEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace'], function (require, exports, nls, paths, labels, iframeEditorInput_1, markdownEditorModel_1, instantiation_1, workspace_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -24,7 +24,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/markdown/common/markdow
     var MarkdownEditorInput = (function (_super) {
         __extends(MarkdownEditorInput, _super);
         function MarkdownEditorInput(resource, label, description, instantiationService, contextService) {
-            _super.call(this, resource, label || nls.localize(0, null, paths.basename(resource.fsPath)), description || labels.getPathLabel(paths.dirname(resource.fsPath), contextService));
+            _super.call(this, resource, label || nls.localize('preview', "Preview '{0}'", paths.basename(resource.fsPath)), description || labels.getPathLabel(paths.dirname(resource.fsPath), contextService));
             this.instantiationService = instantiationService;
             this.contextService = contextService;
         }

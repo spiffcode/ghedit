@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpen', 'vs/base/common/filters', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/git/common/git', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/message/common/message'], function (require, exports, nls, filters, winjs, severity_1, git, quickopenwb, quickopen, model, quickOpenService_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/filters', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/git/common/git', 'vs/workbench/browser/quickopen', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/message/common/message'], function (require, exports, nls, filters, winjs, severity_1, git, quickopenwb, quickopen, model, quickOpenService_1, message_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
         AbstractRefEntry.prototype.getIcon = function () { return 'git'; };
         AbstractRefEntry.prototype.getLabel = function () { return this.head.name; };
         AbstractRefEntry.prototype.getDescription = function () { return ''; };
-        AbstractRefEntry.prototype.getAriaLabel = function () { return nls.localize(0, null, this.getLabel()); };
+        AbstractRefEntry.prototype.getAriaLabel = function () { return nls.localize('refAriaLabel', "{0}, git", this.getLabel()); };
         AbstractRefEntry.prototype.run = function (mode, context) {
             if (mode === quickopen.Mode.PREVIEW) {
                 return false;
@@ -45,7 +45,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
         function CheckoutHeadEntry() {
             _super.apply(this, arguments);
         }
-        CheckoutHeadEntry.prototype.getDescription = function () { return nls.localize(1, null, this.head.commit.substr(0, 8)); };
+        CheckoutHeadEntry.prototype.getDescription = function () { return nls.localize('checkoutBranch', "Branch at {0}", this.head.commit.substr(0, 8)); };
         CheckoutHeadEntry.prototype.run = function (mode, context) {
             var _this = this;
             if (mode === quickopen.Mode.PREVIEW) {
@@ -61,7 +61,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
         function CheckoutTagEntry() {
             _super.apply(this, arguments);
         }
-        CheckoutTagEntry.prototype.getDescription = function () { return nls.localize(2, null, this.head.commit.substr(0, 8)); };
+        CheckoutTagEntry.prototype.getDescription = function () { return nls.localize('checkoutTag', "Tag at {0}", this.head.commit.substr(0, 8)); };
         CheckoutTagEntry.prototype.run = function (mode, context) {
             var _this = this;
             if (mode === quickopen.Mode.PREVIEW) {
@@ -77,7 +77,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
         function CurrentHeadEntry() {
             _super.apply(this, arguments);
         }
-        CurrentHeadEntry.prototype.getDescription = function () { return nls.localize(3, null, this.head.name); };
+        CurrentHeadEntry.prototype.getDescription = function () { return nls.localize('alreadyCheckedOut', "Branch {0} is already the current branch", this.head.name); };
         return CurrentHeadEntry;
     }(AbstractRefEntry));
     var BranchEntry = (function (_super) {
@@ -90,8 +90,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
         }
         BranchEntry.prototype.getIcon = function () { return 'git'; };
         BranchEntry.prototype.getLabel = function () { return this.name; };
-        BranchEntry.prototype.getAriaLabel = function () { return nls.localize(4, null, this.getLabel()); };
-        BranchEntry.prototype.getDescription = function () { return nls.localize(5, null, this.name); };
+        BranchEntry.prototype.getAriaLabel = function () { return nls.localize({ key: 'branchAriaLabel', comment: ['the branch name'] }, "{0}, git branch", this.getLabel()); };
+        BranchEntry.prototype.getDescription = function () { return nls.localize('createBranch', "Create branch {0}", this.name); };
         BranchEntry.prototype.run = function (mode, context) {
             var _this = this;
             if (mode === quickopen.Mode.PREVIEW) {
@@ -170,7 +170,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
             return winjs.TPromise.as(entries);
         };
         CheckoutCommand.prototype.getEmptyLabel = function (input) {
-            return nls.localize(6, null);
+            return nls.localize('noBranches', "No other branches");
         };
         return CheckoutCommand;
     }());
@@ -213,7 +213,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitQuickOpe
             return winjs.TPromise.as([new model.QuickOpenEntryGroup(branchEntry, 'branch', false)]);
         };
         BranchCommand.prototype.getEmptyLabel = function (input) {
-            return nls.localize(7, null);
+            return nls.localize('notValidBranchName', "Please provide a valid branch name");
         };
         return BranchCommand;
     }());

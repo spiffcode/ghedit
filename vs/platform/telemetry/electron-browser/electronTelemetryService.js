@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'getmac', 'crypto', 'vs/base/common/winjs.base', 'vs/nls!vs/platform/telemetry/electron-browser/electronTelemetryService', 'vs/base/common/errors', 'vs/base/common/uuid', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/platform'], function (require, exports, getmac, crypto, winjs_base_1, nls, errors, uuid, telemetryService_1, storage_1, configurationRegistry_1, configuration_1, platform_1) {
+define(["require", "exports", 'getmac', 'crypto', 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/errors', 'vs/base/common/uuid', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/platform'], function (require, exports, getmac, crypto, winjs_base_1, nls, errors, uuid, telemetryService_1, storage_1, configurationRegistry_1, configuration_1, platform_1) {
     "use strict";
     var TELEMETRY_SECTION_ID = 'telemetry';
     var StorageKeys;
@@ -92,11 +92,11 @@ define(["require", "exports", 'getmac', 'crypto', 'vs/base/common/winjs.base', '
         'id': TELEMETRY_SECTION_ID,
         'order': 20,
         'type': 'object',
-        'title': nls.localize(0, null),
+        'title': nls.localize('telemetryConfigurationTitle', "Telemetry configuration"),
         'properties': {
             'telemetry.enableTelemetry': {
                 'type': 'boolean',
-                'description': nls.localize(1, null),
+                'description': nls.localize('telemetry.enableTelemetry', "Enable usage data and errors to be sent to Microsoft."),
                 'default': true
             }
         }

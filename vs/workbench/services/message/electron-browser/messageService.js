@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/services/message/electron-browser/messageService', 'vs/workbench/services/message/browser/messageService', 'vs/base/common/platform'], function (require, exports, nls, messageService_1, platform_1) {
+define(["require", "exports", 'vs/nls', 'vs/workbench/services/message/browser/messageService', 'vs/base/common/platform'], function (require, exports, nls, messageService_1, platform_1) {
     'use strict';
     var MessageService = (function (_super) {
         __extends(MessageService, _super);
@@ -18,10 +18,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/services/message/electron-bro
         }
         MessageService.prototype.confirm = function (confirmation) {
             if (!confirmation.primaryButton) {
-                confirmation.primaryButton = nls.localize(0, null);
+                confirmation.primaryButton = nls.localize({ key: 'yesButton', comment: ['&& denotes a mnemonic'] }, "&&Yes");
             }
             if (!confirmation.secondaryButton) {
-                confirmation.secondaryButton = nls.localize(1, null);
+                confirmation.secondaryButton = nls.localize('cancelButton', "Cancel");
             }
             var opts = {
                 title: confirmation.title || this.contextService.getConfiguration().env.appName,

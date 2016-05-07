@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/emptyView', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/winjs.base', 'vs/base/browser/ui/button/button', 'vs/base/browser/builder', 'vs/base/browser/ui/splitview/splitview', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/selection/common/selection'], function (require, exports, nls, env, DOM, winjs_base_1, button_1, builder_1, splitview_1, platform_1, actionRegistry_1, instantiation_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/winjs.base', 'vs/base/browser/ui/button/button', 'vs/base/browser/builder', 'vs/base/browser/ui/splitview/splitview', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/selection/common/selection'], function (require, exports, nls, env, DOM, winjs_base_1, button_1, builder_1, splitview_1, platform_1, actionRegistry_1, instantiation_1, selection_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -23,22 +23,22 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/files/browser/views/emp
         function EmptyView(instantiationService) {
             _super.call(this, {
                 minimumSize: 2 * 22,
-                ariaHeaderLabel: nls.localize(0, null)
+                ariaHeaderLabel: nls.localize('explorerSection', "Files Explorer Section")
             });
             this.instantiationService = instantiationService;
         }
         EmptyView.prototype.renderHeader = function (container) {
             var titleDiv = builder_1.$('div.title').appendTo(container);
-            builder_1.$('span').text(nls.localize(1, null)).appendTo(titleDiv);
+            builder_1.$('span').text(nls.localize('noWorkspace', "No Folder Opened")).appendTo(titleDiv);
         };
         EmptyView.prototype.renderBody = function (container) {
             var _this = this;
             DOM.addClass(container, 'explorer-empty-view');
             var titleDiv = builder_1.$('div.section').appendTo(container);
-            builder_1.$('p').text(nls.localize(2, null)).appendTo(titleDiv);
+            builder_1.$('p').text(nls.localize('noWorkspaceHelp', "You have not yet opened a folder.")).appendTo(titleDiv);
             var section = builder_1.$('div.section').appendTo(container);
             var button = new button_1.Button(section);
-            button.label = nls.localize(3, null);
+            button.label = nls.localize('openFolder', "Open Folder");
             button.on('click', function () {
                 _this.runWorkbenchAction(env.isMacintosh ? 'workbench.action.files.openFileFolder' : 'workbench.action.files.openFolder');
             });

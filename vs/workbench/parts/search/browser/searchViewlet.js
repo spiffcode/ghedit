@@ -16,13 +16,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/search/browser/searchViewlet', 'vs/editor/common/editorCommon', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/browser/ui/aria/aria', 'vs/base/common/glob', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/browser/dom', 'vs/base/common/actions', 'vs/base/browser/keyboardEvent', 'vs/base/common/timer', 'vs/base/browser/builder', 'vs/base/browser/ui/filelabel/fileLabel', 'vs/base/browser/ui/findinput/findInput', 'vs/base/browser/ui/leftRightWidget/leftRightWidget', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/actionsRenderer', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/common/memento', 'vs/workbench/browser/actions/openSettings', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/search/common/searchModel', 'vs/workbench/parts/search/common/searchQuery', 'vs/base/browser/ui/checkbox/checkbox', 'vs/workbench/parts/search/browser/search.contribution', 'vs/base/browser/ui/inputbox/inputBox', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/editor/common/core/range', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/search/common/search', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/keyCodes', 'vs/css!./media/searchviewlet'], function (require, exports, winjs_base_1, nls, editorCommon_1, lifecycle, errors, aria, glob_1, types_1, strings, paths, dom, actions_1, keyboardEvent_1, timer, builder_1, fileLabel_1, findInput_1, leftRightWidget_1, countBadge_1, treeImpl_1, treeDefaults_1, actionsRenderer_1, actionBarRegistry_1, memento_1, openSettings_1, events_1, files_1, files_2, viewlet_1, searchModel_1, searchQuery_1, checkbox_1, search_contribution_1, inputBox_1, editorService_1, viewletService_1, range_1, storage_1, configuration_1, contextView_1, event_1, instantiation_1, message_1, search_1, progress_1, workspace_1, selection_1, keybindingService_1, telemetry_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/editor/common/editorCommon', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/browser/ui/aria/aria', 'vs/base/common/glob', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/browser/dom', 'vs/base/common/actions', 'vs/base/browser/keyboardEvent', 'vs/base/common/timer', 'vs/base/browser/builder', 'vs/base/browser/ui/filelabel/fileLabel', 'vs/base/browser/ui/findinput/findInput', 'vs/base/browser/ui/leftRightWidget/leftRightWidget', 'vs/base/browser/ui/countBadge/countBadge', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/parts/tree/browser/treeDefaults', 'vs/base/parts/tree/browser/actionsRenderer', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/common/memento', 'vs/workbench/browser/actions/openSettings', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/search/common/searchModel', 'vs/workbench/parts/search/common/searchQuery', 'vs/base/browser/ui/checkbox/checkbox', 'vs/workbench/parts/search/browser/search.contribution', 'vs/base/browser/ui/inputbox/inputBox', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/editor/common/core/range', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/search/common/search', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/keyCodes', 'vs/css!./media/searchviewlet'], function (require, exports, winjs_base_1, nls, editorCommon_1, lifecycle, errors, aria, glob_1, types_1, strings, paths, dom, actions_1, keyboardEvent_1, timer, builder_1, fileLabel_1, findInput_1, leftRightWidget_1, countBadge_1, treeImpl_1, treeDefaults_1, actionsRenderer_1, actionBarRegistry_1, memento_1, openSettings_1, events_1, files_1, files_2, viewlet_1, searchModel_1, searchQuery_1, checkbox_1, search_contribution_1, inputBox_1, editorService_1, viewletService_1, range_1, storage_1, configuration_1, contextView_1, event_1, instantiation_1, message_1, search_1, progress_1, workspace_1, selection_1, keybindingService_1, telemetry_1, keyCodes_1) {
     'use strict';
     var ID = search_contribution_1.VIEWLET_ID;
     var FindInFolderAction = (function (_super) {
         __extends(FindInFolderAction, _super);
         function FindInFolderAction(resource, viewletService) {
-            _super.call(this, 'workbench.search.action.findInFolder', nls.localize(0, null));
+            _super.call(this, 'workbench.search.action.findInFolder', nls.localize('findInFolder', "Find in Folder"));
             this.viewletService = viewletService;
             this.resource = resource;
         }
@@ -97,10 +97,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         SearchAccessibilityProvider.prototype.getAriaLabel = function (tree, element) {
             if (element instanceof searchModel_1.FileMatch) {
                 var path = this.contextService.toWorkspaceRelativePath(element.resource()) || element.resource().fsPath;
-                return nls.localize(1, null, element.count(), element.name(), paths.dirname(path));
+                return nls.localize('fileMatchAriaLabel', "{0} matches in file {1} of folder {2}, Search result", element.count(), element.name(), paths.dirname(path));
             }
             if (element instanceof searchModel_1.Match) {
-                return nls.localize(2, null, element.text());
+                return nls.localize('searchResultAria', "{0}, Search result", element.text());
             }
         };
         SearchAccessibilityProvider = __decorate([
@@ -167,7 +167,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
     var RemoveAction = (function (_super) {
         __extends(RemoveAction, _super);
         function RemoveAction(viewer, element) {
-            _super.call(this, 'remove', nls.localize(3, null), 'action-remove');
+            _super.call(this, 'remove', nls.localize('RemoveAction.label', "Remove"), 'action-remove');
             this.viewer = viewer;
             this.fileMatch = element;
         }
@@ -205,7 +205,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 };
                 rightRenderer = function (right) {
                     var len = fileMatch_1.count();
-                    return new countBadge_1.CountBadge(right, len, len > 1 ? nls.localize(4, null, len) : nls.localize(5, null, len));
+                    return new countBadge_1.CountBadge(right, len, len > 1 ? nls.localize('searchMatches', "{0} matches found", len) : nls.localize('searchMatch', "{0} match found", len));
                 };
                 widget = new leftRightWidget_1.LeftRightWidget(container, leftRenderer, rightRenderer);
                 container.appendTo(domElement);
@@ -213,7 +213,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             }
             else if (element instanceof searchModel_1.EmptyMatch) {
                 dom.addClass(domElement, 'linematch');
-                builder_1.$('a.plain.label').innerHtml(nls.localize(6, null)).appendTo(domElement);
+                builder_1.$('a.plain.label').innerHtml(nls.localize('noMatches', "no matches")).appendTo(domElement);
             }
             else if (element instanceof searchModel_1.Match) {
                 dom.addClass(domElement, 'linematch');
@@ -239,7 +239,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         __extends(RefreshAction, _super);
         function RefreshAction(viewlet) {
             _super.call(this, 'refresh');
-            this.label = nls.localize(7, null);
+            this.label = nls.localize('RefreshAction.label', "Refresh");
             this.enabled = false;
             this.class = 'search-action refresh';
             this.viewlet = viewlet;
@@ -255,7 +255,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         __extends(SelectOrRemoveAction, _super);
         function SelectOrRemoveAction(viewlet) {
             _super.call(this, 'selectOrRemove');
-            this.label = nls.localize(8, null);
+            this.label = nls.localize('SelectOrRemoveAction.selectLabel', "Select");
             this.enabled = false;
             this.selectMode = true;
             this.viewlet = viewlet;
@@ -269,7 +269,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 result = this.runAsRemove();
             }
             this.selectMode = !this.selectMode;
-            this.label = this.selectMode ? nls.localize(9, null) : nls.localize(10, null);
+            this.label = this.selectMode ? nls.localize('SelectOrRemoveAction.selectLabel', "Select") : nls.localize('SelectOrRemoveAction.removeLabel', "Remove");
             return result;
         };
         SelectOrRemoveAction.prototype.runAsSelect = function () {
@@ -302,7 +302,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         __extends(CollapseAllAction, _super);
         function CollapseAllAction(viewlet) {
             _super.call(this, 'collapseAll');
-            this.label = nls.localize(11, null);
+            this.label = nls.localize('CollapseAllAction.label', "Collapse");
             this.enabled = false;
             this.class = 'search-action collapse';
             this.viewlet = viewlet;
@@ -325,7 +325,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         __extends(ClearSearchResultsAction, _super);
         function ClearSearchResultsAction(viewlet) {
             _super.call(this, 'clearSearchResults');
-            this.label = nls.localize(12, null);
+            this.label = nls.localize('ClearSearchResultsAction.label', "Clear Search Results");
             this.enabled = false;
             this.class = 'search-action clear-search-results';
             this.viewlet = viewlet;
@@ -342,7 +342,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
         function ConfigureGlobalExclusionsAction(instantiationService) {
             _super.call(this, 'configureGlobalExclusionsAction');
             this.instantiationService = instantiationService;
-            this.label = nls.localize(13, null);
+            this.label = nls.localize('ConfigureGlobalExclusionsAction.label', "Open Settings");
             this.enabled = true;
             this.class = 'search-configure-exclusions';
         }
@@ -363,7 +363,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             this.onOptionChange = null;
             this.width = options.width || 100;
             this.placeholder = options.placeholder || '';
-            this.ariaLabel = options.ariaLabel || nls.localize(14, null);
+            this.ariaLabel = options.ariaLabel || nls.localize('defaultLabel', "input");
             this.listenersToRemove = [];
             this.pattern = null;
             this.domNode = null;
@@ -460,7 +460,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             });
             this.pattern = new checkbox_1.Checkbox({
                 actionClassName: 'pattern',
-                title: nls.localize(15, null),
+                title: nls.localize('patternDescription', "Use Glob Patterns"),
                 isChecked: false,
                 onChange: function (viaKeyboard) {
                     _this.onOptionChange(null);
@@ -494,7 +494,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             this.inputBox.showMessage({
                 type: inputBox_1.MessageType.INFO,
                 formatContent: true,
-                content: nls.localize(16, null)
+                content: nls.localize('patternHelpInclude', "The pattern to match. e.g. **\\*\\*/*.js** to match all JavaScript files or **myFolder/\\*\\*** to match that folder with all children.\n\n**Reference**:\n**\\*** matches 0 or more characters\n**?** matches 1 character\n**\\*\\*** matches zero or more directories\n**[a-z]** matches a range of characters\n**{a,b}** matches any of the patterns)")
             }, true);
         };
         PatternInput.OPTION_CHANGE = 'optionChange';
@@ -561,7 +561,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             };
             this.queryBox = builder.div({ 'class': 'query-box' }, function (div) {
                 var options = {
-                    label: nls.localize(17, null),
+                    label: nls.localize('label.Search', 'Search: Type Search Term and press Enter to search or Escape to cancel'),
                     validation: function (value) {
                         if (value.length === 0) {
                             return null;
@@ -577,10 +577,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                             return { content: e.message };
                         }
                         if (strings.regExpLeadsToEndlessLoop(regExp)) {
-                            return { content: nls.localize(18, null) };
+                            return { content: nls.localize('regexp.validationFailure', "Expression matches everything") };
                         }
                     },
-                    placeholder: nls.localize(19, null)
+                    placeholder: nls.localize('findPlaceHolder', "Press Enter to Search, ESC to Cancel")
                 };
                 _this.findInput = new findInput_1.FindInput(div.getHTMLElement(), _this.contextViewService, options);
                 _this.findInput.onKeyUp(onStandardKeyUp);
@@ -604,7 +604,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 _this.findInput.setWholeWords(isWholeWords);
             }).style({ position: 'relative' }).getHTMLElement();
             this.queryDetails = builder.div({ 'class': ['query-details', 'separator'] }, function (builder) {
-                builder.div({ 'class': 'more', 'tabindex': 0, 'role': 'button', 'title': nls.localize(20, null) })
+                builder.div({ 'class': 'more', 'tabindex': 0, 'role': 'button', 'title': nls.localize('moreSearch', "Toggle Search Details") })
                     .on(dom.EventType.CLICK, function (e) {
                     dom.EventHelper.stop(e);
                     _this.toggleFileTypes(true);
@@ -617,10 +617,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 });
                 //folder includes list
                 builder.div({ 'class': 'file-types' }, function (builder) {
-                    var title = nls.localize(21, null);
+                    var title = nls.localize('searchScope.includes', "files to include");
                     builder.element('h4', { text: title });
                     _this.inputPatternIncludes = new PatternInput(builder.getContainer(), _this.contextViewService, {
-                        ariaLabel: nls.localize(22, null)
+                        ariaLabel: nls.localize('label.includes', 'Search Include Patterns')
                     });
                     _this.inputPatternIncludes.setIsGlobPattern(includesUsePattern);
                     _this.inputPatternIncludes.setValue(patternIncludes);
@@ -644,10 +644,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 });
                 //pattern exclusion list
                 builder.div({ 'class': 'file-types' }, function (builder) {
-                    var title = nls.localize(23, null);
+                    var title = nls.localize('searchScope.excludes', "files to exclude");
                     builder.element('h4', { text: title });
                     _this.inputPatternExclusions = new PatternInput(builder.getContainer(), _this.contextViewService, {
-                        ariaLabel: nls.localize(24, null)
+                        ariaLabel: nls.localize('label.excludes', 'Search Exclude Patterns')
                     });
                     _this.inputPatternExclusions.setIsGlobPattern(exclusionsUsePattern);
                     _this.inputPatternExclusions.setValue(patternExclusions);
@@ -670,11 +670,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 });
                 // add hint if we have global exclusion
                 _this.inputPatternGlobalExclusionsContainer = builder.div({ 'class': 'file-types global-exclude disabled' }, function (builder) {
-                    var title = nls.localize(25, null);
+                    var title = nls.localize('global.searchScope.folders', "files excluded through settings");
                     builder.element('h4', { text: title });
                     _this.inputPatternGlobalExclusions = new inputBox_1.InputBox(builder.getContainer(), _this.contextViewService, {
                         actions: [_this.instantiationService.createInstance(ConfigureGlobalExclusionsAction)],
-                        ariaLabel: nls.localize(26, null)
+                        ariaLabel: nls.localize('label.global.excludes', 'Configured Search Exclude Patterns')
                     });
                     _this.inputPatternGlobalExclusions.inputElement.readOnly = true;
                     builder_1.$(_this.inputPatternGlobalExclusions.inputElement).attr('aria-readonly', 'true');
@@ -694,7 +694,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     controller: new SearchController(_this),
                     accessibilityProvider: _this.instantiationService.createInstance(SearchAccessibilityProvider)
                 }, {
-                    ariaLabel: nls.localize(27, null)
+                    ariaLabel: nls.localize('treeAriaLabel', "Search Results")
                 });
                 _this.toUnbind.push(function () { return renderer.dispose(); });
                 _this.toUnbind.push(_this.tree.addListener('selection', function (event) {
@@ -733,7 +733,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                         if (excludes_1[exclude] === true) {
                             return exclude;
                         }
-                        return nls.localize(28, null, exclude, excludes_1[exclude].when);
+                        return nls.localize('globLabel', "{0} when {1}", exclude, excludes_1[exclude].when);
                     });
                     if (exclusions.length) {
                         var values = exclusions.join(', ');
@@ -1008,7 +1008,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 _this.actionRegistry['clearSearchResults'].enabled = hasResults;
                 if (completed && completed.limitHit) {
                     _this.findInput.showMessage({
-                        content: nls.localize(29, null),
+                        content: nls.localize('searchMaxResultsWarning', "The result set only contains a subset of all matches. Please be more specific in your search to narrow down the results."),
                         type: inputBox_1.MessageType.WARNING
                     });
                 }
@@ -1017,19 +1017,19 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     var hasIncludes = !!includePattern;
                     var message = void 0;
                     if (!completed) {
-                        message = nls.localize(30, null);
+                        message = nls.localize('searchCanceled', "Search was canceled before any results could be found - ");
                     }
                     else if (hasIncludes && hasExcludes) {
-                        message = nls.localize(31, null, includePattern, excludePattern);
+                        message = nls.localize('noResultsIncludesExcludes', "No results found in '{0}' excluding '{1}' - ", includePattern, excludePattern);
                     }
                     else if (hasIncludes) {
-                        message = nls.localize(32, null, includePattern);
+                        message = nls.localize('noResultsIncludes', "No results found in '{0}' - ", includePattern);
                     }
                     else if (hasExcludes) {
-                        message = nls.localize(33, null, excludePattern);
+                        message = nls.localize('noResultsExcludes', "No results found excluding '{0}' - ", excludePattern);
                     }
                     else {
-                        message = nls.localize(34, null);
+                        message = nls.localize('noResultsFound', "No results found. Review your settings for configured exclusions - ");
                     }
                     // Indicate as status to ARIA
                     aria.status(message);
@@ -1039,7 +1039,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     if (!completed) {
                         builder_1.$(div).a({
                             'class': ['pointer', 'prominent'],
-                            text: nls.localize(35, null)
+                            text: nls.localize('rerunSearch.message', "Search again")
                         }).on(dom.EventType.CLICK, function (e) {
                             dom.EventHelper.stop(e, false);
                             _this.onQueryChanged(true);
@@ -1049,7 +1049,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                         builder_1.$(div).a({
                             'class': ['pointer', 'prominent'],
                             'tabindex': '0',
-                            text: nls.localize(36, null)
+                            text: nls.localize('rerunSearchInAll.message', "Search again in all files")
                         }).on(dom.EventType.CLICK, function (e) {
                             dom.EventHelper.stop(e, false);
                             _this.inputPatternExclusions.setValue('');
@@ -1061,7 +1061,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                         builder_1.$(div).a({
                             'class': ['pointer', 'prominent'],
                             'tabindex': '0',
-                            text: nls.localize(37, null)
+                            text: nls.localize('openSettings.message', "Open Settings")
                         }).on(dom.EventType.CLICK, function (e) {
                             dom.EventHelper.stop(e, false);
                             var action = _this.instantiationService.createInstance(openSettings_1.OpenGlobalSettingsAction, openSettings_1.OpenGlobalSettingsAction.ID, openSettings_1.OpenGlobalSettingsAction.LABEL);
@@ -1072,7 +1072,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 else {
                     _this.viewModel.toggleHighlights(true); // show highlights
                     // Indicate as status to ARIA
-                    aria.status(nls.localize(38, null, _this.viewModel.count(), _this.viewModel.fileCount()));
+                    aria.status(nls.localize('ariaSearchResultsStatus', "Search returned {0} results in {1} files", _this.viewModel.count(), _this.viewModel.fileCount()));
                 }
                 doneTimer.stop();
             };

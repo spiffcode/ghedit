@@ -16,14 +16,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/repl', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/common/platform', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/parts/debug/browser/replViewer', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/replHistory', 'vs/workbench/browser/panel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/base/common/keyCodes', 'vs/css!./media/repl'], function (require, exports, nls, errors, lifecycle, dom, platform, treeimpl, viewer, debug, debugactions, replhistory, panel_1, telemetry_1, contextView_1, instantiation_1, contextService_1, storage_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/common/platform', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/parts/debug/browser/replViewer', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/replHistory', 'vs/workbench/browser/panel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/base/common/keyCodes', 'vs/css!./media/repl'], function (require, exports, nls, errors, lifecycle, dom, platform, treeimpl, viewer, debug, debugactions, replhistory, panel_1, telemetry_1, contextView_1, instantiation_1, contextService_1, storage_1, keyCodes_1) {
     "use strict";
     var $ = dom.emmet;
     var replTreeOptions = {
         indentPixels: 8,
         twistiePixels: 20,
         paddingOnRow: false,
-        ariaLabel: nls.localize(0, null)
+        ariaLabel: nls.localize('replAriaLabel', "Read Eval Print Loop Panel")
     };
     var HISTORY_STORAGE_KEY = 'debug.repl.history';
     var Repl = (function (_super) {

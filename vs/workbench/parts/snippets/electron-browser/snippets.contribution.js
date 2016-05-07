@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-browser/snippets.contribution', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', './snippetsTracker', 'vs/base/common/errors', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/editor/common/services/modeService', 'electron', 'fs'], function (require, exports, nls, winjs, paths, actions, actions_1, platform, workbenchActionRegistry, workbenchContributions, snippetsTracker, errors, quickOpenService_1, workspace_1, JSONContributionRegistry, modeService_1, electron_1, fs) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', './snippetsTracker', 'vs/base/common/errors', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/workspace/common/workspace', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/editor/common/services/modeService', 'electron', 'fs'], function (require, exports, nls, winjs, paths, actions, actions_1, platform, workbenchActionRegistry, workbenchContributions, snippetsTracker, errors, quickOpenService_1, workspace_1, JSONContributionRegistry, modeService_1, electron_1, fs) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -42,7 +42,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-brows
             picks = picks.sort(function (e1, e2) {
                 return e1.label.localeCompare(e2.label);
             });
-            return this.quickOpenService.pick(picks, { placeHolder: nls.localize(1, null) }).then(function (language) {
+            return this.quickOpenService.pick(picks, { placeHolder: nls.localize('openSnippet.pickLanguage', "Select Language for Snippet") }).then(function (language) {
                 if (language) {
                     var snippetPath = paths.join(_this.contextService.getConfiguration().env.appSettingsHome, 'snippets', language.id + '.json');
                     return fileExists(snippetPath).then(function (success) {
@@ -71,7 +71,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-brows
                         return createFile(snippetPath, defaultContent).then(function () {
                             _this.openFile(snippetPath);
                         }, function (err) {
-                            errors.onUnexpectedError(nls.localize(2, null, snippetPath));
+                            errors.onUnexpectedError(nls.localize('openSnippet.errorOnCreate', 'Unable to create {0}', snippetPath));
                         });
                     });
                 }
@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-brows
             });
         };
         OpenSnippetsAction.ID = 'workbench.action.openSnippets';
-        OpenSnippetsAction.LABEL = nls.localize(0, null);
+        OpenSnippetsAction.LABEL = nls.localize('openSnippet.label', 'Snippets');
         OpenSnippetsAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, quickOpenService_1.IQuickOpenService),
@@ -110,7 +110,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-brows
             });
         });
     }
-    var preferencesCategory = nls.localize(3, null);
+    var preferencesCategory = nls.localize('preferences', "Preferences");
     var workbenchActionsRegistry = platform.Registry.as(workbenchActionRegistry.Extensions.WorkbenchActions);
     workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenSnippetsAction, OpenSnippetsAction.ID, OpenSnippetsAction.LABEL), preferencesCategory);
     platform.Registry.as(workbenchContributions.Extensions.Workbench).registerWorkbenchContribution(snippetsTracker.SnippetsTracker);
@@ -118,28 +118,28 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/snippets/electron-brows
     var schema = {
         'id': schemaId,
         'defaultSnippets': [{
-                'label': nls.localize(4, null),
+                'label': nls.localize('snippetSchema.json.default', "Empty snippet"),
                 'body': { '{{snippetName}}': { 'prefix': '{{prefix}}', 'body': '{{snippet}}', 'description': '{{description}}' } }
             }],
         'type': 'object',
-        'description': nls.localize(5, null),
+        'description': nls.localize('snippetSchema.json', 'User snippet configuration'),
         'additionalProperties': {
             'type': 'object',
             'required': ['prefix', 'body'],
             'properties': {
                 'prefix': {
-                    'description': nls.localize(6, null),
+                    'description': nls.localize('snippetSchema.json.prefix', 'The prefix to used when selecting the snippet in intellisense'),
                     'type': 'string'
                 },
                 'body': {
-                    'description': nls.localize(7, null),
+                    'description': nls.localize('snippetSchema.json.body', 'The snippet content. Use \'${id}\', \'${id:label}\', \'${1:label}\' for variables and \'$0\', \'$1\' for the cursor positions'),
                     'type': ['string', 'array'],
                     'items': {
                         'type': 'string'
                     }
                 },
                 'description': {
-                    'description': nls.localize(8, null),
+                    'description': nls.localize('snippetSchema.json.description', 'The snippet description.'),
                     'type': 'string'
                 }
             },

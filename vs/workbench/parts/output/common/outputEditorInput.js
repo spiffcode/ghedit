@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/output/common/outputEditorInput', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/async', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/parts/output/common/output', 'vs/platform/instantiation/common/instantiation', 'vs/platform/event/common/event', 'vs/workbench/common/events', 'vs/workbench/services/panel/common/panelService'], function (require, exports, nls, lifecycle, strings, async_1, stringEditorInput_1, output_1, instantiation_1, event_1, events_1, panelService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/common/async', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/parts/output/common/output', 'vs/platform/instantiation/common/instantiation', 'vs/platform/event/common/event', 'vs/workbench/common/events', 'vs/workbench/services/panel/common/panelService'], function (require, exports, nls, lifecycle, strings, async_1, stringEditorInput_1, output_1, instantiation_1, event_1, events_1, panelService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -25,7 +25,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/output/common/outputEdi
         __extends(OutputEditorInput, _super);
         function OutputEditorInput(outputChannel, instantiationService, outputService, panelService, eventService) {
             var _this = this;
-            _super.call(this, nls.localize(0, null), outputChannel ? nls.localize(1, null, outputChannel.label) : '', '', output_1.OUTPUT_MIME, true, instantiationService);
+            _super.call(this, nls.localize('output', "Output"), outputChannel ? nls.localize('outputChannel', "for '{0}'", outputChannel.label) : '', '', output_1.OUTPUT_MIME, true, instantiationService);
             this.outputChannel = outputChannel;
             this.outputService = outputService;
             this.panelService = panelService;

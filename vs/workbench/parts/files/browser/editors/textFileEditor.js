@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/files/browser/editors/textFileEditor', 'vs/base/common/errors', 'vs/base/common/mime', 'vs/base/common/labels', 'vs/base/common/types', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/browser/saveErrorHandler', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/common/editor/binaryEditorModel', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/workbench/services/editor/common/editorService', 'vs/editor/common/services/modeService', 'vs/workbench/services/themes/common/themeService'], function (require, exports, winjs_base_1, nls, errors, mime_1, labels, types, paths, actions_1, files_1, saveErrorHandler_1, textEditor_1, textFileEditorModel_1, binaryEditorModel_1, fileEditorInput_1, quickOpenService_1, viewletService_1, files_2, telemetry_1, contextService_1, storage_1, configuration_1, event_1, instantiation_1, message_1, editorService_1, modeService_1, themeService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/errors', 'vs/base/common/mime', 'vs/base/common/labels', 'vs/base/common/types', 'vs/base/common/paths', 'vs/base/common/actions', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/browser/saveErrorHandler', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/common/editor/binaryEditorModel', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/workbench/services/editor/common/editorService', 'vs/editor/common/services/modeService', 'vs/workbench/services/themes/common/themeService'], function (require, exports, winjs_base_1, nls, errors, mime_1, labels, types, paths, actions_1, files_1, saveErrorHandler_1, textEditor_1, textFileEditorModel_1, binaryEditorModel_1, fileEditorInput_1, quickOpenService_1, viewletService_1, files_2, telemetry_1, contextService_1, storage_1, configuration_1, event_1, instantiation_1, message_1, editorService_1, modeService_1, themeService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -42,7 +42,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             }
         };
         TextFileEditor.prototype.getTitle = function () {
-            return this.getInput() ? this.getInput().getName() : nls.localize(0, null);
+            return this.getInput() ? this.getInput().getName() : nls.localize('textFileEditor', "Text File Editor");
         };
         TextFileEditor.prototype.setInput = function (input, options) {
             var _this = this;
@@ -127,7 +127,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 if (error.fileOperationResult === files_2.FileOperationResult.FILE_NOT_FOUND && paths.isValidBasename(paths.basename(input.getResource().fsPath))) {
                     return winjs_base_1.TPromise.wrapError(errors.create(errors.toErrorMessage(error), { actions: [
                             message_1.CancelAction,
-                            new actions_1.Action('workbench.files.action.createMissingFile', nls.localize(1, null), null, true, function () {
+                            new actions_1.Action('workbench.files.action.createMissingFile', nls.localize('createFile', "Create File"), null, true, function () {
                                 return _this.fileService.updateContent(input.getResource(), '').then(function () {
                                     // Add to working files
                                     _this.textFileService.getWorkingFilesModel().addEntry(input.getResource());
@@ -142,7 +142,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                 }
                 // Inform the user if the file is too large to open
                 if (error.fileOperationResult === files_2.FileOperationResult.FILE_TOO_LARGE) {
-                    _this.messageService.show(message_1.Severity.Info, nls.localize(2, null));
+                    _this.messageService.show(message_1.Severity.Info, nls.localize('fileTooLarge', "We are sorry, but the file is too large to open it inside an editor."));
                     return;
                 }
                 // Otherwise make sure the error bubbles up
@@ -180,7 +180,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                         }, errors.onUnexpectedError);
                     }
                     else {
-                        _this.messageService.show(message_1.Severity.Info, nls.localize(3, null, labels.getPathLabel(fileEditorInput_2.getResource())));
+                        _this.messageService.show(message_1.Severity.Info, nls.localize('folderOutofWorkspace', "The folder '{0}' is outside the currently opened root folder and can not be opened in this instance.", labels.getPathLabel(fileEditorInput_2.getResource())));
                     }
                 }
             }, errors.onUnexpectedError);
@@ -190,7 +190,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
             var options = _super.prototype.getCodeEditorOptions.call(this);
             var input = this.getInput();
             var inputName = input && input.getName();
-            options.ariaLabel = inputName ? nls.localize(4, null, inputName) : nls.localize(5, null);
+            options.ariaLabel = inputName ? nls.localize('fileEditorWithInputAriaLabel', "{0}. Text file editor.", inputName) : nls.localize('fileEditorAriaLabel', "Text file editor.");
             return options;
         };
         TextFileEditor.prototype.supportsSplitEditor = function () {

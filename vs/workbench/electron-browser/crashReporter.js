@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/crashReporter', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/telemetry/common/telemetry', 'vs/platform/platform', 'electron'], function (require, exports, nls, winjs_base_1, errors_1, configurationRegistry_1, configuration_1, telemetry_1, platform_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/platform/configuration/common/configurationRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/telemetry/common/telemetry', 'vs/platform/platform', 'electron'], function (require, exports, nls, winjs_base_1, errors_1, configurationRegistry_1, configuration_1, telemetry_1, platform_1, electron_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -19,11 +19,11 @@ define(["require", "exports", 'vs/nls!vs/workbench/electron-browser/crashReporte
         'id': TELEMETRY_SECTION_ID,
         'order': 20,
         'type': 'object',
-        'title': nls.localize(0, null),
+        'title': nls.localize('telemetryConfigurationTitle', "Telemetry configuration"),
         'properties': {
             'telemetry.enableCrashReporter': {
                 'type': 'boolean',
-                'description': nls.localize(1, null),
+                'description': nls.localize('telemetry.enableCrashReporting', "Enable crash reports to be sent to Microsoft.\n\t// This option requires restart to take effect."),
                 'default': true
             }
         }

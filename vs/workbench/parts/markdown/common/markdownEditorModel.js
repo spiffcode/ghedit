@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/parts/markdown/common/markdownEditorModel', 'vs/base/common/paths', 'vs/workbench/common/editor/iframeEditorModel', 'vs/platform/theme/common/themes', 'vs/workbench/parts/markdown/common/markdown', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/themes/common/themeService', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, iframeEditorModel_1, themes_1, markdown_1, editorService_1, themeService_1, workspace_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/workbench/common/editor/iframeEditorModel', 'vs/platform/theme/common/themes', 'vs/workbench/parts/markdown/common/markdown', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/themes/common/themeService', 'vs/platform/workspace/common/workspace'], function (require, exports, winjs_base_1, nls, paths, iframeEditorModel_1, themes_1, markdown_1, editorService_1, themeService_1, workspace_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40,7 +40,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls!vs/workbench/
                     try {
                         var theme = _this.themeService.getTheme();
                         var usesLightTheme = themes_1.isLightTheme(theme);
-                        var markdownError = nls.localize(0, null, paths.basename(_this.resource.fsPath));
+                        var markdownError = nls.localize('markdownError', "Unable to open '{0}' for Markdown rendering. Please make sure the file exists and that it is a valid Markdown file.", paths.basename(_this.resource.fsPath));
                         _this.setContents('<html><head><style type="text/css">body {color: ' + (usesLightTheme ? 'black' : 'white') + '; font-family: "Segoe WPC", "Segoe UI", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback"; font-size: 13px; margin: 0; line-height: 1.4em; padding-left: 20px;}</style></head><body>', markdownError, '</body></html>');
                         c(_this);
                     }

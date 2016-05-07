@@ -7,22 +7,22 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/find/browser/findWidget', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/strings', 'vs/base/browser/dom', 'vs/base/browser/ui/findinput/findInput', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/widget', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/editor/contrib/find/common/findModel', 'vs/css!./findWidget'], function (require, exports, nls, errors_1, keyCodes_1, strings, dom, findInput_1, inputBox_1, widget_1, editorCommon_1, editorBrowser_1, findModel_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/keyCodes', 'vs/base/common/strings', 'vs/base/browser/dom', 'vs/base/browser/ui/findinput/findInput', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/widget', 'vs/editor/common/editorCommon', 'vs/editor/browser/editorBrowser', 'vs/editor/contrib/find/common/findModel', 'vs/css!./findWidget'], function (require, exports, nls, errors_1, keyCodes_1, strings, dom, findInput_1, inputBox_1, widget_1, editorCommon_1, editorBrowser_1, findModel_1) {
     'use strict';
-    var NLS_FIND_INPUT_LABEL = nls.localize(0, null);
-    var NLS_FIND_INPUT_PLACEHOLDER = nls.localize(1, null);
-    var NLS_PREVIOUS_MATCH_BTN_LABEL = nls.localize(2, null);
-    var NLS_NEXT_MATCH_BTN_LABEL = nls.localize(3, null);
-    var NLS_TOGGLE_SELECTION_FIND_TITLE = nls.localize(4, null);
-    var NLS_CLOSE_BTN_LABEL = nls.localize(5, null);
-    var NLS_REPLACE_INPUT_LABEL = nls.localize(6, null);
-    var NLS_REPLACE_INPUT_PLACEHOLDER = nls.localize(7, null);
-    var NLS_REPLACE_BTN_LABEL = nls.localize(8, null);
-    var NLS_REPLACE_ALL_BTN_LABEL = nls.localize(9, null);
-    var NLS_TOGGLE_REPLACE_MODE_BTN_LABEL = nls.localize(10, null);
-    var NLS_MATCHES_COUNT_LIMIT_TITLE = nls.localize(11, null);
-    var NLS_MATCHES_LOCATION = nls.localize(12, null);
-    var NLS_NO_RESULTS = nls.localize(13, null);
+    var NLS_FIND_INPUT_LABEL = nls.localize('label.find', "Find");
+    var NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");
+    var NLS_PREVIOUS_MATCH_BTN_LABEL = nls.localize('label.previousMatchButton', "Previous match");
+    var NLS_NEXT_MATCH_BTN_LABEL = nls.localize('label.nextMatchButton', "Next match");
+    var NLS_TOGGLE_SELECTION_FIND_TITLE = nls.localize('label.toggleSelectionFind', "Find in selection");
+    var NLS_CLOSE_BTN_LABEL = nls.localize('label.closeButton', "Close");
+    var NLS_REPLACE_INPUT_LABEL = nls.localize('label.replace', "Replace");
+    var NLS_REPLACE_INPUT_PLACEHOLDER = nls.localize('placeholder.replace', "Replace");
+    var NLS_REPLACE_BTN_LABEL = nls.localize('label.replaceButton', "Replace");
+    var NLS_REPLACE_ALL_BTN_LABEL = nls.localize('label.replaceAllButton', "Replace All");
+    var NLS_TOGGLE_REPLACE_MODE_BTN_LABEL = nls.localize('label.toggleReplaceButton', "Toggle Replace mode");
+    var NLS_MATCHES_COUNT_LIMIT_TITLE = nls.localize('title.matchesCountLimit', "Only the first 999 results are highlighted, but all find operations work on the entire text.");
+    var NLS_MATCHES_LOCATION = nls.localize('label.matchesLocation', "{0} of {1}");
+    var NLS_NO_RESULTS = nls.localize('label.noResults', "No results");
     var FindWidget = (function (_super) {
         __extends(FindWidget, _super);
         function FindWidget(codeEditor, controller, state, contextViewProvider, keybindingService) {

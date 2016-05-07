@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunnerConfiguration', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/base/common/types', 'vs/base/common/uuid', 'vs/base/common/parsers', 'vs/platform/markers/common/problemMatcher', 'vs/workbench/parts/tasks/common/taskSystem'], function (require, exports, nls, Objects, Platform, Types, UUID, parsers_1, problemMatcher_1, TaskSystem) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/base/common/types', 'vs/base/common/uuid', 'vs/base/common/parsers', 'vs/platform/markers/common/problemMatcher', 'vs/workbench/parts/tasks/common/taskSystem'], function (require, exports, nls, Objects, Platform, Types, UUID, parsers_1, problemMatcher_1, TaskSystem) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -68,7 +68,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             }
             if (!result.command) {
                 this.validationStatus.state = parsers_1.ValidationState.Fatal;
-                this.log(nls.localize(0, null));
+                this.log(nls.localize('ConfigurationParser.noCommand', 'Error: no valid command name provided.'));
                 return null;
             }
             return result;
@@ -192,7 +192,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             }
             if (!argsIsValid) {
                 this.validationStatus.state = parsers_1.ValidationState.Fatal;
-                this.log(nls.localize(1, null, fileConfig.args ? JSON.stringify(fileConfig.args, null, 4) : 'undefined'));
+                this.log(nls.localize('ConfigurationParser.noargs', 'Error: command arguments must be an array of strings. Provided value is:\n{0}', fileConfig.args ? JSON.stringify(fileConfig.args, null, 4) : 'undefined'));
             }
             result.options = this.createCommandOptions(fileConfig.options);
             if (context.isMain) {
@@ -204,7 +204,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 result.tasks = this.createTasks(fileConfig.tasks, context);
                 if (hasGlobalMatcher) {
                     this.validationStatus.state = parsers_1.ValidationState.Warning;
-                    this.log(nls.localize(2, null));
+                    this.log(nls.localize('ConfigurationParser.globalMatcher', 'Warning: global matchers and tasks can\'t be mixed. Ignoring global matchers.'));
                 }
             }
             else if (context.isMain) {
@@ -259,7 +259,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                     }
                     else {
                         this.validationStatus.state = parsers_1.ValidationState.Warning;
-                        this.log(nls.localize(3, null, fileOptions.cwd));
+                        this.log(nls.localize('ConfigurationParser.invalidCWD', 'Warning: options.cwd must be of type string. Ignoring value {0}\n', fileOptions.cwd));
                     }
                 }
                 if (!Types.isUndefined(fileOptions.env)) {
@@ -290,7 +290,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             }
             else {
                 this.validationStatus.state = parsers_1.ValidationState.Error;
-                this.log(nls.localize(4, null, JSON.stringify(value, null, 4)));
+                this.log(nls.localize('ConfigurationParser.noName', 'Error: Problem Matcher in declare scope must have a name:\n{0}\n', JSON.stringify(value, null, 4)));
                 return null;
             }
         };
@@ -306,7 +306,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 var taskName = externalTask.taskName;
                 if (!taskName) {
                     _this.validationStatus.state = parsers_1.ValidationState.Fatal;
-                    _this.log(nls.localize(5, null, JSON.stringify(externalTask, null, 4)));
+                    _this.log(nls.localize('ConfigurationParser.noTaskName', 'Error: tasks must provide a taskName property. The task will be ignored.\n{0}\n', JSON.stringify(externalTask, null, 4)));
                     return;
                 }
                 var problemMatchers = _this.createProblemMatchers(externalTask.problemMatcher);
@@ -386,7 +386,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
             var kind = this.getProblemMatcherKind(problemMatcher);
             if (kind === ProblemMatcherKind.Unknown) {
                 this.validationStatus.state = parsers_1.ValidationState.Warning;
-                this.log(nls.localize(6, null, JSON.stringify(problemMatcher, null, 4)));
+                this.log(nls.localize('ConfigurationParser.unknownMatcherKind', 'Warning: the defined problem matcher is unknown. Supported types are string | ProblemMatcher | (string | ProblemMatcher)[].\n{0}\n', JSON.stringify(problemMatcher, null, 4)));
                 return result;
             }
             else if (kind === ProblemMatcherKind.String || kind === ProblemMatcherKind.ProblemMatcher) {
@@ -438,7 +438,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                     }
                 }
                 this.validationStatus.state = parsers_1.ValidationState.Error;
-                this.log(nls.localize(7, null, value));
+                this.log(nls.localize('ConfigurationParser.invalidVaraibleReference', 'Error: Invalid problemMatcher reference: {0}\n', value));
                 return null;
             }
             else {

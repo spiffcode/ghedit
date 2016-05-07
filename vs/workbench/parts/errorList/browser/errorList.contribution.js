@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/errorList/browser/errorList.contribution', 'vs/base/common/actions', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/workbench/browser/panel', 'vs/workbench/parts/errorList/browser/errorListConstants', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService'], function (require, exports, nls, actions_1, winjs_base_1, platform, panel, errorListConstants_1, partService_1, panelService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/workbench/browser/panel', 'vs/workbench/parts/errorList/browser/errorListConstants', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService'], function (require, exports, nls, actions_1, winjs_base_1, platform, panel, errorListConstants_1, partService_1, panelService_1) {
     "use strict";
     var ToggleErrorListAction = (function (_super) {
         __extends(ToggleErrorListAction, _super);
@@ -34,7 +34,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/errorList/browser/error
             return this.panelService.openPanel(errorListConstants_1.ERROR_LIST_PANEL_ID, true);
         };
         ToggleErrorListAction.ID = 'workbench.action.errorList.toggle';
-        ToggleErrorListAction.LABEL = nls.localize(0, null);
+        ToggleErrorListAction.LABEL = nls.localize('toggleErrorList', "Toggle Error List");
         ToggleErrorListAction = __decorate([
             __param(2, partService_1.IPartService),
             __param(3, panelService_1.IPanelService)
@@ -42,7 +42,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/errorList/browser/error
         return ToggleErrorListAction;
     }(actions_1.Action));
     // register panel
-    platform.Registry.as(panel.Extensions.Panels).registerPanel(new panel.PanelDescriptor('vs/workbench/parts/errorList/browser/errorList', 'ErrorList', errorListConstants_1.ERROR_LIST_PANEL_ID, nls.localize(1, null), 'errorList'));
+    platform.Registry.as(panel.Extensions.Panels).registerPanel(new panel.PanelDescriptor('vs/workbench/parts/errorList/browser/errorList', 'ErrorList', errorListConstants_1.ERROR_LIST_PANEL_ID, nls.localize('errorListPanel', "Error List"), 'errorList'));
 });
 // register toggle output action globally
 // let actionRegistry = <IWorkbenchActionRegistry>platform.Registry.as(ActionExtensions.WorkbenchActions);

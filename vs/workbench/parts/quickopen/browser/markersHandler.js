@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/network', 'vs/base/common/errors', 'vs/base/browser/dom', 'vs/nls!vs/workbench/parts/quickopen/browser/markersHandler', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/editor/common/editorService', 'vs/platform/markers/common/markers', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/editor/common/services/codeEditorService', 'vs/base/common/filters', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/css!./media/markerHandler'], function (require, exports, winjs_base_1, strings, network, errors, dom, nls, labels_1, severity_1, quickopen_1, textEditor_1, quickOpenAction_1, quickOpen_1, quickOpenModel_1, editorService_1, markers_1, workspace_1, quickOpenService_1, codeEditorService_1, filters_1, highlightedLabel_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/network', 'vs/base/common/errors', 'vs/base/browser/dom', 'vs/nls', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/workbench/services/editor/common/editorService', 'vs/platform/markers/common/markers', 'vs/platform/workspace/common/workspace', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/editor/common/services/codeEditorService', 'vs/base/common/filters', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/css!./media/markerHandler'], function (require, exports, winjs_base_1, strings, network, errors, dom, nls, labels_1, severity_1, quickopen_1, textEditor_1, quickOpenAction_1, quickOpen_1, quickOpenModel_1, editorService_1, markers_1, workspace_1, quickOpenService_1, codeEditorService_1, filters_1, highlightedLabel_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -27,8 +27,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strin
             this._labelProvider = new labels_1.PathLabelProvider(contextService);
             this._marker = marker;
             var message = marker.message, source = marker.source, resource = marker.resource, startLineNumber = marker.startLineNumber, startColumn = marker.startColumn;
-            this._label = source ? nls.localize(0, null, source, message) : message;
-            this._description = nls.localize(1, null, this._labelProvider.getLabel(resource.fsPath), startLineNumber, startColumn);
+            this._label = source ? nls.localize('marker.msg', '[{0}] {1}', source, message) : message;
+            this._description = nls.localize('marker.desc', '{0}({1},{2})', this._labelProvider.getLabel(resource.fsPath), startLineNumber, startColumn);
         }
         MarkerEntry.prototype.update = function (query) {
             if (this._marker.resource.scheme === network.Schemas.inMemory) {
@@ -42,7 +42,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strin
             this.setHidden(!labelHighlights && !descHighlights);
         };
         MarkerEntry.prototype.getAriaLabel = function () {
-            return nls.localize(2, null, this._label);
+            return nls.localize('markerAriaLabel', "{0}, errors and warnings", this._label);
         };
         MarkerEntry.prototype.getHeight = function () {
             return 48;
@@ -127,7 +127,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strin
             this._contextService = contextService;
         }
         MarkersHandler.prototype.getAriaLabel = function () {
-            return nls.localize(3, null);
+            return nls.localize('markersHandlerAriaLabel', "Type to narrow down errors and warnings");
         };
         MarkersHandler.prototype.getResults = function (searchValue) {
             var _this = this;
@@ -206,9 +206,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strin
         };
         MarkersHandler.prototype.getEmptyLabel = function (searchString) {
             if (searchString.length > 0) {
-                return nls.localize(4, null);
+                return nls.localize('noErrorsAndWarningsMatching', "No errors or warnings matching");
             }
-            return nls.localize(5, null);
+            return nls.localize('noErrorsAndWarnings', "No errors or warnings");
         };
         MarkersHandler = __decorate([
             __param(0, markers_1.IMarkerService),
@@ -226,7 +226,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/strin
         }
         GotoMarkerAction.Prefix = '!';
         GotoMarkerAction.Id = 'workbench.action.showErrorsWarnings';
-        GotoMarkerAction.Label = nls.localize(6, null);
+        GotoMarkerAction.Label = nls.localize('label', "Show Errors and Warnings");
         GotoMarkerAction = __decorate([
             __param(2, quickOpenService_1.IQuickOpenService)
         ], GotoMarkerAction);

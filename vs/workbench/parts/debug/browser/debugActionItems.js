@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugActionItems', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/parts/debug/common/debug', 'vs/platform/configuration/common/configuration'], function (require, exports, nls, lifecycle, errors, dom, actionbar_1, debug_1, configuration_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/browser/dom', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/parts/debug/common/debug', 'vs/platform/configuration/common/configuration'], function (require, exports, nls, lifecycle, errors, dom, actionbar_1, debug_1, configuration_1) {
     "use strict";
     var SelectConfigActionItem = (function (_super) {
         __extends(SelectConfigActionItem, _super);
@@ -61,7 +61,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugActi
             this.select.options.length = 0;
             return this.debugService.loadLaunchConfig().then(function (config) {
                 if (!config || !config.configurations) {
-                    _this.select.add(_this.createOption("<" + nls.localize(0, null) + ">"));
+                    _this.select.add(_this.createOption("<" + nls.localize('none', "none") + ">"));
                     _this.select.disabled = true;
                     return _this.actionRunner.run(_this._action, null);
                 }

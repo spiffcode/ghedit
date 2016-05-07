@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugViews', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/events', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message'], function (require, exports, nls, dom, builder, winjs_base_1, errors, events, actionbarregistry, treeimpl, splitview, viewlet, debug, model, viewer, debugactions, contextView_1, instantiation_1, telemetry_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/events', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message'], function (require, exports, nls, dom, builder, winjs_base_1, errors, events, actionbarregistry, treeimpl, splitview, viewlet, debug, model, viewer, debugactions, contextView_1, instantiation_1, telemetry_1, message_1) {
     "use strict";
     var IDebugService = debug.IDebugService;
     var debugTreeOptions = function (ariaLabel) {
@@ -36,7 +36,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
     var VariablesView = (function (_super) {
         __extends(VariablesView, _super);
         function VariablesView(actionRunner, settings, messageService, contextMenuService, telemetryService, debugService, instantiationService) {
-            _super.call(this, actionRunner, !!settings[VariablesView.MEMENTO], nls.localize(0, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, !!settings[VariablesView.MEMENTO], nls.localize('variablesSection', "Variables Section"), messageService, contextMenuService);
             this.settings = settings;
             this.telemetryService = telemetryService;
             this.debugService = debugService;
@@ -44,7 +44,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         VariablesView.prototype.renderHeader = function (container) {
             var titleDiv = $('div.title').appendTo(container);
-            $('span').text(nls.localize(1, null)).appendTo(titleDiv);
+            $('span').text(nls.localize('variables', "Variables")).appendTo(titleDiv);
             _super.prototype.renderHeader.call(this, container);
         };
         VariablesView.prototype.renderBody = function (container) {
@@ -56,7 +56,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
                 renderer: this.instantiationService.createInstance(viewer.VariablesRenderer),
                 accessibilityProvider: new viewer.VariablesAccessibilityProvider(),
                 controller: new viewer.BaseDebugController(this.debugService, this.contextMenuService, new viewer.VariablesActionProvider(this.instantiationService))
-            }, debugTreeOptions(nls.localize(2, null)));
+            }, debugTreeOptions(nls.localize('variablesAriaTreeLabel', "Debug Variables")));
             var viewModel = this.debugService.getViewModel();
             this.tree.setInput(viewModel);
             var collapseAction = this.instantiationService.createInstance(viewlet.CollapseAction, this.tree, false, 'explorer-action collapse-explorer');
@@ -105,7 +105,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         __extends(WatchExpressionsView, _super);
         function WatchExpressionsView(actionRunner, settings, messageService, contextMenuService, debugService, instantiationService) {
             var _this = this;
-            _super.call(this, actionRunner, !!settings[WatchExpressionsView.MEMENTO], nls.localize(3, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, !!settings[WatchExpressionsView.MEMENTO], nls.localize('expressionsSection', "Expressions Section"), messageService, contextMenuService);
             this.settings = settings;
             this.debugService = debugService;
             this.instantiationService = instantiationService;
@@ -118,7 +118,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         WatchExpressionsView.prototype.renderHeader = function (container) {
             var titleDiv = $('div.title').appendTo(container);
-            $('span').text(nls.localize(4, null)).appendTo(titleDiv);
+            $('span').text(nls.localize('watch', "Watch")).appendTo(titleDiv);
             _super.prototype.renderHeader.call(this, container);
         };
         WatchExpressionsView.prototype.renderBody = function (container) {
@@ -131,7 +131,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
                 renderer: this.instantiationService.createInstance(viewer.WatchExpressionsRenderer, actionProvider, this.actionRunner),
                 accessibilityProvider: new viewer.WatchExpressionsAccessibilityProvider(),
                 controller: new viewer.WatchExpressionsController(this.debugService, this.contextMenuService, actionProvider)
-            }, debugTreeOptions(nls.localize(5, null)));
+            }, debugTreeOptions(nls.localize('watchAriaTreeLabel', "Debug Watch Expressions")));
             this.tree.setInput(this.debugService.getModel());
             var addWatchExpressionAction = this.instantiationService.createInstance(debugactions.AddWatchExpressionAction, debugactions.AddWatchExpressionAction.ID, debugactions.AddWatchExpressionAction.LABEL);
             var collapseAction = this.instantiationService.createInstance(viewlet.CollapseAction, this.tree, false, 'explorer-action collapse-explorer');
@@ -175,7 +175,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
     var CallStackView = (function (_super) {
         __extends(CallStackView, _super);
         function CallStackView(actionRunner, settings, messageService, contextMenuService, telemetryService, debugService, instantiationService) {
-            _super.call(this, actionRunner, !!settings[CallStackView.MEMENTO], nls.localize(6, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, !!settings[CallStackView.MEMENTO], nls.localize('callstackSection', "Call Stack Section"), messageService, contextMenuService);
             this.settings = settings;
             this.telemetryService = telemetryService;
             this.debugService = debugService;
@@ -183,7 +183,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         CallStackView.prototype.renderHeader = function (container) {
             var title = $('div.debug-call-stack-title').appendTo(container);
-            $('span.title').text(nls.localize(7, null)).appendTo(title);
+            $('span.title').text(nls.localize('callStack', "Call Stack")).appendTo(title);
             this.pauseMessage = $('span.pause-message').appendTo(title);
             this.pauseMessage.hide();
             this.pauseMessageLabel = $('span.label').appendTo(this.pauseMessage);
@@ -197,7 +197,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
                 dataSource: this.instantiationService.createInstance(viewer.CallStackDataSource),
                 renderer: this.instantiationService.createInstance(viewer.CallStackRenderer),
                 accessibilityProvider: this.instantiationService.createInstance(viewer.CallstackAccessibilityProvider)
-            }, debugTreeOptions(nls.localize(8, null)));
+            }, debugTreeOptions(nls.localize('callStackAriaLabel', "Debug Call Stack")));
             var debugModel = this.debugService.getModel();
             this.tree.setInput(debugModel);
             this.toDispose.push(this.tree.addListener2('selection', function (e) {
@@ -250,7 +250,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
                 _this.tree.expand(focussedThread);
                 _this.tree.setFocus(_this.debugService.getViewModel().getFocusedStackFrame());
                 if (focussedThread.stoppedDetails && focussedThread.stoppedDetails.reason) {
-                    _this.pauseMessageLabel.text(nls.localize(9, null, focussedThread.stoppedDetails.reason));
+                    _this.pauseMessageLabel.text(nls.localize('debugStopped', "Paused on {0}", focussedThread.stoppedDetails.reason));
                     if (focussedThread.stoppedDetails.text) {
                         _this.pauseMessageLabel.title(focussedThread.stoppedDetails.text);
                     }
@@ -281,7 +281,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         __extends(BreakpointsView, _super);
         function BreakpointsView(actionRunner, settings, messageService, contextMenuService, debugService, instantiationService) {
             var _this = this;
-            _super.call(this, actionRunner, BreakpointsView.getExpandedBodySize(debugService.getModel().getBreakpoints().length + debugService.getModel().getFunctionBreakpoints().length + debugService.getModel().getExceptionBreakpoints().length), !!settings[BreakpointsView.MEMENTO], nls.localize(10, null), messageService, contextMenuService);
+            _super.call(this, actionRunner, BreakpointsView.getExpandedBodySize(debugService.getModel().getBreakpoints().length + debugService.getModel().getFunctionBreakpoints().length + debugService.getModel().getExceptionBreakpoints().length), !!settings[BreakpointsView.MEMENTO], nls.localize('breakpointsSection', "Breakpoints Section"), messageService, contextMenuService);
             this.settings = settings;
             this.debugService = debugService;
             this.instantiationService = instantiationService;
@@ -289,7 +289,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
         }
         BreakpointsView.prototype.renderHeader = function (container) {
             var titleDiv = $('div.title').appendTo(container);
-            $('span').text(nls.localize(11, null)).appendTo(titleDiv);
+            $('span').text(nls.localize('breakpoints', "Breakpoints")).appendTo(titleDiv);
             _super.prototype.renderHeader.call(this, container);
         };
         BreakpointsView.prototype.renderBody = function (container) {
@@ -324,7 +324,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/browser/debugView
                         return first.desiredLineNumber - second.desiredLineNumber;
                     }
                 }
-            }, debugTreeOptions(nls.localize(12, null)));
+            }, debugTreeOptions(nls.localize('breakpointsAriaTreeLabel', "Debug Breakpoints")));
             var debugModel = this.debugService.getModel();
             this.tree.setInput(debugModel);
             this.toDispose.push(this.tree.addListener2('selection', function (e) {

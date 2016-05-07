@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/editor/contrib/hover/browser/hover', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/platform/opener/common/opener', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', './modesContentHover', './modesGlyphHover', 'vs/css!./hover'], function (require, exports, nls, keyCodes_1, platform, winjs_base_1, opener_1, keybindingService_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorBrowserExtensions_1, modesContentHover_1, modesGlyphHover_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/platform/opener/common/opener', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommon', 'vs/editor/common/editorCommonExtensions', 'vs/editor/browser/editorBrowserExtensions', './modesContentHover', './modesGlyphHover', 'vs/css!./hover'], function (require, exports, nls, keyCodes_1, platform, winjs_base_1, opener_1, keybindingService_1, range_1, editorAction_1, editorActionEnablement_1, editorCommon, editorCommonExtensions_1, editorBrowserExtensions_1, modesContentHover_1, modesGlyphHover_1) {
     'use strict';
     var ModesHoverController = (function () {
         function ModesHoverController(editor, openerService) {
@@ -128,7 +128,7 @@ define(["require", "exports", 'vs/nls!vs/editor/contrib/hover/browser/hover', 'v
         return ShowHoverAction;
     }(editorAction_1.EditorAction));
     editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(ModesHoverController);
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShowHoverAction, ShowHoverAction.ID, nls.localize(0, null), {
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShowHoverAction, ShowHoverAction.ID, nls.localize('showHover', "Show Hover"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         kbExpr: keybindingService_1.KbExpr.has(editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS),
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_I)

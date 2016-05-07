@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-browser/extensionsWidgets', 'vs/base/common/severity', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/common/objects', 'vs/workbench/parts/output/common/output', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/extensions/common/extensionsUtil'], function (require, exports, nls, severity_1, async_1, dom_1, lifecycle_1, errors_1, objects_1, output_1, extensions_1, instantiation_1, extensions_2, quickOpenService_1, extensionsUtil_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/common/objects', 'vs/workbench/parts/output/common/output', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/extensions/common/extensionsUtil'], function (require, exports, nls, severity_1, async_1, dom_1, lifecycle_1, errors_1, objects_1, output_1, extensions_1, instantiation_1, extensions_2, quickOpenService_1, extensionsUtil_1) {
     "use strict";
     var InitialState = {
         errors: [],
@@ -69,20 +69,20 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             dom_1.toggleClass(this.domNode, 'is-installing', !this.hasErrors && this.isInstalling);
             dom_1.toggleClass(this.domNode, 'has-updates', !this.hasErrors && !this.isInstalling && this.hasUpdates);
             if (this.hasErrors) {
-                var singular = nls.localize(0, null);
-                var plural = nls.localize(1, null, this.state.errors.length);
+                var singular = nls.localize('oneIssue', "Extensions (1 issue)");
+                var plural = nls.localize('multipleIssues', "Extensions ({0} issues)", this.state.errors.length);
                 this.domNode.title = this.state.errors.length > 1 ? plural : singular;
             }
             else if (this.isInstalling) {
-                this.domNode.title = nls.localize(2, null, this.state.installing.length);
+                this.domNode.title = nls.localize('extensionsInstalling', "Extensions ({0} installing...)", this.state.installing.length);
             }
             else if (this.hasUpdates) {
-                var singular = nls.localize(3, null);
-                var plural = nls.localize(4, null, this.state.outdated.length);
+                var singular = nls.localize('oneUpdate', "Extensions (1 update available)");
+                var plural = nls.localize('multipleUpdates', "Extensions ({0} updates available)", this.state.outdated.length);
                 this.domNode.title = this.state.outdated.length > 1 ? plural : singular;
             }
             else {
-                this.domNode.title = nls.localize(5, null);
+                this.domNode.title = nls.localize('extensions', "Extensions");
             }
         };
         ExtensionsStatusbarItem.prototype.onClick = function () {

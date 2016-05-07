@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/notroot/notrootView', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./notrootView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./notrootView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
     'use strict';
     var $ = builder.$;
     var NotRootView = (function (_super) {
@@ -29,8 +29,8 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/views/notro
         NotRootView.prototype.render = function () {
             this._element = $([
                 '<div class="notroot-view">',
-                '<p>', nls.localize(0, null), '</p>',
-                '<p>', nls.localize(1, null), '</p>',
+                '<p>', nls.localize('wrongRoot', "This directory seems to be contained in a git repository."), '</p>',
+                '<p>', nls.localize('pleaseRestart', "Open the repository's root directory in order to access Git features."), '</p>',
                 '</div>'
             ].join('')).getHTMLElement();
         };

@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/browser/parts/editor/binaryEditor', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/ui/resourceviewer/resourceViewer', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor/binaryEditorModel', 'vs/workbench/services/editor/common/editorService', 'vs/platform/telemetry/common/telemetry', 'vs/css!./media/binaryeditor'], function (require, exports, nls, winjs_base_1, builder_1, resourceViewer_1, baseEditor_1, binaryEditorModel_1, editorService_1, telemetry_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/browser/ui/resourceviewer/resourceViewer', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor/binaryEditorModel', 'vs/workbench/services/editor/common/editorService', 'vs/platform/telemetry/common/telemetry', 'vs/css!./media/binaryeditor'], function (require, exports, nls, winjs_base_1, builder_1, resourceViewer_1, baseEditor_1, binaryEditorModel_1, editorService_1, telemetry_1) {
     'use strict';
     /*
      * This class is only intended to be subclassed and not instantiated.
@@ -28,7 +28,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/browser/parts/editor/binaryEd
             this._editorService = _editorService;
         }
         BaseBinaryResourceEditor.prototype.getTitle = function () {
-            return this.getInput() ? this.getInput().getName() : nls.localize(0, null);
+            return this.getInput() ? this.getInput().getName() : nls.localize('binaryEditor', "Binary Viewer");
         };
         Object.defineProperty(BaseBinaryResourceEditor.prototype, "editorService", {
             get: function () {

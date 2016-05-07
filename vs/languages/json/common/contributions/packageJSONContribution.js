@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/json/common/contributions/packageJSONContribution', 'vs/platform/request/common/request'], function (require, exports, Strings, nls, request_1) {
+define(["require", "exports", 'vs/base/common/strings', 'vs/nls', 'vs/platform/request/common/request'], function (require, exports, Strings, nls, request_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -38,7 +38,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                     'main': '{{pathToMain}}',
                     'dependencies': {}
                 };
-                result.add({ type: 'module', label: nls.localize(0, null), codeSnippet: JSON.stringify(defaultValue, null, '\t'), documentationLabel: '' });
+                result.add({ type: 'module', label: nls.localize('json.package.default', 'Default package.json'), codeSnippet: JSON.stringify(defaultValue, null, '\t'), documentationLabel: '' });
             }
             return null;
         };
@@ -78,11 +78,11 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                             }
                         }
                         else {
-                            result.error(nls.localize(1, null, success.responseText));
+                            result.error(nls.localize('json.npm.error.repoaccess', 'Request to the NPM repository failed: {0}', success.responseText));
                             return 0;
                         }
                     }, function (error) {
-                        result.error(nls.localize(2, null, error.responseText));
+                        result.error(nls.localize('json.npm.error.repoaccess', 'Request to the NPM repository failed: {0}', error.responseText));
                         return 0;
                     });
                 }
@@ -113,11 +113,11 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                         if (obj && obj.version) {
                             var version = obj.version;
                             var name = JSON.stringify(version);
-                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize(3, null) });
+                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize('json.npm.latestversion', 'The currently latest version of the package') });
                             name = JSON.stringify('^' + version);
-                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize(4, null) });
+                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize('json.npm.majorversion', 'Matches the most recent major version (1.x.x)') });
                             name = JSON.stringify('~' + version);
-                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize(5, null) });
+                            result.add({ type: 'class', label: name, codeSnippet: name, documentationLabel: nls.localize('json.npm.minorversion', 'Matches the most recent minor version (1.2.x)') });
                         }
                     }
                     catch (e) {
@@ -133,7 +133,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
             if (this.isPackageJSONFile(resource) && (location.matches(['dependencies', '*']) || location.matches(['devDependencies', '*']) || location.matches(['optionalDependencies', '*']) || location.matches(['peerDependencies', '*']))) {
                 var pack = location.getSegments()[location.getSegments().length - 1];
                 var htmlContent = [];
-                htmlContent.push({ className: 'type', text: nls.localize(6, null, pack) });
+                htmlContent.push({ className: 'type', text: nls.localize('json.npm.package.hover', '{0}', pack) });
                 var queryUrl = 'http://registry.npmjs.org/' + encodeURIComponent(pack) + '/latest';
                 return this.requestService.makeRequest({
                     url: queryUrl
@@ -145,7 +145,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/nls!vs/languages/jso
                                 htmlContent.push({ className: 'documentation', text: obj.description });
                             }
                             if (obj.version) {
-                                htmlContent.push({ className: 'documentation', text: nls.localize(7, null, obj.version) });
+                                htmlContent.push({ className: 'documentation', text: nls.localize('json.npm.version.hover', 'Latest version: {0}', obj.version) });
                             }
                         }
                     }

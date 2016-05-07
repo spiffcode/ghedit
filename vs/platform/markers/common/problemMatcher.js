@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher', 'vs/base/common/objects', 'vs/base/common/strings', 'vs/base/common/assert', 'vs/base/common/paths', 'vs/base/common/types', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/parsers'], function (require, exports, NLS, Objects, Strings, Assert, Paths, Types, severity_1, uri_1, parsers_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/strings', 'vs/base/common/assert', 'vs/base/common/paths', 'vs/base/common/types', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/base/common/parsers'], function (require, exports, NLS, Objects, Strings, Assert, Paths, Types, severity_1, uri_1, parsers_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -440,7 +440,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
         ProblemMatcherParser.prototype.checkProblemMatcherValid = function (externalProblemMatcher, problemMatcher) {
             if (!problemMatcher || !problemMatcher.pattern || !problemMatcher.owner || Types.isUndefined(problemMatcher.fileLocation)) {
                 this.status.state = parsers_1.ValidationState.Fatal;
-                this.log(NLS.localize(0, null, JSON.stringify(externalProblemMatcher, null, 4)));
+                this.log(NLS.localize('ProblemMatcherParser.invalidMarkerDescription', 'Error: Invalid problemMatcher description. A matcher must at least define a pattern, owner and a file location. The problematic matcher is:\n{0}\n', JSON.stringify(externalProblemMatcher, null, 4)));
                 return false;
             }
             return true;
@@ -485,7 +485,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
             var severity = description.severity ? severity_1.default.fromValue(description.severity) : undefined;
             if (severity === severity_1.default.Ignore) {
                 this.status.state = parsers_1.ValidationState.Info;
-                this.log(NLS.localize(1, null, description.severity));
+                this.log(NLS.localize('ProblemMatcherParser.unknownSeverity', 'Info: unknown severity {0}. Valid values are error, warning and info.\n', description.severity));
                 severity = severity_1.default.Error;
             }
             if (Types.isString(description.base)) {
@@ -548,7 +548,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
                         if (!Types.isUndefined(pattern.loop) && pattern.loop) {
                             pattern.loop = false;
                             this.status.state = parsers_1.ValidationState.Error;
-                            this.log(NLS.localize(2, null));
+                            this.log(NLS.localize('ProblemMatcherParser.loopProperty.notLast', 'The loop property is only supported on the last line matcher.'));
                         }
                     }
                     result.push(pattern);
@@ -561,7 +561,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
                 if (!Types.isUndefined(pattern.loop) && pattern.loop) {
                     pattern.loop = false;
                     this.status.state = parsers_1.ValidationState.Error;
-                    this.log(NLS.localize(3, null));
+                    this.log(NLS.localize('ProblemMatcherParser.loopProperty.notMultiLine', 'The loop property is only supported on multi line matchers.'));
                 }
                 this.validateProblemPattern([pattern]);
                 return pattern;
@@ -609,11 +609,11 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
             });
             if (regexp !== values.length) {
                 this.status.state = parsers_1.ValidationState.Error;
-                this.log(NLS.localize(4, null));
+                this.log(NLS.localize('ProblemMatcherParser.problemPattern.missingRegExp', 'The problem pattern is missing a regular expression.'));
             }
             if (!(file && message && (location || line))) {
                 this.status.state = parsers_1.ValidationState.Error;
-                this.log(NLS.localize(5, null));
+                this.log(NLS.localize('ProblemMatcherParser.problemPattern.missingProperty', 'The problem pattern is invalid. It must have at least a file, message and line or location match group.'));
             }
         };
         ProblemMatcherParser.prototype.addWatchingMatcher = function (external, internal) {
@@ -643,7 +643,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
             }
             if (begins || ends) {
                 this.status.state = parsers_1.ValidationState.Error;
-                this.log(NLS.localize(6, null));
+                this.log(NLS.localize('ProblemMatcherParser.problemPattern.watchingMatcher', 'A problem matcher must define both a begin pattern and an end pattern for watching.'));
             }
         };
         ProblemMatcherParser.prototype.createWatchingPattern = function (external) {
@@ -676,7 +676,7 @@ define(["require", "exports", 'vs/nls!vs/platform/markers/common/problemMatcher'
             }
             catch (err) {
                 this.status.state = parsers_1.ValidationState.Fatal;
-                this.log(NLS.localize(7, null, value));
+                this.log(NLS.localize('ProblemMatcherParser.invalidRegexp', 'Error: The string {0} is not a valid regular expression.\n', value));
             }
             return result;
         };

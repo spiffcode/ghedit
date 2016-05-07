@@ -16,12 +16,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/nls!vs/workbench/parts/files/electron-browser/electronFileActions', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/common/editor', 'vs/platform/message/common/message', 'electron'], function (require, exports, winjs_base_1, actions_1, nls, paths, labels, platform, severity_1, editorService_1, editor_1, message_1, electron_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/labels', 'vs/base/common/platform', 'vs/base/common/severity', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/common/editor', 'vs/platform/message/common/message', 'electron'], function (require, exports, winjs_base_1, actions_1, nls, paths, labels, platform, severity_1, editorService_1, editor_1, message_1, electron_1) {
     'use strict';
     var RevealInOSAction = (function (_super) {
         __extends(RevealInOSAction, _super);
         function RevealInOSAction(resource) {
-            _super.call(this, 'workbench.action.files.revealInWindows', platform.isWindows ? nls.localize(0, null) : (platform.isMacintosh ? nls.localize(1, null) : nls.localize(2, null)));
+            _super.call(this, 'workbench.action.files.revealInWindows', platform.isWindows ? nls.localize('revealInWindows', "Reveal in Explorer") : (platform.isMacintosh ? nls.localize('revealInMac', "Reveal in Finder") : nls.localize('openContainer', "Open Containing Folder")));
             this.resource = resource;
             this.order = 45;
         }
@@ -45,12 +45,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
                 electron_1.shell.showItemInFolder(paths.normalize(fileInput.getResource().fsPath, true));
             }
             else {
-                this.messageService.show(severity_1.default.Info, nls.localize(6, null));
+                this.messageService.show(severity_1.default.Info, nls.localize('openFileToReveal', "Open a file first to reveal"));
             }
             return winjs_base_1.TPromise.as(true);
         };
         GlobalRevealInOSAction.ID = 'workbench.action.files.revealActiveFileInWindows';
-        GlobalRevealInOSAction.LABEL = platform.isWindows ? nls.localize(3, null) : (platform.isMacintosh ? nls.localize(4, null) : nls.localize(5, null));
+        GlobalRevealInOSAction.LABEL = platform.isWindows ? nls.localize('revealActiveFileInWindows', "Reveal Active File in Windows Explorer") : (platform.isMacintosh ? nls.localize('revealActiveFileInMac', "Reveal Active File in Finder") : nls.localize('openActiveFileContainer', "Open Containing Folder of Active File"));
         GlobalRevealInOSAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, message_1.IMessageService)
@@ -61,7 +61,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     var CopyPathAction = (function (_super) {
         __extends(CopyPathAction, _super);
         function CopyPathAction(resource) {
-            _super.call(this, 'workbench.action.files.copyPath', nls.localize(7, null));
+            _super.call(this, 'workbench.action.files.copyPath', nls.localize('copyPath', "Copy Path"));
             this.resource = resource;
             this.order = 140;
         }
@@ -86,12 +86,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
                 this.editorService.focusEditor(); // focus back to editor
             }
             else {
-                this.messageService.show(severity_1.default.Info, nls.localize(9, null));
+                this.messageService.show(severity_1.default.Info, nls.localize('openFileToCopy', "Open a file first to copy its path"));
             }
             return winjs_base_1.TPromise.as(true);
         };
         GlobalCopyPathAction.ID = 'workbench.action.files.copyPathOfActiveFile';
-        GlobalCopyPathAction.LABEL = nls.localize(8, null);
+        GlobalCopyPathAction.LABEL = nls.localize('copyPathOfActive', "Copy Path of Active File");
         GlobalCopyPathAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, message_1.IMessageService)
@@ -113,7 +113,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     }(actions_1.Action));
     exports.BaseOpenAction = BaseOpenAction;
     exports.OPEN_FILE_ID = 'workbench.action.files.openFile';
-    exports.OPEN_FILE_LABEL = nls.localize(10, null);
+    exports.OPEN_FILE_LABEL = nls.localize('openFile', "Open File...");
     var OpenFileAction = (function (_super) {
         __extends(OpenFileAction, _super);
         function OpenFileAction(id, label) {
@@ -123,7 +123,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     }(BaseOpenAction));
     exports.OpenFileAction = OpenFileAction;
     exports.OPEN_FOLDER_ID = 'workbench.action.files.openFolder';
-    exports.OPEN_FOLDER_LABEL = nls.localize(11, null);
+    exports.OPEN_FOLDER_LABEL = nls.localize('openFolder', "Open Folder...");
     var OpenFolderAction = (function (_super) {
         __extends(OpenFolderAction, _super);
         function OpenFolderAction(id, label) {
@@ -133,7 +133,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     }(BaseOpenAction));
     exports.OpenFolderAction = OpenFolderAction;
     exports.OPEN_FILE_FOLDER_ID = 'workbench.action.files.openFileFolder';
-    exports.OPEN_FILE_FOLDER_LABEL = nls.localize(12, null);
+    exports.OPEN_FILE_FOLDER_LABEL = nls.localize('openFileFolder', "Open...");
     var OpenFileFolderAction = (function (_super) {
         __extends(OpenFileFolderAction, _super);
         function OpenFileFolderAction(id, label) {
@@ -155,12 +155,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
                 electron_1.ipcRenderer.send('vscode:windowOpen', [fileInput.getResource().fsPath], true /* force new window */); // handled from browser process
             }
             else {
-                this.messageService.show(severity_1.default.Info, nls.localize(14, null));
+                this.messageService.show(severity_1.default.Info, nls.localize('openFileToShow', "Open a file first to open in new window"));
             }
             return winjs_base_1.TPromise.as(true);
         };
         ShowOpenedFileInNewWindow.ID = 'workbench.action.files.showOpenedFileInNewWindow';
-        ShowOpenedFileInNewWindow.LABEL = nls.localize(13, null);
+        ShowOpenedFileInNewWindow.LABEL = nls.localize('openFileInNewWindow', "Open Active File in New Window");
         ShowOpenedFileInNewWindow = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
             __param(3, message_1.IMessageService)

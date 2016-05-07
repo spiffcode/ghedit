@@ -16,11 +16,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/paging', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/severity', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/common/quickOpenPaging', 'vs/base/common/filters', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/electron-browser/extensionsActions', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'electron', 'vs/workbench/parts/extensions/common/extensionsUtil'], function (require, exports, nls, lifecycle_1, winjs_base_1, types_1, paging_1, async_1, dom, severity_1, errors_1, quickOpen_1, quickOpenPaging_1, filters_1, quickopen_1, extensions_1, extensionsActions_1, message_1, telemetry_1, instantiation_1, contextService_1, highlightedLabel_1, actions_1, actionbar_1, electron_1, extensionsUtil_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/paging', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/severity', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/common/quickOpenPaging', 'vs/base/common/filters', 'vs/workbench/browser/quickopen', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/electron-browser/extensionsActions', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/base/browser/ui/highlightedlabel/highlightedLabel', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'electron', 'vs/workbench/parts/extensions/common/extensionsUtil'], function (require, exports, nls, lifecycle_1, winjs_base_1, types_1, paging_1, async_1, dom, severity_1, errors_1, quickOpen_1, quickOpenPaging_1, filters_1, quickopen_1, extensions_1, extensionsActions_1, message_1, telemetry_1, instantiation_1, contextService_1, highlightedLabel_1, actions_1, actionbar_1, electron_1, extensionsUtil_1) {
     "use strict";
     var $ = dom.emmet;
-    var InstallLabel = nls.localize(0, null);
-    var UpdateLabel = nls.localize(1, null);
+    var InstallLabel = nls.localize('install', "Install Extension");
+    var UpdateLabel = nls.localize('update', "Update Extension");
     (function (ExtensionState) {
         ExtensionState[ExtensionState["Uninstalled"] = 0] = "Uninstalled";
         ExtensionState[ExtensionState["Installed"] = 1] = "Installed";
@@ -50,7 +50,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
     var OpenLicenseAction = (function (_super) {
         __extends(OpenLicenseAction, _super);
         function OpenLicenseAction(contextService) {
-            _super.call(this, 'extensions.open-license', nls.localize(2, null), '', true);
+            _super.call(this, 'extensions.open-license', nls.localize('license', "License"), '', true);
             this.contextService = contextService;
         }
         OpenLicenseAction.prototype.run = function (extension) {
@@ -66,7 +66,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
     var OpenInGalleryAction = (function (_super) {
         __extends(OpenInGalleryAction, _super);
         function OpenInGalleryAction(promptToInstall, messageService, contextService, instantiationService) {
-            _super.call(this, 'extensions.open-in-gallery', nls.localize(3, null), '', true);
+            _super.call(this, 'extensions.open-in-gallery', nls.localize('readme', "Readme"), '', true);
             this.promptToInstall = promptToInstall;
             this.messageService = messageService;
             this.contextService = contextService;
@@ -80,12 +80,12 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
                 return winjs_base_1.TPromise.as(null);
             }
             var hideMessage = this.messageService.show(severity_1.default.Info, {
-                message: nls.localize(4, null, extension.displayName),
+                message: nls.localize('installPrompt', "Would you like to install '{0}'?", extension.displayName),
                 actions: [
-                    new actions_1.Action('cancelaction', nls.localize(5, null)),
-                    new actions_1.Action('installNow', nls.localize(6, null), null, true, function () {
+                    new actions_1.Action('cancelaction', nls.localize('cancel', 'Cancel')),
+                    new actions_1.Action('installNow', nls.localize('installNow', 'Install Now'), null, true, function () {
                         hideMessage();
-                        var hideInstallMessage = _this.messageService.show(severity_1.default.Info, nls.localize(7, null, extension.displayName));
+                        var hideInstallMessage = _this.messageService.show(severity_1.default.Info, nls.localize('nowInstalling', "'{0}' is being installed...", extension.displayName));
                         var action = _this.instantiationService.createInstance(extensionsActions_1.InstallAction, '');
                         return action.run(extension).then(function (r) {
                             hideInstallMessage();
@@ -132,7 +132,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
         function AccessibilityProvider() {
         }
         AccessibilityProvider.prototype.getAriaLabel = function (entry) {
-            return nls.localize(8, null, entry.extension.displayName, entry.extension.description);
+            return nls.localize('extensionAriaLabel', "{0}, {1}, extensions picker", entry.extension.displayName, entry.extension.description);
         };
         return AccessibilityProvider;
     }());
@@ -170,14 +170,14 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
         };
         Renderer.prototype.renderPlaceholder = function (index, templateId, data) {
             dom.addClass(data.root, 'loading');
-            data.author.textContent = nls.localize(9, null);
-            data.displayName.set(nls.localize(10, null));
+            data.author.textContent = nls.localize('author', 'Author');
+            data.displayName.set(nls.localize('name', 'Name'));
             data.version.textContent = '0.0.1';
             data.installCount.textContent = '';
             dom.removeClass(data.installCount, 'octicon');
             dom.removeClass(data.installCount, 'octicon-cloud-download');
             data.actionbar.clear();
-            data.description.set(nls.localize(11, null));
+            data.description.set(nls.localize('description', 'Description'));
             data.disposables = lifecycle_1.dispose(data.disposables);
         };
         Renderer.prototype.renderElement = function (entry, templateId, data) {
@@ -227,13 +227,13 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
                 dom.addClass(data.installCount, 'octicon');
                 dom.addClass(data.installCount, 'octicon-cloud-download');
                 if (!installCount) {
-                    data.installCount.title = nls.localize(12, null, extension.displayName);
+                    data.installCount.title = nls.localize('installCountZero', "{0} wasn't downloaded yet.", extension.displayName);
                 }
                 else if (installCount === 1) {
-                    data.installCount.title = nls.localize(13, null, extension.displayName);
+                    data.installCount.title = nls.localize('installCountOne', "{0} was downloaded once.", extension.displayName);
                 }
                 else {
-                    data.installCount.title = nls.localize(14, null, extension.displayName, installCount);
+                    data.installCount.title = nls.localize('installCountMultiple', "{0} was downloaded {1} times.", extension.displayName, installCount);
                 }
             }
             else {
@@ -318,7 +318,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             this.modelPromise = null;
         }
         LocalExtensionsHandler.prototype.getAriaLabel = function () {
-            return nls.localize(15, null);
+            return nls.localize('localExtensionsHandlerAriaLabel', "Type to narrow down the list of installed extensions");
         };
         LocalExtensionsHandler.prototype.getResults = function (input) {
             var _this = this;
@@ -332,7 +332,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             });
         };
         LocalExtensionsHandler.prototype.getEmptyLabel = function (input) {
-            return nls.localize(16, null);
+            return nls.localize('noExtensionsInstalled', "No extensions found");
         };
         LocalExtensionsHandler.prototype.getAutoFocus = function (searchValue) {
             return { autoFocusFirstEntry: true };
@@ -358,7 +358,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             this.delayer = new async_1.ThrottledDelayer(500);
         }
         GalleryExtensionsHandler.prototype.getAriaLabel = function () {
-            return nls.localize(17, null);
+            return nls.localize('galleryExtensionsHandlerAriaLabel', "Type to narrow down the list of extensions from the gallery");
         };
         GalleryExtensionsHandler.prototype.getResults = function (text) {
             var _this = this;
@@ -379,7 +379,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             });
         };
         GalleryExtensionsHandler.prototype.getEmptyLabel = function (input) {
-            return nls.localize(18, null);
+            return nls.localize('noExtensionsToInstall', "No extensions found");
         };
         GalleryExtensionsHandler.prototype.getAutoFocus = function (searchValue) {
             return { autoFocusFirstEntry: true };
@@ -438,7 +438,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             this.telemetryService = telemetryService;
         }
         OutdatedExtensionsHandler.prototype.getAriaLabel = function () {
-            return nls.localize(19, null);
+            return nls.localize('outdatedExtensionsHandlerAriaLabel', "Type to narrow down the list of outdated extensions");
         };
         OutdatedExtensionsHandler.prototype.getResults = function (input) {
             var _this = this;
@@ -456,7 +456,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             this.modelPromise = null;
         };
         OutdatedExtensionsHandler.prototype.getEmptyLabel = function (input) {
-            return nls.localize(20, null);
+            return nls.localize('noOutdatedExtensions', "No outdated extensions found");
         };
         OutdatedExtensionsHandler.prototype.getAutoFocus = function (searchValue) {
             return { autoFocusFirstEntry: true };
@@ -532,7 +532,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/extensions/electron-bro
             this.modelPromise = null;
         };
         SuggestedExtensionHandler.prototype.getEmptyLabel = function (input) {
-            return nls.localize(21, null);
+            return nls.localize('noRecommendedExtensions', "No recommended extensions");
         };
         SuggestedExtensionHandler.prototype.getAutoFocus = function (searchValue) {
             return { autoFocusFirstEntry: true };

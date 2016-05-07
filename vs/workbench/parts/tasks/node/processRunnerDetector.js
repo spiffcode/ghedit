@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunnerDetector', 'vs/base/common/strings', 'vs/base/common/processes', 'vs/base/node/processes'], function (require, exports, nls, Strings, processes_1, processes_2) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/strings', 'vs/base/common/processes', 'vs/base/node/processes'], function (require, exports, nls, Strings, processes_1, processes_2) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -188,10 +188,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 if (tasks.length === 0) {
                     if (success.cmdCode !== 0) {
                         if (command === 'gulp') {
-                            _this._stderr.push(nls.localize(0, null));
+                            _this._stderr.push(nls.localize('TaskSystemDetector.noGulpTasks', 'Running gulp --tasks-simple didn\'t list any tasks. Did you run npm install?'));
                         }
                         else if (command === 'jake') {
-                            _this._stderr.push(nls.localize(1, null));
+                            _this._stderr.push(nls.localize('TaskSystemDetector.noJakeTasks', 'Running jake --tasks didn\'t list any tasks. Did you run npm install?'));
                         }
                     }
                     return { config: null, stdout: _this._stdout, stderr: _this._stderr };
@@ -211,17 +211,17 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 var error = err.error;
                 if (error.code === 'ENOENT') {
                     if (command === 'gulp') {
-                        _this._stderr.push(nls.localize(2, null));
+                        _this._stderr.push(nls.localize('TaskSystemDetector.noGulpProgram', 'Gulp is not installed on your system. Run npm install -g gulp to install it.'));
                     }
                     else if (command === 'jake') {
-                        _this._stderr.push(nls.localize(3, null));
+                        _this._stderr.push(nls.localize('TaskSystemDetector.noJakeProgram', 'Jake is not installed on your system. Run npm install -g jake to install it.'));
                     }
                     else if (command === 'grunt') {
-                        _this._stderr.push(nls.localize(4, null));
+                        _this._stderr.push(nls.localize('TaskSystemDetector.noGruntProgram', 'Grunt is not installed on your system. Run npm install -g grunt to install it.'));
                     }
                 }
                 else {
-                    _this._stderr.push(nls.localize(5, null, command, error.message));
+                    _this._stderr.push(nls.localize('TaskSystemDetector.noProgram', 'Program {0} was not found. Message is {1}', command, error.message));
                 }
                 return { config: null, stdout: _this._stdout, stderr: _this._stderr };
             }, function (progress) {
@@ -259,7 +259,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 });
                 if (taskInfos_1.build.index !== -1) {
                     var name_1 = tasks[taskInfos_1.build.index];
-                    this._stdout.push(nls.localize(6, null, name_1));
+                    this._stdout.push(nls.localize('TaskSystemDetector.buildTaskDetected', 'Build task named \'{0}\' detected.', name_1));
                     taskConfigs.push({
                         taskName: name_1,
                         args: [],
@@ -270,7 +270,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/tasks/node/processRunne
                 }
                 if (taskInfos_1.test.index !== -1) {
                     var name_2 = tasks[taskInfos_1.test.index];
-                    this._stdout.push(nls.localize(7, null, name_2));
+                    this._stdout.push(nls.localize('TaskSystemDetector.testTaskDetected', 'Test task named \'{0}\' detected.', name_2));
                     taskConfigs.push({
                         taskName: name_2,
                         args: [],

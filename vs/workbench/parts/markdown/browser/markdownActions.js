@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/nls!vs/workbench/parts/markdown/browser/markdownActions', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/parts/markdown/common/markdownEditorInput', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/css!./media/markdownactions'], function (require, exports, winjs_base_1, actions_1, errors, nls, baseEditor_1, editor_1, markdownEditorInput_1, editorService_1, instantiation_1, message_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/nls', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/parts/markdown/common/markdownEditorInput', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/css!./media/markdownactions'], function (require, exports, winjs_base_1, actions_1, errors, nls, baseEditor_1, editor_1, markdownEditorInput_1, editorService_1, instantiation_1, message_1) {
     'use strict';
     var GlobalTogglePreviewMarkdownAction = (function (_super) {
         __extends(GlobalTogglePreviewMarkdownAction, _super);
@@ -42,7 +42,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
                     action_1.run().done(function () { return action_1.dispose(); }, errors.onUnexpectedError);
                 }
                 else {
-                    msg = nls.localize(1, null);
+                    msg = nls.localize('markdownPreviewNoFile', "Open a Markdown file first to show a preview.");
                 }
                 if (msg) {
                     this.messageService.show(message_1.Severity.Info, msg);
@@ -51,7 +51,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
             return winjs_base_1.TPromise.as(true);
         };
         GlobalTogglePreviewMarkdownAction.ID = 'workbench.action.markdown.togglePreview';
-        GlobalTogglePreviewMarkdownAction.LABEL = nls.localize(0, null);
+        GlobalTogglePreviewMarkdownAction.LABEL = nls.localize('toggleMarkdownPreview', "Toggle Preview");
         GlobalTogglePreviewMarkdownAction = __decorate([
             __param(2, instantiation_1.IInstantiationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -82,7 +82,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
                     return this.editorService.openEditor(input, null, true /* to the side */);
                 }
                 else {
-                    msg = nls.localize(3, null);
+                    msg = nls.localize('markdownPreviewNoFile', "Open a Markdown file first to show a preview.");
                 }
                 if (msg) {
                     this.messageService.show(message_1.Severity.Info, msg);
@@ -91,7 +91,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
             return winjs_base_1.TPromise.as(true);
         };
         OpenPreviewToSideAction.ID = 'workbench.action.markdown.openPreviewSideBySide';
-        OpenPreviewToSideAction.LABEL = nls.localize(2, null);
+        OpenPreviewToSideAction.LABEL = nls.localize('openPreviewSideBySide', "Open Preview to the Side");
         OpenPreviewToSideAction = __decorate([
             __param(2, instantiation_1.IInstantiationService),
             __param(3, editorService_1.IWorkbenchEditorService),
@@ -103,7 +103,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     var PreviewMarkdownAction = (function (_super) {
         __extends(PreviewMarkdownAction, _super);
         function PreviewMarkdownAction(markdownResource, instantiationService, editorService) {
-            _super.call(this, 'workbench.markdown.action.previewFromExplorer', nls.localize(4, null));
+            _super.call(this, 'workbench.markdown.action.previewFromExplorer', nls.localize('openPreview', "Open Preview"));
             this.instantiationService = instantiationService;
             this.editorService = editorService;
             this.markdownResource = markdownResource;
@@ -122,7 +122,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
     var PreviewMarkdownEditorInputAction = (function (_super) {
         __extends(PreviewMarkdownEditorInputAction, _super);
         function PreviewMarkdownEditorInputAction(instantiationService, editorService) {
-            _super.call(this, 'workbench.markdown.action.previewFromEditor', nls.localize(5, null));
+            _super.call(this, 'workbench.markdown.action.previewFromEditor', nls.localize('openPreview', "Open Preview"));
             this.instantiationService = instantiationService;
             this.editorService = editorService;
             this.class = 'markdown-action action-preview';

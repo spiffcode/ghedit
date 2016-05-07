@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActionItems', 'vs/base/browser/keyboardEvent', 'vs/base/browser/builder', 'vs/base/common/strings', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/parts/git/common/git', 'vs/platform/contextview/browser/contextView', 'vs/base/common/keyCodes'], function (require, exports, nls, Keyboard, Builder, Strings, InputBox, ActionBar, git_1, contextView_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/keyboardEvent', 'vs/base/browser/builder', 'vs/base/common/strings', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/parts/git/common/git', 'vs/platform/contextview/browser/contextView', 'vs/base/common/keyCodes'], function (require, exports, nls, Keyboard, Builder, Strings, InputBox, ActionBar, git_1, contextView_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -29,12 +29,12 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActionIt
         CreateBranchActionItem.prototype.render = function (container) {
             var _this = this;
             this.inputBox = new InputBox.InputBox(container, this.contextViewService, {
-                placeholder: nls.localize(0, null),
+                placeholder: nls.localize('createNewBranch', "Create New Branch"),
                 validationOptions: {
                     showMessage: false,
                     validation: function (v) { return _this.validate(v); }
                 },
-                ariaLabel: nls.localize(1, null)
+                ariaLabel: nls.localize('newBranchAriaLabel', "Type branch name")
             });
             $(this.inputBox.inputElement).on('keyup', function (e) { return _this.onKeyUp(e); });
             this._updateEnabled();
@@ -55,12 +55,12 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/git/browser/gitActionIt
         };
         CreateBranchActionItem.prototype.validate = function (value) {
             if (/^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|^\s*$/.test(value)) {
-                return { content: nls.localize(2, null) };
+                return { content: nls.localize('invalidBranchName', "Invalid branch name.") };
             }
             var model = this.gitService.getModel();
             var heads = model.getHeads();
             if (heads.some(function (h) { return h.name === value; })) {
-                return { content: nls.localize(3, null) };
+                return { content: nls.localize('dupeBranchName', "Branch name already exists.") };
             }
             return null;
         };

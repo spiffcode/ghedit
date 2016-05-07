@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/debugService', 'vs/base/common/lifecycle', 'vs/base/common/mime', 'vs/base/common/eventEmitter', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/browser/ui/aria/aria', 'vs/base/node/aiAdapter', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/files/common/files', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/workbench/common/editor', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/rawDebugSession', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugEditorInputs', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/browser/breakpointWidget', 'vs/workbench/parts/debug/node/debugConfigurationManager', 'vs/workbench/parts/debug/common/debugSource', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/thread/electron-browser/threadService', 'electron'], function (require, exports, nls, lifecycle, mime, ee, uri_1, actions_1, arrays, types, errors, severity_1, winjs_base_1, aria, aiAdapter_1, keybindingService_1, markers_1, lifecycle_1, extensions_1, instantiation_1, files_1, event_1, message_1, telemetry_1, storage_1, wbeditorcommon, debug, session, model, debugEditorInputs_1, viewmodel, debugactions, breakpointWidget_1, debugConfigurationManager_1, debugSource_1, taskService_1, taskSystem_1, viewletService_1, panelService_1, partService_1, files_2, contextService_1, editorService_1, windowService_1, threadService_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/mime', 'vs/base/common/eventEmitter', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/browser/ui/aria/aria', 'vs/base/node/aiAdapter', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/files/common/files', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/workbench/common/editor', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/rawDebugSession', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugEditorInputs', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/browser/breakpointWidget', 'vs/workbench/parts/debug/node/debugConfigurationManager', 'vs/workbench/parts/debug/common/debugSource', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/thread/electron-browser/threadService', 'electron'], function (require, exports, nls, lifecycle, mime, ee, uri_1, actions_1, arrays, types, errors, severity_1, winjs_base_1, aria, aiAdapter_1, keybindingService_1, markers_1, lifecycle_1, extensions_1, instantiation_1, files_1, event_1, message_1, telemetry_1, storage_1, wbeditorcommon, debug, session, model, debugEditorInputs_1, viewmodel, debugactions, breakpointWidget_1, debugConfigurationManager_1, debugSource_1, taskService_1, taskSystem_1, viewletService_1, panelService_1, partService_1, files_2, contextService_1, editorService_1, windowService_1, threadService_1, electron_1) {
     "use strict";
     var DEBUG_BREAKPOINTS_KEY = 'debug.breakpoint';
     var DEBUG_BREAKPOINTS_ACTIVATED_KEY = 'debug.breakpointactivated';
@@ -155,7 +155,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             var _this = this;
             this.toDisposeOnSessionEnd.push(this.session);
             this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.INITIALIZED, function (event) {
-                aria.status(nls.localize(0, null));
+                aria.status(nls.localize('debuggingStarted', "Debugging started."));
                 _this.sendAllBreakpoints().then(function () {
                     if (_this.session.capabilities.supportsConfigurationDoneRequest) {
                         _this.session.configurationDone().done(null, errors.onUnexpectedError);
@@ -178,7 +178,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                             // focus first stack frame from top that has source location
                             var stackFrameToFocus = arrays.first(callStack, function (sf) { return sf.source && sf.source.available; }, callStack[0]);
                             _this.setFocusedStackFrameAndEvaluate(stackFrameToFocus);
-                            aria.alert(nls.localize(1, null, event.body.reason, stackFrameToFocus.source ? stackFrameToFocus.source.name : '', stackFrameToFocus.lineNumber));
+                            aria.alert(nls.localize('debuggingPaused', "Debugging paused, reason {0}, {1} {2}", event.body.reason, stackFrameToFocus.source ? stackFrameToFocus.source.name : '', stackFrameToFocus.lineNumber));
                             return _this.openOrRevealEditor(stackFrameToFocus.source, stackFrameToFocus.lineNumber, false, false);
                         }
                         else {
@@ -188,7 +188,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 }, errors.onUnexpectedError);
             }));
             this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.CONTINUED, function () {
-                aria.status(nls.localize(2, null));
+                aria.status(nls.localize('debuggingContinued', "Debugging continued."));
                 _this.model.continueThreads();
                 _this.setFocusedStackFrameAndEvaluate(null);
                 _this.setStateAndEmit(_this.configurationManager.getConfiguration().noDebug ? debug.State.RunningNoDebug : debug.State.Running);
@@ -210,7 +210,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 }
             }));
             this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.DEBUGEE_TERMINATED, function (event) {
-                aria.status(nls.localize(3, null));
+                aria.status(nls.localize('debuggingStopped', "Debugging stopped."));
                 if (_this.session && _this.session.getId() === event.sessionId) {
                     if (event.body && typeof event.body.restart === 'boolean' && event.body.restart) {
                         _this.restartSession().done(null, function (err) { return _this.messageService.show(severity_1.default.Error, err.message); });
@@ -265,7 +265,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 this.session.threads().then(function (response) {
                     var thread = response.body.threads.filter(function (t) { return t.id === threadId; }).pop();
                     if (!thread) {
-                        throw new Error(nls.localize(4, null, threadId));
+                        throw new Error(nls.localize('debugNoThread', "Did not get a thread from debug adapter with id {0}.", threadId));
                     }
                     _this.model.rawUpdate({
                         threadId: thread.id,
@@ -431,15 +431,15 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 if (!configuration) {
                     return _this.configurationManager.openConfigFile(false).then(function (openend) {
                         if (openend) {
-                            _this.messageService.show(severity_1.default.Info, nls.localize(5, null));
+                            _this.messageService.show(severity_1.default.Info, nls.localize('NewLaunchConfig', "Please set up the launch configuration file for your application."));
                         }
                     });
                 }
                 configuration.noDebug = noDebug;
                 if (!_this.configurationManager.getAdapter()) {
                     _this.emit(debug.ServiceEvents.TYPE_NOT_SUPPORTED, configuration.type);
-                    return configuration.type ? winjs_base_1.TPromise.wrapError(new Error(nls.localize(6, null, configuration.type)))
-                        : winjs_base_1.TPromise.wrapError(errors.create(nls.localize(7, null), { actions: [message_1.CloseAction, _this.instantiationService.createInstance(debugactions.ConfigureAction, debugactions.ConfigureAction.ID, debugactions.ConfigureAction.LABEL)] }));
+                    return configuration.type ? winjs_base_1.TPromise.wrapError(new Error(nls.localize('debugTypeNotSupported', "Configured debug type '{0}' is not supported.", configuration.type)))
+                        : winjs_base_1.TPromise.wrapError(errors.create(nls.localize('debugTypeMissing', "Missing property 'type' for the selected configuration in launch.json."), { actions: [message_1.CloseAction, _this.instantiationService.createInstance(debugactions.ConfigureAction, debugactions.ConfigureAction.ID, debugactions.ConfigureAction.LABEL)] }));
                 }
                 return _this.runPreLaunchTask(configuration.preLaunchTask).then(function (taskSummary) {
                     var errorCount = configuration.preLaunchTask ? _this.markerService.getStatistics().errors : 0;
@@ -448,10 +448,10 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                         return _this.doCreateSession(configuration, changeViewState);
                     }
                     _this.messageService.show(severity_1.default.Error, {
-                        message: errorCount > 1 ? nls.localize(8, null, configuration.preLaunchTask) :
-                            errorCount === 1 ? nls.localize(9, null, configuration.preLaunchTask) :
-                                nls.localize(10, null, configuration.preLaunchTask, taskSummary.exitCode),
-                        actions: [message_1.CloseAction, new actions_1.Action('debug.continue', nls.localize(11, null), null, true, function () {
+                        message: errorCount > 1 ? nls.localize('preLaunchTaskErrors', "Build errors have been detected during preLaunchTask '{0}'.", configuration.preLaunchTask) :
+                            errorCount === 1 ? nls.localize('preLaunchTaskError', "Build error has been detected during preLaunchTask '{0}'.", configuration.preLaunchTask) :
+                                nls.localize('preLaunchTaskExitCode', "The preLaunchTask '{0}' terminated with exit code {1}.", configuration.preLaunchTask, taskSummary.exitCode),
+                        actions: [message_1.CloseAction, new actions_1.Action('debug.continue', nls.localize('debugAnyway', "Debug Anyway"), null, true, function () {
                                 _this.messageService.hideAll();
                                 return _this.doCreateSession(configuration, changeViewState);
                             })]
@@ -486,7 +486,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 columnsStartAt1: true
             }).then(function (result) {
                 if (!_this.session) {
-                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize(12, null)));
+                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize('debugAdapterCrash', "Debug adapter process has terminated unexpectedly")));
                 }
                 _this.model.setExceptionBreakpoints(_this.session.capabilities.exceptionBreakpointFilters);
                 return configuration.request === 'attach' ? _this.session.attach(configuration) : _this.session.launch(configuration);
@@ -525,7 +525,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
             return this.taskService.tasks().then(function (descriptions) {
                 var filteredTasks = descriptions.filter(function (task) { return task.name === taskName; });
                 if (filteredTasks.length !== 1) {
-                    return winjs_base_1.TPromise.wrapError(errors.create(nls.localize(13, null, taskName), {
+                    return winjs_base_1.TPromise.wrapError(errors.create(nls.localize('DebugTaskNotFound', "Could not find the preLaunchTask \'{0}\'.", taskName), {
                         actions: [
                             message_1.CloseAction,
                             _this.taskService.configureAction(),
@@ -539,7 +539,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
                 }
                 if (_this.lastTaskEvent) {
                     // there is a different task running currently.
-                    return winjs_base_1.TPromise.wrapError(errors.create(nls.localize(14, null, _this.lastTaskEvent.taskName, taskName)));
+                    return winjs_base_1.TPromise.wrapError(errors.create(nls.localize('differentTaskRunning', "There is a task {0} running. Can not run pre launch task {1}.", _this.lastTaskEvent.taskName, taskName)));
                 }
                 // no task running, execute the preLaunchTask.
                 var taskPromise = _this.taskService.run(filteredTasks[0].id).then(function (result) {
@@ -678,7 +678,7 @@ define(["require", "exports", 'vs/nls!vs/workbench/parts/debug/electron-browser/
         };
         DebugService.prototype.sourceIsUnavailable = function (source, sideBySide) {
             this.model.sourceIsUnavailable(source);
-            var editorInput = this.getDebugStringEditorInput(source, nls.localize(15, null, source.uri.fsPath), 'text/plain');
+            var editorInput = this.getDebugStringEditorInput(source, nls.localize('debugSourceNotAvailable', "Source {0} is not available.", source.uri.fsPath), 'text/plain');
             return this.editorService.openEditor(editorInput, wbeditorcommon.TextEditorOptions.create({ preserveFocus: true }), sideBySide);
         };
         DebugService.prototype.revealRepl = function (focus) {
