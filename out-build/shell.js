@@ -2,8 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas'], function (require, exports, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, baseLifecycleService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, jsonValidationExtensionPoint_1, remoteTelemetryService_1, storage_2, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1) {
+define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'navbarPart', 'navbarService', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas'], function (require, exports, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, baseLifecycleService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, jsonValidationExtensionPoint_1, remoteTelemetryService_1, storage_2, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1, navbarPart_1, navbarService_1) {
     'use strict';
+    var Identifiers = {
+        NAVBAR_PART: 'workbench.parts.navbar'
+    };
     var MonacoEditorLanguages = this.MonacoEditorLanguages || [];
     var MonacoEditorSchemas = this.MonacoEditorSchemas || {};
     /**
@@ -31,6 +34,14 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             var workbenchContainer = builder_1.$(parent).div();
             // Instantiation service with services
             var instantiationService = this.initInstantiationService();
+            // Nav bar
+            this.navbarPart = new navbarPart_1.NavbarPart(Identifiers.NAVBAR_PART);
+            //		this.toDispose.push(this.navbarPart);
+            //		this.toShutdown.push(this.navbarPart);
+            this.navbarPart.setInstantiationService(instantiationService);
+            instantiationService.addSingleton(navbarService_1.INavbarService, this.navbarPart);
+            this.createNavbarPart();
+            this.fillNavbar();
             //crash reporting
             if (!!this.configuration.env.crashReporter) {
             }
@@ -68,6 +79,20 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
                 clearTimeout(timeoutHandle);
             });
             return workbenchContainer;
+        };
+        WorkbenchShell.prototype.createNavbarPart = function () {
+            var navbarContainer = builder_1.$(this.content).div({
+                'class': ['part', 'navbar'],
+                id: Identifiers.NAVBAR_PART,
+                role: 'contentinfo'
+            });
+            this.navbarPart.create(navbarContainer);
+        };
+        WorkbenchShell.prototype.fillNavbar = function () {
+            this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, navbarService_1.NavbarAlignment.LEFT, 1000);
+            this.navbarPart.addEntry({ text: '<user name>', tooltip: 'user menu...', command: 'whatever' }, navbarService_1.NavbarAlignment.RIGHT, 300);
+            this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'settings menu...', command: 'whatever' }, navbarService_1.NavbarAlignment.RIGHT, 200);
+            this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, navbarService_1.NavbarAlignment.RIGHT, 100);
         };
         WorkbenchShell.prototype.onWorkbenchStarted = function () {
             var _this = this;
@@ -335,7 +360,11 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
         WorkbenchShell.prototype.layout = function () {
             var clArea = builder_1.$(this.container).getClientArea();
             var contentsSize = new builder_1.Dimension(clArea.width, clArea.height);
-            this.contentsContainer.size(contentsSize.width, contentsSize.height);
+            var navbarStyle = this.navbarPart.getContainer().getComputedStyle();
+            var navbarHeight = parseInt(navbarStyle.getPropertyValue('height'), 10) || 18;
+            this.navbarPart.getContainer().position(0);
+            this.contentsContainer.position(navbarHeight);
+            this.contentsContainer.size(contentsSize.width, contentsSize.height - navbarHeight);
             this.contextViewService.layout();
             this.workbench.layout();
         };
