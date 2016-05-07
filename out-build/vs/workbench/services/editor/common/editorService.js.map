@@ -1,1 +1,0 @@
-{"version":3,"file":"editorService.js","sourceRoot":"","sources":["../../../../../../src/vs/workbench/services/editor/common/editorService.ts"],"names":[],"mappings":";IAAA;;;oGAGgG;IAChG,YAAY,CAAC;IAMb,WAAY,iBAAiB;QAC5B,+EAAe,CAAA;QACf,qEAAU,CAAA;IACX,CAAC,EAHW,yBAAiB,KAAjB,yBAAiB,QAG5B;IAHD,IAAY,iBAAiB,GAAjB,yBAGX,CAAA;IAEU,+BAAuB,GAAG,+BAAe,CAA0B,eAAe,CAAC,CAAC"}
