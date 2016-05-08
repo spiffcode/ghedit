@@ -1,19 +1,17 @@
 var gulp = require('gulp');
-var run = require('gulp-run');
+var shell = require('gulp-shell');
 
-gulp.task('build', function() {
-    return run('cd src && tsc').exec(function() {
-        run('cp index.html out-build').exec();
-        run('cp src/navbarPart.css out-build').exec();
-    });
-});
+gulp.task('clean', shell.task([
+    'rm -rf out-build',
+    'cp -R $(cd "$(cd "src/vs" && echo $(pwd -P))"/../../out && echo $PWD) out-build'
+]));
 
-gulp.task('clean', function() {
-    return run('rm -rf out-build').exec(function() {
-        return run('cp -R $(cd "$(cd "src/vs" && echo $(pwd -P))"/../../out && echo $PWD) out-build').exec();
-    });
-});
+gulp.task('build', shell.task([
+    'cd src && tsc',
+    'cp index.html out-build',
+    'cp src/navbarPart.css out-build'
+]));
 
-gulp.task('push', function() {
-    return run('bin/push').exec();
-});
+gulp.task('push', shell.task([
+    'bin/push'
+]));
