@@ -34,7 +34,6 @@ file specified by the '--config-file' option."
 GIT_DEPLOY_DIR="out-build"
 PROJ_DIR="$(cd "$(cd "${0%/*}" && echo $PWD)/.." && echo $PWD)"
 cd "$PROJ_DIR"
-cp ./index.html $GIT_DEPLOY_DIR
 
 parse_args() {
 	# Set args from a local environment file.
