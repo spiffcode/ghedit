@@ -3,7 +3,8 @@ var run = require('gulp-run');
 
 gulp.task('build', function() {
     return run('cd src && tsc').exec(function() {
-        return run('cp src/navbarPart.css out-build').exec();
+        run('cp index.html out-build').exec();
+        run('cp src/navbarPart.css out-build').exec();
     });
 });
 
