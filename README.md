@@ -28,21 +28,20 @@
     cd ghcode
     ln -s ../vscode/src/vs src/vs
 
-    # Install npm packages
+    # Install local npm packages
     npm install
-    npm install -g typescript
     
 #### BUILDING
 
     # From the ghcode directory
     # Run once if first time or if vscode has been updated & compiled
-    gulp clean
+    npm run clean
 
     # Perform a regular build of ghcode
-    gulp build
+    npm run build
 
     # Push to gh-pages
-    gulp push
+    npm run push
 
 #### RUNNING
 
