@@ -1,1 +1,1 @@
-{"version":3,"file":"vs/languages/razor/common/vsxmlTokenTypes.js","sourceRoot":"file:///home/scottlu/s/vscode/src","sources":["vs/languages/razor/common/vsxmlTokenTypes.ts"],"names":[],"mappings":";IAAA;;;oGAGgG;IAChG,YAAY,CAAC;IAEA,mBAAW,GAAG,4CAA4C,CAAC;IAC3D,iBAAS,GAAG,iCAAiC,CAAC"}
+{"version":3,"file":"vs/languages/razor/common/vsxmlTokenTypes.js","sourceRoot":"file:///Users/scottlu/src/vscode/src","sources":["vs/languages/razor/common/vsxmlTokenTypes.ts"],"names":[],"mappings":";IAAA;;;oGAGgG;IAChG,YAAY,CAAC;IAEA,mBAAW,GAAG,4CAA4C,CAAC;IAC3D,iBAAS,GAAG,iCAAiC,CAAC"}
