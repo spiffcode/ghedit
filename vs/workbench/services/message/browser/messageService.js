@@ -5,39 +5,38 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/types', '
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var WorkbenchMessageService = (function () {
-        function WorkbenchMessageService(telemetryService, keybindingService) {
+        function WorkbenchMessageService(telemetryService) {
             this.telemetryService = telemetryService;
             this.serviceId = message_1.IMessageService;
-            this.messagesShowingContextKey = keybindingService.createKey(WorkbenchMessageService.GLOBAL_MESSAGES_SHOWING_CONTEXT, false);
             this.handler = new messageList_1.MessageList(constants_1.Identifiers.WORKBENCH_CONTAINER, telemetryService);
             this.messageBuffer = [];
             this.canShowMessages = true;
             this.disposeables = [];
-            this.registerListeners();
         }
-        WorkbenchMessageService.prototype.setWorkbenchServices = function (quickOpenService, statusbarService) {
+        WorkbenchMessageService.prototype.setWorkbenchServices = function (statusbarService) {
             this.statusbarService = statusbarService;
-            this.quickOpenService = quickOpenService;
-            this.disposeables.push(this.quickOpenService.onShow(this.onQuickOpenShowing, this));
-            this.disposeables.push(this.quickOpenService.onHide(this.onQuickOpenHiding, this));
         };
-        WorkbenchMessageService.prototype.registerListeners = function () {
-            this.disposeables.push(this.handler.onMessagesShowing(this.onMessagesShowing, this));
-            this.disposeables.push(this.handler.onMessagesCleared(this.onMessagesCleared, this));
+        Object.defineProperty(WorkbenchMessageService.prototype, "onMessagesShowing", {
+            get: function () {
+                return this.handler.onMessagesShowing;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(WorkbenchMessageService.prototype, "onMessagesCleared", {
+            get: function () {
+                return this.handler.onMessagesCleared;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        WorkbenchMessageService.prototype.suspend = function () {
+            this.canShowMessages = false;
+            this.handler.hide();
         };
-        WorkbenchMessageService.prototype.onMessagesShowing = function () {
-            this.messagesShowingContextKey.set(true);
-        };
-        WorkbenchMessageService.prototype.onMessagesCleared = function () {
-            this.messagesShowingContextKey.reset();
-        };
-        WorkbenchMessageService.prototype.onQuickOpenShowing = function () {
-            this.canShowMessages = false; // when quick open is open, don't show messages behind
-            this.handler.hide(); // hide messages when quick open is visible
-        };
-        WorkbenchMessageService.prototype.onQuickOpenHiding = function () {
+        WorkbenchMessageService.prototype.resume = function () {
             this.canShowMessages = true;
-            this.handler.show(); // make sure the handler is visible
+            this.handler.show();
             // Release messages from buffer
             while (this.messageBuffer.length) {
                 var bufferedMessage = this.messageBuffer.pop();
@@ -103,7 +102,8 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/types', '
                 }, delayBy);
                 var hideHandle_1;
                 // Dispose function takes care of timeouts and actual entry
-                var dispose_1 = { dispose: function () {
+                var dispose_1 = {
+                    dispose: function () {
                         if (showHandle_1) {
                             clearTimeout(showHandle_1);
                         }
@@ -113,7 +113,8 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/types', '
                         if (statusDispose_1) {
                             statusDispose_1.dispose();
                         }
-                    } };
+                    }
+                };
                 this.statusMsgDispose = dispose_1;
                 if (typeof autoDisposeAfter === 'number' && autoDisposeAfter > 0) {
                     hideHandle_1 = setTimeout(function () { return dispose_1.dispose(); }, autoDisposeAfter);
@@ -139,7 +140,6 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/types', '
                 this.disposeables.pop().dispose();
             }
         };
-        WorkbenchMessageService.GLOBAL_MESSAGES_SHOWING_CONTEXT = 'globalMessageVisible';
         return WorkbenchMessageService;
     }());
     exports.WorkbenchMessageService = WorkbenchMessageService;

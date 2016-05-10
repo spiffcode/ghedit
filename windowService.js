@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 'vs/base/common/event'], function (require, exports, instantiation_1, event_1) {
     'use strict';
-    //import {ipcRenderer as ipc, remote} from 'electron';
+    // TODO: import {ipcRenderer as ipc, remote} from 'electron';
     // TODO: const windowId = remote.getCurrentWindow().id;
     var windowId = 666;
     exports.IWindowService = instantiation_1.createDecorator('windowService');

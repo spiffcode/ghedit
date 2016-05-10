@@ -13,11 +13,12 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/uri', 'vs
     var ContextKey = exports.ContextKey;
     // --- Editor Actions
     var EditorActionDescriptor = (function () {
-        function EditorActionDescriptor(ctor, id, label, kbOpts) {
+        function EditorActionDescriptor(ctor, id, label, kbOpts, alias) {
             if (kbOpts === void 0) { kbOpts = defaultEditorActionKeybindingOptions; }
             this.ctor = ctor;
             this.id = id;
             this.label = label;
+            this.alias = alias;
             this.kbOpts = kbOpts;
         }
         return EditorActionDescriptor;
@@ -99,10 +100,11 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/uri', 'vs
         return SimpleEditorContributionDescriptor;
     }());
     var InternalEditorActionDescriptor = (function () {
-        function InternalEditorActionDescriptor(ctor, id, label) {
+        function InternalEditorActionDescriptor(ctor, id, label, alias) {
             this._descriptor = descriptors_1.createSyncDescriptor(ctor, {
                 id: id,
-                label: label
+                label: label,
+                alias: alias
             });
         }
         InternalEditorActionDescriptor.prototype.createInstance = function (instService, editor) {
@@ -155,7 +157,7 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/uri', 'vs
                 mac: desc.kbOpts.mac,
             };
             keybindingsRegistry_1.KeybindingsRegistry.registerCommandDesc(commandDesc);
-            this.editorContributions.push(new InternalEditorActionDescriptor(desc.ctor, desc.id, desc.label));
+            this.editorContributions.push(new InternalEditorActionDescriptor(desc.ctor, desc.id, desc.label, desc.alias));
         };
         EditorContributionRegistry.prototype.getEditorContributions2 = function () {
             return this.editorContributions.slice(0);

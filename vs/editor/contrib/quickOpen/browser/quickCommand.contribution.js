@@ -8,6 +8,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/brow
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(quickCommand_1.QuickCommandAction, quickCommand_1.QuickCommandAction.ID, nls.localize('label', "Command Palette"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: (browser.isIE11orEarlier ? keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.F1 : keyCodes_1.KeyCode.F1)
-    }));
+    }, 'Command Palette'));
 });
 //# sourceMappingURL=quickCommand.contribution.js.map

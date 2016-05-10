@@ -1,10 +1,9 @@
-define(["require", "exports", 'vs/nls', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/platform', 'vs/base/common/uri', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/base/common/strings', 'vs/base/common/paths'], function (require, exports, nls, extensionsRegistry_1, platform_1, uri_1, JSONContributionRegistry, strings, paths) {
+define(["require", "exports", 'vs/nls', 'vs/platform/extensions/common/extensionsRegistry', 'vs/base/common/uri', 'vs/base/common/strings', 'vs/base/common/paths'], function (require, exports, nls, extensionsRegistry_1, uri_1, strings, paths) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    var schemaRegistry = platform_1.Registry.as(JSONContributionRegistry.Extensions.JSONContribution);
     var configurationExtPoint = extensionsRegistry_1.ExtensionsRegistry.registerExtensionPoint('jsonValidation', {
         description: nls.localize('contributes.jsonValidation', 'Contributes json schema configuration.'),
         type: 'array',
@@ -57,11 +56,6 @@ define(["require", "exports", 'vs/nls', 'vs/platform/extensions/common/extension
                             collector.error(nls.localize('invalid.url.schema', "'configuration.jsonValidation.url' must start with 'http:', 'https:' or './' to reference schemas located in the extension"));
                             return;
                         }
-                        var fileMatch = extension.fileMatch;
-                        if (!strings.startsWith(extension.fileMatch, '/')) {
-                            fileMatch = '/' + fileMatch;
-                        }
-                        schemaRegistry.addSchemaFileAssociation(fileMatch, uri);
                     });
                 }
             });

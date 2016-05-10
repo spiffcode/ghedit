@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/lifecycle', 'vs/base/common/glob', 'vs/workbench/parts/extensions/common/extensions', 'vs/editor/common/services/modelService', 'vs/platform/storage/common/storage', 'vs/platform/workspace/common/workspace'], function (require, exports, objects_1, lifecycle_1, glob_1, extensions_1, modelService_1, storage_1, workspace_1) {
+define(["require", "exports", 'vs/base/common/collections', 'vs/base/common/lifecycle', 'vs/base/common/glob', 'vs/workbench/parts/extensions/common/extensions', 'vs/editor/common/services/modelService', 'vs/platform/storage/common/storage', 'vs/platform/workspace/common/workspace'], function (require, exports, collections_1, lifecycle_1, glob_1, extensions_1, modelService_1, storage_1, workspace_1) {
     "use strict";
     var ExtensionTipsService = (function () {
         function ExtensionTipsService(_galleryService, _modelService, _storageService, contextService) {
@@ -19,21 +19,41 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/lifecycl
             this._galleryService = _galleryService;
             this._modelService = _modelService;
             this._storageService = _storageService;
+            this.serviceId = extensions_1.IExtensionTipsService;
+            this._recommendations = Object.create(null);
+            this._availableRecommendations = Object.create(null);
             this._disposables = [];
             if (!this._galleryService.isEnabled()) {
                 return;
             }
-            this._recommendations = objects_1.toObject(JSON.parse(_storageService.get('extensionsAssistant/recommendations', storage_1.StorageScope.GLOBAL, '[]')), function (id) { return id; }, function () { return true; });
             var extensionTips = contextService.getConfiguration().env.extensionTips;
-            if (extensionTips) {
-                this._availableRecommendations = extensionTips;
-                this._disposables.push(this._modelService.onModelAdded(function (model) {
-                    _this._suggest(model.getAssociatedResource());
-                }));
-                for (var _i = 0, _a = this._modelService.getModels(); _i < _a.length; _i++) {
-                    var model = _a[_i];
-                    this._suggest(model.getAssociatedResource());
+            if (!extensionTips) {
+                return;
+            }
+            // retrieve ids of previous recommendations
+            var storedRecommendations = JSON.parse(_storageService.get('extensionsAssistant/recommendations', storage_1.StorageScope.GLOBAL, '[]'));
+            for (var _i = 0, storedRecommendations_1 = storedRecommendations; _i < storedRecommendations_1.length; _i++) {
+                var id = storedRecommendations_1[_i];
+                this._recommendations[id] = true;
+            }
+            // group ids by pattern, like {**/*.md} -> [ext.foo1, ext.bar2]
+            this._availableRecommendations = Object.create(null);
+            collections_1.forEach(extensionTips, function (entry) {
+                var id = entry.key, pattern = entry.value;
+                var ids = _this._availableRecommendations[pattern];
+                if (!ids) {
+                    _this._availableRecommendations[pattern] = [id];
                 }
+                else {
+                    ids.push(id);
+                }
+            });
+            this._disposables.push(this._modelService.onModelAdded(function (model) {
+                _this._suggest(model.getAssociatedResource());
+            }));
+            for (var _a = 0, _b = this._modelService.getModels(); _a < _b.length; _a++) {
+                var model = _b[_a];
+                this._suggest(model.getAssociatedResource());
             }
         }
         ExtensionTipsService.prototype.getRecommendations = function () {
@@ -46,11 +66,20 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/lifecycl
             if (!uri) {
                 return;
             }
-            var ids = Object.keys(this._availableRecommendations);
-            var recommendations = ids
-                .filter(function (id) { return glob_1.match(_this._availableRecommendations[id], uri.fsPath); });
-            recommendations.forEach(function (r) { return _this._recommendations[r] = true; });
-            this._storageService.store('extensionsAssistant/recommendations', JSON.stringify(Object.keys(this._recommendations)), storage_1.StorageScope.GLOBAL);
+            // re-schedule this bit of the operation to be off
+            // the critical path - in case glob-match is slow
+            setImmediate(function () {
+                collections_1.forEach(_this._availableRecommendations, function (entry) {
+                    var pattern = entry.key, ids = entry.value;
+                    if (glob_1.match(pattern, uri.fsPath)) {
+                        for (var _i = 0, ids_1 = ids; _i < ids_1.length; _i++) {
+                            var id = ids_1[_i];
+                            _this._recommendations[id] = true;
+                        }
+                    }
+                });
+                _this._storageService.store('extensionsAssistant/recommendations', JSON.stringify(Object.keys(_this._recommendations)), storage_1.StorageScope.GLOBAL);
+            });
         };
         ExtensionTipsService.prototype.dispose = function () {
             this._disposables = lifecycle_1.dispose(this._disposables);

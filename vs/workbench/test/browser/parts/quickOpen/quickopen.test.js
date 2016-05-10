@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestUtils', 'vs/platform/keybinding/test/common/mockKeybindingService', 'vs/platform/platform', 'vs/workbench/browser/parts/quickopen/editorHistoryModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/quickopen/quickOpenController', 'vs/base/parts/quickopen/common/quickOpen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/common/editor/stringEditorInput', 'vs/base/common/types', 'vs/base/common/paths', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/base/common/uri', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/common/events', 'vs/platform/editor/common/editor'], function (require, exports, assert, servicesTestUtils_1, mockKeybindingService_1, platform_1, editorHistoryModel_1, quickopen_1, quickOpenController_1, quickOpen_1, quickOpenAction_1, stringEditorInput_1, types_1, paths_1, baseEditor_1, uri_1, instantiationService_1, events_1, editor_1) {
+define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestUtils', 'vs/platform/keybinding/test/common/mockKeybindingService', 'vs/platform/platform', 'vs/workbench/browser/parts/quickopen/editorHistoryModel', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/quickopen/quickOpenController', 'vs/base/parts/quickopen/common/quickOpen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/workbench/common/editor/stringEditorInput', 'vs/base/common/types', 'vs/base/common/paths', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/base/common/uri', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/common/events', 'vs/platform/editor/common/editor'], function (require, exports, assert, servicesTestUtils_1, mockKeybindingService_1, platform_1, editorHistoryModel_1, quickopen_1, quickOpenController_1, quickOpen_1, quickOpenAction_1, stringEditorInput_1, types_1, paths_1, baseEditor_1, uri_1, serviceCollection_1, instantiationService_1, editorService_1, events_1, editor_1) {
     'use strict';
     function toResource(path) {
         return uri_1.default.file(paths_1.join('C:\\', path));
@@ -15,7 +15,7 @@ define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestU
         test('EditorHistoryEntry', function () {
             var editorService = new servicesTestUtils_1.TestEditorService();
             var contextService = new servicesTestUtils_1.TestContextService();
-            var inst = instantiationService_1.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             var model = new editorHistoryModel_1.EditorHistoryModel(editorService, null, contextService);
             var input1 = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name1', 'description', 'value1', 'text/plain', false);
             var entry1 = new editorHistoryModel_1.EditorHistoryEntry(editorService, contextService, input1, null, null, model);
@@ -45,7 +45,7 @@ define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestU
         test('EditorHistoryEntry is removed when open fails', function () {
             var editorService = new servicesTestUtils_1.TestEditorService();
             var contextService = new servicesTestUtils_1.TestContextService();
-            var inst = instantiationService_1.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             var model = new editorHistoryModel_1.EditorHistoryModel(editorService, null, contextService);
             var input1 = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name1', 'description', 'value1', 'text/plain', false);
             model.add(input1);
@@ -54,10 +54,10 @@ define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestU
             assert.equal(0, model.getEntries().length);
         });
         test('EditorHistoryModel', function () {
-            platform_1.Registry.as('workbench.contributions.editors').setInstantiationService(instantiationService_1.createInstantiationService({}));
+            platform_1.Registry.as('workbench.contributions.editors').setInstantiationService(new instantiationService_1.InstantiationService());
             var editorService = new servicesTestUtils_1.TestEditorService();
             var contextService = new servicesTestUtils_1.TestContextService();
-            var inst = instantiationService_1.createInstantiationService({ editorService: editorService });
+            var inst = new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([editorService_1.IWorkbenchEditorService, editorService]));
             var model = new editorHistoryModel_1.EditorHistoryModel(editorService, inst, contextService);
             var input1 = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name1', 'description', 'value1', 'text/plain', false);
             var input2 = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name2', 'description', 'value2', 'text/plain', false);
@@ -129,8 +129,8 @@ define(["require", "exports", 'assert', 'vs/workbench/test/browser/servicesTestU
             var eventService = new servicesTestUtils_1.TestEventService();
             var storageService = new servicesTestUtils_1.TestStorageService();
             var contextService = new servicesTestUtils_1.TestContextService();
-            var inst = instantiationService_1.createInstantiationService({ editorService: editorService });
-            var controller = new quickOpenController_1.QuickOpenController(eventService, storageService, editorService, null, null, null, contextService, new mockKeybindingService_1.MockKeybindingService());
+            var inst = new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([editorService_1.IWorkbenchEditorService, editorService]));
+            var controller = new quickOpenController_1.QuickOpenController(eventService, storageService, editorService, null, null, null, contextService, new mockKeybindingService_1.MockKeybindingService(), null);
             controller.create();
             assert.equal(0, controller.getEditorHistoryModel().getEntries().length);
             var cinput1 = inst.createInstance(fileInputCtor, toResource('Hello World'), 'text/plain', void 0);

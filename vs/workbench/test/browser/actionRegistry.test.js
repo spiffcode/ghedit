@@ -22,10 +22,12 @@ define(["require", "exports", 'assert', 'vs/platform/platform', 'vs/platform/act
             var d = new actions_1.SyncActionDescriptor(MyClass, 'id', 'name');
             var oldActions = Registry.getWorkbenchActions().slice(0);
             var oldCount = Registry.getWorkbenchActions().length;
-            Registry.registerWorkbenchAction(d);
-            Registry.registerWorkbenchAction(d);
+            Registry.registerWorkbenchAction(d, 'My Alias', 'category');
+            Registry.registerWorkbenchAction(d, null);
             assert.equal(Registry.getWorkbenchActions().length, 1 + oldCount);
             assert.strictEqual(d, Registry.getWorkbenchAction('id'));
+            assert.deepEqual(Registry.getAlias(d.id), 'My Alias');
+            assert.equal(Registry.getCategory(d.id), 'category');
             Registry.setWorkbenchActions(oldActions);
         });
         test('Workbench Action Bar prepareActions()', function () {

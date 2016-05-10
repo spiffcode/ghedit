@@ -11,10 +11,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/electron-browser/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', './extensionsActions', './extensionTipsService', 'vs/workbench/browser/quickopen', 'electron'], function (require, exports, nls, errors, platform, winjs_base_1, extensions_1, instantiation_1, message_1, severity_1, contextService_1, actions_1, wbaregistry, actions_2, extensionsActions_1, extensionTipsService_1, quickopen_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/electron-browser/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', './extensionsActions', 'vs/workbench/browser/quickopen', 'electron'], function (require, exports, nls, errors, platform, winjs_base_1, extensions_1, instantiation_1, message_1, severity_1, contextService_1, actions_1, wbaregistry, actions_2, extensionsActions_1, quickopen_1, electron_1) {
     "use strict";
     var ExtensionsWorkbenchExtension = (function () {
-        function ExtensionsWorkbenchExtension(instantiationService, extensionsService, messageService, contextService, galleryService) {
+        function ExtensionsWorkbenchExtension(instantiationService, extensionsService, messageService, contextService, extenstionTips, // this is to eagerly start the service
+            galleryService) {
             this.instantiationService = instantiationService;
             this.extensionsService = extensionsService;
             this.messageService = messageService;
@@ -24,18 +25,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/platform/pl
             if (options.extensionsToInstall && options.extensionsToInstall.length) {
                 this.install(options.extensionsToInstall).done(null, errors.onUnexpectedError);
             }
-            // add service
-            instantiationService.addSingleton(extensions_1.IExtensionTipsService, this.instantiationService.createInstance(extensionTipsService_1.ExtensionTipsService));
             var actionRegistry = platform.Registry.as(wbaregistry.Extensions.WorkbenchActions);
-            actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListExtensionsAction, extensionsActions_1.ListExtensionsAction.ID, extensionsActions_1.ListExtensionsAction.LABEL), extensions_1.ExtensionsLabel);
+            actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListExtensionsAction, extensionsActions_1.ListExtensionsAction.ID, extensionsActions_1.ListExtensionsAction.LABEL), 'Extensions: Show Installed Extensions', extensions_1.ExtensionsLabel);
             platform.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen', 'LocalExtensionsHandler', 'ext ', nls.localize('localExtensionsCommands', "Show Local Extensions")));
             if (galleryService.isEnabled()) {
-                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.InstallExtensionAction, extensionsActions_1.InstallExtensionAction.ID, extensionsActions_1.InstallExtensionAction.LABEL), extensions_1.ExtensionsLabel);
+                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.InstallExtensionAction, extensionsActions_1.InstallExtensionAction.ID, extensionsActions_1.InstallExtensionAction.LABEL), 'Extensions: Install Extension', extensions_1.ExtensionsLabel);
                 platform.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen', 'GalleryExtensionsHandler', 'ext install ', nls.localize('galleryExtensionsCommands', "Install Gallery Extensions"), true));
-                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListOutdatedExtensionsAction, extensionsActions_1.ListOutdatedExtensionsAction.ID, extensionsActions_1.ListOutdatedExtensionsAction.LABEL), extensions_1.ExtensionsLabel);
+                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListOutdatedExtensionsAction, extensionsActions_1.ListOutdatedExtensionsAction.ID, extensionsActions_1.ListOutdatedExtensionsAction.LABEL), 'Extensions: Show Outdated Extensions', extensions_1.ExtensionsLabel);
                 platform.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen', 'OutdatedExtensionsHandler', 'ext update ', nls.localize('outdatedExtensionsCommands', "Update Outdated Extensions")));
                 // add extension tips services
-                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListSuggestedExtensionsAction, extensionsActions_1.ListSuggestedExtensionsAction.ID, extensionsActions_1.ListSuggestedExtensionsAction.LABEL), extensions_1.ExtensionsLabel);
+                actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(extensionsActions_1.ListSuggestedExtensionsAction, extensionsActions_1.ListSuggestedExtensionsAction.ID, extensionsActions_1.ListSuggestedExtensionsAction.LABEL), 'Extensions: Show Extension Recommendations', extensions_1.ExtensionsLabel);
                 platform.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen', 'SuggestedExtensionHandler', 'ext recommend ', nls.localize('suggestedExtensionsCommands', "Show Extension Recommendations")));
             }
         }
@@ -66,7 +65,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/platform/pl
             __param(1, extensions_1.IExtensionsService),
             __param(2, message_1.IMessageService),
             __param(3, contextService_1.IWorkspaceContextService),
-            __param(4, extensions_1.IGalleryService)
+            __param(4, extensions_1.IExtensionTipsService),
+            // this is to eagerly start the service
+            __param(5, extensions_1.IGalleryService)
         ], ExtensionsWorkbenchExtension);
         return ExtensionsWorkbenchExtension;
     }());

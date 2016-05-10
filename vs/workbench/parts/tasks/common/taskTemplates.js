@@ -10,7 +10,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         autoDetect: true,
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "gulp",',
@@ -26,7 +26,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         autoDetect: true,
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "grunt",',
@@ -43,7 +43,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         autoDetect: false,
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "npm",',
@@ -74,7 +74,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         description: nls.localize('tsc.config', 'Compiles a TypeScript project'),
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "tsc",',
@@ -92,7 +92,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         description: nls.localize('tsc.watch', 'Compiles a TypeScript project in watch mode'),
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "tsc",',
@@ -112,7 +112,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         description: nls.localize('dotnetCore', 'Executes .NET Core build command'),
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "dotnet",',
@@ -137,7 +137,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         description: nls.localize('msbuild', 'Executes the build target'),
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "msbuild",',
@@ -166,7 +166,7 @@ define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
         description: nls.localize('externalCommand', 'Example to run an arbitrary external command'),
         content: [
             '{',
-            '\t// See http://go.microsoft.com/fwlink/?LinkId=733558',
+            '\t// See https://go.microsoft.com/fwlink/?LinkId=733558',
             '\t// for the documentation about the tasks.json format',
             '\t"version": "0.1.0",',
             '\t"command": "echo",',

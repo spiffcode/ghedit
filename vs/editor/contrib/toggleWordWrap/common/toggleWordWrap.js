@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommonExtensions'], function (require, exports, nls, keyCodes_1, winjs_base_1, defaultConfig_1, editorAction_1, editorActionEnablement_1, editorCommonExtensions_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/common/winjs.base', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/editor/common/editorCommonExtensions'], function (require, exports, nls, keyCodes_1, winjs_base_1, editorAction_1, editorActionEnablement_1, editorCommonExtensions_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -20,7 +20,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
                 wrappingInfo.wrappingColumn = 0;
             }
             else {
-                wrappingInfo.wrappingColumn = defaultConfig_1.DefaultConfig.editor.wrappingColumn;
+                wrappingInfo.wrappingColumn = -1;
             }
             this.editor.updateOptions(wrappingInfo);
             return winjs_base_1.TPromise.as(true);
@@ -34,6 +34,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_Z,
         mac: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_Z },
         linux: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_Z }
-    }));
+    }, 'View: Toggle Word Wrap'));
 });
 //# sourceMappingURL=toggleWordWrap.js.map

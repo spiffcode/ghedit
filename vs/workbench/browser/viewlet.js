@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/platform/platform', 'vs/base/browser/builder', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/browser/actionBarRegistry', 'vs/base/browser/ui/toolbar/toolbar', 'vs/base/browser/dnd', 'vs/base/common/lifecycle', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/browser/composite', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message', 'vs/platform/selection/common/selection'], function (require, exports, nls, winjs_base_1, DOM, errors, platform_1, builder_1, actions_1, actionbar_1, actionBarRegistry_1, toolbar_1, dnd_1, lifecycle_1, splitview_1, viewletService_1, editorService_1, composite_1, contextView_1, message_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/common/errors', 'vs/platform/platform', 'vs/base/browser/builder', 'vs/base/common/actions', 'vs/base/browser/ui/actionbar/actionbar', 'vs/workbench/browser/actionBarRegistry', 'vs/base/browser/ui/toolbar/toolbar', 'vs/base/browser/dnd', 'vs/base/common/lifecycle', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/browser/composite', 'vs/platform/contextview/browser/contextView', 'vs/platform/message/common/message'], function (require, exports, nls, winjs_base_1, DOM, errors, platform_1, builder_1, actions_1, actionbar_1, actionBarRegistry_1, toolbar_1, dnd_1, lifecycle_1, splitview_1, viewletService_1, editorService_1, composite_1, contextView_1, message_1) {
     "use strict";
     var Viewlet = (function (_super) {
         __extends(Viewlet, _super);
@@ -100,12 +100,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
         };
         ViewerViewlet.prototype.getControl = function () {
             return this.viewer;
-        };
-        ViewerViewlet.prototype.getSelection = function () {
-            if (!this.viewer) {
-                return new selection_1.StructuredSelection([]); // return early if viewlet has not yet been created
-            }
-            return new selection_1.StructuredSelection(this.viewer.getSelection());
         };
         ViewerViewlet.prototype.dispose = function () {
             // Dispose Viewer
@@ -285,9 +279,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
         AdaptiveCollapsibleViewletView.prototype.focusBody = function () {
             focus(this.tree);
         };
-        AdaptiveCollapsibleViewletView.prototype.getSelection = function () {
-            return new selection_1.StructuredSelection(this.tree.getSelection());
-        };
         AdaptiveCollapsibleViewletView.prototype.reveal = function (element, relativeTop) {
             return reveal(this.tree, element, relativeTop);
         };
@@ -376,9 +367,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
         };
         CollapsibleViewletView.prototype.focusBody = function () {
             focus(this.tree);
-        };
-        CollapsibleViewletView.prototype.getSelection = function () {
-            return new selection_1.StructuredSelection(this.tree.getSelection());
         };
         CollapsibleViewletView.prototype.reveal = function (element, relativeTop) {
             return reveal(this.tree, element, relativeTop);

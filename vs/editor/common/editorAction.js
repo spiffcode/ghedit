@@ -83,6 +83,9 @@ define(["require", "exports", 'vs/base/common/actions', 'vs/base/common/strings'
         EditorAction.prototype.getEnablementState = function () {
             return true;
         };
+        EditorAction.prototype.getAlias = function () {
+            return this._descriptor.alias;
+        };
         return EditorAction;
     }(actions_1.Action));
     exports.EditorAction = EditorAction;

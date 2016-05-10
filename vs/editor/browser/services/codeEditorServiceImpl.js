@@ -61,6 +61,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/strings'
         DecorationRenderOptions.prototype.dispose = function () {
             dom.removeCSSRulesWithPrefix(CSSNameHelper.getDeletionPrefixFor(ThemeType.Light, this._key), this._styleSheet);
             dom.removeCSSRulesWithPrefix(CSSNameHelper.getDeletionPrefixFor(ThemeType.Dark, this._key), this._styleSheet);
+            dom.removeCSSRulesWithPrefix(CSSNameHelper.getDeletionPrefixFor(ThemeType.HighContrastBlack, this._key), this._styleSheet);
         };
         /**
          * Build the CSS for decorations styled via `className`.
@@ -139,6 +140,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/strings'
                 }
                 if (darkCSS.length > 0) {
                     this._createCSSSelector(styleSheet, ThemeType.Dark, key, ruleType, darkCSS);
+                    this._createCSSSelector(styleSheet, ThemeType.HighContrastBlack, key, ruleType, darkCSS);
                 }
                 return CSSNameHelper.getClassName(key, ruleType);
             }
@@ -169,6 +171,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/strings'
     (function (ThemeType) {
         ThemeType[ThemeType["Light"] = 0] = "Light";
         ThemeType[ThemeType["Dark"] = 1] = "Dark";
+        ThemeType[ThemeType["HighContrastBlack"] = 2] = "HighContrastBlack";
     })(ThemeType || (ThemeType = {}));
     var ModelDecorationCSSRuleType;
     (function (ModelDecorationCSSRuleType) {
@@ -183,7 +186,10 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/strings'
             if (theme === ThemeType.Light) {
                 return '.monaco-editor.vs';
             }
-            return '.monaco-editor.vs-dark';
+            if (theme === ThemeType.Dark) {
+                return '.monaco-editor.vs-dark';
+            }
+            return '.monaco-editor.hc-black';
         };
         CSSNameHelper.getClassName = function (key, type) {
             return 'ced-' + key + '-' + type;

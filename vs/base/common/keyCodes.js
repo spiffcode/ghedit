@@ -491,7 +491,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform'], function (re
         };
         /**
          * This prints the binding in a format suitable for electron's accelerators.
-         * See https://github.com/atom/electron/blob/master/docs/api/accelerator.md
+         * See https://github.com/electron/electron/blob/master/docs/api/accelerator.md
          */
         Keybinding._toElectronAccelerator = function (value, Platform) {
             if (BinaryKeybindings.hasChord(value)) {
@@ -659,7 +659,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform'], function (re
         };
         /**
          * This prints the binding in a format suitable for electron's accelerators.
-         * See https://github.com/atom/electron/blob/master/docs/api/accelerator.md
+         * See https://github.com/electron/electron/blob/master/docs/api/accelerator.md
          */
         Keybinding.prototype._toElectronAccelerator = function (Platform) {
             if (Platform === void 0) { Platform = defaultPlatform; }

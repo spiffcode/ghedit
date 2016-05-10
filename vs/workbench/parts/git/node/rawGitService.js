@@ -1,4 +1,4 @@
-define(["require", "exports", 'path', 'vs/base/common/winjs.base', 'vs/base/node/mime', 'vs/base/node/pfs', 'vs/workbench/parts/git/node/git.lib', 'vs/workbench/parts/git/common/git'], function (require, exports, path, winjs_base_1, mime, pfs, git_lib_1, git_1) {
+define(["require", "exports", 'path', 'vs/base/common/winjs.base', 'vs/base/node/mime', 'vs/base/node/pfs', 'vs/workbench/parts/git/node/git.lib', 'vs/workbench/parts/git/common/git', 'vs/base/common/event'], function (require, exports, path, winjs_base_1, mime, pfs, git_lib_1, git_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,8 +6,24 @@ define(["require", "exports", 'path', 'vs/base/common/winjs.base', 'vs/base/node
     'use strict';
     var RawGitService = (function () {
         function RawGitService(repo) {
+            var _this = this;
             this.repo = repo;
+            var listener;
+            this._onOutput = new event_1.Emitter({
+                onFirstListenerAdd: function () {
+                    listener = _this.repo.onOutput(function (output) { return _this._onOutput.fire(output); });
+                },
+                onLastListenerRemove: function () {
+                    listener();
+                    listener = null;
+                }
+            });
         }
+        Object.defineProperty(RawGitService.prototype, "onOutput", {
+            get: function () { return this._onOutput.event; },
+            enumerable: true,
+            configurable: true
+        });
         RawGitService.prototype.getVersion = function () {
             return winjs_base_1.TPromise.as(this.repo.version);
         };
@@ -148,7 +164,7 @@ define(["require", "exports", 'path', 'vs/base/common/winjs.base', 'vs/base/node
         };
         // careful, this buffers the whole object into memory
         RawGitService.prototype.show = function (filePath, treeish) {
-            treeish = treeish === '~' ? '' : treeish;
+            treeish = (!treeish || treeish === '~') ? '' : treeish;
             return this.repo.buffer(treeish + ':' + filePath).then(null, function (e) {
                 if (e instanceof git_lib_1.GitError) {
                     return ''; // mostly untracked files end up in a git error
@@ -156,82 +172,8 @@ define(["require", "exports", 'path', 'vs/base/common/winjs.base', 'vs/base/node
                 return winjs_base_1.TPromise.wrapError(e);
             });
         };
-        RawGitService.prototype.onOutput = function () {
-            var _this = this;
-            var cancel;
-            return new winjs_base_1.Promise(function (c, e, p) {
-                cancel = _this.repo.onOutput(p);
-            }, function () { return cancel(); });
-        };
         return RawGitService;
     }());
     exports.RawGitService = RawGitService;
-    var DelayedRawGitService = (function () {
-        function DelayedRawGitService(raw) {
-            this.raw = raw;
-        }
-        DelayedRawGitService.prototype.getVersion = function () {
-            return this.raw.then(function (raw) { return raw.getVersion(); });
-        };
-        DelayedRawGitService.prototype.serviceState = function () {
-            return this.raw.then(function (raw) { return raw.serviceState(); });
-        };
-        DelayedRawGitService.prototype.status = function () {
-            return this.raw.then(function (raw) { return raw.status(); });
-        };
-        DelayedRawGitService.prototype.init = function () {
-            return this.raw.then(function (raw) { return raw.init(); });
-        };
-        DelayedRawGitService.prototype.add = function (filesPaths) {
-            return this.raw.then(function (raw) { return raw.add(filesPaths); });
-        };
-        DelayedRawGitService.prototype.stage = function (filePath, content) {
-            return this.raw.then(function (raw) { return raw.stage(filePath, content); });
-        };
-        DelayedRawGitService.prototype.branch = function (name, checkout) {
-            return this.raw.then(function (raw) { return raw.branch(name, checkout); });
-        };
-        DelayedRawGitService.prototype.checkout = function (treeish, filePaths) {
-            return this.raw.then(function (raw) { return raw.checkout(treeish, filePaths); });
-        };
-        DelayedRawGitService.prototype.clean = function (filePaths) {
-            return this.raw.then(function (raw) { return raw.clean(filePaths); });
-        };
-        DelayedRawGitService.prototype.undo = function () {
-            return this.raw.then(function (raw) { return raw.undo(); });
-        };
-        DelayedRawGitService.prototype.reset = function (treeish, hard) {
-            return this.raw.then(function (raw) { return raw.reset(treeish, hard); });
-        };
-        DelayedRawGitService.prototype.revertFiles = function (treeish, filePaths) {
-            return this.raw.then(function (raw) { return raw.revertFiles(treeish, filePaths); });
-        };
-        DelayedRawGitService.prototype.fetch = function () {
-            return this.raw.then(function (raw) { return raw.fetch(); });
-        };
-        DelayedRawGitService.prototype.pull = function (rebase) {
-            return this.raw.then(function (raw) { return raw.pull(rebase); });
-        };
-        DelayedRawGitService.prototype.push = function (origin, name, options) {
-            return this.raw.then(function (raw) { return raw.push(origin, name, options); });
-        };
-        DelayedRawGitService.prototype.sync = function () {
-            return this.raw.then(function (raw) { return raw.sync(); });
-        };
-        DelayedRawGitService.prototype.commit = function (message, amend, stage) {
-            return this.raw.then(function (raw) { return raw.commit(message, amend, stage); });
-        };
-        DelayedRawGitService.prototype.detectMimetypes = function (path, treeish) {
-            return this.raw.then(function (raw) { return raw.detectMimetypes(path, treeish); });
-        };
-        DelayedRawGitService.prototype.show = function (path, treeish) {
-            return this.raw.then(function (raw) { return raw.show(path, treeish); });
-        };
-        DelayedRawGitService.prototype.onOutput = function () {
-            return this.raw.then(function (raw) { return raw.onOutput(); });
-        };
-        return DelayedRawGitService;
-    }());
-    exports.DelayedRawGitService = DelayedRawGitService;
 });
 //# sourceMappingURL=rawGitService.js.map

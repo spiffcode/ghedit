@@ -137,11 +137,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.RightArrow,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.RightArrow }
-    }));
+    }, 'Expand Select'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShrinkSelectionAction, ShrinkSelectionAction.ID, nls.localize('smartSelect.shrink', "Shrink Select"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.LeftArrow,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.LeftArrow }
-    }));
+    }, 'Shrink Select'));
 });
 //# sourceMappingURL=smartSelect.js.map

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/mime', 'vs/platform/instantiation/common/descriptors', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/thread/common/thread', 'vs/editor/common/modes/abstractMode', 'vs/editor/common/modes/modesRegistry', 'vs/editor/common/modes/monarch/monarchCompile', 'vs/editor/common/modes/monarch/monarchDefinition', 'vs/editor/common/modes/monarch/monarchLexer', 'vs/editor/common/modes/supports/declarationSupport', 'vs/editor/common/modes/supports/richEditSupport', 'vs/editor/common/services/languagesRegistry', 'vs/editor/common/services/modeService', 'vs/platform/configuration/common/configuration'], function (require, exports, nls, errors_1, event_1, lifecycle_1, objects, paths, winjs_base_1, mime, descriptors_1, extensionsRegistry_1, thread_1, abstractMode_1, modesRegistry_1, monarchCompile_1, monarchDefinition_1, monarchLexer_1, declarationSupport_1, richEditSupport_1, languagesRegistry_1, modeService_1, configuration_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/mime', 'vs/platform/instantiation/common/descriptors', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/thread/common/thread', 'vs/editor/common/modes/abstractMode', 'vs/editor/common/modes/modesRegistry', 'vs/editor/common/modes/monarch/monarchCompile', 'vs/editor/common/modes/monarch/monarchDefinition', 'vs/editor/common/modes/monarch/monarchLexer', 'vs/editor/common/modes/supports/declarationSupport', 'vs/editor/common/modes/supports/richEditSupport', 'vs/editor/common/services/languagesRegistry', 'vs/editor/common/services/modeService'], function (require, exports, nls, errors_1, event_1, lifecycle_1, objects, paths, winjs_base_1, mime, descriptors_1, extensionsRegistry_1, thread_1, abstractMode_1, modesRegistry_1, monarchCompile_1, monarchDefinition_1, monarchLexer_1, declarationSupport_1, richEditSupport_1, languagesRegistry_1, modeService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -403,14 +403,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
                 }
                 modesRegistry_1.ModesRegistry.registerLanguages(allValidLanguages);
             });
-            this._configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationChange(e.config); });
+            this._configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationChange(e.config); });
         }
         MainThreadModeServiceImpl.prototype.onReady = function () {
             var _this = this;
             if (!this._onReadyPromise) {
-                var configuration_2 = this._configurationService.getConfiguration();
+                var configuration_1 = this._configurationService.getConfiguration();
                 this._onReadyPromise = this._extensionService.onReady().then(function () {
-                    _this.onConfigurationChange(configuration_2);
+                    _this.onConfigurationChange(configuration_1);
                     return true;
                 });
             }

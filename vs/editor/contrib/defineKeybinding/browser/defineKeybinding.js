@@ -384,6 +384,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(DefineKeybindingAction, DefineKeybindingAction.ID, NLS_DEFINE_ACTION_LABEL, {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K)
-    }));
+    }, 'Define Keybinding'));
 });
 //# sourceMappingURL=defineKeybinding.js.map

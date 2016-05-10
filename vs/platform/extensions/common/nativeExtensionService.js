@@ -112,6 +112,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/paths'
             extensionsRegistry_1.ExtensionsRegistry.registerExtensions(extensionDescriptions);
             messages.forEach(function (entry) { return _this._handleMessage(entry); });
             this._triggerOnReady();
+            return;
         };
         MainProcessExtensionService.prototype.$onExtensionActivated = function (extensionId) {
             this._activatedExtensions[extensionId] = new MainProcessSuccessExtension();
@@ -183,7 +184,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/paths'
          * This class is constructed manually because it is a service, so it doesn't use any ctor injection
          */
         function ExtHostExtensionService(threadService, telemetryService) {
-            _super.call(this, true);
+            _super.call(this, false);
             threadService.registerRemotableInstance(ExtHostExtensionService, this);
             this._threadService = threadService;
             this._storage = new remotable_storage_1.ExtHostStorage(threadService);
@@ -229,8 +230,12 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/paths'
             }
         };
         ExtHostExtensionService.prototype.registrationDone = function (messages) {
-            this._triggerOnReady();
-            this._proxy.$onExtensionHostReady(extensionsRegistry_1.ExtensionsRegistry.getAllExtensionDescriptions(), messages);
+            var _this = this;
+            this._proxy.$onExtensionHostReady(extensionsRegistry_1.ExtensionsRegistry.getAllExtensionDescriptions(), messages).then(function () {
+                // Wait for the main process to acknowledge its receival of the extensions descriptions
+                // before allowing extensions to be activated
+                _this._triggerOnReady();
+            });
         };
         // -- overwriting AbstractExtensionService
         ExtHostExtensionService.prototype._showMessage = function (severity, msg) {
@@ -326,7 +331,8 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/paths'
             id: extensionDescription.id,
             name: extensionDescription.name,
             publisherDisplayName: extensionDescription.publisher,
-            activationEvents: extensionDescription.activationEvents ? extensionDescription.activationEvents.join(',') : null
+            activationEvents: extensionDescription.activationEvents ? extensionDescription.activationEvents.join(',') : null,
+            isBuiltin: extensionDescription.isBuiltin
         };
         for (var contribution in extensionDescription.contributes) {
             var contributionDetails = extensionDescription.contributes[contribution];

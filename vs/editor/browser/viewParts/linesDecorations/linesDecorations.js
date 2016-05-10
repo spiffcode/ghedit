@@ -62,16 +62,10 @@ define(["require", "exports", 'vs/editor/browser/viewParts/glyphMargin/glyphMarg
             return true;
         };
         LinesDecorationsOverlay.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged;
         };
         LinesDecorationsOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        LinesDecorationsOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        LinesDecorationsOverlay.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
         };
         // --- end event handlers
         LinesDecorationsOverlay.prototype._getDecorations = function (ctx) {

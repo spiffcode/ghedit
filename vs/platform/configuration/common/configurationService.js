@@ -1,51 +1,46 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/common/objects', 'vs/base/common/errors', './model', 'vs/base/common/async', 'vs/base/common/lifecycle', 'vs/base/common/collections', './configuration', 'vs/platform/files/common/files', './configurationRegistry', 'vs/platform/platform', 'vs/base/common/event'], function (require, exports, paths, winjs_base_1, eventEmitter_1, objects, errors, model, async_1, lifecycle_1, collections, configuration_1, files_1, configurationRegistry_1, platform_1, event_1) {
+define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/objects', 'vs/base/common/errors', './model', 'vs/base/common/async', 'vs/base/common/lifecycle', 'vs/base/common/collections', './configuration', 'vs/platform/files/common/files', './configurationRegistry', 'vs/platform/platform', 'vs/base/common/event'], function (require, exports, paths, winjs_base_1, objects, errors, model, async_1, lifecycle_1, collections, configuration_1, files_1, configurationRegistry_1, platform_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    var ConfigurationService = (function (_super) {
-        __extends(ConfigurationService, _super);
+    var ConfigurationService = (function () {
         function ConfigurationService(contextService, eventService, workspaceSettingsRootFolder) {
             if (workspaceSettingsRootFolder === void 0) { workspaceSettingsRootFolder = '.vscode'; }
-            _super.call(this);
             this.serviceId = configuration_1.IConfigurationService;
+            this._onDidUpdateConfiguration = new event_1.Emitter();
             this.contextService = contextService;
             this.eventService = eventService;
             this.workspaceSettingsRootFolder = workspaceSettingsRootFolder;
             this.workspaceFilePathToConfiguration = Object.create(null);
             this.cachedConfig = {
-                merged: {},
-                consolidated: { contents: {}, parseErrors: [] },
-                globals: { contents: {}, parseErrors: [] }
+                config: {}
             };
-            this.onDidUpdateConfiguration = event_1.fromEventEmitter(this, configuration_1.ConfigurationServiceEventTypes.UPDATED);
             this.registerListeners();
         }
+        Object.defineProperty(ConfigurationService.prototype, "onDidUpdateConfiguration", {
+            get: function () {
+                return this._onDidUpdateConfiguration.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         ConfigurationService.prototype.registerListeners = function () {
             var _this = this;
             var unbind = this.eventService.addListener(files_1.EventType.FILE_CHANGES, function (events) { return _this.handleFileEvents(events); });
-            var subscription = platform_1.Registry.as(configurationRegistry_1.Extensions.Configuration).onDidRegisterConfiguration(function () { return _this.handleConfigurationChange(); });
+            var subscription = platform_1.Registry.as(configurationRegistry_1.Extensions.Configuration).onDidRegisterConfiguration(function () { return _this.onDidRegisterConfiguration(); });
             this.callOnDispose = function () {
                 unbind();
                 subscription.dispose();
             };
         };
         ConfigurationService.prototype.initialize = function () {
-            return this.loadConfiguration().then(function () { return null; });
+            return this.doLoadConfiguration().then(function () { return null; });
         };
         ConfigurationService.prototype.getConfiguration = function (section) {
-            var result = section ? this.cachedConfig.merged[section] : this.cachedConfig.merged;
-            var parseErrors = this.cachedConfig.consolidated.parseErrors;
-            if (this.cachedConfig.globals.parseErrors) {
-                parseErrors.push.apply(parseErrors, this.cachedConfig.globals.parseErrors);
-            }
-            if (parseErrors.length > 0) {
+            var result = section ? this.cachedConfig.config[section] : this.cachedConfig.config;
+            var parseErrors = this.cachedConfig.parseErrors;
+            if (parseErrors && parseErrors.length > 0) {
                 if (!result) {
                     result = {};
                 }
@@ -54,13 +49,14 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base
             return result;
         };
         ConfigurationService.prototype.loadConfiguration = function (section) {
-            var _this = this;
-            return this.doLoadConfiguration().then(function (res) {
-                _this.cachedConfig = res;
-                return _this.getConfiguration(section);
-            });
+            // Reset caches to ensure we are hitting the disk
+            this.bulkFetchFromWorkspacePromise = null;
+            this.workspaceFilePathToConfiguration = Object.create(null);
+            // Load configuration
+            return this.doLoadConfiguration(section);
         };
-        ConfigurationService.prototype.doLoadConfiguration = function () {
+        ConfigurationService.prototype.doLoadConfiguration = function (section) {
+            var _this = this;
             // Load globals
             var globals = this.loadGlobalConfiguration();
             // Load workspace locals
@@ -72,11 +68,20 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base
                 consolidated.contents, // source: workspace configured values
                 true // overwrite
                 );
+                var parseErrors = [];
+                if (consolidated.parseErrors) {
+                    parseErrors = consolidated.parseErrors;
+                }
+                if (globals.parseErrors) {
+                    parseErrors.push.apply(parseErrors, globals.parseErrors);
+                }
                 return {
-                    merged: merged,
-                    consolidated: consolidated,
-                    globals: globals
+                    config: merged,
+                    parseErrors: parseErrors
                 };
+            }).then(function (res) {
+                _this.cachedConfig = res;
+                return _this.getConfiguration(section);
             });
         };
         ConfigurationService.prototype.loadGlobalConfiguration = function () {
@@ -112,11 +117,20 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base
                 return winjs_base_1.TPromise.join(_this.workspaceFilePathToConfiguration);
             });
         };
+        ConfigurationService.prototype.onDidRegisterConfiguration = function () {
+            // a new configuration was registered (e.g. from an extension) and this means we do have a new set of
+            // configuration defaults. since we already loaded the merged set of configuration (defaults < global < workspace),
+            // we want to update the defaults with the new values. So we take our cached config and mix it into the new
+            // defaults that we got, overwriting any value present.
+            this.cachedConfig.config = objects.mixin(objects.clone(model.getDefaultValues()), this.cachedConfig.config, true /* overwrite */);
+            // emit this as update to listeners
+            this._onDidUpdateConfiguration.fire({ config: this.cachedConfig.config });
+        };
         ConfigurationService.prototype.handleConfigurationChange = function () {
             var _this = this;
             if (!this.reloadConfigurationScheduler) {
                 this.reloadConfigurationScheduler = new async_1.RunOnceScheduler(function () {
-                    _this.loadConfiguration().then(function (config) { return _this.emit(configuration_1.ConfigurationServiceEventTypes.UPDATED, { config: config }); }).done(null, errors.onUnexpectedError);
+                    _this.doLoadConfiguration().then(function (config) { return _this._onDidUpdateConfiguration.fire({ config: config }); }).done(null, errors.onUnexpectedError);
                 }, ConfigurationService.RELOAD_CONFIGURATION_DELAY);
             }
             if (!this.reloadConfigurationScheduler.isScheduled()) {
@@ -161,11 +175,11 @@ define(["require", "exports", 'vs/base/common/paths', 'vs/base/common/winjs.base
                 this.reloadConfigurationScheduler.dispose();
             }
             this.callOnDispose = lifecycle_1.cAll(this.callOnDispose);
-            _super.prototype.dispose.call(this);
+            this._onDidUpdateConfiguration.dispose();
         };
         ConfigurationService.RELOAD_CONFIGURATION_DELAY = 50;
         return ConfigurationService;
-    }(eventEmitter_1.EventEmitter));
+    }());
     exports.ConfigurationService = ConfigurationService;
 });
 //# sourceMappingURL=configurationService.js.map

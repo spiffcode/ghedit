@@ -16,11 +16,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/common/errors', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/platform', 'vs/workbench/common/events', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/part', 'vs/workbench/browser/parts/activitybar/activityAction', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/activity/common/activityService', 'vs/workbench/services/part/common/partService', 'vs/css!./media/activityBarPart'], function (require, exports, nls, winjs_base_1, builder_1, errors, actionbar_1, platform_1, events_1, viewlet_1, part_1, activityAction_1, viewletService_1, activityService_1, partService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/base/common/errors', 'vs/base/browser/ui/actionbar/actionbar', 'vs/platform/platform', 'vs/workbench/common/events', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/part', 'vs/workbench/browser/parts/activitybar/activityAction', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/activity/common/activityService', 'vs/workbench/services/part/common/partService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/css!./media/activityBarPart'], function (require, exports, nls, winjs_base_1, builder_1, errors, actionbar_1, platform_1, events_1, viewlet_1, part_1, activityAction_1, viewletService_1, activityService_1, partService_1, contextView_1, event_1, instantiation_1, message_1, telemetry_1, keybindingService_1) {
     'use strict';
     var ActivitybarPart = (function (_super) {
         __extends(ActivitybarPart, _super);
-        function ActivitybarPart(viewletService, messageService, telemetryService, eventService, contextMenuService, keybindingService, id) {
+        function ActivitybarPart(id, viewletService, messageService, telemetryService, eventService, contextMenuService, keybindingService, instantiationService) {
             _super.call(this, id);
             this.viewletService = viewletService;
             this.messageService = messageService;
@@ -28,14 +28,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
             this.eventService = eventService;
             this.contextMenuService = contextMenuService;
             this.keybindingService = keybindingService;
+            this.instantiationService = instantiationService;
             this.serviceId = activityService_1.IActivityService;
             this.activityActionItems = {};
             this.viewletIdToActions = {};
             this.registerListeners();
         }
-        ActivitybarPart.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         ActivitybarPart.prototype.registerListeners = function () {
             var _this = this;
             // Activate viewlet action on opening of a viewlet
@@ -177,6 +175,15 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
             }
             _super.prototype.dispose.call(this);
         };
+        ActivitybarPart = __decorate([
+            __param(1, viewletService_1.IViewletService),
+            __param(2, message_1.IMessageService),
+            __param(3, telemetry_1.ITelemetryService),
+            __param(4, event_1.IEventService),
+            __param(5, contextView_1.IContextMenuService),
+            __param(6, keybindingService_1.IKeybindingService),
+            __param(7, instantiation_1.IInstantiationService)
+        ], ActivitybarPart);
         return ActivitybarPart;
     }(part_1.Part));
     exports.ActivitybarPart = ActivitybarPart;

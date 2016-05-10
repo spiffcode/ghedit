@@ -138,12 +138,6 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/editor/common/edito
         ViewCursors.prototype.onZonesChanged = function () {
             return true;
         };
-        ViewCursors.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return true;
-        };
-        ViewCursors.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
-        };
         ViewCursors.prototype.onViewFocusChanged = function (isFocused) {
             this._editorHasFocus = isFocused;
             this._updateBlinking();

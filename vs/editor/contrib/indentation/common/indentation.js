@@ -163,11 +163,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/editor/
     }(editorAction_1.EditorAction));
     exports.ToggleRenderWhitespaceAction = ToggleRenderWhitespaceAction;
     // register actions
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentationToSpacesAction, IndentationToSpacesAction.ID, nls.localize('indentationToSpaces', "Convert Indentation to Spaces")));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentationToTabsAction, IndentationToTabsAction.ID, nls.localize('indentationToTabs', "Convert Indentation to Tabs")));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentUsingSpaces, IndentUsingSpaces.ID, nls.localize('indentUsingSpaces', "Indent Using Spaces")));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentUsingTabs, IndentUsingTabs.ID, nls.localize('indentUsingTabs', "Indent Using Tabs")));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(DetectIndentation, DetectIndentation.ID, nls.localize('detectIndentation', "Detect Indentation from Content")));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ToggleRenderWhitespaceAction, ToggleRenderWhitespaceAction.ID, nls.localize('toggleRenderWhitespace', "Toggle Render Whitespace")));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentationToSpacesAction, IndentationToSpacesAction.ID, nls.localize('indentationToSpaces', "Convert Indentation to Spaces"), void 0, 'Convert Indentation to Spaces'));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentationToTabsAction, IndentationToTabsAction.ID, nls.localize('indentationToTabs', "Convert Indentation to Tabs"), void 0, 'Convert Indentation to Tabs'));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentUsingSpaces, IndentUsingSpaces.ID, nls.localize('indentUsingSpaces', "Indent Using Spaces"), void 0, 'Indent Using Spaces'));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentUsingTabs, IndentUsingTabs.ID, nls.localize('indentUsingTabs', "Indent Using Tabs"), void 0, 'Indent Using Tabs'));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(DetectIndentation, DetectIndentation.ID, nls.localize('detectIndentation', "Detect Indentation from Content"), void 0, 'Detect Indentation from Content'));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ToggleRenderWhitespaceAction, ToggleRenderWhitespaceAction.ID, nls.localize('toggleRenderWhitespace', "Toggle Render Whitespace"), void 0, 'Toggle Render Whitespace'));
 });
 //# sourceMappingURL=indentation.js.map

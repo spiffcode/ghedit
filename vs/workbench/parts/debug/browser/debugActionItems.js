@@ -33,10 +33,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this.toDispose.push(dom.addStandardDisposableListener(this.select, 'change', function (e) {
                 _this.actionRunner.run(_this._action, e.target.value).done(null, errors.onUnexpectedError);
             }));
-            this.toDispose.push(this.debugService.addListener2(debug_1.ServiceEvents.STATE_CHANGED, function () {
-                _this.select.disabled = _this.debugService.getState() !== debug_1.State.Inactive;
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) {
+                _this.select.disabled = state !== debug_1.State.Inactive;
             }));
-            this.toDispose.push(configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) {
+            this.toDispose.push(configurationService.onDidUpdateConfiguration(function (e) {
                 _this.setOptions().done(null, errors.onUnexpectedError);
             }));
         };
@@ -59,7 +59,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             var _this = this;
             var previousSelectedIndex = this.select.selectedIndex;
             this.select.options.length = 0;
-            return this.debugService.loadLaunchConfig().then(function (config) {
+            return this.debugService.getConfigurationManager().loadLaunchConfig().then(function (config) {
                 if (!config || !config.configurations) {
                     _this.select.add(_this.createOption("<" + nls.localize('none', "none") + ">"));
                     _this.select.disabled = true;
@@ -68,7 +68,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 var configurations = config.configurations;
                 _this.select.disabled = configurations.length < 1;
                 var found = false;
-                var configurationName = _this.debugService.getConfigurationName();
+                var configurationName = _this.debugService.getConfigurationManager().configurationName;
                 for (var i = 0; i < configurations.length; i++) {
                     _this.select.add(_this.createOption(configurations[i].name));
                     if (configurationName === configurations[i].name) {

@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/razor/common/razorTokenTypes', 'vs/languages/html/common/html', 'vs/languages/razor/common/razor', 'vs/platform/test/common/nullThreadService', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, modesUtil, razorTokenTypes, html_1, razor_1, nullThreadService_1, mockModeService_1, instantiationService_1) {
+define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/razor/common/razorTokenTypes', 'vs/languages/html/common/html', 'vs/languages/razor/common/razor', 'vs/platform/test/common/nullThreadService', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/thread/common/thread', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, modesUtil, razorTokenTypes, html_1, razor_1, nullThreadService_1, mockModeService_1, thread_1, modeService_1, serviceCollection_1, instantiationService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,10 +9,10 @@ define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/r
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
             var modeService = new mockModeService_1.MockModeService();
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-                modeService: modeService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modeService_1.IModeService, modeService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             var mode = new razor_1.RAZORMode({ id: 'razor' }, inst, modeService, threadService);
             tokenizationSupport = mode.tokenizationSupport;

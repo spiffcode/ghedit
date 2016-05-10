@@ -1,3 +1,12 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 define(["require", "exports", 'vs/base/common/uri', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/events', 'vs/base/common/arrays', 'vs/workbench/common/editor/untitledEditorInput'], function (require, exports, uri_1, instantiation_1, events_1, arrays, untitledEditorInput_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -6,12 +15,10 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/platform/instantiation/c
     'use strict';
     exports.IUntitledEditorService = instantiation_1.createDecorator('untitledEditorService');
     var UntitledEditorService = (function () {
-        function UntitledEditorService() {
+        function UntitledEditorService(instantiationService) {
+            this.instantiationService = instantiationService;
             this.serviceId = exports.IUntitledEditorService;
         }
-        UntitledEditorService.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         UntitledEditorService.prototype.get = function (resource) {
             return UntitledEditorService.CACHE[resource.toString()];
         };
@@ -78,6 +85,9 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/platform/instantiation/c
         };
         UntitledEditorService.CACHE = Object.create(null);
         UntitledEditorService.KNOWN_ASSOCIATED_FILE_PATHS = Object.create(null);
+        UntitledEditorService = __decorate([
+            __param(0, instantiation_1.IInstantiationService)
+        ], UntitledEditorService);
         return UntitledEditorService;
     }());
     exports.UntitledEditorService = UntitledEditorService;

@@ -12,11 +12,21 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this._onShown = onShown;
             this._onHidden = onHidden;
             this.editor = editor;
-            this.modelListenersToRemove = [];
             this.model = null;
             this.isVisible = false;
             this.isDisposed = false;
-            this.setModel(model);
+            this.model = model;
+            this.toDispose = [];
+            this.toDispose.push(this.model.onHint(function (e) {
+                _this.show();
+                _this.parameterHints = e.hints;
+                _this.render(e.hints);
+                _this.currentSignature = e.hints.currentSignature;
+                _this.select(_this.currentSignature);
+            }));
+            this.toDispose.push(this.model.onCancel(function () {
+                _this.hide();
+            }));
             this.$el = builder_1.$('.editor-widget.parameter-hints-widget').on('click', function () {
                 _this.selectNext();
                 _this.editor.focus();
@@ -39,28 +49,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this.currentSignature = 0;
             this.editor.addContentWidget(this);
             this.hide();
-            this.toDispose = [];
             this.toDispose.push(this.editor.addListener2(editorCommon_1.EventType.CursorSelectionChanged, function (e) {
                 if (_this.isVisible) {
                     _this.editor.layoutContentWidget(_this);
                 }
             }));
         }
-        ParameterHintsWidget.prototype.setModel = function (newModel) {
-            var _this = this;
-            this.releaseModel();
-            this.model = newModel;
-            this.modelListenersToRemove.push(this.model.addListener('hint', function (e) {
-                _this.show();
-                _this.parameterHints = e.hints;
-                _this.render(e.hints);
-                _this.currentSignature = e.hints.currentSignature;
-                _this.select(_this.currentSignature);
-            }));
-            this.modelListenersToRemove.push(this.model.addListener('cancel', function (e) {
-                _this.hide();
-            }));
-        };
         ParameterHintsWidget.prototype.show = function () {
             var _this = this;
             if (this.isDisposed) {
@@ -204,19 +198,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         ParameterHintsWidget.prototype.getId = function () {
             return ParameterHintsWidget.ID;
         };
-        ParameterHintsWidget.prototype.releaseModel = function () {
-            var listener;
-            while (listener = this.modelListenersToRemove.pop()) {
-                listener();
-            }
-            if (this.model) {
-                this.model.dispose();
-                this.model = null;
-            }
-        };
         ParameterHintsWidget.prototype.destroy = function () {
             this.toDispose = lifecycle_1.dispose(this.toDispose);
-            this.releaseModel();
+            this.model = null;
             if (this.$overloads) {
                 this.$overloads.destroy();
                 delete this.$overloads;

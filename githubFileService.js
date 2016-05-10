@@ -66,11 +66,14 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
         };
         FileService.prototype.setupUnixWorkspaceWatching = function () {
             /* TODO:
-            this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging).startWatching();
+            this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging, this.options.debugBrkFileWatcherPort).startWatching();
             */
         };
         FileService.prototype.resolveFile = function (resource, options) {
             return this.resolve(resource, options);
+        };
+        FileService.prototype.existsFile = function (resource) {
+            return this.resolveFile(resource).then(function () { return true; }, function () { return false; });
         };
         FileService.prototype.resolveContent = function (resource, options) {
             var preferredEncoding;

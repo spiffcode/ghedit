@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                 actions.push(this.instantiationService.createInstance(debugactions.ToggleEnablementAction, debugactions.ToggleEnablementAction.ID, debugactions.ToggleEnablementAction.LABEL));
             }
             else {
-                actions.push(new actions_1.Action('addBreakpoint', nls.localize('addBreakpoint', "Add Breakpoint"), null, true, function () { return _this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber }); }));
+                actions.push(new actions_1.Action('addBreakpoint', nls.localize('addBreakpoint', "Add Breakpoint"), null, true, function () { return _this.debugService.addBreakpoints([{ uri: uri, lineNumber: lineNumber }]); }));
                 actions.push(this.instantiationService.createInstance(debugactions.AddConditionalBreakpointAction, debugactions.AddConditionalBreakpointAction.ID, debugactions.AddConditionalBreakpointAction.LABEL, this.editor, lineNumber));
             }
             return winjs_base_1.TPromise.as(actions);
@@ -52,7 +52,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                 if (e.target.type !== editorcommon.MouseTargetType.GUTTER_GLYPH_MARGIN || e.target.detail) {
                     return;
                 }
-                if (!_this.debugService.canSetBreakpointsIn(_this.editor.getModel())) {
+                if (!_this.debugService.getConfigurationManager().canSetBreakpointsIn(_this.editor.getModel())) {
                     return;
                 }
                 var lineNumber = e.target.position.lineNumber;
@@ -67,12 +67,19 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                     });
                 }
                 else {
-                    _this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber });
+                    var breakpoint = _this.debugService.getModel().getBreakpoints()
+                        .filter(function (bp) { return bp.source.uri.toString() === uri.toString() && bp.lineNumber === lineNumber; }).pop();
+                    if (breakpoint) {
+                        _this.debugService.removeBreakpoints(breakpoint.getId());
+                    }
+                    else {
+                        _this.debugService.addBreakpoints([{ uri: uri, lineNumber: lineNumber }]);
+                    }
                 }
             }));
             this.toDispose.push(this.editor.addListener2(editorcommon.EventType.MouseMove, function (e) {
                 var showBreakpointHintAtLineNumber = -1;
-                if (e.target.type === editorcommon.MouseTargetType.GUTTER_GLYPH_MARGIN && _this.debugService.canSetBreakpointsIn(_this.editor.getModel())) {
+                if (e.target.type === editorcommon.MouseTargetType.GUTTER_GLYPH_MARGIN && _this.debugService.getConfigurationManager().canSetBreakpointsIn(_this.editor.getModel())) {
                     if (!e.target.detail) {
                         // is not after last line
                         showBreakpointHintAtLineNumber = e.target.position.lineNumber;
@@ -83,7 +90,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             this.toDispose.push(this.editor.addListener2(editorcommon.EventType.MouseLeave, function (e) {
                 _this.ensureBreakpointHintDecoration(-1);
             }));
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () { return _this.onDebugStateUpdate(); }));
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) { return _this.onDebugStateUpdate(state); }));
             // hover listeners & hover widget
             this.toDispose.push(this.editor.addListener2(editorcommon.EventType.MouseDown, function (e) { return _this.onEditorMouseDown(e); }));
             this.toDispose.push(this.editor.addListener2(editorcommon.EventType.MouseMove, function (e) { return _this.onEditorMouseMove(e); }));
@@ -113,12 +120,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             }
             this.breakpointHintDecoration = this.editor.deltaDecorations(this.breakpointHintDecoration, newDecoration);
         };
-        DebugEditorContribution.prototype.onDebugStateUpdate = function () {
-            if (this.debugService.getState() !== debug.State.Stopped) {
+        DebugEditorContribution.prototype.onDebugStateUpdate = function (state) {
+            if (state !== debug.State.Stopped) {
                 this.hideHoverWidget();
             }
             this.contextService.updateOptions('editor', {
-                hover: this.debugService.getState() !== debug.State.Stopped
+                hover: state !== debug.State.Stopped
             });
         };
         DebugEditorContribution.prototype.hideHoverWidget = function () {
@@ -136,7 +143,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             this.hideHoverWidget();
         };
         DebugEditorContribution.prototype.onEditorMouseMove = function (mouseEvent) {
-            if (this.debugService.getState() !== debug.State.Stopped) {
+            if (this.debugService.state !== debug.State.Stopped) {
                 return;
             }
             var targetType = mouseEvent.target.type;

@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/uri', 'vs/base/common/labels', 'vs/platform/platform', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/editor/stringEditorInput', 'vs/platform/configuration/common/model', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/configuration/common/configuration', 'vs/platform/editor/common/editor', 'vs/platform/storage/common/storage', 'vs/platform/files/common/files', 'vs/platform/message/common/message', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, uri_1, labels, platform_1, actions_1, actionRegistry_1, stringEditorInput_1, model_1, editorService_1, contextService_1, configuration_1, editor_1, storage_1, files_1, message_1, keybindingService_1, actions_2, instantiation_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/uri', 'vs/base/common/labels', 'vs/platform/platform', 'vs/base/common/actions', 'vs/base/common/strings', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/editor/stringEditorInput', 'vs/platform/configuration/common/model', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/configuration/common/configuration', 'vs/platform/editor/common/editor', 'vs/platform/storage/common/storage', 'vs/platform/files/common/files', 'vs/platform/message/common/message', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/actions/common/actions', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, uri_1, labels, platform_1, actions_1, strings, actionRegistry_1, stringEditorInput_1, model_1, editorService_1, contextService_1, configuration_1, editor_1, storage_1, files_1, message_1, keybindingService_1, actions_2, instantiation_1, keyCodes_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -71,7 +71,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             _super.call(this, id, label, editorService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService);
         }
         BaseOpenSettingsAction.prototype.open = function (emptySettingsContents, settingsResource) {
-            return this.openTwoEditors(DefaultSettingsInput.getInstance(this.instantiationService), settingsResource, emptySettingsContents);
+            return this.openTwoEditors(DefaultSettingsInput.getInstance(this.instantiationService, this.configurationService), settingsResource, emptySettingsContents);
         };
         BaseOpenSettingsAction = __decorate([
             __param(2, editorService_1.IWorkbenchEditorService),
@@ -182,9 +182,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         function DefaultSettingsInput() {
             _super.apply(this, arguments);
         }
-        DefaultSettingsInput.getInstance = function (instantiationService) {
+        DefaultSettingsInput.getInstance = function (instantiationService, configurationService) {
             if (!DefaultSettingsInput.INSTANCE) {
-                var defaults = model_1.getDefaultValuesContent();
+                var editorConfig = configurationService.getConfiguration();
+                var defaults = model_1.getDefaultValuesContent(editorConfig.editor.insertSpaces ? strings.repeat(' ', editorConfig.editor.tabSize) : '\t');
                 var defaultsHeader = '// ' + nls.localize('defaultSettingsHeader', "Overwrite settings by placing them into your settings file.");
                 DefaultSettingsInput.INSTANCE = instantiationService.createInstance(DefaultSettingsInput, nls.localize('defaultName', "Default Settings"), null, defaultsHeader + '\n' + defaults, 'application/json', false);
             }
@@ -219,8 +220,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenGlobalSettingsAction, OpenGlobalSettingsAction.ID, OpenGlobalSettingsAction.LABEL, {
         primary: null,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_COMMA }
-    }), category);
-    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenGlobalKeybindingsAction, OpenGlobalKeybindingsAction.ID, OpenGlobalKeybindingsAction.LABEL), category);
-    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenWorkspaceSettingsAction, OpenWorkspaceSettingsAction.ID, OpenWorkspaceSettingsAction.LABEL), category);
+    }), 'Preferences: Open User Settings', category);
+    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenGlobalKeybindingsAction, OpenGlobalKeybindingsAction.ID, OpenGlobalKeybindingsAction.LABEL), 'Preferences: Open Keyboard Shortcuts', category);
+    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenWorkspaceSettingsAction, OpenWorkspaceSettingsAction.ID, OpenWorkspaceSettingsAction.LABEL), 'Preferences: Open Workspace Settings', category);
 });
 //# sourceMappingURL=openSettings.js.map

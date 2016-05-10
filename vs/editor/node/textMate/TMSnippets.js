@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/json', 'vs/base/common/p
             defaultSnippets: [{ body: { language: '{{id}}', path: './snippets/{{id}}.json.' } }],
             properties: {
                 language: {
-                    description: nls.localize('vscode.extension.contributes.snippets-language', 'Language id for which this snippet is contributed to.'),
+                    description: nls.localize('vscode.extension.contributes.snippets-language', 'Language identifier for which this snippet is contributed to.'),
                     type: 'string'
                 },
                 path: {

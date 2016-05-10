@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/errors'], function (require, exports, errors) {
+define(["require", "exports", 'vs/base/common/errors'], function (require, exports, errors_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -27,7 +27,7 @@ define(["require", "exports", 'vs/base/common/errors'], function (require, expor
         };
         AbstractDescriptor.prototype._validate = function (type) {
             if (!type) {
-                throw errors.illegalArgument('can not be falsy');
+                throw errors_1.illegalArgument('can not be falsy');
             }
         };
         return AbstractDescriptor;
@@ -50,15 +50,6 @@ define(["require", "exports", 'vs/base/common/errors'], function (require, expor
             enumerable: true,
             configurable: true
         });
-        SyncDescriptor.prototype.equals = function (other) {
-            if (other === this) {
-                return true;
-            }
-            if (!(other instanceof SyncDescriptor)) {
-                return false;
-            }
-            return other.ctor === this.ctor;
-        };
         SyncDescriptor.prototype.bind = function () {
             var moreStaticArguments = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -110,16 +101,6 @@ define(["require", "exports", 'vs/base/common/errors'], function (require, expor
             enumerable: true,
             configurable: true
         });
-        AsyncDescriptor.prototype.equals = function (other) {
-            if (other === this) {
-                return true;
-            }
-            if (!(other instanceof AsyncDescriptor)) {
-                return false;
-            }
-            return other.moduleName === this.moduleName &&
-                other.ctorName === this.ctorName;
-        };
         AsyncDescriptor.prototype.bind = function () {
             var moreStaticArguments = [];
             for (var _i = 0; _i < arguments.length; _i++) {

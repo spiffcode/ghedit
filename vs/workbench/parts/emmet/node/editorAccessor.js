@@ -7,7 +7,7 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/base/common/s
     var EditorAccessor = (function () {
         function EditorAccessor(editor) {
             this.lineStarts = null;
-            this.emmetSupportedModes = ['html', 'razor', 'css', 'less', 'scss', 'xml', 'xsl', 'jade', 'handlebars', 'hbs', 'jsx', 'tsx', 'erb', 'php', 'twig'];
+            this.emmetSupportedModes = ['html', 'razor', 'css', 'less', 'scss', 'xml', 'xsl', 'jade', 'handlebars', 'ejs', 'hbs', 'jsx', 'tsx', 'erb', 'php', 'twig'];
             this.editor = editor;
         }
         EditorAccessor.prototype.noExpansionOccurred = function () {
@@ -88,7 +88,7 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/base/common/s
             var position = this.editor.getSelection().getStartPosition();
             var mode = this.editor.getModel().getModeAtPosition(position.lineNumber, position.column);
             var syntax = mode.getId().split('.').pop();
-            if (/\b(razor|handlebars|erb|php|hbs|twig)\b/.test(syntax)) {
+            if (/\b(razor|handlebars|erb|php|hbs|ejs|twig)\b/.test(syntax)) {
                 return 'html';
             }
             if (/\b(typescriptreact|javascriptreact)\b/.test(syntax)) {

@@ -165,8 +165,8 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/eventEmit
     exports.SimpleEditorRequestService = SimpleEditorRequestService;
     var StandaloneKeybindingService = (function (_super) {
         __extends(StandaloneKeybindingService, _super);
-        function StandaloneKeybindingService(configurationService, domNode) {
-            _super.call(this, configurationService);
+        function StandaloneKeybindingService(configurationService, messageService, domNode) {
+            _super.call(this, configurationService, messageService);
             this._dynamicKeybindings = [];
             this._dynamicCommands = Object.create(null);
             this._beginListening(domNode);

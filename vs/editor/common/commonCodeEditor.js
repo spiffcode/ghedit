@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/eventEmitter', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/timer', 'vs/base/common/winjs.base', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/controller/cursor', 'vs/editor/common/controller/cursorMoveHelper', 'vs/editor/common/core/editorState', 'vs/editor/common/core/position', 'vs/editor/common/core/range', 'vs/editor/common/core/selection', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/viewModel/characterHardWrappingLineMapper', 'vs/editor/common/viewModel/splitLinesCollection', 'vs/editor/common/viewModel/viewModel'], function (require, exports, nls, actions_1, errors_1, eventEmitter_1, lifecycle_1, objects, timer, winjs_base_1, defaultConfig_1, cursor_1, cursorMoveHelper_1, editorState_1, position_1, range_1, selection_1, editorAction_1, editorCommon, characterHardWrappingLineMapper_1, splitLinesCollection_1, viewModel_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/eventEmitter', 'vs/base/common/lifecycle', 'vs/base/common/objects', 'vs/base/common/timer', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/controller/cursor', 'vs/editor/common/controller/cursorMoveHelper', 'vs/editor/common/core/editorState', 'vs/editor/common/core/position', 'vs/editor/common/core/range', 'vs/editor/common/core/selection', 'vs/editor/common/editorAction', 'vs/editor/common/editorCommon', 'vs/editor/common/viewModel/characterHardWrappingLineMapper', 'vs/editor/common/viewModel/splitLinesCollection', 'vs/editor/common/viewModel/viewModel'], function (require, exports, nls, actions_1, errors_1, eventEmitter_1, lifecycle_1, objects, timer, winjs_base_1, serviceCollection_1, keybindingService_1, defaultConfig_1, cursor_1, cursorMoveHelper_1, editorState_1, position_1, range_1, selection_1, editorAction_1, editorCommon, characterHardWrappingLineMapper_1, splitLinesCollection_1, viewModel_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -41,9 +41,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this._lifetimeDispose.push(this._configuration.onDidChange(function (e) { return _this.emit(editorCommon.EventType.ConfigurationChanged, e); }));
             this.forcedWidgetFocusCount = 0;
             this._telemetryService = telemetryService;
-            this._instantiationService = instantiationService.createChild({
-                keybindingService: this._keybindingService
-            });
+            this._instantiationService = instantiationService.createChild(new serviceCollection_1.ServiceCollection([keybindingService_1.IKeybindingService, this._keybindingService]));
             this._attachModel(null);
             // Create editor contributions
             this.contributions = {};

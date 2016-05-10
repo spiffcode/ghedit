@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/editor/common/services/codeEditorService', 'vs/workbench/parts/files/common/files', 'vs/editor/common/core/selection', 'vs/editor/common/commands/trimTrailingWhitespaceCommand', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event'], function (require, exports, codeEditorService_1, files_1, selection_1, trimTrailingWhitespaceCommand_1, configuration_1, event_1) {
+define(["require", "exports", 'vs/base/common/lifecycle', 'vs/editor/common/services/codeEditorService', 'vs/workbench/parts/files/common/files', 'vs/editor/common/core/selection', 'vs/editor/common/commands/trimTrailingWhitespaceCommand', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event'], function (require, exports, lifecycle_1, codeEditorService_1, files_1, selection_1, trimTrailingWhitespaceCommand_1, configuration_1, event_1) {
     'use strict';
     // The save participant can change a model before its saved to support various scenarios like trimming trailing whitespace
     var SaveParticipant = (function () {
@@ -26,8 +26,8 @@ define(["require", "exports", 'vs/editor/common/services/codeEditorService', 'vs
         }
         SaveParticipant.prototype.registerListeners = function () {
             var _this = this;
-            this.toUnbind.push(this.eventService.addListener(files_1.EventType.FILE_SAVING, function (e) { return _this.onTextFileSaving(e); }));
-            this.toUnbind.push(this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationChange(e.config); }));
+            this.toUnbind.push(this.eventService.addListener2(files_1.EventType.FILE_SAVING, function (e) { return _this.onTextFileSaving(e); }));
+            this.toUnbind.push(this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationChange(e.config); }));
         };
         SaveParticipant.prototype.onConfigurationChange = function (configuration) {
             this.trimTrailingWhitespace = configuration && configuration.files && configuration.files.trimTrailingWhitespace;
@@ -75,9 +75,7 @@ define(["require", "exports", 'vs/editor/common/services/codeEditorService', 'vs
             model.pushEditOperations(prevSelection, ops, function (edits) { return prevSelection; });
         };
         SaveParticipant.prototype.dispose = function () {
-            while (this.toUnbind.length) {
-                this.toUnbind.pop()();
-            }
+            this.toUnbind = lifecycle_1.dispose(this.toUnbind);
         };
         SaveParticipant = __decorate([
             __param(0, configuration_1.IConfigurationService),

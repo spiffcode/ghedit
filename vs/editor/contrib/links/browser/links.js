@@ -367,6 +367,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
         ], OpenLinkAction);
         return OpenLinkAction;
     }(editorAction_1.EditorAction));
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenLinkAction, OpenLinkAction.ID, nls.localize('label', "Open Link")));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OpenLinkAction, OpenLinkAction.ID, nls.localize('label', "Open Link"), void 0, 'Open Link'));
 });
 //# sourceMappingURL=links.js.map

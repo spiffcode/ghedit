@@ -10,14 +10,23 @@ define(["require", "exports", 'vs/base/common/lifecycle'], function (require, ex
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var ScrollEvent = (function () {
-        function ScrollEvent(scrollTop, scrollLeft, scrollWidth, scrollHeight, vertical, horizontal) {
+        function ScrollEvent(scrollTop, scrollLeft, scrollWidth, scrollHeight, scrollTopChanged, scrollLeftChanged, scrollWidthChanged, scrollHeightChanged) {
+            if (scrollTopChanged === void 0) { scrollTopChanged = false; }
+            if (scrollLeftChanged === void 0) { scrollLeftChanged = false; }
+            if (scrollWidthChanged === void 0) { scrollWidthChanged = false; }
+            if (scrollHeightChanged === void 0) { scrollHeightChanged = false; }
             this.scrollTop = Math.round(scrollTop);
             this.scrollLeft = Math.round(scrollLeft);
             this.scrollWidth = Math.round(scrollWidth);
             this.scrollHeight = Math.round(scrollHeight);
-            this.vertical = Boolean(vertical);
-            this.horizontal = Boolean(horizontal);
+            this.scrollTopChanged = scrollTopChanged;
+            this.scrollLeftChanged = scrollLeftChanged;
+            this.scrollWidthChanged = scrollWidthChanged;
+            this.scrollHeightChanged = scrollHeightChanged;
         }
+        ScrollEvent.prototype.create = function (scrollTop, scrollLeft, scrollWidth, scrollHeight) {
+            return new ScrollEvent(scrollTop, scrollLeft, scrollWidth, scrollHeight, scrollTop !== this.scrollTop, scrollLeft !== this.scrollLeft, scrollWidth !== this.scrollWidth, scrollHeight !== this.scrollHeight);
+        };
         return ScrollEvent;
     }());
     exports.ScrollEvent = ScrollEvent;

@@ -336,14 +336,11 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/eventEmit
                 scrollTop: this.layoutProvider.getScrollTop(),
                 scrollLeft: this.layoutProvider.getScrollLeft()
             });
-            return false;
-        };
-        View.prototype.onScrollHeightChanged = function (scrollHeight) {
             this.outgoingEventBus.emit('scrollSize', {
                 scrollWidth: this.layoutProvider.getScrollWidth(),
                 scrollHeight: this.layoutProvider.getScrollHeight()
             });
-            return _super.prototype.onScrollHeightChanged.call(this, scrollHeight);
+            return false;
         };
         View.prototype.onViewFocusChanged = function (isFocused) {
             dom.toggleClass(this.domNode, 'focused', isFocused);

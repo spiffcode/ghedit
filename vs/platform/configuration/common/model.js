@@ -136,7 +136,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/platform/platform', 
         return ret;
     }
     exports.getDefaultValues = getDefaultValues;
-    function getDefaultValuesContent() {
+    function getDefaultValuesContent(indent) {
         var lastEntry = -1;
         var result = [];
         result.push('{');
@@ -144,10 +144,10 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/platform/platform', 
             if (config.title) {
                 if (isTop) {
                     result.push('');
-                    result.push('\t//-------- ' + config.title + ' --------');
+                    result.push(indent + '//-------- ' + config.title + ' --------');
                 }
                 else {
-                    result.push('\t// ' + config.title);
+                    result.push(indent + '// ' + config.title);
                 }
                 result.push('');
             }
@@ -159,17 +159,17 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/platform/platform', 
                         defaultValue = getDefaultValue(prop.type);
                     }
                     if (prop.description) {
-                        result.push('\t// ' + prop.description);
+                        result.push(indent + '// ' + prop.description);
                     }
-                    var valueString = JSON.stringify(defaultValue, null, '\t');
+                    var valueString = JSON.stringify(defaultValue, null, indent);
                     if (valueString && (typeof defaultValue === 'object')) {
-                        valueString = addIndent(valueString);
+                        valueString = addIndent(valueString, indent);
                     }
                     if (lastEntry !== -1) {
                         result[lastEntry] += ',';
                     }
                     lastEntry = result.length;
-                    result.push('\t' + JSON.stringify(key) + ': ' + valueString);
+                    result.push(indent + JSON.stringify(key) + ': ' + valueString);
                     result.push('');
                 });
             }
@@ -179,8 +179,8 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/platform/platform', 
         return result.join('\n');
     }
     exports.getDefaultValuesContent = getDefaultValuesContent;
-    function addIndent(str) {
-        return str.split('\n').join('\n\t');
+    function addIndent(str, indent) {
+        return str.split('\n').join('\n' + indent);
     }
     function getDefaultValue(type) {
         var t = Array.isArray(type) ? type[0] : type;

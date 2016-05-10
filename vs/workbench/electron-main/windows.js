@@ -2,50 +2,68 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/window', 'vs/workbench/electron-main/lifecycle', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/arrays', 'vs/base/common/objects', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager'], function (require, exports, events, path, fs, electron_1, platform, env, window, lifecycle, nls, paths, arrays, objects, storage, settings, update_manager_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/window', 'vs/workbench/electron-main/lifecycle', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/arrays', 'vs/base/common/objects', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager', './log', 'vs/platform/instantiation/common/instantiation'], function (require, exports, events, path, fs, electron_1, platform, env_1, window, lifecycle_1, nls, paths, arrays, objects, storage, settings_1, update_manager_1, log_1, instantiation_1) {
     'use strict';
-    var eventEmitter = new events.EventEmitter();
     var EventTypes = {
         OPEN: 'open',
         CLOSE: 'close',
         READY: 'ready'
     };
-    function onOpen(clb) {
-        eventEmitter.addListener(EventTypes.OPEN, clb);
-        return function () { return eventEmitter.removeListener(EventTypes.OPEN, clb); };
-    }
-    exports.onOpen = onOpen;
-    function onReady(clb) {
-        eventEmitter.addListener(EventTypes.READY, clb);
-        return function () { return eventEmitter.removeListener(EventTypes.READY, clb); };
-    }
-    exports.onReady = onReady;
-    function onClose(clb) {
-        eventEmitter.addListener(EventTypes.CLOSE, clb);
-        return function () { return eventEmitter.removeListener(EventTypes.CLOSE, clb); };
-    }
-    exports.onClose = onClose;
     var WindowError;
     (function (WindowError) {
         WindowError[WindowError["UNRESPONSIVE"] = 0] = "UNRESPONSIVE";
         WindowError[WindowError["CRASHED"] = 1] = "CRASHED";
     })(WindowError || (WindowError = {}));
+    exports.IWindowsService = instantiation_1.createDecorator('windowsService');
     var WindowsManager = (function () {
-        function WindowsManager() {
+        function WindowsManager(instantiationService, logService, storageService, envService, lifecycleService, updateManager, settingsManager) {
+            this.instantiationService = instantiationService;
+            this.logService = logService;
+            this.storageService = storageService;
+            this.envService = envService;
+            this.lifecycleService = lifecycleService;
+            this.updateManager = updateManager;
+            this.settingsManager = settingsManager;
+            this.serviceId = exports.IWindowsService;
+            this.eventEmitter = new events.EventEmitter();
         }
+        WindowsManager.prototype.onOpen = function (clb) {
+            var _this = this;
+            this.eventEmitter.addListener(EventTypes.OPEN, clb);
+            return function () { return _this.eventEmitter.removeListener(EventTypes.OPEN, clb); };
+        };
+        WindowsManager.prototype.onReady = function (clb) {
+            var _this = this;
+            this.eventEmitter.addListener(EventTypes.READY, clb);
+            return function () { return _this.eventEmitter.removeListener(EventTypes.READY, clb); };
+        };
+        WindowsManager.prototype.onClose = function (clb) {
+            var _this = this;
+            this.eventEmitter.addListener(EventTypes.CLOSE, clb);
+            return function () { return _this.eventEmitter.removeListener(EventTypes.CLOSE, clb); };
+        };
         WindowsManager.prototype.ready = function (initialUserEnv) {
             this.registerListeners();
             this.initialUserEnv = initialUserEnv;
-            this.windowsState = storage.getItem(WindowsManager.windowsStateStorageKey) || { openedFolders: [] };
+            this.windowsState = this.storageService.getItem(WindowsManager.windowsStateStorageKey) || { openedFolders: [] };
         };
         WindowsManager.prototype.registerListeners = function () {
             var _this = this;
             electron_1.app.on('activate', function (event, hasVisibleWindows) {
-                env.log('App#activate');
+                _this.logService.log('App#activate');
                 // Mac only event: reopen last window when we get activated
                 if (!hasVisibleWindows) {
                     // We want to open the previously opened folder, so we dont pass on the path argument
-                    var cliArgWithoutPath = objects.clone(env.cliArgs);
+                    var cliArgWithoutPath = objects.clone(_this.envService.cliArgs);
                     cliArgWithoutPath.pathArguments = [];
                     _this.windowsState.openedFolders = []; // make sure we do not restore too much
                     _this.open({ cli: cliArgWithoutPath });
@@ -54,7 +72,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             var macOpenFiles = [];
             var runningTimeout = null;
             electron_1.app.on('open-file', function (event, path) {
-                env.log('App#open-file: ', path);
+                _this.logService.log('App#open-file: ', path);
                 event.preventDefault();
                 // Keep in array because more might come!
                 macOpenFiles.push(path);
@@ -65,86 +83,86 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 }
                 // Handle paths delayed in case more are coming!
                 runningTimeout = setTimeout(function () {
-                    _this.open({ cli: env.cliArgs, pathsToOpen: macOpenFiles, preferNewWindow: true /* dropping on the dock prefers to open in a new window */ });
+                    _this.open({ cli: _this.envService.cliArgs, pathsToOpen: macOpenFiles, preferNewWindow: true /* dropping on the dock prefers to open in a new window */ });
                     macOpenFiles = [];
                     runningTimeout = null;
                 }, 100);
             });
-            settings.manager.onChange(function (newSettings) {
+            this.settingsManager.onChange(function (newSettings) {
                 _this.sendToAll('vscode:optionsChange', JSON.stringify({ globalSettings: newSettings }));
             }, this);
             electron_1.ipcMain.on('vscode:startCrashReporter', function (event, config) {
-                env.log('IPC#vscode:startCrashReporter');
+                _this.logService.log('IPC#vscode:startCrashReporter');
                 electron_1.crashReporter.start(config);
             });
             electron_1.ipcMain.on('vscode:windowOpen', function (event, paths, forceNewWindow) {
-                env.log('IPC#vscode-windowOpen: ', paths);
+                _this.logService.log('IPC#vscode-windowOpen: ', paths);
                 if (paths && paths.length) {
-                    _this.open({ cli: env.cliArgs, pathsToOpen: paths, forceNewWindow: forceNewWindow });
+                    _this.open({ cli: _this.envService.cliArgs, pathsToOpen: paths, forceNewWindow: forceNewWindow });
                 }
             });
             electron_1.ipcMain.on('vscode:workbenchLoaded', function (event, windowId) {
-                env.log('IPC#vscode-workbenchLoaded');
+                _this.logService.log('IPC#vscode-workbenchLoaded');
                 var win = _this.getWindowById(windowId);
                 if (win) {
                     win.setReady();
                     // Event
-                    eventEmitter.emit(EventTypes.READY, win);
+                    _this.eventEmitter.emit(EventTypes.READY, win);
                 }
             });
             electron_1.ipcMain.on('vscode:openFilePicker', function () {
-                env.log('IPC#vscode-openFilePicker');
+                _this.logService.log('IPC#vscode-openFilePicker');
                 _this.openFilePicker();
             });
             electron_1.ipcMain.on('vscode:openFolderPicker', function (event, forceNewWindow) {
-                env.log('IPC#vscode-openFolderPicker');
+                _this.logService.log('IPC#vscode-openFolderPicker');
                 _this.openFolderPicker(forceNewWindow);
             });
             electron_1.ipcMain.on('vscode:openFileFolderPicker', function (event, forceNewWindow) {
-                env.log('IPC#vscode-openFileFolderPicker');
+                _this.logService.log('IPC#vscode-openFileFolderPicker');
                 _this.openFileFolderPicker(forceNewWindow);
             });
             electron_1.ipcMain.on('vscode:closeFolder', function (event, windowId) {
-                env.log('IPC#vscode-closeFolder');
+                _this.logService.log('IPC#vscode-closeFolder');
                 var win = _this.getWindowById(windowId);
                 if (win) {
-                    _this.open({ cli: env.cliArgs, forceEmpty: true, windowToUse: win });
+                    _this.open({ cli: _this.envService.cliArgs, forceEmpty: true, windowToUse: win });
                 }
             });
             electron_1.ipcMain.on('vscode:openNewWindow', function () {
-                env.log('IPC#vscode-openNewWindow');
+                _this.logService.log('IPC#vscode-openNewWindow');
                 _this.openNewWindow();
             });
             electron_1.ipcMain.on('vscode:reloadWindow', function (event, windowId) {
-                env.log('IPC#vscode:reloadWindow');
+                _this.logService.log('IPC#vscode:reloadWindow');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     _this.reload(vscodeWindow);
                 }
             });
             electron_1.ipcMain.on('vscode:toggleFullScreen', function (event, windowId) {
-                env.log('IPC#vscode:toggleFullScreen');
+                _this.logService.log('IPC#vscode:toggleFullScreen');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.toggleFullScreen();
                 }
             });
             electron_1.ipcMain.on('vscode:setFullScreen', function (event, windowId, fullscreen) {
-                env.log('IPC#vscode:setFullScreen');
+                _this.logService.log('IPC#vscode:setFullScreen');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.setFullScreen(fullscreen);
                 }
             });
             electron_1.ipcMain.on('vscode:toggleDevTools', function (event, windowId) {
-                env.log('IPC#vscode:toggleDevTools');
+                _this.logService.log('IPC#vscode:toggleDevTools');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.webContents.toggleDevTools();
                 }
             });
             electron_1.ipcMain.on('vscode:openDevTools', function (event, windowId) {
-                env.log('IPC#vscode:openDevTools');
+                _this.logService.log('IPC#vscode:openDevTools');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.webContents.openDevTools();
@@ -152,46 +170,46 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 }
             });
             electron_1.ipcMain.on('vscode:setRepresentedFilename', function (event, windowId, fileName) {
-                env.log('IPC#vscode:setRepresentedFilename');
+                _this.logService.log('IPC#vscode:setRepresentedFilename');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.setRepresentedFilename(fileName);
                 }
             });
             electron_1.ipcMain.on('vscode:setMenuBarVisibility', function (event, windowId, visibility) {
-                env.log('IPC#vscode:setMenuBarVisibility');
+                _this.logService.log('IPC#vscode:setMenuBarVisibility');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.setMenuBarVisibility(visibility);
                 }
             });
             electron_1.ipcMain.on('vscode:flashFrame', function (event, windowId) {
-                env.log('IPC#vscode:flashFrame');
+                _this.logService.log('IPC#vscode:flashFrame');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.flashFrame(!vscodeWindow.win.isFocused());
                 }
             });
             electron_1.ipcMain.on('vscode:focusWindow', function (event, windowId) {
-                env.log('IPC#vscode:focusWindow');
+                _this.logService.log('IPC#vscode:focusWindow');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow) {
                     vscodeWindow.win.focus();
                 }
             });
             electron_1.ipcMain.on('vscode:setDocumentEdited', function (event, windowId, edited) {
-                env.log('IPC#vscode:setDocumentEdited');
+                _this.logService.log('IPC#vscode:setDocumentEdited');
                 var vscodeWindow = _this.getWindowById(windowId);
                 if (vscodeWindow && vscodeWindow.win.isDocumentEdited() !== edited) {
                     vscodeWindow.win.setDocumentEdited(edited);
                 }
             });
             electron_1.ipcMain.on('vscode:toggleMenuBar', function (event, windowId) {
-                env.log('IPC#vscode:toggleMenuBar');
+                _this.logService.log('IPC#vscode:toggleMenuBar');
                 // Update in settings
-                var menuBarHidden = storage.getItem(window.VSCodeWindow.menuBarHiddenKey, false);
+                var menuBarHidden = _this.storageService.getItem(window.VSCodeWindow.menuBarHiddenKey, false);
                 var newMenuBarHidden = !menuBarHidden;
-                storage.setItem(window.VSCodeWindow.menuBarHiddenKey, newMenuBarHidden);
+                _this.storageService.setItem(window.VSCodeWindow.menuBarHiddenKey, newMenuBarHidden);
                 // Update across windows
                 WindowsManager.WINDOWS.forEach(function (w) { return w.setMenuBarVisibility(!newMenuBarHidden); });
                 // Inform user if menu bar is now hidden
@@ -204,7 +222,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             });
             electron_1.ipcMain.on('vscode:broadcast', function (event, windowId, target, broadcast) {
                 if (broadcast.channel && broadcast.payload) {
-                    env.log('IPC#vscode:broadcast', target, broadcast.channel, broadcast.payload);
+                    _this.logService.log('IPC#vscode:broadcast', target, broadcast.channel, broadcast.payload);
                     // Handle specific events on main side
                     _this.onBroadcast(broadcast.channel, broadcast.payload);
                     // Send to windows
@@ -233,18 +251,14 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 }
                 console[logEntry.severity].apply(console, args);
             });
-            electron_1.ipcMain.on('vscode:exit', function (event, code) {
-                env.log('IPC#vscode:exit', code);
-                process.exit(code);
-            });
             electron_1.ipcMain.on('vscode:closeExtensionHostWindow', function (event, extensionDevelopmentPath) {
-                env.log('IPC#vscode:closeExtensionHostWindow', extensionDevelopmentPath);
+                _this.logService.log('IPC#vscode:closeExtensionHostWindow', extensionDevelopmentPath);
                 var windowOnExtension = _this.findWindow(null, null, extensionDevelopmentPath);
                 if (windowOnExtension) {
                     windowOnExtension.win.close();
                 }
             });
-            update_manager_1.Instance.on('update-downloaded', function (update) {
+            this.updateManager.on('update-downloaded', function (update) {
                 _this.sendToFocused('vscode:telemetry', { eventName: 'update:downloaded', data: { version: update.version } });
                 _this.sendToAll('vscode:update-downloaded', JSON.stringify({
                     releaseNotes: update.releaseNotes,
@@ -253,23 +267,23 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 }));
             });
             electron_1.ipcMain.on('vscode:update-apply', function () {
-                env.log('IPC#vscode:update-apply');
-                if (update_manager_1.Instance.availableUpdate) {
-                    update_manager_1.Instance.availableUpdate.quitAndUpdate();
+                _this.logService.log('IPC#vscode:update-apply');
+                if (_this.updateManager.availableUpdate) {
+                    _this.updateManager.availableUpdate.quitAndUpdate();
                 }
             });
-            update_manager_1.Instance.on('update-not-available', function (explicit) {
+            this.updateManager.on('update-not-available', function (explicit) {
                 _this.sendToFocused('vscode:telemetry', { eventName: 'update:notAvailable', data: { explicit: explicit } });
                 if (explicit) {
                     _this.sendToFocused('vscode:update-not-available', '');
                 }
             });
-            update_manager_1.Instance.on('update-available', function (url) {
+            this.updateManager.on('update-available', function (url) {
                 if (url) {
                     _this.sendToFocused('vscode:update-available', url);
                 }
             });
-            lifecycle.onBeforeQuit(function () {
+            this.lifecycleService.onBeforeQuit(function () {
                 // 0-1 window open: Do not keep the list but just rely on the active window to be stored
                 if (WindowsManager.WINDOWS.length < 2) {
                     _this.windowsState.openedFolders = [];
@@ -284,10 +298,10 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 });
             });
             electron_1.app.on('will-quit', function () {
-                storage.setItem(WindowsManager.windowsStateStorageKey, _this.windowsState);
+                _this.storageService.setItem(WindowsManager.windowsStateStorageKey, _this.windowsState);
             });
             var loggedStartupTimes = false;
-            onReady(function (window) {
+            this.onReady(function (window) {
                 if (loggedStartupTimes) {
                     return; // only for the first window
                 }
@@ -298,12 +312,12 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
         WindowsManager.prototype.onBroadcast = function (event, payload) {
             // Theme changes
             if (event === 'vscode:changeTheme' && typeof payload === 'string') {
-                storage.setItem(window.VSCodeWindow.themeStorageKey, payload);
+                this.storageService.setItem(window.VSCodeWindow.themeStorageKey, payload);
             }
         };
         WindowsManager.prototype.reload = function (win, cli) {
             // Only reload when the window has not vetoed this
-            lifecycle.manager.unload(win).done(function (veto) {
+            this.lifecycleService.unload(win).done(function (veto) {
                 if (!veto) {
                     win.reload(cli);
                 }
@@ -320,7 +334,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                     // Warn if the requested path to open does not exist
                     if (!iPath) {
                         var options = {
-                            title: env.product.nameLong,
+                            title: _this.envService.product.nameLong,
                             type: 'info',
                             buttons: [nls.localize('ok', "OK")],
                             message: nls.localize('pathNotExistTitle', "Path does not exist"),
@@ -382,7 +396,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 else {
                     openFilesInNewWindow = openConfig.preferNewWindow;
                     if (openFilesInNewWindow && !openConfig.cli.extensionDevelopmentPath) {
-                        openFilesInNewWindow = settings.manager.getValue('window.openFilesInNewWindow', openFilesInNewWindow);
+                        openFilesInNewWindow = this.settingsManager.getValue('window.openFilesInNewWindow', openFilesInNewWindow);
                     }
                 }
                 // Open Files in last instance if any and flag tells us so
@@ -466,7 +480,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 }
             });
             // Emit events
-            iPathsToOpen.forEach(function (iPath) { return eventEmitter.emit(EventTypes.OPEN, iPath); });
+            iPathsToOpen.forEach(function (iPath) { return _this.eventEmitter.emit(EventTypes.OPEN, iPath); });
             return arrays.distinct(usedWindows);
         };
         WindowsManager.prototype.openPluginDevelopmentHostWindow = function (openConfig) {
@@ -505,31 +519,31 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             configuration.filesToCreate = filesToCreate;
             configuration.filesToDiff = filesToDiff;
             configuration.extensionsToInstall = extensionsToInstall;
-            configuration.appName = env.product.nameLong;
-            configuration.applicationName = env.product.applicationName;
-            configuration.darwinBundleIdentifier = env.product.darwinBundleIdentifier;
-            configuration.appRoot = env.appRoot;
-            configuration.version = env.version;
-            configuration.commitHash = env.product.commit;
-            configuration.appSettingsHome = env.appSettingsHome;
-            configuration.appSettingsPath = env.appSettingsPath;
-            configuration.appKeybindingsPath = env.appKeybindingsPath;
-            configuration.userExtensionsHome = env.userExtensionsHome;
-            configuration.extensionTips = env.product.extensionTips;
-            configuration.mainIPCHandle = env.mainIPCHandle;
-            configuration.sharedIPCHandle = env.sharedIPCHandle;
-            configuration.isBuilt = env.isBuilt;
-            configuration.crashReporter = env.product.crashReporter;
-            configuration.extensionsGallery = env.product.extensionsGallery;
-            configuration.welcomePage = env.product.welcomePage;
-            configuration.productDownloadUrl = env.product.downloadUrl;
-            configuration.releaseNotesUrl = env.product.releaseNotesUrl;
-            configuration.licenseUrl = env.product.licenseUrl;
-            configuration.updateFeedUrl = update_manager_1.Instance.feedUrl;
-            configuration.updateChannel = update_manager_1.Instance.channel;
-            configuration.aiConfig = env.product.aiConfig;
-            configuration.sendASmile = env.product.sendASmile;
-            configuration.enableTelemetry = env.product.enableTelemetry;
+            configuration.appName = this.envService.product.nameLong;
+            configuration.applicationName = this.envService.product.applicationName;
+            configuration.darwinBundleIdentifier = this.envService.product.darwinBundleIdentifier;
+            configuration.appRoot = this.envService.appRoot;
+            configuration.version = this.envService.version;
+            configuration.commitHash = this.envService.product.commit;
+            configuration.appSettingsHome = this.envService.appSettingsHome;
+            configuration.appSettingsPath = this.envService.appSettingsPath;
+            configuration.appKeybindingsPath = this.envService.appKeybindingsPath;
+            configuration.userExtensionsHome = this.envService.userExtensionsHome;
+            configuration.extensionTips = this.envService.product.extensionTips;
+            configuration.mainIPCHandle = this.envService.mainIPCHandle;
+            configuration.sharedIPCHandle = this.envService.sharedIPCHandle;
+            configuration.isBuilt = this.envService.isBuilt;
+            configuration.crashReporter = this.envService.product.crashReporter;
+            configuration.extensionsGallery = this.envService.product.extensionsGallery;
+            configuration.welcomePage = this.envService.product.welcomePage;
+            configuration.productDownloadUrl = this.envService.product.downloadUrl;
+            configuration.releaseNotesUrl = this.envService.product.releaseNotesUrl;
+            configuration.licenseUrl = this.envService.product.licenseUrl;
+            configuration.updateFeedUrl = this.updateManager.feedUrl;
+            configuration.updateChannel = this.updateManager.channel;
+            configuration.aiConfig = this.envService.product.aiConfig;
+            configuration.sendASmile = this.envService.product.sendASmile;
+            configuration.enableTelemetry = this.envService.product.enableTelemetry;
             configuration.userEnv = userEnv;
             var recents = this.getRecentlyOpenedPaths(workspacePath, filesToOpen);
             configuration.recentFiles = recents.files;
@@ -540,7 +554,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             var files;
             var folders;
             // Get from storage
-            var storedRecents = storage.getItem(WindowsManager.openedPathsListStorageKey);
+            var storedRecents = this.storageService.getItem(WindowsManager.openedPathsListStorageKey);
             if (storedRecents) {
                 files = storedRecents.files || [];
                 folders = storedRecents.folders || [];
@@ -574,7 +588,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             }
             var parsedPath;
             if (gotoLineMode) {
-                parsedPath = env.parseLineAndColumnAware(anyPath);
+                parsedPath = env_1.parseLineAndColumnAware(anyPath);
                 anyPath = parsedPath.path;
             }
             var candidate = path.normalize(anyPath);
@@ -606,7 +620,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                 candidates = cli.pathArguments;
             }
             else {
-                var reopenFolders = settings.manager.getValue('window.reopenFolders', 'one');
+                var reopenFolders = this.settingsManager.getValue('window.reopenFolders', 'one');
                 var lastActiveFolder = this.windowsState.lastActiveWindow && this.windowsState.lastActiveWindow.workspacePath;
                 // Restore all
                 if (reopenFolders === 'all') {
@@ -640,18 +654,20 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             }
             // New window
             if (!vscodeWindow) {
-                vscodeWindow = new window.VSCodeWindow({
+                vscodeWindow = this.instantiationService.createInstance(window.VSCodeWindow, {
                     state: this.getNewWindowState(configuration),
                     extensionDevelopmentPath: configuration.extensionDevelopmentPath
                 });
                 WindowsManager.WINDOWS.push(vscodeWindow);
                 // Window Events
+                vscodeWindow.win.webContents.removeAllListeners('devtools-reload-page'); // remove built in listener so we can handle this on our own
+                vscodeWindow.win.webContents.on('devtools-reload-page', function () { return _this.reload(vscodeWindow); });
                 vscodeWindow.win.webContents.on('crashed', function () { return _this.onWindowError(vscodeWindow, WindowError.CRASHED); });
                 vscodeWindow.win.on('unresponsive', function () { return _this.onWindowError(vscodeWindow, WindowError.UNRESPONSIVE); });
                 vscodeWindow.win.on('close', function () { return _this.onBeforeWindowClose(vscodeWindow); });
                 vscodeWindow.win.on('closed', function () { return _this.onWindowClosed(vscodeWindow); });
                 // Lifecycle
-                lifecycle.manager.registerWindow(vscodeWindow);
+                this.lifecycleService.registerWindow(vscodeWindow);
             }
             else {
                 // Some configuration things get inherited if the window is being reused and we are
@@ -661,13 +677,14 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
                     configuration.extensionDevelopmentPath = currentWindowConfig.extensionDevelopmentPath;
                     configuration.verboseLogging = currentWindowConfig.verboseLogging;
                     configuration.logExtensionHostCommunication = currentWindowConfig.logExtensionHostCommunication;
+                    configuration.debugBrkFileWatcherPort = currentWindowConfig.debugBrkFileWatcherPort;
                     configuration.debugBrkExtensionHost = currentWindowConfig.debugBrkExtensionHost;
                     configuration.debugExtensionHostPort = currentWindowConfig.debugExtensionHostPort;
                     configuration.extensionsHomePath = currentWindowConfig.extensionsHomePath;
                 }
             }
             // Only load when the window has not vetoed this
-            lifecycle.manager.unload(vscodeWindow).done(function (veto) {
+            this.lifecycleService.unload(vscodeWindow).done(function (veto) {
                 if (!veto) {
                     // Load it
                     vscodeWindow.load(configuration);
@@ -747,12 +764,13 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             var _this = this;
             this.getFileOrFolderPaths(options, function (paths) {
                 if (paths && paths.length) {
-                    _this.open({ cli: env.cliArgs, pathsToOpen: paths, forceNewWindow: forceNewWindow });
+                    _this.open({ cli: _this.envService.cliArgs, pathsToOpen: paths, forceNewWindow: forceNewWindow });
                 }
             });
         };
         WindowsManager.prototype.getFileOrFolderPaths = function (options, clb) {
-            var workingDir = storage.getItem(WindowsManager.workingDirPickerStorageKey);
+            var _this = this;
+            var workingDir = this.storageService.getItem(WindowsManager.workingDirPickerStorageKey);
             var focussedWindow = this.getFocusedWindow();
             var pickerProperties;
             if (options.pickFiles && options.pickFolders) {
@@ -767,7 +785,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             }, function (paths) {
                 if (paths && paths.length > 0) {
                     // Remember path in storage for next time
-                    storage.setItem(WindowsManager.workingDirPickerStorageKey, path.dirname(paths[0]));
+                    _this.storageService.setItem(WindowsManager.workingDirPickerStorageKey, path.dirname(paths[0]));
                     // Return
                     clb(paths);
                 }
@@ -834,7 +852,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             return null;
         };
         WindowsManager.prototype.openNewWindow = function () {
-            this.open({ cli: env.cliArgs, forceNewWindow: true, forceEmpty: true });
+            this.open({ cli: this.envService.cliArgs, forceNewWindow: true, forceEmpty: true });
         };
         WindowsManager.prototype.sendToFocused = function (channel) {
             var args = [];
@@ -880,7 +898,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             // Unresponsive
             if (error === WindowError.UNRESPONSIVE) {
                 electron_1.dialog.showMessageBox(vscodeWindow.win, {
-                    title: env.product.nameLong,
+                    title: this.envService.product.nameLong,
                     type: 'warning',
                     buttons: [nls.localize('reopen', "Reopen"), nls.localize('wait', "Keep Waiting"), nls.localize('close', "Close")],
                     message: nls.localize('appStalled', "The window is no longer responding"),
@@ -898,7 +916,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             }
             else {
                 electron_1.dialog.showMessageBox(vscodeWindow.win, {
-                    title: env.product.nameLong,
+                    title: this.envService.product.nameLong,
                     type: 'warning',
                     buttons: [nls.localize('reopen', "Reopen"), nls.localize('close', "Close")],
                     message: nls.localize('appCrashed', "The window has crashed"),
@@ -941,7 +959,7 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
             var index = WindowsManager.WINDOWS.indexOf(win);
             WindowsManager.WINDOWS.splice(index, 1);
             // Emit
-            eventEmitter.emit(EventTypes.CLOSE, win.id);
+            this.eventEmitter.emit(EventTypes.CLOSE, win.id);
         };
         WindowsManager.prototype.isPathEqual = function (pathA, pathB) {
             if (pathA === pathB) {
@@ -965,9 +983,17 @@ define(["require", "exports", 'events', 'path', 'fs', 'electron', 'vs/base/commo
         WindowsManager.workingDirPickerStorageKey = 'pickerWorkingDir';
         WindowsManager.windowsStateStorageKey = 'windowsState';
         WindowsManager.WINDOWS = [];
+        WindowsManager = __decorate([
+            __param(0, instantiation_1.IInstantiationService),
+            __param(1, log_1.ILogService),
+            __param(2, storage.IStorageService),
+            __param(3, env_1.IEnvironmentService),
+            __param(4, lifecycle_1.ILifecycleService),
+            __param(5, update_manager_1.IUpdateService),
+            __param(6, settings_1.ISettingsService)
+        ], WindowsManager);
         return WindowsManager;
     }());
     exports.WindowsManager = WindowsManager;
-    exports.manager = new WindowsManager();
 });
 //# sourceMappingURL=windows.js.map

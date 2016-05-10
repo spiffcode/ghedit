@@ -39,7 +39,7 @@ define(["require", "exports", 'vs/editor/browser/view/viewPart', 'vs/base/browse
             return true;
         };
         ViewLayer.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged;
         };
         ViewLayer.prototype.onZonesChanged = function () {
             return true;
@@ -143,6 +143,9 @@ define(["require", "exports", 'vs/editor/browser/view/viewPart', 'vs/base/browse
             return true;
         };
         ViewLayer.prototype.onModelTokensChanged = function (e) {
+            if (this._lines.length === 0) {
+                return false;
+            }
             var changedFromIndex = e.fromLineNumber - this._rendLineNumberStart;
             var changedToIndex = e.toLineNumber - this._rendLineNumberStart;
             if (changedToIndex < 0 || changedFromIndex >= this._lines.length) {

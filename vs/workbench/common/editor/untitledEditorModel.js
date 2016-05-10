@@ -30,7 +30,7 @@ define(["require", "exports", 'vs/workbench/common/editor/stringEditorModel', 'v
         UntitledEditorModel.prototype.registerListeners = function () {
             var _this = this;
             // Config Changes
-            this.configurationChangeListenerUnbind = this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationChange(e.config); });
+            this.configurationChangeListener = this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationChange(e.config); });
         };
         UntitledEditorModel.prototype.onConfigurationChange = function (configuration) {
             this.configuredEncoding = configuration && configuration.files && configuration.files.encoding;
@@ -90,9 +90,9 @@ define(["require", "exports", 'vs/workbench/common/editor/stringEditorModel', 'v
                 this.textModelChangeListener();
                 this.textModelChangeListener = null;
             }
-            if (this.configurationChangeListenerUnbind) {
-                this.configurationChangeListenerUnbind();
-                this.configurationChangeListenerUnbind = null;
+            if (this.configurationChangeListener) {
+                this.configurationChangeListener.dispose();
+                this.configurationChangeListener = null;
             }
             this.eventService.emit(events_1.EventType.UNTITLED_FILE_DELETED, new events_1.UntitledEditorEvent(this.resource));
         };

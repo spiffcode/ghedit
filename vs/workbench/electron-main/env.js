@@ -2,159 +2,214 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base/common/arrays', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/base/common/types'], function (require, exports, crypto, fs, path, os, electron_1, arrays, strings, paths, platform, uri_1, types) {
+define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base/common/arrays', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/base/common/types', 'vs/platform/instantiation/common/instantiation', './product', './argv'], function (require, exports, crypto, fs, path, os, electron_1, arrays, strings, paths, platform, uri_1, types, instantiation_1, product_1, argv_1) {
     'use strict';
-    exports.isBuilt = !process.env.VSCODE_DEV;
-    exports.appRoot = path.dirname(uri_1.default.parse(require.toUrl('')).fsPath);
-    exports.currentWorkingDirectory = process.env.VSCODE_CWD || process.cwd();
-    var productContents;
-    try {
-        productContents = JSON.parse(fs.readFileSync(path.join(exports.appRoot, 'product.json'), 'utf8'));
-    }
-    catch (error) {
-        productContents = Object.create(null);
-    }
-    exports.product = productContents;
-    exports.product.nameShort = exports.product.nameShort + (exports.isBuilt ? '' : ' Dev');
-    exports.product.nameLong = exports.product.nameLong + (exports.isBuilt ? '' : ' Dev');
-    exports.product.dataFolderName = exports.product.dataFolderName + (exports.isBuilt ? '' : '-dev');
-    exports.updateUrl = exports.product.updateUrl;
-    exports.quality = exports.product.quality;
-    exports.mainIPCHandle = getMainIPCHandle();
-    exports.sharedIPCHandle = getSharedIPCHandle();
-    exports.version = electron_1.app.getVersion();
-    exports.cliArgs = parseCli();
-    exports.appHome = electron_1.app.getPath('userData');
-    exports.appSettingsHome = path.join(exports.appHome, 'User');
-    if (!fs.existsSync(exports.appSettingsHome)) {
-        fs.mkdirSync(exports.appSettingsHome);
-    }
-    exports.appSettingsPath = path.join(exports.appSettingsHome, 'settings.json');
-    exports.appKeybindingsPath = path.join(exports.appSettingsHome, 'keybindings.json');
-    exports.userHome = path.join(electron_1.app.getPath('home'), exports.product.dataFolderName);
-    if (!fs.existsSync(exports.userHome)) {
-        fs.mkdirSync(exports.userHome);
-    }
-    exports.userExtensionsHome = exports.cliArgs.extensionsHomePath || path.join(exports.userHome, 'extensions');
-    if (!fs.existsSync(exports.userExtensionsHome)) {
-        fs.mkdirSync(exports.userExtensionsHome);
-    }
-    // Helper to identify if we have extension tests to run from the command line without debugger
-    exports.isTestingFromCli = exports.cliArgs.extensionTestsPath && !exports.cliArgs.debugBrkExtensionHost;
-    function log() {
-        var a = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            a[_i - 0] = arguments[_i];
+    exports.IEnvironmentService = instantiation_1.createDecorator('environmentService');
+    function getNumericValue(value, defaultValue, fallback) {
+        if (fallback === void 0) { fallback = void 0; }
+        var numericValue = parseInt(value);
+        if (types.isNumber(numericValue)) {
+            return numericValue;
         }
-        if (exports.cliArgs.verboseLogging) {
-            (_a = console.log).call.apply(_a, [null, "(" + new Date().toLocaleTimeString() + ")"].concat(a));
+        if (value) {
+            return defaultValue;
         }
-        var _a;
+        return fallback;
     }
-    exports.log = log;
-    function parseCli() {
-        // We need to do some argv massaging. First, remove the Electron executable
-        var args = Array.prototype.slice.call(process.argv, 1);
-        // Then, when in dev, remove the first non option argument, it will be the app location
-        if (!exports.isBuilt) {
-            var i = (function () {
-                for (var j = 0; j < args.length; j++) {
-                    if (args[j][0] !== '-') {
-                        return j;
-                    }
-                }
-                return -1;
-            })();
-            if (i > -1) {
-                args.splice(i, 1);
+    var EnvService = (function () {
+        function EnvService() {
+            this.serviceId = exports.IEnvironmentService;
+            this._appRoot = path.dirname(uri_1.default.parse(require.toUrl('')).fsPath);
+            this._currentWorkingDirectory = process.env['VSCODE_CWD'] || process.cwd();
+            this._version = electron_1.app.getVersion();
+            this._appHome = electron_1.app.getPath('userData');
+            this._appSettingsHome = path.join(this._appHome, 'User');
+            // TODO move out of here!
+            if (!fs.existsSync(this._appSettingsHome)) {
+                fs.mkdirSync(this._appSettingsHome);
             }
+            this._appSettingsPath = path.join(this._appSettingsHome, 'settings.json');
+            this._appKeybindingsPath = path.join(this._appSettingsHome, 'keybindings.json');
+            // Remove the Electron executable
+            var _a = process.argv, args = _a.slice(1);
+            // If dev, remove the first non-option argument: it's the app location
+            if (!this.isBuilt) {
+                var index = arrays.firstIndex(args, function (a) { return !/^-/.test(a); });
+                if (index > -1) {
+                    args.splice(index, 1);
+                }
+            }
+            // Finally, prepend any extra arguments from the 'argv' file
+            if (fs.existsSync(path.join(this._appRoot, 'argv'))) {
+                var extraargs = JSON.parse(fs.readFileSync(path.join(this._appRoot, 'argv'), 'utf8'));
+                args = extraargs.concat(args);
+            }
+            var argv = argv_1.parseArgs(args);
+            var debugBrkExtensionHostPort = getNumericValue(argv.debugBrkPluginHost, 5870);
+            var debugExtensionHostPort = getNumericValue(argv.debugPluginHost, 5870, this.isBuilt ? void 0 : 5870);
+            var pathArguments = parsePathArguments(this._currentWorkingDirectory, argv._, argv.goto);
+            var timestamp = parseInt(argv.timestamp);
+            var debugBrkFileWatcherPort = getNumericValue(argv.debugBrkFileWatcherPort, void 0);
+            this._cliArgs = Object.freeze({
+                pathArguments: pathArguments,
+                programStart: types.isNumber(timestamp) ? timestamp : 0,
+                enablePerformance: argv.performance,
+                verboseLogging: argv.verbose,
+                debugExtensionHostPort: debugBrkExtensionHostPort || debugExtensionHostPort,
+                debugBrkExtensionHost: !!debugBrkExtensionHostPort,
+                logExtensionHostCommunication: argv.logExtensionHostCommunication,
+                debugBrkFileWatcherPort: debugBrkFileWatcherPort,
+                openNewWindow: argv['new-window'],
+                openInSameWindow: argv['reuse-window'],
+                gotoLineMode: argv.goto,
+                diffMode: argv.diff && pathArguments.length === 2,
+                extensionsHomePath: normalizePath(argv.extensionHomePath),
+                extensionDevelopmentPath: normalizePath(argv.extensionDevelopmentPath),
+                extensionTestsPath: normalizePath(argv.extensionTestsPath),
+                disableExtensions: argv['disable-extensions'],
+                locale: argv.locale,
+                waitForWindowClose: argv.wait
+            });
+            this._isTestingFromCli = this.cliArgs.extensionTestsPath && !this.cliArgs.debugBrkExtensionHost;
+            this._userHome = path.join(electron_1.app.getPath('home'), product_1.default.dataFolderName);
+            // TODO move out of here!
+            if (!fs.existsSync(this._userHome)) {
+                fs.mkdirSync(this._userHome);
+            }
+            this._userExtensionsHome = this.cliArgs.extensionsHomePath || path.join(this._userHome, 'extensions');
+            // TODO move out of here!
+            if (!fs.existsSync(this._userExtensionsHome)) {
+                fs.mkdirSync(this._userExtensionsHome);
+            }
+            this._mainIPCHandle = this.getMainIPCHandle();
+            this._sharedIPCHandle = this.getSharedIPCHandle();
         }
-        // Finally, any extra arguments in the 'argv' file should be prepended
-        if (fs.existsSync(path.join(exports.appRoot, 'argv'))) {
-            var extraargs = JSON.parse(fs.readFileSync(path.join(exports.appRoot, 'argv'), 'utf8'));
-            args = extraargs.concat(args);
-        }
-        var opts = parseOpts(args);
-        var gotoLineMode = !!opts['g'] || !!opts['goto'];
-        var debugBrkExtensionHostPort = parseNumber(args, '--debugBrkPluginHost', 5870);
-        var debugExtensionHostPort;
-        var debugBrkExtensionHost;
-        if (debugBrkExtensionHostPort) {
-            debugExtensionHostPort = debugBrkExtensionHostPort;
-            debugBrkExtensionHost = true;
-        }
-        else {
-            debugExtensionHostPort = parseNumber(args, '--debugPluginHost', 5870, exports.isBuilt ? void 0 : 5870);
-        }
-        var pathArguments = parsePathArguments(args, gotoLineMode);
-        return {
-            pathArguments: pathArguments,
-            programStart: parseNumber(args, '--timestamp', 0, 0),
-            enablePerformance: !!opts['p'],
-            verboseLogging: !!opts['verbose'],
-            debugExtensionHostPort: debugExtensionHostPort,
-            debugBrkExtensionHost: debugBrkExtensionHost,
-            logExtensionHostCommunication: !!opts['logExtensionHostCommunication'],
-            firstrun: !!opts['squirrel-firstrun'],
-            openNewWindow: !!opts['n'] || !!opts['new-window'],
-            openInSameWindow: !!opts['r'] || !!opts['reuse-window'],
-            gotoLineMode: gotoLineMode,
-            diffMode: (!!opts['d'] || !!opts['diff']) && pathArguments.length === 2,
-            extensionsHomePath: normalizePath(parseString(args, '--extensionHomePath')),
-            extensionDevelopmentPath: normalizePath(parseString(args, '--extensionDevelopmentPath')),
-            extensionTestsPath: normalizePath(parseString(args, '--extensionTestsPath')),
-            disableExtensions: !!opts['disableExtensions'] || !!opts['disable-extensions'],
-            locale: parseString(args, '--locale'),
-            waitForWindowClose: !!opts['w'] || !!opts['wait']
+        Object.defineProperty(EnvService.prototype, "cliArgs", {
+            get: function () { return this._cliArgs; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "userExtensionsHome", {
+            get: function () { return this._userExtensionsHome; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "isTestingFromCli", {
+            get: function () { return this._isTestingFromCli; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "isBuilt", {
+            get: function () { return !process.env['VSCODE_DEV']; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "product", {
+            get: function () { return product_1.default; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "updateUrl", {
+            get: function () { return product_1.default.updateUrl; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "quality", {
+            get: function () { return product_1.default.quality; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "userHome", {
+            get: function () { return this._userHome; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "appRoot", {
+            get: function () { return this._appRoot; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "currentWorkingDirectory", {
+            get: function () { return this._currentWorkingDirectory; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "version", {
+            get: function () { return this._version; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "appHome", {
+            get: function () { return this._appHome; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "appSettingsHome", {
+            get: function () { return this._appSettingsHome; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "appSettingsPath", {
+            get: function () { return this._appSettingsPath; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "appKeybindingsPath", {
+            get: function () { return this._appKeybindingsPath; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "mainIPCHandle", {
+            get: function () { return this._mainIPCHandle; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(EnvService.prototype, "sharedIPCHandle", {
+            get: function () { return this._sharedIPCHandle; },
+            enumerable: true,
+            configurable: true
+        });
+        EnvService.prototype.getMainIPCHandle = function () {
+            return this.getIPCHandleName() + (process.platform === 'win32' ? '-sock' : '.sock');
         };
-    }
-    function getIPCHandleName() {
-        var handleName = electron_1.app.getName();
-        if (!exports.isBuilt) {
-            handleName += '-dev';
-        }
-        // Support to run VS Code multiple times as different user
-        // by making the socket unique over the logged in user
-        var userId = uniqueUserId();
-        if (userId) {
-            handleName += ('-' + userId);
-        }
-        if (process.platform === 'win32') {
-            return '\\\\.\\pipe\\' + handleName;
-        }
-        return path.join(os.tmpdir(), handleName);
-    }
-    function getMainIPCHandle() {
-        return getIPCHandleName() + (process.platform === 'win32' ? '-sock' : '.sock');
-    }
-    function getSharedIPCHandle() {
-        return getIPCHandleName() + '-shared' + (process.platform === 'win32' ? '-sock' : '.sock');
-    }
-    function uniqueUserId() {
-        var username;
-        if (platform.isWindows) {
-            username = process.env.USERNAME;
-        }
-        else {
-            username = process.env.USER;
-        }
-        if (!username) {
-            return ''; // fail gracefully if there is no user name
-        }
-        // use sha256 to ensure the userid value can be used in filenames and are unique
-        return crypto.createHash('sha256').update(username).digest('hex').substr(0, 6);
-    }
-    function parseOpts(argv) {
-        return argv
-            .filter(function (a) { return /^-/.test(a); })
-            .map(function (a) { return a.replace(/^-*/, ''); })
-            .reduce(function (r, a) { r[a] = true; return r; }, {});
-    }
-    function parsePathArguments(argv, gotoLineMode) {
-        return arrays.coalesce(// no invalid paths
-        arrays.distinct(// no duplicates
-        argv.filter(function (a) { return !(/^-/.test(a)); }) // arguments without leading "-"
-            .map(function (arg) {
+        EnvService.prototype.getSharedIPCHandle = function () {
+            return this.getIPCHandleName() + '-shared' + (process.platform === 'win32' ? '-sock' : '.sock');
+        };
+        EnvService.prototype.getIPCHandleName = function () {
+            var handleName = electron_1.app.getName();
+            if (!this.isBuilt) {
+                handleName += '-dev';
+            }
+            // Support to run VS Code multiple times as different user
+            // by making the socket unique over the logged in user
+            var userId = EnvService.getUniqueUserId();
+            if (userId) {
+                handleName += ('-' + userId);
+            }
+            if (process.platform === 'win32') {
+                return '\\\\.\\pipe\\' + handleName;
+            }
+            return path.join(os.tmpdir(), handleName);
+        };
+        EnvService.getUniqueUserId = function () {
+            var username;
+            if (platform.isWindows) {
+                username = process.env.USERNAME;
+            }
+            else {
+                username = process.env.USER;
+            }
+            if (!username) {
+                return ''; // fail gracefully if there is no user name
+            }
+            // use sha256 to ensure the userid value can be used in filenames and are unique
+            return crypto.createHash('sha256').update(username).digest('hex').substr(0, 6);
+        };
+        return EnvService;
+    }());
+    exports.EnvService = EnvService;
+    function parsePathArguments(cwd, args, gotoLineMode) {
+        var result = args.map(function (arg) {
             var pathCandidate = arg;
             var parsedPath;
             if (gotoLineMode) {
@@ -162,7 +217,7 @@ define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base
                 pathCandidate = parsedPath.path;
             }
             if (pathCandidate) {
-                pathCandidate = preparePath(pathCandidate);
+                pathCandidate = preparePath(cwd, pathCandidate);
             }
             var realPath;
             try {
@@ -171,7 +226,7 @@ define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base
             catch (error) {
                 // in case of an error, assume the user wants to create this file
                 // if the path is relative, we join it to the cwd
-                realPath = path.normalize(path.isAbsolute(pathCandidate) ? pathCandidate : path.join(exports.currentWorkingDirectory, pathCandidate));
+                realPath = path.normalize(path.isAbsolute(pathCandidate) ? pathCandidate : path.join(cwd, pathCandidate));
             }
             if (!paths.isValidBasename(path.basename(realPath))) {
                 return null; // do not allow invalid file names
@@ -181,11 +236,12 @@ define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base
                 return toLineAndColumnPath(parsedPath);
             }
             return realPath;
-        }), function (element) {
-            return element && (platform.isWindows || platform.isMacintosh) ? element.toLowerCase() : element; // only linux is case sensitive on the fs
-        }));
+        });
+        var caseInsensitive = platform.isWindows || platform.isMacintosh;
+        var distinct = arrays.distinct(result, function (e) { return e && caseInsensitive ? e.toLowerCase() : e; });
+        return arrays.coalesce(distinct);
     }
-    function preparePath(p) {
+    function preparePath(cwd, p) {
         // Trim trailing quotes
         if (platform.isWindows) {
             p = strings.rtrim(p, '"'); // https://github.com/Microsoft/vscode/issues/1498
@@ -194,7 +250,7 @@ define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base
         p = strings.trim(strings.trim(p, ' '), '\t');
         if (platform.isWindows) {
             // Resolve the path against cwd if it is relative
-            p = path.resolve(exports.currentWorkingDirectory, p);
+            p = path.resolve(cwd, p);
             // Trim trailing '.' chars on Windows to prevent invalid file names
             p = strings.rtrim(p, '.');
         }
@@ -202,28 +258,6 @@ define(["require", "exports", 'crypto', 'fs', 'path', 'os', 'electron', 'vs/base
     }
     function normalizePath(p) {
         return p ? path.normalize(p) : p;
-    }
-    function parseNumber(argv, key, defaultValue, fallbackValue) {
-        var value;
-        for (var i = 0; i < argv.length; i++) {
-            var segments = argv[i].split('=');
-            if (segments[0] === key) {
-                value = Number(segments[1]) || defaultValue;
-                break;
-            }
-        }
-        return types.isNumber(value) ? value : fallbackValue;
-    }
-    function parseString(argv, key, defaultValue, fallbackValue) {
-        var value;
-        for (var i = 0; i < argv.length; i++) {
-            var segments = argv[i].split('=');
-            if (segments[0] === key) {
-                value = String(segments[1]) || defaultValue;
-                break;
-            }
-        }
-        return types.isString(value) ? strings.trim(value, '"') : fallbackValue;
     }
     function getPlatformIdentifier() {
         if (process.platform === 'linux') {

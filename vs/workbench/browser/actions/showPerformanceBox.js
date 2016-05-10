@@ -28,8 +28,4 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/browser/ui/t
     }(actions_1.Action));
     exports.ShowPerformanceBox = ShowPerformanceBox;
 });
-// if (false /* Env.enablePerformanceTools */) {
-// 	let registry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
-// 	registry.registerWorkbenchAction(new SyncActionDescriptor(ShowPerformanceBox, ID, LABEL));
-// } 
 //# sourceMappingURL=showPerformanceBox.js.map

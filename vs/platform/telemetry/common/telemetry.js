@@ -1,13 +1,31 @@
-define(["require", "exports", 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/base/common/timer', 'vs/platform/instantiation/common/instantiation'], function (require, exports, platform_1, winjs_base_1, timer_1, instantiation_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer', 'vs/platform/instantiation/common/instantiation'], function (require, exports, winjs_base_1, timer_1, instantiation_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     exports.ITelemetryService = instantiation_1.createDecorator('telemetryService');
-    exports.Extenstions = {
-        TelemetryAppenders: 'telemetry.appenders'
-    };
+    var Extenstions;
+    (function (Extenstions) {
+        var _telemetryAppenderCtors = [];
+        Extenstions.TelemetryAppenders = {
+            activate: function (accessor) {
+                var telemetryService = accessor.get(exports.ITelemetryService);
+                var instantiationService = accessor.get(instantiation_1.IInstantiationService);
+                for (var _i = 0, _telemetryAppenderCtors_1 = _telemetryAppenderCtors; _i < _telemetryAppenderCtors_1.length; _i++) {
+                    var ctor = _telemetryAppenderCtors_1[_i];
+                    var instance = instantiationService.createInstance(ctor);
+                    telemetryService.addTelemetryAppender(instance);
+                }
+                // can only be done once
+                _telemetryAppenderCtors = undefined;
+            },
+            registerTelemetryAppenderDescriptor: function (ctor) {
+                _telemetryAppenderCtors.push(ctor);
+            }
+        };
+    })(Extenstions = exports.Extenstions || (exports.Extenstions = {}));
+    ;
     exports.NullTelemetryService = {
         serviceId: undefined,
         timedPublicLog: function (name, data) { return timer_1.nullEvent; },
@@ -21,27 +39,6 @@ define(["require", "exports", 'vs/platform/platform', 'vs/base/common/winjs.base
             });
         }
     };
-    var TelemetryAppendersRegistry = (function () {
-        function TelemetryAppendersRegistry() {
-            this._telemetryAppenderCtors = [];
-        }
-        TelemetryAppendersRegistry.prototype.registerTelemetryAppenderDescriptor = function (ctor) {
-            this._telemetryAppenderCtors.push(ctor);
-        };
-        TelemetryAppendersRegistry.prototype.activate = function (instantiationService) {
-            var service = instantiationService.getInstance(exports.ITelemetryService);
-            for (var _i = 0, _a = this._telemetryAppenderCtors; _i < _a.length; _i++) {
-                var ctor = _a[_i];
-                var instance = instantiationService.createInstance(ctor);
-                service.addTelemetryAppender(instance);
-            }
-            // can only be done once
-            this._telemetryAppenderCtors = undefined;
-        };
-        return TelemetryAppendersRegistry;
-    }());
-    exports.TelemetryAppendersRegistry = TelemetryAppendersRegistry;
-    platform_1.Registry.add(exports.Extenstions.TelemetryAppenders, new TelemetryAppendersRegistry());
     // --- util
     function anonymize(input) {
         if (!input) {

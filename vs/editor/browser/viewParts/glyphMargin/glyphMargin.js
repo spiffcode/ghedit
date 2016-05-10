@@ -122,16 +122,10 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
             return true;
         };
         GlyphMarginOverlay.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged;
         };
         GlyphMarginOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        GlyphMarginOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        GlyphMarginOverlay.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
         };
         // --- end event handlers
         GlyphMarginOverlay.prototype._getDecorations = function (ctx) {

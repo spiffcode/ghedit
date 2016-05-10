@@ -5,5 +5,10 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     exports.ILifecycleService = instantiation_1.createDecorator('lifecycleService');
+    exports.NullLifecycleService = {
+        serviceId: null,
+        onWillShutdown: function () { return ({ dispose: function () { } }); },
+        onShutdown: function () { return ({ dispose: function () { } }); }
+    };
 });
 //# sourceMappingURL=lifecycle.js.map

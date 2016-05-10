@@ -440,11 +440,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(NextMarkerAction, NextMarkerAction.ID, nls.localize('markerAction.next.label', "Go to Next Error or Warning"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyCode.F8
-    }));
+    }, 'Go to Next Error or Warning'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PrevMarkerAction, PrevMarkerAction.ID, nls.localize('markerAction.previous.label', "Go to Previous Error or Warning"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F8
-    }));
+    }, 'Go to Previous Error or Warning'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand('closeMarkersNavigation', editorCommonExtensions_1.CommonEditorRegistry.commandWeight(50), { primary: keyCodes_1.KeyCode.Escape, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Escape] }, false, CONTEXT_MARKERS_NAVIGATION_VISIBLE, function (ctx, editor, args) {
         var controller = MarkerController.getMarkerController(editor);
         controller.closeMarkersNavigation();

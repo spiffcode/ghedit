@@ -197,7 +197,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
             this.currentRequest = null;
             this.timeout = AutoFetcher.MIN_TIMEOUT;
             this.toDispose = [];
-            this.toDispose.push(this.configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfiguration(e.config.git); }));
+            this.toDispose.push(this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfiguration(e.config.git); }));
             this.onConfiguration(configurationService.getConfiguration('git'));
         }
         Object.defineProperty(AutoFetcher.prototype, "state", {
@@ -297,6 +297,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
     var GitService = (function (_super) {
         __extends(GitService, _super);
         function GitService(raw, instantiationService, eventService, messageService, editorService, outputService, contextService, lifecycleService, storageService) {
+            var _this = this;
             _super.call(this);
             this.serviceId = git.IGitService;
             this.instantiationService = instantiationService;
@@ -318,29 +319,39 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
             this.inputCache = this.instantiationService.createInstance(EditorInputCache, this);
             this.triggerStatus(true); // trigger initial status
             if (!storageService.getBoolean(IgnoreOldGitStorageKey, storage_1.StorageScope.GLOBAL, false)) {
-                this.raw.getVersion().done(function (version) {
-                    version = version || '';
-                    version = version.replace(/^(\d+\.\d+\.\d+).*$/, '$1');
-                    version = semver.valid(version);
-                    if (version && semver.satisfies(version, '<2.0.0')) {
-                        messageService.show(severity_1.default.Warning, {
-                            message: nls.localize('updateGit', "You seem to have git {0} installed. Code works best with git >=2.0.0.", version),
-                            actions: [
-                                message_1.CloseAction,
-                                new actions.Action('neverShowAgain', nls.localize('neverShowAgain', "Don't show again"), null, true, function () {
-                                    storageService.store(IgnoreOldGitStorageKey, true, storage_1.StorageScope.GLOBAL);
-                                    return null;
-                                }),
-                                new actions.Action('downloadLatest', nls.localize('download', "Download"), '', true, function () {
-                                    electron_1.shell.openExternal('https://git-scm.com/');
-                                    return null;
-                                })
-                            ]
-                        });
+                this.raw.serviceState().done(function (state) {
+                    if (state !== git.RawServiceState.OK) {
+                        return;
                     }
+                    return _this.raw.getVersion().then(function (version) {
+                        version = version || '';
+                        version = version.replace(/^(\d+\.\d+\.\d+).*$/, '$1');
+                        version = semver.valid(version);
+                        if (version && semver.satisfies(version, '<2.0.0')) {
+                            messageService.show(severity_1.default.Warning, {
+                                message: nls.localize('updateGit', "You seem to have git {0} installed. Code works best with git >=2.0.0.", version),
+                                actions: [
+                                    message_1.CloseAction,
+                                    new actions.Action('neverShowAgain', nls.localize('neverShowAgain', "Don't show again"), null, true, function () {
+                                        storageService.store(IgnoreOldGitStorageKey, true, storage_1.StorageScope.GLOBAL);
+                                        return null;
+                                    }),
+                                    new actions.Action('downloadLatest', nls.localize('download', "Download"), '', true, function () {
+                                        electron_1.shell.openExternal('https://git-scm.com/');
+                                        return null;
+                                    })
+                                ]
+                            });
+                        }
+                    });
                 });
             }
         }
+        Object.defineProperty(GitService.prototype, "onOutput", {
+            get: function () { return this.raw.onOutput; },
+            enumerable: true,
+            configurable: true
+        });
         GitService.prototype.registerListeners = function () {
             var _this = this;
             this.toDispose.push(this.eventService.addListener2(files_1.EventType.FILE_CHANGES, function (e) { return _this.onFileChanges(e); }));
@@ -617,9 +628,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
         };
         GitService.prototype.getRunningOperations = function () {
             return this.operations;
-        };
-        GitService.prototype.onOutput = function () {
-            return this.raw.onOutput();
         };
         GitService.prototype.getAutoFetcher = function () {
             return this.autoFetcher;

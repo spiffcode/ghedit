@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/workbench/parts/feedback/browser/feedback', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'electron'], function (require, exports, feedback_1, contextView_1, instantiation_1, electron_1) {
+define(["require", "exports", 'vs/workbench/parts/feedback/browser/feedback', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'electron'], function (require, exports, feedback_1, contextView_1, instantiation_1, workspace_1, electron_1) {
     'use strict';
     var TwitterFeedbackService = (function () {
         function TwitterFeedbackService() {
@@ -42,19 +42,23 @@ define(["require", "exports", 'vs/workbench/parts/feedback/browser/feedback', 'v
         return TwitterFeedbackService;
     }());
     var FeedbackStatusbarItem = (function () {
-        function FeedbackStatusbarItem(instantiationService, contextViewService) {
+        function FeedbackStatusbarItem(instantiationService, contextViewService, contextService) {
             this.instantiationService = instantiationService;
             this.contextViewService = contextViewService;
+            this.contextService = contextService;
         }
         FeedbackStatusbarItem.prototype.render = function (element) {
-            return this.instantiationService.createInstance(feedback_1.FeedbackDropdown, element, {
-                contextViewProvider: this.contextViewService,
-                feedbackService: this.instantiationService.createInstance(TwitterFeedbackService)
-            });
+            if (this.contextService.getConfiguration().env.sendASmile) {
+                return this.instantiationService.createInstance(feedback_1.FeedbackDropdown, element, {
+                    contextViewProvider: this.contextViewService,
+                    feedbackService: this.instantiationService.createInstance(TwitterFeedbackService)
+                });
+            }
         };
         FeedbackStatusbarItem = __decorate([
             __param(0, instantiation_1.IInstantiationService),
-            __param(1, contextView_1.IContextViewService)
+            __param(1, contextView_1.IContextViewService),
+            __param(2, workspace_1.IWorkspaceContextService)
         ], FeedbackStatusbarItem);
         return FeedbackStatusbarItem;
     }());

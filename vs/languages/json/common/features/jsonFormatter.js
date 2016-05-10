@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/base/common/json'], function (require, exports, Json) {
+define(["require", "exports", 'vs/base/common/strings', 'vs/base/common/json'], function (require, exports, strings, Json) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -24,14 +24,14 @@ define(["require", "exports", 'vs/base/common/json'], function (require, exports
         var indentLevel = 0;
         var indentValue;
         if (options.insertSpaces) {
-            indentValue = repeat(' ', options.tabSize);
+            indentValue = strings.repeat(' ', options.tabSize);
         }
         else {
             indentValue = '\t';
         }
         var scanner = Json.createScanner(value, false);
         function newLineAndIndent() {
-            return model.getEOL() + repeat(indentValue, initialIndentLevel + indentLevel);
+            return model.getEOL() + strings.repeat(indentValue, initialIndentLevel + indentLevel);
         }
         function scanNext() {
             var token = scanner.scan();
@@ -51,20 +51,21 @@ define(["require", "exports", 'vs/base/common/json'], function (require, exports
         var firstToken = scanNext();
         if (firstToken !== Json.SyntaxKind.EOF) {
             var firstTokenStart = model.getPositionFromOffset(scanner.getTokenOffset() + rangeOffset);
-            var initialIndent = repeat(indentValue, initialIndentLevel);
+            var initialIndent = strings.repeat(indentValue, initialIndentLevel);
             addEdit(initialIndent, { startLineNumber: range.startLineNumber, startColumn: range.startColumn, endLineNumber: firstTokenStart.lineNumber, endColumn: firstTokenStart.column });
         }
         while (firstToken !== Json.SyntaxKind.EOF) {
             var firstTokenEnd = model.getPositionFromOffset(scanner.getTokenOffset() + scanner.getTokenLength() + rangeOffset);
             var secondToken = scanNext();
+            var replaceContent = '';
             while (!lineBreak && (secondToken === Json.SyntaxKind.LineCommentTrivia || secondToken === Json.SyntaxKind.BlockCommentTrivia)) {
                 // comments on the same line: keep them on the same line, but ignore them otherwise
                 var commentTokenStart = model.getPositionFromOffset(scanner.getTokenOffset() + rangeOffset);
                 addEdit(' ', { startLineNumber: firstTokenEnd.lineNumber, startColumn: firstTokenEnd.column, endLineNumber: commentTokenStart.lineNumber, endColumn: commentTokenStart.column });
                 firstTokenEnd = model.getPositionFromOffset(scanner.getTokenOffset() + scanner.getTokenLength() + rangeOffset);
+                replaceContent = secondToken === Json.SyntaxKind.LineCommentTrivia ? newLineAndIndent() : '';
                 secondToken = scanNext();
             }
-            var replaceContent = '';
             if (secondToken === Json.SyntaxKind.CloseBraceToken) {
                 if (firstToken !== Json.SyntaxKind.OpenBraceToken) {
                     indentLevel--;
@@ -120,13 +121,6 @@ define(["require", "exports", 'vs/base/common/json'], function (require, exports
         return editOperations;
     }
     exports.format = format;
-    function repeat(s, count) {
-        var result = '';
-        for (var i = 0; i < count; i++) {
-            result += s;
-        }
-        return result;
-    }
     function computeIndentLevel(line, options) {
         var i = 0;
         var nChars = 0;

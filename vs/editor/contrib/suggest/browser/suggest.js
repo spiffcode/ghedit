@@ -181,7 +181,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Space,
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.Space }
-    }));
+    }, 'Trigger Suggest'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand(suggest_1.ACCEPT_SELECTED_SUGGESTION_CMD, weight, { primary: keyCodes_1.KeyCode.Tab }, true, suggest_1.CONTEXT_SUGGEST_WIDGET_VISIBLE, function (ctx, editor, args) {
         var controller = SuggestController.getSuggestController(editor);
         controller.acceptSelectedSuggestion();

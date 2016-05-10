@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/keybinding/test/common/mockKeybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/commonCodeEditor', 'vs/editor/common/model/model', 'vs/editor/test/common/mocks/mockCodeEditorService', 'vs/editor/test/common/mocks/mockConfiguration'], function (require, exports, eventEmitter_1, instantiationService_1, mockKeybindingService_1, telemetry_1, commonCodeEditor_1, model_1, mockCodeEditorService_1, mockConfiguration_1) {
+define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/editor/common/services/codeEditorService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/test/common/mockKeybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/commonCodeEditor', 'vs/editor/common/model/model', 'vs/editor/test/common/mocks/mockCodeEditorService', 'vs/editor/test/common/mocks/mockConfiguration'], function (require, exports, eventEmitter_1, codeEditorService_1, serviceCollection_1, instantiationService_1, keybindingService_1, mockKeybindingService_1, telemetry_1, commonCodeEditor_1, model_1, mockCodeEditorService_1, mockConfiguration_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -56,11 +56,11 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/platform/instan
         var codeEditorService = new mockCodeEditorService_1.MockCodeEditorService();
         var keybindingService = new mockKeybindingService_1.MockKeybindingService();
         var telemetryService = telemetry_1.NullTelemetryService;
-        var instantiationService = instantiationService_1.createInstantiationService({
-            codeEditorService: codeEditorService,
-            keybindingService: keybindingService,
-            telemetryService: telemetryService
-        });
+        var services = new serviceCollection_1.ServiceCollection();
+        services.set(codeEditorService_1.ICodeEditorService, codeEditorService);
+        services.set(keybindingService_1.IKeybindingService, keybindingService);
+        services.set(telemetry_1.ITelemetryService, telemetryService);
+        var instantiationService = new instantiationService_1.InstantiationService(services);
         var model = new model_1.Model(text.join('\n'), model_1.Model.DEFAULT_CREATION_OPTIONS, null);
         var editor = new MockCodeEditor(new MockScopeLocation(), options, instantiationService, codeEditorService, keybindingService, telemetryService);
         editor.setModel(model);

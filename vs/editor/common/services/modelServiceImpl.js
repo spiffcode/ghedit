@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/thread', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/common/model/mirrorModel', 'vs/editor/common/model/model', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/resourceService', 'vs/base/common/platform', 'vs/platform/configuration/common/configuration', 'vs/editor/common/config/defaultConfig'], function (require, exports, nls, errors_1, event_1, severity_1, uri_1, telemetry_1, thread_1, range_1, editorCommon, mirrorModel_1, model_1, modeService_1, modelService_1, resourceService_1, platform, configuration_1, defaultConfig_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/severity', 'vs/base/common/uri', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/thread', 'vs/editor/common/core/range', 'vs/editor/common/editorCommon', 'vs/editor/common/model/mirrorModel', 'vs/editor/common/model/model', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/resourceService', 'vs/base/common/platform', 'vs/editor/common/config/defaultConfig'], function (require, exports, nls, errors_1, event_1, severity_1, uri_1, telemetry_1, thread_1, range_1, editorCommon, mirrorModel_1, model_1, modeService_1, modelService_1, resourceService_1, platform, defaultConfig_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -118,7 +118,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
             else if (marker.message) {
                 htmlMessage = [marker.message];
             }
-            if (marker.source) {
+            if (htmlMessage && marker.source) {
                 htmlMessage.unshift({ isText: true, text: "[" + marker.source + "] " });
             }
             return {
@@ -196,7 +196,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
                     _this._messageService.show(severity_1.default.Info, nls.localize('indentAutoMigrate', "Please update your settings: `editor.detectIndentation` replaces `editor.tabSize`: \"auto\" or `editor.insertSpaces`: \"auto\""));
                 }
             };
-            this._configurationServiceSubscription = this._configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) {
+            this._configurationServiceSubscription = this._configurationService.onDidUpdateConfiguration(function (e) {
                 readConfig(e.config);
             });
             readConfig(this._configurationService.getConfiguration());

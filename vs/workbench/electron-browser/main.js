@@ -5,11 +5,14 @@
 define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/electron-browser/shell', 'vs/base/common/errors', 'vs/base/common/platform', 'vs/base/common/paths', 'vs/base/common/timer', 'vs/base/common/objects', 'vs/base/common/uri', 'vs/base/common/strings', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/configuration/node/configurationService', 'path', 'fs', 'graceful-fs'], function (require, exports, winjs, shell_1, errors, platform, paths, timer, objects_1, uri_1, strings, eventService_1, contextService_1, configurationService_1, path, fs, gracefulFs) {
     'use strict';
     gracefulFs.gracefulify(fs);
-    var timers = window.MonacoEnvironment.timers;
+    var timers = window.GlobalEnvironment.timers;
     var domContentLoaded = winjs.Utilities.ready;
     function startup(environment, globalSettings) {
         // Inherit the user environment
-        objects_1.assign(process.env, environment.userEnv);
+        // TODO@Joao: this inheritance should **not** happen here!
+        if (process.env['VSCODE_CLI'] !== '1') {
+            objects_1.assign(process.env, environment.userEnv);
+        }
         // Shell Configuration
         var shellConfiguration = {
             env: environment

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/glob', 'vs/base/common/objects', 'vs/base/common/scorer', 'vs/base/common/strings', 'vs/base/node/service.cp', 'vs/platform/search/common/search', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/editor/common/services/modelService', 'vs/platform/workspace/common/workspace', 'vs/platform/configuration/common/configuration', 'vs/workbench/services/search/node/rawSearchService'], function (require, exports, winjs_base_1, uri_1, glob, objects, scorer, strings, service_cp_1, search_1, untitledEditorService_1, modelService_1, workspace_1, configuration_1, rawSearchService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/glob', 'vs/base/common/objects', 'vs/base/common/scorer', 'vs/base/common/strings', 'vs/base/parts/ipc/node/ipc.cp', 'vs/platform/search/common/search', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/editor/common/services/modelService', 'vs/platform/workspace/common/workspace', 'vs/platform/configuration/common/configuration', './searchIpc'], function (require, exports, winjs_base_1, uri_1, glob, objects, scorer, strings, ipc_cp_1, search_1, untitledEditorService_1, modelService_1, workspace_1, configuration_1, searchIpc_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -159,7 +159,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri',
     exports.SearchService = SearchService;
     var DiskSearch = (function () {
         function DiskSearch(verboseLogging) {
-            var client = new service_cp_1.Client(uri_1.default.parse(require.toUrl('bootstrap')).fsPath, {
+            var client = new ipc_cp_1.Client(uri_1.default.parse(require.toUrl('bootstrap')).fsPath, {
                 serverName: 'Search',
                 timeout: 60 * 1000,
                 args: ['--type=searchService'],
@@ -169,7 +169,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri',
                     VERBOSE_LOGGING: verboseLogging
                 }
             });
-            this.raw = client.getService('SearchService', rawSearchService_1.SearchService);
+            var channel = client.getChannel('search');
+            this.raw = new searchIpc_1.SearchChannelClient(channel);
         }
         DiskSearch.prototype.search = function (query) {
             var result = [];

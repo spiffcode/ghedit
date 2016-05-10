@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/jsonschemas/common/jsonValidationExtensionPoint', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'navbarPart', 'navbarService', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas'], function (require, exports, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, baseLifecycleService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, jsonValidationExtensionPoint_1, remoteTelemetryService_1, storage_2, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1, navbarPart_1, navbarService_1) {
+define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'fileService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'themeService', 'vs/workbench/parts/files/common/files', 'bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'navbarPart', 'navbarService', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas', 'vs/platform/opener/electron-browser/opener.contribution'], function (require, exports, platform, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, storage_2, serviceCollection_1, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1, navbarPart_1, navbarService_1) {
     'use strict';
     var Identifiers = {
         NAVBAR_PART: 'workbench.parts.navbar'
@@ -33,20 +33,13 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             // Workbench Container
             var workbenchContainer = builder_1.$(parent).div();
             // Instantiation service with services
-            var instantiationService = this.initInstantiationService();
-            // Nav bar
-            this.navbarPart = new navbarPart_1.NavbarPart(Identifiers.NAVBAR_PART);
-            //		this.toDispose.push(this.navbarPart);
-            //		this.toShutdown.push(this.navbarPart);
-            this.navbarPart.setInstantiationService(instantiationService);
-            instantiationService.addSingleton(navbarService_1.INavbarService, this.navbarPart);
-            this.createNavbarPart();
-            this.fillNavbar();
+            var _a = this.initServiceCollection(), instantiationService = _a[0], serviceCollection = _a[1];
             //crash reporting
             if (!!this.configuration.env.crashReporter) {
             }
             /* TODO:
             const sharedProcessClientPromise = connect(process.env['VSCODE_SHARED_IPC_HOOK']);
+    
             sharedProcessClientPromise.done(service => {
                 service.onClose(() => {
                     this.messageService.show(Severity.Error, {
@@ -56,15 +49,32 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
                 });
             }, errors.onUnexpectedError);
             */
-            // TODO:		instantiationService.addSingleton(IExtensionsService, getService<IExtensionsService>(sharedProcessClientPromise, 'ExtensionService', ExtensionsService));
+            /* TODO:
+            const extensionsChannelPromise = sharedProcessClientPromise
+                .then(client => client.getChannel<IExtensionsChannel>('extensions'));
+    
+            const channel = getDelayedChannel<IExtensionsChannel>(extensionsChannelPromise);
+            const extensionsService = new ExtensionsChannelClient(channel);
+    
+            serviceCollection.set(IExtensionsService, extensionsService);
+            */
             // Workbench
-            this.workbench = new workbench_1.Workbench(workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, instantiationService);
+            this.workbench = instantiationService.createInstance(workbench_1.Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, serviceCollection);
             this.workbench.startup({
-                onServicesCreated: function () {
-                    _this.initExtensionSystem();
-                },
                 onWorkbenchStarted: function () {
                     _this.onWorkbenchStarted();
+                },
+                onServicesCreated: function () {
+                    // The Navbar requires the IWorkbenchEditorService instantiated by the Workbench
+                    // so it can't be created before this point. However, the Workbench performs layout
+                    // for which the Navbar must be present. So we tuck its creation in here after
+                    // the Workbench has created the services but before it initiates layout.
+                    _this.navbarPart = new navbarPart_1.NavbarPart(Identifiers.NAVBAR_PART, instantiationService);
+                    // TODO:		this.toDispose.push(this.navbarPart);
+                    // TODO:		this.toShutdown.push(this.navbarPart);
+                    serviceCollection.set(navbarService_1.INavbarService, _this.navbarPart);
+                    _this.createNavbarPart();
+                    _this.fillNavbar();
                 }
             });
             // Electron integration
@@ -108,10 +118,16 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
                 windowSize: windowSize,
                 emptyWorkbench: !this.contextService.getWorkspace(),
                 customKeybindingsCount: this.keybindingService.customKeybindingsCount(),
-                theme: this.currentTheme
+                theme: this.currentTheme,
+                language: platform.language
             });
             var workspaceStats = this.workbench.getInstantiationService().createInstance(workspaceStats_1.WorkspaceStats);
             workspaceStats.reportWorkspaceTags();
+            /* GHC: Not need when running in-browser.
+            if ((platform.isLinux || platform.isMacintosh) && process.getuid() === 0) {
+                this.messageService.show(Severity.Warning, nls.localize('runningAsRoot', "It is recommended not to run Code as 'root'."));
+            }
+            */
             // Register all built-in standalone languages.
             MonacoEditorLanguages.forEach(function (language) {
                 _this.registerMonarchStandaloneLanguage(language, language.defModule);
@@ -178,94 +194,70 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             schemaRegistry.registerSchema(uri, schema);
             var i = uri.lastIndexOf('/');
             var pattern = uri.slice(i + 1) + '.json';
-            schemaRegistry.addSchemaFileAssociation(pattern, uri);
+            // TODO: schemaRegistry.addSchemaFileAssociation(pattern, uri);
         };
-        WorkbenchShell.prototype.initInstantiationService = function () {
+        WorkbenchShell.prototype.initServiceCollection = function () {
+            var _this = this;
+            var serviceCollection = new serviceCollection_1.ServiceCollection();
+            var instantiationService = new instantiationService_1.InstantiationService(serviceCollection, true);
             this.windowService = new windowService_1.WindowService();
             var disableWorkspaceStorage = this.configuration.env.extensionTestsPath || (!this.workspace && !this.configuration.env.extensionDevelopmentPath); // without workspace or in any extension test, we use inMemory storage unless we develop an extension where we want to preserve state
             this.storageService = new storage_1.Storage(this.contextService, window.localStorage, disableWorkspaceStorage ? storage_1.inMemoryLocalStorageInstance : window.localStorage);
-            if (this.configuration.env.isBuilt
-                && !this.configuration.env.extensionDevelopmentPath // no telemetry in a window for extension development!
-                && !!this.configuration.env.enableTelemetry) {
+            if (this.configuration.env.isBuilt && !this.configuration.env.extensionDevelopmentPath && !!this.configuration.env.enableTelemetry) {
             }
             else {
                 this.telemetryService = telemetry_1.NullTelemetryService;
             }
-            // TODO: 		this.keybindingService = new WorkbenchKeybindingService(this.configurationService, this.contextService, this.eventService, this.telemetryService, <any>window);
-            this.keybindingService = new simpleServices_1.StandaloneKeybindingService(this.configurationService, document.body);
-            // TODO: 		this.messageService = new MessageService(this.contextService, this.windowService, this.telemetryService, this.keybindingService);
-            this.messageService = new messageService_1.WorkbenchMessageService(this.telemetryService, this.keybindingService);
-            this.keybindingService.setMessageService(this.messageService);
-            var fileService = new fileService_1.FileService(this.configurationService, this.eventService, this.contextService, this.githubService);
+            // TODO: this.messageService = new MessageService(this.contextService, this.windowService, this.telemetryService);
+            this.messageService = new messageService_1.WorkbenchMessageService(this.telemetryService);
+            var fileService = new fileService_1.FileService(this.configurationService, this.eventService, this.contextService, this.githubService, this.messageService);
             this.contextViewService = new contextViewService_1.ContextViewService(this.container, this.telemetryService, this.messageService);
-            // TODO: 		let lifecycleService = new LifecycleService(this.messageService, this.windowService);
-            var lifecycleService = new baseLifecycleService_1.BaseLifecycleService();
-            lifecycleService.onShutdown(function () { return fileService.dispose(); });
-            // TODO: 		this.threadService = new MainThreadService(this.contextService, this.messageService, this.windowService);
+            var lifecycleService = lifecycle_2.NullLifecycleService;
+            this.toUnbind.push(lifecycleService.onShutdown(function () { return fileService.dispose(); }));
+            // TODO: this.threadService = new MainThreadService(this.contextService, this.messageService, this.windowService, lifecycleService);
             this.threadService = new mainThreadService_1.MainThreadService(this.contextService, 'vs/editor/common/worker/editorWorkerServer', 1);
-            // TODO: 		lifecycleService.onShutdown(() => this.threadService.dispose());
-            var requestService = new simpleServices_1.SimpleEditorRequestService(this.contextService, this.telemetryService);
-            // 		lifecycleService.onShutdown(() => requestService.dispose());
-            var markerService = new markerService_1.MainProcessMarkerService(this.threadService);
-            // TODO: 		let extensionService = new MainProcessExtensionService(this.contextService, this.threadService, this.messageService, this.telemetryService);
+            // TODO:		let extensionService = new MainProcessExtensionService(this.contextService, this.threadService, this.messageService, this.telemetryService);
             var extensionService = new simpleServices_1.SimpleExtensionService();
-            // TODO: 		this.keybindingService.setExtensionService(extensionService);
+            this.keybindingService = new simpleServices_1.StandaloneKeybindingService(this.configurationService, this.messageService, document.body);
+            this.messagesShowingContextKey = this.keybindingService.createKey('globalMessageVisible', false);
+            this.toUnbind.push(this.messageService.onMessagesShowing(function () { return _this.messagesShowingContextKey.set(true); }));
+            this.toUnbind.push(this.messageService.onMessagesCleared(function () { return _this.messagesShowingContextKey.reset(); }));
+            this.contextViewService = new contextViewService_1.ContextViewService(this.container, this.telemetryService, this.messageService);
+            var requestService = new simpleServices_1.SimpleEditorRequestService(this.contextService, this.telemetryService);
+            // TODO: this.toUnbind.push(lifecycleService.onShutdown(() => requestService.dispose()));
+            var markerService = new markerService_1.MainProcessMarkerService(this.threadService);
             var modeService = this.modeService = new modeServiceImpl_1.MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
             var modelService = this.modelService = new modelServiceImpl_1.ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
             var editorWorkerService = this.editorWorkerService = new editorWorkerServiceImpl_1.EditorWorkerServiceImpl(modelService);
-            var untitledEditorService = new untitledEditorService_1.UntitledEditorService();
+            var untitledEditorService = instantiationService.createInstance(untitledEditorService_1.UntitledEditorService);
             this.themeService = new themeService_2.ThemeService(extensionService, this.windowService, this.storageService);
-            var result = instantiationService_1.createInstantiationService();
-            result.addSingleton(telemetry_1.ITelemetryService, this.telemetryService);
-            result.addSingleton(event_1.IEventService, this.eventService);
-            result.addSingleton(request_1.IRequestService, requestService);
-            result.addSingleton(contextService_1.IWorkspaceContextService, this.contextService);
-            result.addSingleton(contextView_1.IContextViewService, this.contextViewService);
-            result.addSingleton(contextView_1.IContextMenuService, new contextMenuService_1.ContextMenuService(document.body /* TODO: correct element? */, this.telemetryService, this.messageService, this.contextViewService));
-            result.addSingleton(message_1.IMessageService, this.messageService);
-            result.addSingleton(storage_2.IStorageService, this.storageService);
-            result.addSingleton(lifecycle_2.ILifecycleService, lifecycleService);
-            result.addSingleton(thread_1.IThreadService, this.threadService);
-            result.addSingleton(extensions_1.IExtensionService, extensionService);
-            result.addSingleton(modeService_1.IModeService, modeService);
-            result.addSingleton(files_1.IFileService, fileService);
-            result.addSingleton(untitledEditorService_1.IUntitledEditorService, untitledEditorService);
-            // TODO: 		result.addSingleton(ISearchService, new SearchService(modelService, untitledEditorService, this.contextService, configService));
-            result.addSingleton(windowService_1.IWindowService, this.windowService);
-            result.addSingleton(configuration_1.IConfigurationService, this.configurationService);
-            result.addSingleton(keybindingService_1.IKeybindingService, this.keybindingService);
-            result.addSingleton(markers_1.IMarkerService, markerService);
-            result.addSingleton(modelService_1.IModelService, modelService);
-            result.addSingleton(codeEditorService_1.ICodeEditorService, new codeEditorServiceImpl_1.CodeEditorServiceImpl());
-            result.addSingleton(editorWorkerService_1.IEditorWorkerService, editorWorkerService);
-            result.addSingleton(themeService_1.IThemeService, this.themeService);
-            result.addSingleton(actions_1.IActionsService, new actionsService_1.default(extensionService, this.keybindingService));
-            this.textFileService = new bogusTextFileServices_1.TextFileService(this.contextService, result, fileService, untitledEditorService, lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService, null /* TODO: IWorkbenchEditorService */, this.windowService);
-            result.addSingleton(files_2.ITextFileService, this.textFileService);
-            return result;
-        };
-        // TODO@Alex, TODO@Joh move this out of here?
-        WorkbenchShell.prototype.initExtensionSystem = function () {
-            // TODO: 		this.threadService.getRemotable(MainProcessVSCodeAPIHelper);
-            // TODO: 		this.threadService.getRemotable(MainThreadDocuments);
-            this.threadService.getRemotable(remoteTelemetryService_1.RemoteTelemetryServiceHelper);
-            // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSyntax);
-            // TODO:		this.workbench.getInstantiationService().createInstance(MainProcessTextMateSnippet);
-            this.workbench.getInstantiationService().createInstance(jsonValidationExtensionPoint_1.JSONValidationExtensionPoint);
-            // TODO:		this.workbench.getInstantiationService().createInstance(LanguageConfigurationFileHandler);
-            // TODO: 		this.threadService.getRemotable(MainThreadConfiguration);
-            // TODO: 		this.threadService.getRemotable(MainThreadQuickOpen);
-            // TODO: 		this.threadService.getRemotable(MainThreadStatusBar);
-            // TODO:		this.workbench.getInstantiationService().createInstance(MainThreadFileSystemEventService);
-            // TODO: 		this.threadService.getRemotable(MainThreadCommands);
-            // TODO: 		this.threadService.getRemotable(MainThreadOutputService);
-            // TODO: 		this.threadService.getRemotable(MainThreadDiagnostics);
-            // TODO: 		this.threadService.getRemotable(MainThreadMessageService);
-            // TODO: 		this.threadService.getRemotable(MainThreadLanguages);
-            // TODO: 		this.threadService.getRemotable(MainThreadWorkspace);
-            // TODO: 		this.threadService.getRemotable(MainThreadEditors);
-            // TODO: 		this.threadService.getRemotable(MainThreadStorage);
-            // TODO: 		this.threadService.getRemotable(MainThreadLanguageFeatures);
+            serviceCollection.set(telemetry_1.ITelemetryService, this.telemetryService);
+            serviceCollection.set(event_1.IEventService, this.eventService);
+            serviceCollection.set(request_1.IRequestService, requestService);
+            serviceCollection.set(contextService_1.IWorkspaceContextService, this.contextService);
+            serviceCollection.set(contextView_1.IContextViewService, this.contextViewService);
+            serviceCollection.set(contextView_1.IContextMenuService, new contextMenuService_1.ContextMenuService(document.body /* TODO: correct element? */, this.telemetryService, this.messageService, this.contextViewService));
+            serviceCollection.set(message_1.IMessageService, this.messageService);
+            serviceCollection.set(storage_2.IStorageService, this.storageService);
+            serviceCollection.set(lifecycle_2.ILifecycleService, lifecycleService);
+            serviceCollection.set(thread_1.IThreadService, this.threadService);
+            serviceCollection.set(extensions_1.IExtensionService, extensionService);
+            serviceCollection.set(modeService_1.IModeService, modeService);
+            serviceCollection.set(files_1.IFileService, fileService);
+            serviceCollection.set(untitledEditorService_1.IUntitledEditorService, untitledEditorService);
+            // TODO: serviceCollection.set(ISearchService, new SearchService(modelService, untitledEditorService, this.contextService, this.configurationService));
+            serviceCollection.set(windowService_1.IWindowService, this.windowService);
+            serviceCollection.set(configuration_1.IConfigurationService, this.configurationService);
+            serviceCollection.set(keybindingService_1.IKeybindingService, this.keybindingService);
+            serviceCollection.set(markers_1.IMarkerService, markerService);
+            serviceCollection.set(modelService_1.IModelService, modelService);
+            serviceCollection.set(codeEditorService_1.ICodeEditorService, new codeEditorServiceImpl_1.CodeEditorServiceImpl());
+            serviceCollection.set(editorWorkerService_1.IEditorWorkerService, editorWorkerService);
+            serviceCollection.set(themeService_1.IThemeService, this.themeService);
+            serviceCollection.set(actions_1.IActionsService, new actionsService_1.default(extensionService, this.keybindingService));
+            this.textFileService = new bogusTextFileServices_1.TextFileService(this.contextService, instantiationService, fileService, untitledEditorService, lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService, null /* TODO: IWorkbenchEditorService */, this.windowService);
+            serviceCollection.set(files_2.ITextFileService, this.textFileService);
+            return [instantiationService, serviceCollection];
         };
         WorkbenchShell.prototype.open = function () {
             var _this = this;
@@ -296,7 +288,7 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
             builder_1.$(window).on(dom.EventType.RESIZE, function () { return _this.layout(); }, this.toUnbind);
         };
         WorkbenchShell.prototype.writeTimers = function () {
-            var timers = window.MonacoEnvironment.timers;
+            var timers = window.GlobalEnvironment.timers;
             if (timers) {
                 var events = [];
                 // Program
@@ -371,14 +363,10 @@ define(["require", "exports", 'vs/base/browser/builder', 'vs/base/browser/dom', 
         WorkbenchShell.prototype.joinCreation = function () {
             return this.workbench.joinCreation();
         };
-        WorkbenchShell.prototype.dispose = function (force) {
+        WorkbenchShell.prototype.dispose = function () {
             // Workbench
             if (this.workbench) {
-                var veto = this.workbench.shutdown(force);
-                // If Workbench vetos dispose, return early
-                if (veto) {
-                    return;
-                }
+                this.workbench.dispose();
             }
             this.contextViewService.dispose();
             this.storageService.dispose();

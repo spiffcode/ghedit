@@ -7,7 +7,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/auto-updater.win32', 'vs/workbench/electron-main/auto-updater.linux', 'vs/workbench/electron-main/lifecycle'], function (require, exports, fs, path, events, electron, platform, env, settings, auto_updater_win32_1, auto_updater_linux_1, lifecycle_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/auto-updater.win32', 'vs/workbench/electron-main/auto-updater.linux', 'vs/workbench/electron-main/lifecycle', 'vs/platform/instantiation/common/instantiation'], function (require, exports, fs, path, events, electron, platform, env_1, settings_1, auto_updater_win32_1, auto_updater_linux_1, lifecycle_1, instantiation_1) {
     'use strict';
     (function (State) {
         State[State["Uninitialized"] = 0] = "Uninitialized";
@@ -22,10 +31,15 @@ define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/commo
         ExplicitState[ExplicitState["Explicit"] = 1] = "Explicit";
     })(exports.ExplicitState || (exports.ExplicitState = {}));
     var ExplicitState = exports.ExplicitState;
+    exports.IUpdateService = instantiation_1.createDecorator('updateService');
     var UpdateManager = (function (_super) {
         __extends(UpdateManager, _super);
-        function UpdateManager() {
+        function UpdateManager(instantiationService, lifecycleService, envService, settingsManager) {
             _super.call(this);
+            this.lifecycleService = lifecycleService;
+            this.envService = envService;
+            this.settingsManager = settingsManager;
+            this.serviceId = exports.IUpdateService;
             this._state = State.Uninitialized;
             this.explicitState = ExplicitState.Implicit;
             this._availableUpdate = null;
@@ -33,10 +47,10 @@ define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/commo
             this._feedUrl = null;
             this._channel = null;
             if (platform.isWindows) {
-                this.raw = new auto_updater_win32_1.Win32AutoUpdaterImpl();
+                this.raw = instantiationService.createInstance(auto_updater_win32_1.Win32AutoUpdaterImpl);
             }
             else if (platform.isLinux) {
-                this.raw = new auto_updater_linux_1.LinuxAutoUpdaterImpl();
+                this.raw = instantiationService.createInstance(auto_updater_linux_1.LinuxAutoUpdaterImpl);
             }
             else if (platform.isMacintosh) {
                 this.raw = electron.autoUpdater;
@@ -84,7 +98,7 @@ define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/commo
             });
         };
         UpdateManager.prototype.quitAndUpdate = function (rawQuitAndUpdate) {
-            lifecycle_1.manager.quit().done(function (vetod) {
+            this.lifecycleService.quit().done(function (vetod) {
                 if (vetod) {
                     return;
                 }
@@ -116,14 +130,19 @@ define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/commo
             if (this.feedUrl) {
                 return; // already initialized
             }
-            var channel = UpdateManager.getUpdateChannel();
-            var feedUrl = UpdateManager.getUpdateFeedUrl(channel);
+            var channel = this.getUpdateChannel();
+            var feedUrl = this.getUpdateFeedUrl(channel);
             if (!feedUrl) {
                 return; // updates not available
             }
+            try {
+                this.raw.setFeedURL(feedUrl);
+            }
+            catch (e) {
+                return; // application not signed
+            }
             this._channel = channel;
             this._feedUrl = feedUrl;
-            this.raw.setFeedURL(feedUrl);
             this.setState(State.Idle);
             // Check for updates on startup after 30 seconds
             var timer = setTimeout(function () { return _this.checkForUpdates(); }, 30 * 1000);
@@ -169,25 +188,30 @@ define(["require", "exports", 'fs', 'path', 'events', 'electron', 'vs/base/commo
             this._availableUpdate = availableUpdate;
             this.emit('change');
         };
-        UpdateManager.getUpdateChannel = function () {
-            var channel = settings.manager.getValue('update.channel') || 'default';
-            return channel === 'none' ? null : env.quality;
+        UpdateManager.prototype.getUpdateChannel = function () {
+            var channel = this.settingsManager.getValue('update.channel') || 'default';
+            return channel === 'none' ? null : this.envService.quality;
         };
-        UpdateManager.getUpdateFeedUrl = function (channel) {
+        UpdateManager.prototype.getUpdateFeedUrl = function (channel) {
             if (!channel) {
                 return null;
             }
             if (platform.isWindows && !fs.existsSync(path.join(path.dirname(process.execPath), 'unins000.exe'))) {
                 return null;
             }
-            if (!env.updateUrl || !env.product.commit) {
+            if (!this.envService.updateUrl || !this.envService.product.commit) {
                 return null;
             }
-            return env.updateUrl + "/api/update/" + env.getPlatformIdentifier() + "/" + channel + "/" + env.product.commit;
+            return this.envService.updateUrl + "/api/update/" + env_1.getPlatformIdentifier() + "/" + channel + "/" + this.envService.product.commit;
         };
+        UpdateManager = __decorate([
+            __param(0, instantiation_1.IInstantiationService),
+            __param(1, lifecycle_1.ILifecycleService),
+            __param(2, env_1.IEnvironmentService),
+            __param(3, settings_1.ISettingsService)
+        ], UpdateManager);
         return UpdateManager;
     }(events.EventEmitter));
     exports.UpdateManager = UpdateManager;
-    exports.Instance = new UpdateManager();
 });
 //# sourceMappingURL=update-manager.js.map

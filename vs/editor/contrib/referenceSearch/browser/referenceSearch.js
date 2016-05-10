@@ -19,7 +19,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var FindReferencesController = (function () {
-        function FindReferencesController(editor, editorService, telemetryService, messageService, instantiationService, peekViewService, contextService, keybindingService) {
+        function FindReferencesController(editor, editorService, telemetryService, messageService, instantiationService, keybindingService, contextService, peekViewService) {
             this._startTime = -1;
             this.requestIdPool = 0;
             this.callOnClear = [];
@@ -177,9 +177,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
             __param(2, telemetry_1.ITelemetryService),
             __param(3, message_1.IMessageService),
             __param(4, instantiation_1.IInstantiationService),
-            __param(5, peekViewWidget_1.IPeekViewService),
+            __param(5, keybindingService_1.IKeybindingService),
             __param(6, workspace_1.IWorkspaceContextService),
-            __param(7, keybindingService_1.IKeybindingService)
+            __param(7, instantiation_1.optional(peekViewWidget_1.IPeekViewService))
         ], FindReferencesController);
         return FindReferencesController;
     }());
@@ -187,7 +187,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
     var ReferenceAction = (function (_super) {
         __extends(ReferenceAction, _super);
         // state - changes with every invocation
-        function ReferenceAction(descriptor, editor, peekViewService, keybindingService) {
+        function ReferenceAction(descriptor, editor, keybindingService, peekViewService) {
             _super.call(this, descriptor, editor, editorActionEnablement_1.Behaviour.WidgetFocus | editorActionEnablement_1.Behaviour.ShowInContextMenu | editorActionEnablement_1.Behaviour.UpdateOnCursorPositionChange);
             this.label = nls.localize('references.action.label', "Find All References");
             this.peekViewService = peekViewService;
@@ -222,8 +222,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
         };
         ReferenceAction.ID = 'editor.action.referenceSearch.trigger';
         ReferenceAction = __decorate([
-            __param(2, peekViewWidget_1.IPeekViewService),
-            __param(3, keybindingService_1.IKeybindingService)
+            __param(2, keybindingService_1.IKeybindingService),
+            __param(3, instantiation_1.optional(peekViewWidget_1.IPeekViewService))
         ], ReferenceAction);
         return ReferenceAction;
     }(editorAction_1.EditorAction));
@@ -272,7 +272,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ReferenceAction, ReferenceAction.ID, nls.localize('references.action.name', "Show References"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F12
-    }));
+    }, 'Show References'));
     keybindingsRegistry_1.KeybindingsRegistry.registerCommandDesc({
         id: 'editor.action.findReferences',
         handler: findReferencesCommand,

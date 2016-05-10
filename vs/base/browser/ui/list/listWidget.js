@@ -106,9 +106,16 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/types'
             this.list = list;
             this.view = view;
             this.toDispose = [];
+            this.toDispose.push(view.addListener('mousedown', function (e) { return _this.onMouseDown(e); }));
             this.toDispose.push(view.addListener('click', function (e) { return _this.onClick(e); }));
         }
+        Controller.prototype.onMouseDown = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        };
         Controller.prototype.onClick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             this.list.setSelection(e.index);
         };
         Controller.prototype.dispose = function () {

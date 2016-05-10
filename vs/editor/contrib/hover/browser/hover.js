@@ -132,6 +132,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         kbExpr: keybindingService_1.KbExpr.has(editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS),
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_I)
-    }));
+    }, 'Show Hover'));
 });
 //# sourceMappingURL=hover.js.map

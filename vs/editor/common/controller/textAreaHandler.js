@@ -176,7 +176,7 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/event', 'v
         TextAreaHandler.prototype._onKeyDownHandler = function (e) {
             if (e.equals(keyCodes_1.CommonKeybindings.ESCAPE)) {
                 // Prevent default always for `Esc`, otherwise it will generate a keypress
-                // See http://msdn.microsoft.com/en-us/library/ie/ms536939(v=vs.85).aspx
+                // See https://msdn.microsoft.com/en-us/library/ie/ms536939(v=vs.85).aspx
                 e.preventDefault();
             }
             this._onKeyDown.fire(e);

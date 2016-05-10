@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/events', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message'], function (require, exports, nls, dom, builder, winjs_base_1, errors, events, actionbarregistry, treeimpl, splitview, viewlet, debug, model, viewer, debugactions, contextView_1, instantiation_1, telemetry_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/base/common/events', 'vs/workbench/browser/actionBarRegistry', 'vs/base/parts/tree/browser/treeImpl', 'vs/base/browser/ui/splitview/splitview', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugViewer', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message'], function (require, exports, nls, dom, builder, winjs_base_1, errors, events, actionbarregistry, treeimpl, splitview, viewlet, debug, debugModel_1, viewer, debugactions, contextView_1, instantiation_1, telemetry_1, message_1) {
     "use strict";
     var IDebugService = debug.IDebugService;
     var debugTreeOptions = function (ariaLabel) {
@@ -61,25 +61,24 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
             this.tree.setInput(viewModel);
             var collapseAction = this.instantiationService.createInstance(viewlet.CollapseAction, this.tree, false, 'explorer-action collapse-explorer');
             this.toolBar.setActions(actionbarregistry.prepareActions([collapseAction]))();
-            this.toDispose.push(viewModel.addListener2(debug.ViewModelEvents.FOCUSED_STACK_FRAME_UPDATED, function () { return _this.onFocusedStackFrameUpdated(); }));
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () {
-                collapseAction.enabled = _this.debugService.getState() === debug.State.Running || _this.debugService.getState() === debug.State.Stopped;
+            this.toDispose.push(viewModel.onDidFocusStackFrame(function (sf) { return _this.onFocusStackFrame(sf); }));
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) {
+                collapseAction.enabled = state === debug.State.Running || state === debug.State.Stopped;
             }));
             this.toDispose.push(this.tree.addListener2(events.EventType.FOCUS, function (e) {
                 var isMouseClick = (e.payload && e.payload.origin === 'mouse');
-                var isVariableType = (e.focus instanceof model.Variable);
+                var isVariableType = (e.focus instanceof debugModel_1.Variable);
                 if (isMouseClick && isVariableType) {
                     _this.telemetryService.publicLog('debug/variables/selected');
                 }
             }));
         };
-        VariablesView.prototype.onFocusedStackFrameUpdated = function () {
+        VariablesView.prototype.onFocusStackFrame = function (stackFrame) {
             var _this = this;
             this.tree.refresh().then(function () {
-                var stackFrame = _this.debugService.getViewModel().getFocusedStackFrame();
                 if (stackFrame) {
                     return stackFrame.getScopes(_this.debugService).then(function (scopes) {
-                        if (scopes.length > 0) {
+                        if (scopes.length > 0 && !scopes[0].expensive) {
                             return _this.tree.expand(scopes[0]);
                         }
                     });
@@ -109,9 +108,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
             this.settings = settings;
             this.debugService = debugService;
             this.instantiationService = instantiationService;
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, function (we) {
+            this.toDispose.push(this.debugService.getModel().onDidChangeWatchExpressions(function (we) {
                 // only expand when a new watch expression is added.
-                if (we instanceof model.Expression) {
+                if (we instanceof debugModel_1.Expression) {
                     _this.expand();
                 }
             }));
@@ -137,9 +136,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
             var collapseAction = this.instantiationService.createInstance(viewlet.CollapseAction, this.tree, false, 'explorer-action collapse-explorer');
             var removeAllWatchExpressionsAction = this.instantiationService.createInstance(debugactions.RemoveAllWatchExpressionsAction, debugactions.RemoveAllWatchExpressionsAction.ID, debugactions.RemoveAllWatchExpressionsAction.LABEL);
             this.toolBar.setActions(actionbarregistry.prepareActions([addWatchExpressionAction, collapseAction, removeAllWatchExpressionsAction]))();
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, function (we) { return _this.onWatchExpressionsUpdated(we); }));
-            this.toDispose.push(this.debugService.getViewModel().addListener2(debug.ViewModelEvents.SELECTED_EXPRESSION_UPDATED, function (expression) {
-                if (!expression || !(expression instanceof model.Expression)) {
+            this.toDispose.push(this.debugService.getModel().onDidChangeWatchExpressions(function (we) { return _this.onWatchExpressionsUpdated(we); }));
+            this.toDispose.push(this.debugService.getViewModel().onDidSelectExpression(function (expression) {
+                if (!expression || !(expression instanceof debugModel_1.Expression)) {
                     return;
                 }
                 _this.tree.refresh(expression, false).then(function () {
@@ -152,10 +151,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                 }).done(null, errors.onUnexpectedError);
             }));
         };
-        WatchExpressionsView.prototype.onWatchExpressionsUpdated = function (we) {
+        WatchExpressionsView.prototype.onWatchExpressionsUpdated = function (expression) {
             var _this = this;
             this.tree.refresh().done(function () {
-                return we instanceof model.Expression ? _this.tree.reveal(we) : winjs_base_1.TPromise.as(true);
+                return expression instanceof debugModel_1.Expression ? _this.tree.reveal(expression) : winjs_base_1.TPromise.as(true);
             }, errors.onUnexpectedError);
         };
         WatchExpressionsView.prototype.shutdown = function () {
@@ -198,17 +197,17 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                 renderer: this.instantiationService.createInstance(viewer.CallStackRenderer),
                 accessibilityProvider: this.instantiationService.createInstance(viewer.CallstackAccessibilityProvider)
             }, debugTreeOptions(nls.localize('callStackAriaLabel', "Debug Call Stack")));
-            var debugModel = this.debugService.getModel();
-            this.tree.setInput(debugModel);
             this.toDispose.push(this.tree.addListener2('selection', function (e) {
-                if (!e.selection.length) {
+                if (!e.selection.length || !e.payload) {
+                    // Ignore the event if it was not initated by user.
+                    // Debug sometimes automaticaly sets the selected frame, and those events we need to ignore.
                     return;
                 }
                 var element = e.selection[0];
-                if (element instanceof model.StackFrame) {
+                if (element instanceof debugModel_1.StackFrame) {
                     var stackFrame = element;
-                    _this.debugService.setFocusedStackFrameAndEvaluate(stackFrame);
-                    var isMouse = (e.payload.origin === 'mouse');
+                    _this.debugService.setFocusedStackFrameAndEvaluate(stackFrame).done(null, errors.onUnexpectedError);
+                    var isMouse = (e.payload && e.payload.origin === 'mouse');
                     var preserveFocus = isMouse;
                     var originalEvent = e && e.payload && e.payload.originalEvent;
                     if (originalEvent && isMouse && originalEvent.detail === 2) {
@@ -216,7 +215,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                         originalEvent.preventDefault(); // focus moves to editor, we need to prevent default
                     }
                     var sideBySide = (originalEvent && (originalEvent.ctrlKey || originalEvent.metaKey));
-                    _this.debugService.openOrRevealEditor(stackFrame.source, stackFrame.lineNumber, preserveFocus, sideBySide).done(null, errors.onUnexpectedError);
+                    _this.debugService.openOrRevealSource(stackFrame.source, stackFrame.lineNumber, preserveFocus, sideBySide).done(null, errors.onUnexpectedError);
                 }
                 // user clicked on 'Load More Stack Frames', get those stack frames and refresh the tree.
                 if (typeof element === 'number') {
@@ -233,32 +232,45 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
             }));
             this.toDispose.push(this.tree.addListener2(events.EventType.FOCUS, function (e) {
                 var isMouseClick = (e.payload && e.payload.origin === 'mouse');
-                var isStackFrameType = (e.focus instanceof model.StackFrame);
+                var isStackFrameType = (e.focus instanceof debugModel_1.StackFrame);
                 if (isMouseClick && isStackFrameType) {
                     _this.telemetryService.publicLog('debug/callStack/selected');
                 }
             }));
-            this.toDispose.push(debugModel.addListener2(debug.ModelEvents.CALLSTACK_UPDATED, function () {
-                _this.tree.refresh().done(null, errors.onUnexpectedError);
-            }));
-            this.toDispose.push(this.debugService.getViewModel().addListener2(debug.ViewModelEvents.FOCUSED_STACK_FRAME_UPDATED, function () {
-                var focussedThread = _this.debugService.getModel().getThreads()[_this.debugService.getViewModel().getFocusedThreadId()];
+            var model = this.debugService.getModel();
+            this.toDispose.push(this.debugService.getViewModel().onDidFocusStackFrame(function () {
+                var focussedThread = model.getThreads()[_this.debugService.getViewModel().getFocusedThreadId()];
                 if (!focussedThread) {
                     _this.pauseMessage.hide();
                     return;
                 }
-                _this.tree.expand(focussedThread);
-                _this.tree.setFocus(_this.debugService.getViewModel().getFocusedStackFrame());
-                if (focussedThread.stoppedDetails && focussedThread.stoppedDetails.reason) {
-                    _this.pauseMessageLabel.text(nls.localize('debugStopped', "Paused on {0}", focussedThread.stoppedDetails.reason));
-                    if (focussedThread.stoppedDetails.text) {
-                        _this.pauseMessageLabel.title(focussedThread.stoppedDetails.text);
+                return _this.tree.expand(focussedThread).then(function () {
+                    var focusedStackFrame = _this.debugService.getViewModel().getFocusedStackFrame();
+                    _this.tree.setSelection([focusedStackFrame]);
+                    if (focussedThread.stoppedDetails && focussedThread.stoppedDetails.reason) {
+                        _this.pauseMessageLabel.text(nls.localize('debugStopped', "Paused on {0}", focussedThread.stoppedDetails.reason));
+                        if (focussedThread.stoppedDetails.text) {
+                            _this.pauseMessageLabel.title(focussedThread.stoppedDetails.text);
+                        }
+                        focussedThread.stoppedDetails.reason === 'exception' ? _this.pauseMessageLabel.addClass('exception') : _this.pauseMessageLabel.removeClass('exception');
+                        _this.pauseMessage.show();
                     }
-                    focussedThread.stoppedDetails.reason === 'exception' ? _this.pauseMessageLabel.addClass('exception') : _this.pauseMessageLabel.removeClass('exception');
-                    _this.pauseMessage.show();
+                    else {
+                        _this.pauseMessage.hide();
+                    }
+                    return _this.tree.reveal(focusedStackFrame);
+                });
+            }));
+            this.toDispose.push(model.onDidChangeCallStack(function () {
+                var threads = model.getThreads();
+                var threadsArray = Object.keys(threads).map(function (ref) { return threads[ref]; });
+                // Only show the threads in the call stack if there is more than 1 thread.
+                var newTreeInput = threadsArray.length === 1 ? threadsArray[0] : model;
+                if (_this.tree.getInput() === newTreeInput) {
+                    _this.tree.refresh().done(null, errors.onUnexpectedError);
                 }
                 else {
-                    _this.pauseMessage.hide();
+                    _this.tree.setInput(newTreeInput).done(null, errors.onUnexpectedError);
                 }
             }));
         };
@@ -285,7 +297,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
             this.settings = settings;
             this.debugService = debugService;
             this.instantiationService = instantiationService;
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.onBreakpointsChange(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.onBreakpointsChange(); }));
         }
         BreakpointsView.prototype.renderHeader = function (container) {
             var titleDiv = $('div.title').appendTo(container);
@@ -306,16 +318,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                     compare: function (tree, element, otherElement) {
                         var first = element;
                         var second = otherElement;
-                        if (first instanceof model.ExceptionBreakpoint) {
+                        if (first instanceof debugModel_1.ExceptionBreakpoint) {
                             return -1;
                         }
-                        if (second instanceof model.ExceptionBreakpoint) {
+                        if (second instanceof debugModel_1.ExceptionBreakpoint) {
                             return 1;
                         }
-                        if (first instanceof model.FunctionBreakpoint) {
+                        if (first instanceof debugModel_1.FunctionBreakpoint) {
                             return -1;
                         }
-                        if (second instanceof model.FunctionBreakpoint) {
+                        if (second instanceof debugModel_1.FunctionBreakpoint) {
                             return 1;
                         }
                         if (first.source.uri.toString() !== second.source.uri.toString()) {
@@ -332,7 +344,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                     return;
                 }
                 var element = e.selection[0];
-                if (!(element instanceof model.Breakpoint)) {
+                if (!(element instanceof debugModel_1.Breakpoint)) {
                     return;
                 }
                 var breakpoint = element;
@@ -345,11 +357,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/dom', 'vs/base/browser/
                         originalEvent.preventDefault(); // focus moves to editor, we need to prevent default
                     }
                     var sideBySide = (originalEvent && (originalEvent.ctrlKey || originalEvent.metaKey));
-                    _this.debugService.openOrRevealEditor(breakpoint.source, breakpoint.lineNumber, preserveFocus, sideBySide).done(null, errors.onUnexpectedError);
+                    _this.debugService.openOrRevealSource(breakpoint.source, breakpoint.lineNumber, preserveFocus, sideBySide).done(null, errors.onUnexpectedError);
                 }
             }));
-            this.toDispose.push(this.debugService.getViewModel().addListener2(debug.ViewModelEvents.SELECTED_FUNCTION_BREAKPOINT_UPDATED, function (fbp) {
-                if (!fbp || !(fbp instanceof model.FunctionBreakpoint)) {
+            this.toDispose.push(this.debugService.getViewModel().onDidSelectFunctionBreakpoint(function (fbp) {
+                if (!fbp || !(fbp instanceof debugModel_1.FunctionBreakpoint)) {
                     return;
                 }
                 _this.tree.refresh(fbp, false).then(function () {

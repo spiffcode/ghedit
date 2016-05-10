@@ -1,3 +1,8 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -14,22 +19,25 @@ define(["require", "exports", 'vs/nls', 'vs/platform/thread/common/thread', 'vs/
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var ExtHostMessageService = (function () {
-        function ExtHostMessageService(threadService, commands) {
+        function ExtHostMessageService(threadService) {
             this._proxy = threadService.getRemotable(MainThreadMessageService);
-            this._commands = commands;
         }
         ExtHostMessageService.prototype.showMessage = function (severity, message, commands) {
             var items = [];
             for (var handle = 0; handle < commands.length; handle++) {
                 var command = commands[handle];
                 if (typeof command === 'string') {
-                    items.push({ title: command, handle: handle });
+                    items.push({ title: command, handle: handle, isCloseAffordance: false });
+                }
+                else if (typeof command === 'object') {
+                    var title = command.title, isCloseAffordance = command.isCloseAffordance;
+                    items.push({ title: title, isCloseAffordance: isCloseAffordance, handle: handle });
                 }
                 else {
-                    items.push({ title: command.title, handle: handle });
+                    console.warn('Invalid message item:', command);
                 }
             }
-            return this._proxy.showMessage(severity, message, items).then(function (handle) {
+            return this._proxy.$showMessage(severity, message, items).then(function (handle) {
                 if (typeof handle === 'number') {
                     return commands[handle];
                 }
@@ -45,26 +53,35 @@ define(["require", "exports", 'vs/nls', 'vs/platform/thread/common/thread', 'vs/
         function MainThreadMessageService(messageService) {
             this._messageService = messageService;
         }
-        MainThreadMessageService.prototype.showMessage = function (severity, message, commands) {
+        MainThreadMessageService.prototype.$showMessage = function (severity, message, commands) {
             var _this = this;
-            var hide;
-            var actions = [];
-            actions.push(new actions_1.Action('__close', nls.localize('close', "Close"), undefined, true, function () {
-                hide();
-                return winjs_base_1.TPromise.as(undefined);
-            }));
-            commands.forEach(function (command) {
-                actions.push(new actions_1.Action('_extension_message_handle_' + command.handle, command.title, undefined, true, function () {
-                    hide(command.handle);
-                    return winjs_base_1.TPromise.as(undefined);
-                }));
-            });
-            return new winjs_base_1.TPromise(function (c) {
+            return new winjs_base_1.TPromise(function (resolve) {
                 var messageHide;
-                hide = function (handle) {
-                    messageHide();
-                    c(handle);
-                };
+                var actions = [];
+                var hasCloseAffordance = false;
+                var MessageItemAction = (function (_super) {
+                    __extends(MessageItemAction, _super);
+                    function MessageItemAction(id, label, handle) {
+                        _super.call(this, id, label, undefined, true, function () {
+                            resolve(handle);
+                            messageHide(); // triggers dispose! make sure promise is already resolved
+                            return undefined;
+                        });
+                    }
+                    MessageItemAction.prototype.dispose = function () {
+                        resolve(undefined);
+                    };
+                    return MessageItemAction;
+                }(actions_1.Action));
+                commands.forEach(function (command) {
+                    if (command.isCloseAffordance === true) {
+                        hasCloseAffordance = true;
+                    }
+                    actions.push(new MessageItemAction('_extension_message_handle_' + command.handle, command.title, command.handle));
+                });
+                if (!hasCloseAffordance) {
+                    actions.unshift(new MessageItemAction('__close', nls.localize('close', "Close"), undefined));
+                }
                 messageHide = _this._messageService.show(severity, {
                     message: message,
                     actions: actions

@@ -192,7 +192,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
         }
         function finish() {
             if (all.length === 0) {
-                return;
+                return winjs_base_1.TPromise.as(undefined);
             }
             var concurrentEdits = getConcurrentEdits();
             if (concurrentEdits) {

@@ -32,7 +32,7 @@ define(["require", "exports", 'vs/base/common/types', 'vs/base/common/events', '
         MarkdownFileTracker.prototype.registerListeners = function () {
             var _this = this;
             this.fileChangeListener = this.eventService.addListener(files_1.EventType.FILE_CHANGES, function (e) { return _this.onFileChanges(e); });
-            this.configFileChangeListener = this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigFileChange(e); });
+            this.configFileChangeListener = this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigFileChange(e); });
             // reload markdown editors when their resources change
             this.editorInputChangeListener = this.eventService.addListener(events_2.EventType.EDITOR_INPUT_CHANGED, function (e) { return _this.onEditorInputChanged(e); });
             // initially read the config for CSS styles in preview
@@ -137,7 +137,7 @@ define(["require", "exports", 'vs/base/common/types', 'vs/base/common/events', '
                 this.fileChangeListener = null;
             }
             if (this.configFileChangeListener) {
-                this.configFileChangeListener();
+                this.configFileChangeListener.dispose();
                 this.configFileChangeListener = null;
             }
             if (this.editorInputChangeListener) {

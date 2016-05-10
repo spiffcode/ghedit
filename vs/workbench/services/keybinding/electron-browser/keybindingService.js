@@ -85,12 +85,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
     });
     var WorkbenchKeybindingService = (function (_super) {
         __extends(WorkbenchKeybindingService, _super);
-        function WorkbenchKeybindingService(configurationService, contextService, eventService, telemetryService, domNode) {
+        function WorkbenchKeybindingService(configurationService, contextService, eventService, telemetryService, messageService, extensionService, domNode) {
             var _this = this;
-            _super.call(this, configurationService);
+            _super.call(this, configurationService, messageService);
             this.contextService = contextService;
             this.eventService = eventService;
             this.telemetryService = telemetryService;
+            this._extensionService = extensionService;
             this.toDispose = this.eventService.addListener(events_1.EventType.WORKBENCH_OPTIONS_CHANGED, function (e) { return _this.onOptionsChanged(e); });
             this._eventService = eventService;
             keybindingsExtPoint.setHandler(function (extensions) {
@@ -105,9 +106,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
             });
             this._beginListening(domNode);
         }
-        WorkbenchKeybindingService.prototype.setExtensionService = function (extensionService) {
-            this._extensionService = extensionService;
-        };
         WorkbenchKeybindingService.prototype.customKeybindingsCount = function () {
             var opts = this.contextService.getOptions();
             if (opts.globalSettings && opts.globalSettings.keybindings && Array.isArray(opts.globalSettings.keybindings)) {
@@ -253,7 +251,5 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
     };
     var schemaRegistry = platform_1.Registry.as(jsonContributionRegistry_1.Extensions.JSONContribution);
     schemaRegistry.registerSchema(schemaId, schema);
-    schemaRegistry.addSchemaFileAssociation('vscode://defaultsettings/keybindings.json', schemaId);
-    schemaRegistry.addSchemaFileAssociation('%APP_SETTINGS_HOME%/keybindings.json', schemaId);
 });
 //# sourceMappingURL=keybindingService.js.map

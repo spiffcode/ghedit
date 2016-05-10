@@ -2,11 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -16,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/mime', 'vs/base/common/eventEmitter', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/browser/ui/aria/aria', 'vs/base/node/aiAdapter', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/files/common/files', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/workbench/common/editor', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/rawDebugSession', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugEditorInputs', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/browser/breakpointWidget', 'vs/workbench/parts/debug/node/debugConfigurationManager', 'vs/workbench/parts/debug/common/debugSource', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/thread/electron-browser/threadService', 'electron'], function (require, exports, nls, lifecycle, mime, ee, uri_1, actions_1, arrays, types, errors, severity_1, winjs_base_1, aria, aiAdapter_1, keybindingService_1, markers_1, lifecycle_1, extensions_1, instantiation_1, files_1, event_1, message_1, telemetry_1, storage_1, wbeditorcommon, debug, session, model, debugEditorInputs_1, viewmodel, debugactions, breakpointWidget_1, debugConfigurationManager_1, debugSource_1, taskService_1, taskSystem_1, viewletService_1, panelService_1, partService_1, files_2, contextService_1, editorService_1, windowService_1, threadService_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/strings', 'vs/base/common/lifecycle', 'vs/base/common/mime', 'vs/base/common/event', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/severity', 'vs/base/common/winjs.base', 'vs/base/browser/ui/aria/aria', 'vs/base/node/aiAdapter', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/platform/files/common/files', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/workbench/common/editor', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/rawDebugSession', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/debugEditorInputs', 'vs/workbench/parts/debug/common/debugViewModel', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/node/debugConfigurationManager', 'vs/workbench/parts/debug/common/debugSource', 'vs/workbench/parts/tasks/common/taskService', 'vs/workbench/parts/tasks/common/taskSystem', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/workbench/parts/files/common/files', 'vs/platform/configuration/common/configuration', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/window/electron-browser/windowService', 'vs/workbench/services/thread/electron-browser/threadService', 'electron'], function (require, exports, nls, strings, lifecycle, mime, event_1, uri_1, actions_1, arrays, types, errors, severity_1, winjs_base_1, aria, aiAdapter_1, keybindingService_1, markers_1, lifecycle_1, extensions_1, instantiation_1, files_1, event_2, message_1, telemetry_1, storage_1, wbeditorcommon, debug, session, model, debugEditorInputs_1, viewmodel, debugactions, debugConfigurationManager_1, debugSource_1, taskService_1, taskSystem_1, viewletService_1, panelService_1, partService_1, files_2, configuration_1, contextService_1, editorService_1, windowService_1, threadService_1, electron_1) {
     "use strict";
     var DEBUG_BREAKPOINTS_KEY = 'debug.breakpoint';
     var DEBUG_BREAKPOINTS_ACTIVATED_KEY = 'debug.breakpointactivated';
@@ -24,10 +19,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
     var DEBUG_EXCEPTION_BREAKPOINTS_KEY = 'debug.exceptionbreakpoint';
     var DEBUG_WATCH_EXPRESSIONS_KEY = 'debug.watchexpressions';
     var DEBUG_SELECTED_CONFIG_NAME_KEY = 'debug.selectedconfigname';
-    var DebugService = (function (_super) {
-        __extends(DebugService, _super);
-        function DebugService(storageService, editorService, textFileService, viewletService, panelService, fileService, messageService, partService, windowService, telemetryService, contextService, keybindingService, eventService, lifecycleService, instantiationService, extensionService, markerService, taskService) {
-            _super.call(this);
+    var DebugService = (function () {
+        function DebugService(storageService, editorService, textFileService, viewletService, panelService, fileService, messageService, partService, windowService, telemetryService, contextService, keybindingService, eventService, lifecycleService, instantiationService, extensionService, markerService, taskService, configurationService) {
             this.storageService = storageService;
             this.editorService = editorService;
             this.textFileService = textFileService;
@@ -44,14 +37,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this.extensionService = extensionService;
             this.markerService = markerService;
             this.taskService = taskService;
+            this.configurationService = configurationService;
             this.serviceId = debug.IDebugService;
             this.toDispose = [];
             this.toDisposeOnSessionEnd = [];
             this.debugStringEditorInputs = [];
             this.session = null;
-            this.state = debug.State.Inactive;
+            this._state = debug.State.Inactive;
+            this._onDidChangeState = new event_1.Emitter();
             if (!this.contextService.getWorkspace()) {
-                this.state = debug.State.Disabled;
+                this._state = debug.State.Disabled;
             }
             this.configurationManager = this.instantiationService.createInstance(debugConfigurationManager_1.ConfigurationManager, this.storageService.get(DEBUG_SELECTED_CONFIG_NAME_KEY, storage_1.StorageScope.WORKSPACE, 'null'));
             this.inDebugMode = keybindingService.createKey(debug.CONTEXT_IN_DEBUG_MODE, false);
@@ -92,7 +87,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             }
             // from this point on we require an active session
             var session = this.getActiveSession();
-            if (!session || session.getType() !== 'extensionHost') {
+            if (!session || session.configuration.type !== 'extensionHost') {
                 return; // we are only intersted if we have an active debug session for extensionHost
             }
             // a plugin logged output, show it inside the REPL
@@ -154,64 +149,68 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         DebugService.prototype.registerSessionListeners = function () {
             var _this = this;
             this.toDisposeOnSessionEnd.push(this.session);
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.INITIALIZED, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidInitialize(function (event) {
                 aria.status(nls.localize('debuggingStarted', "Debugging started."));
                 _this.sendAllBreakpoints().then(function () {
-                    if (_this.session.capabilities.supportsConfigurationDoneRequest) {
+                    if (_this.session.configuration.capabilities.supportsConfigurationDoneRequest) {
                         _this.session.configurationDone().done(null, errors.onUnexpectedError);
                     }
                 });
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.STOPPED, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidStop(function (event) {
                 _this.setStateAndEmit(debug.State.Stopped);
                 var threadId = event.body.threadId;
-                _this.getThreadData(threadId).done(function () {
-                    var thread = _this.model.getThreads()[threadId];
+                _this.getThreadData().done(function () {
                     _this.model.rawUpdate({
                         threadId: threadId,
                         stoppedDetails: event.body,
                         allThreadsStopped: event.body.allThreadsStopped
                     });
-                    thread.getCallStack(_this).then(function (callStack) {
-                        _this.windowService.getWindow().focus();
+                    _this.model.getThreads()[threadId].getCallStack(_this).then(function (callStack) {
                         if (callStack.length > 0) {
                             // focus first stack frame from top that has source location
                             var stackFrameToFocus = arrays.first(callStack, function (sf) { return sf.source && sf.source.available; }, callStack[0]);
-                            _this.setFocusedStackFrameAndEvaluate(stackFrameToFocus);
+                            _this.setFocusedStackFrameAndEvaluate(stackFrameToFocus).done(null, errors.onUnexpectedError);
+                            _this.windowService.getWindow().focus();
                             aria.alert(nls.localize('debuggingPaused', "Debugging paused, reason {0}, {1} {2}", event.body.reason, stackFrameToFocus.source ? stackFrameToFocus.source.name : '', stackFrameToFocus.lineNumber));
-                            return _this.openOrRevealEditor(stackFrameToFocus.source, stackFrameToFocus.lineNumber, false, false);
+                            return _this.openOrRevealSource(stackFrameToFocus.source, stackFrameToFocus.lineNumber, false, false);
                         }
                         else {
-                            _this.setFocusedStackFrameAndEvaluate(null);
+                            _this.setFocusedStackFrameAndEvaluate(null).done(null, errors.onUnexpectedError);
                         }
                     });
                 }, errors.onUnexpectedError);
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.CONTINUED, function () {
+            this.toDisposeOnSessionEnd.push(this.session.onDidContinue(function (threadID) {
                 aria.status(nls.localize('debuggingContinued', "Debugging continued."));
-                _this.model.continueThreads();
-                _this.setFocusedStackFrameAndEvaluate(null);
-                _this.setStateAndEmit(_this.configurationManager.getConfiguration().noDebug ? debug.State.RunningNoDebug : debug.State.Running);
+                // TODO@Isidor temporary workaround for #5835
+                if (strings.equalsIgnoreCase(_this.session.configuration.type, 'go')) {
+                    _this.model.clearThreads(false);
+                }
+                else {
+                    _this.model.clearThreads(false, threadID);
+                }
+                // Get a top stack frame of a stopped thread if there is any.
+                var threads = _this.model.getThreads();
+                var stoppedReference = Object.keys(threads).filter(function (ref) { return threads[ref].stopped; }).pop();
+                var stoppedThread = stoppedReference ? threads[parseInt(stoppedReference)] : null;
+                var stackFrameToFocus = stoppedThread && stoppedThread.getCachedCallStack().length > 0 ? stoppedThread.getCachedCallStack()[0] : null;
+                _this.setFocusedStackFrameAndEvaluate(stackFrameToFocus).done(null, errors.onUnexpectedError);
+                if (!stoppedThread) {
+                    _this.setStateAndEmit(_this.configurationManager.configuration.noDebug ? debug.State.RunningNoDebug : debug.State.Running);
+                }
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.THREAD, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidThread(function (event) {
                 if (event.body.reason === 'started') {
-                    _this.session.threads().done(function (result) {
-                        var thread = result.body.threads.filter(function (thread) { return thread.id === event.body.threadId; }).pop();
-                        if (thread) {
-                            _this.model.rawUpdate({
-                                threadId: thread.id,
-                                thread: thread
-                            });
-                        }
-                    }, errors.onUnexpectedError);
+                    _this.getThreadData().done(null, errors.onUnexpectedError);
                 }
                 else if (event.body.reason === 'exited') {
                     _this.model.clearThreads(true, event.body.threadId);
                 }
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.DEBUGEE_TERMINATED, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidTerminateDebugee(function (event) {
                 aria.status(nls.localize('debuggingStopped', "Debugging stopped."));
-                if (_this.session && _this.session.getId() === event.sessionId) {
+                if (_this.session && _this.session.getId() === event.body.sessionId) {
                     if (event.body && typeof event.body.restart === 'boolean' && event.body.restart) {
                         _this.restartSession().done(null, function (err) { return _this.messageService.show(severity_1.default.Error, err.message); });
                     }
@@ -220,7 +219,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                     }
                 }
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.OUTPUT, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidOutput(function (event) {
                 if (event.body && event.body.category === 'telemetry') {
                     // only log telemetry events from debug adapter if the adapter provided the telemetry key
                     if (_this.telemetryAdapter) {
@@ -231,7 +230,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                     _this.onOutput(event);
                 }
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.BREAKPOINT, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidBreakpoint(function (event) {
                 var id = event.body && event.body.breakpoint ? event.body.breakpoint.id : undefined;
                 var breakpoint = _this.model.getBreakpoints().filter(function (bp) { return bp.idFromAdapter === id; }).pop();
                 if (breakpoint) {
@@ -245,12 +244,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 }
                 var _a, _b;
             }));
-            this.toDisposeOnSessionEnd.push(this.session.addListener2(debug.SessionEvents.SERVER_EXIT, function (event) {
+            this.toDisposeOnSessionEnd.push(this.session.onDidExitAdapter(function (event) {
                 // 'Run without debugging' mode VSCode must terminate the extension host. More details: #3905
-                if (_this.session.getType() === 'extensionHost' && _this.state === debug.State.RunningNoDebug) {
+                if (_this.session.configuration.type === 'extensionHost' && _this._state === debug.State.RunningNoDebug) {
                     electron_1.ipcRenderer.send('vscode:closeExtensionHostWindow', _this.contextService.getWorkspace().resource.fsPath);
                 }
-                if (_this.session && _this.session.getId() === event.sessionId) {
+                if (_this.session && _this.session.getId() === event.body.sessionId) {
                     _this.onSessionEnd();
                 }
             }));
@@ -259,19 +258,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             var outputSeverity = event.body.category === 'stderr' ? severity_1.default.Error : event.body.category === 'console' ? severity_1.default.Warning : severity_1.default.Info;
             this.appendReplOutput(event.body.output, outputSeverity);
         };
-        DebugService.prototype.getThreadData = function (threadId) {
+        DebugService.prototype.getThreadData = function () {
             var _this = this;
-            return this.model.getThreads()[threadId] ? winjs_base_1.TPromise.as(undefined) :
-                this.session.threads().then(function (response) {
-                    var thread = response.body.threads.filter(function (t) { return t.id === threadId; }).pop();
-                    if (!thread) {
-                        throw new Error(nls.localize('debugNoThread', "Did not get a thread from debug adapter with id {0}.", threadId));
-                    }
-                    _this.model.rawUpdate({
-                        threadId: thread.id,
-                        thread: thread
-                    });
-                });
+            return this.session.threads().then(function (response) {
+                response.body.threads.forEach(function (thread) { return _this.model.rawUpdate({ threadId: thread.id, thread: thread }); });
+            });
         };
         DebugService.prototype.loadBreakpoints = function () {
             try {
@@ -315,12 +306,23 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 return [];
             }
         };
-        DebugService.prototype.getState = function () {
-            return this.state;
-        };
+        Object.defineProperty(DebugService.prototype, "state", {
+            get: function () {
+                return this._state;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DebugService.prototype, "onDidChangeState", {
+            get: function () {
+                return this._onDidChangeState.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         DebugService.prototype.setStateAndEmit = function (newState) {
-            this.state = newState;
-            this.emit(debug.ServiceEvents.STATE_CHANGED);
+            this._state = newState;
+            this._onDidChangeState.fire(newState);
         };
         Object.defineProperty(DebugService.prototype, "enabled", {
             get: function () {
@@ -332,58 +334,43 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         DebugService.prototype.setFocusedStackFrameAndEvaluate = function (focusedStackFrame) {
             this.viewModel.setFocusedStackFrame(focusedStackFrame);
             if (focusedStackFrame) {
-                this.model.evaluateWatchExpressions(this.session, focusedStackFrame);
+                return this.model.evaluateWatchExpressions(this.session, focusedStackFrame);
             }
             else {
                 this.model.clearWatchExpressionValues();
+                return winjs_base_1.TPromise.as(null);
             }
         };
-        DebugService.prototype.setBreakpointsForModel = function (modelUri, rawData) {
-            this.model.removeBreakpoints(this.model.getBreakpoints().filter(function (bp) { return bp.source.uri.toString() === modelUri.toString(); }));
-            this.model.addBreakpoints(rawData);
-        };
-        DebugService.prototype.toggleBreakpoint = function (rawBreakpoint) {
-            var breakpoint = this.model.getBreakpoints().filter(function (bp) { return bp.lineNumber === rawBreakpoint.lineNumber && bp.source.uri.toString() === rawBreakpoint.uri.toString(); }).pop();
+        DebugService.prototype.enableOrDisableBreakpoints = function (enable, breakpoint) {
             if (breakpoint) {
-                this.model.removeBreakpoints([breakpoint]);
+                this.model.setEnablement(breakpoint, enable);
+                if (breakpoint instanceof model.Breakpoint) {
+                    return this.sendBreakpoints(breakpoint.source.uri);
+                }
+                else if (breakpoint instanceof model.FunctionBreakpoint) {
+                    return this.sendFunctionBreakpoints();
+                }
+                return this.sendExceptionBreakpoints();
             }
-            else {
-                this.model.addBreakpoints([rawBreakpoint]);
-            }
-            return this.sendBreakpoints(rawBreakpoint.uri);
-        };
-        DebugService.prototype.enableOrDisableAllBreakpoints = function (enabled) {
-            this.model.enableOrDisableAllBreakpoints(enabled);
+            this.model.enableOrDisableAllBreakpoints(enable);
             return this.sendAllBreakpoints();
         };
-        DebugService.prototype.toggleEnablement = function (element) {
-            this.model.toggleEnablement(element);
-            if (element instanceof model.Breakpoint) {
-                var breakpoint = element;
-                return this.sendBreakpoints(breakpoint.source.uri);
-            }
-            else if (element instanceof model.FunctionBreakpoint) {
-                return this.sendFunctionBreakpoints();
-            }
-            return this.sendExceptionBreakpoints();
-        };
-        DebugService.prototype.removeAllBreakpoints = function () {
+        DebugService.prototype.addBreakpoints = function (rawBreakpoints) {
             var _this = this;
-            var urisToClear = arrays.distinct(this.model.getBreakpoints(), function (bp) { return bp.source.uri.toString(); }).map(function (bp) { return bp.source.uri; });
-            this.model.removeBreakpoints(this.model.getBreakpoints());
+            this.model.addBreakpoints(rawBreakpoints);
+            var uris = arrays.distinct(rawBreakpoints, function (raw) { return raw.uri.toString(); }).map(function (raw) { return raw.uri; });
+            return winjs_base_1.TPromise.join(uris.map(function (uri) { return _this.sendBreakpoints(uri); }));
+        };
+        DebugService.prototype.removeBreakpoints = function (id) {
+            var _this = this;
+            var toRemove = this.model.getBreakpoints().filter(function (bp) { return !id || bp.getId() === id; });
+            var urisToClear = arrays.distinct(toRemove, function (bp) { return bp.source.uri.toString(); }).map(function (bp) { return bp.source.uri; });
+            this.model.removeBreakpoints(toRemove);
             return winjs_base_1.TPromise.join(urisToClear.map(function (uri) { return _this.sendBreakpoints(uri); }));
         };
-        DebugService.prototype.toggleBreakpointsActivated = function () {
-            this.model.toggleBreakpointsActivated();
+        DebugService.prototype.setBreakpointsActivated = function (activated) {
+            this.model.setBreakpointsActivated(activated);
             return this.sendAllBreakpoints();
-        };
-        DebugService.prototype.editBreakpoint = function (editor, lineNumber) {
-            if (breakpointWidget_1.BreakpointWidget.INSTANCE) {
-                breakpointWidget_1.BreakpointWidget.INSTANCE.dispose();
-            }
-            this.instantiationService.createInstance(breakpointWidget_1.BreakpointWidget, editor, lineNumber);
-            breakpointWidget_1.BreakpointWidget.INSTANCE.show({ lineNumber: lineNumber, column: 1 }, 2);
-            return winjs_base_1.TPromise.as(null);
         };
         DebugService.prototype.addFunctionBreakpoint = function () {
             this.model.addFunctionBreakpoint('');
@@ -407,8 +394,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         DebugService.prototype.appendReplOutput = function (value, severity) {
             this.model.appendReplOutput(value, severity);
         };
-        DebugService.prototype.clearReplExpressions = function () {
-            this.model.clearReplExpressions();
+        DebugService.prototype.removeReplExpressions = function () {
+            this.model.removeReplExpressions();
         };
         DebugService.prototype.addWatchExpression = function (name) {
             return this.model.addWatchExpression(this.session, this.viewModel.getFocusedStackFrame(), name);
@@ -416,18 +403,19 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         DebugService.prototype.renameWatchExpression = function (id, newName) {
             return this.model.renameWatchExpression(this.session, this.viewModel.getFocusedStackFrame(), id, newName);
         };
-        DebugService.prototype.clearWatchExpressions = function (id) {
-            this.model.clearWatchExpressions(id);
+        DebugService.prototype.removeWatchExpressions = function (id) {
+            this.model.removeWatchExpressions(id);
         };
         DebugService.prototype.createSession = function (noDebug, changeViewState) {
             var _this = this;
             if (changeViewState === void 0) { changeViewState = !this.partService.isSideBarHidden(); }
-            this.clearReplExpressions();
-            return this.textFileService.saveAll()
+            this.removeReplExpressions();
+            return this.textFileService.saveAll() // make sure all dirty files are saved
+                .then(function () { return _this.configurationService.loadConfiguration() // make sure configuration is up to date
                 .then(function () { return _this.extensionService.onReady()
-                .then(function () { return _this.setConfiguration(_this.configurationManager.getConfigurationName())
+                .then(function () { return _this.configurationManager.setConfiguration((_this.configurationManager.configurationName))
                 .then(function () {
-                var configuration = _this.configurationManager.getConfiguration();
+                var configuration = _this.configurationManager.configuration;
                 if (!configuration) {
                     return _this.configurationManager.openConfigFile(false).then(function (openend) {
                         if (openend) {
@@ -436,8 +424,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                     });
                 }
                 configuration.noDebug = noDebug;
-                if (!_this.configurationManager.getAdapter()) {
-                    _this.emit(debug.ServiceEvents.TYPE_NOT_SUPPORTED, configuration.type);
+                if (!_this.configurationManager.adapter) {
                     return configuration.type ? winjs_base_1.TPromise.wrapError(new Error(nls.localize('debugTypeNotSupported', "Configured debug type '{0}' is not supported.", configuration.type)))
                         : winjs_base_1.TPromise.wrapError(errors.create(nls.localize('debugTypeMissing', "Missing property 'type' for the selected configuration in launch.json."), { actions: [message_1.CloseAction, _this.instantiationService.createInstance(debugactions.ConfigureAction, debugactions.ConfigureAction.ID, debugactions.ConfigureAction.LABEL)] }));
                 }
@@ -465,19 +452,19 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                         actions: [message_1.CloseAction, _this.taskService.configureAction()]
                     });
                 });
-            }); }); });
+            }); }); }); });
         };
         DebugService.prototype.doCreateSession = function (configuration, changeViewState) {
             var _this = this;
             this.setStateAndEmit(debug.State.Initializing);
-            var key = this.configurationManager.getAdapter().aiKey;
+            var key = this.configurationManager.adapter.aiKey;
             var telemetryInfo = Object.create(null);
             this.telemetryService.getTelemetryInfo().then(function (info) {
                 telemetryInfo['common.vscodemachineid'] = info.machineId;
                 telemetryInfo['common.vscodesessionid'] = info.sessionId;
             }, errors.onUnexpectedError);
-            this.telemetryAdapter = new aiAdapter_1.AIAdapter(key, this.configurationManager.getAdapter().type, null, telemetryInfo);
-            this.session = new session.RawDebugSession(this.messageService, this.telemetryService, configuration.debugServer, this.configurationManager.getAdapter(), this.telemetryAdapter);
+            this.telemetryAdapter = new aiAdapter_1.AIAdapter(key, this.configurationManager.adapter.type, null, telemetryInfo);
+            this.session = new session.RawDebugSession(this.messageService, this.telemetryService, configuration.debugServer, this.configurationManager.adapter, this.telemetryAdapter);
             this.registerSessionListeners();
             return this.session.initialize({
                 adapterID: configuration.type,
@@ -488,12 +475,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 if (!_this.session) {
                     return winjs_base_1.TPromise.wrapError(new Error(nls.localize('debugAdapterCrash', "Debug adapter process has terminated unexpectedly")));
                 }
-                _this.model.setExceptionBreakpoints(_this.session.capabilities.exceptionBreakpointFilters);
+                _this.model.setExceptionBreakpoints(_this.session.configuration.capabilities.exceptionBreakpointFilters);
                 return configuration.request === 'attach' ? _this.session.attach(configuration) : _this.session.launch(configuration);
             }).then(function (result) {
-                if (changeViewState) {
+                if (changeViewState && !_this.viewModel.changedWorkbenchViewState) {
+                    // We only want to change the workbench view state on the first debug session #5738
+                    _this.viewModel.changedWorkbenchViewState = true;
                     _this.viewletService.openViewlet(debug.VIEWLET_ID);
-                    _this.revealRepl(false).done(undefined, errors.onUnexpectedError);
+                    _this.panelService.openPanel(debug.REPL_ID, false).done(undefined, errors.onUnexpectedError);
                 }
                 // Do not change status bar to orange if we are just running without debug.
                 if (!configuration.noDebug) {
@@ -556,13 +545,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         };
         DebugService.prototype.rawAttach = function (port) {
             if (this.session) {
-                if (!this.session.isAttach) {
+                if (!this.session.configuration.isAttach) {
                     return this.session.attach({ port: port });
                 }
                 this.session.disconnect().done(null, errors.onUnexpectedError);
             }
-            var configuration = this.configurationManager.getConfiguration();
             this.setStateAndEmit(debug.State.Initializing);
+            var configuration = this.configurationManager.configuration;
             return this.doCreateSession({
                 type: configuration.type,
                 request: 'attach',
@@ -589,7 +578,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             if (this.session) {
                 var bpsExist = this.model.getBreakpoints().length > 0;
                 this.telemetryService.publicLog('debugSessionStop', {
-                    type: this.session.getType(),
+                    type: this.session.configuration.type,
                     success: this.session.emittedStopped || !bpsExist,
                     sessionLengthInSeconds: this.session.getLengthInSeconds(),
                     breakpointCount: this.model.getBreakpoints().length,
@@ -605,7 +594,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this.partService.removeClass('debugging');
             this.editorService.focusEditor();
             this.model.clearThreads(true);
-            this.setFocusedStackFrameAndEvaluate(null);
+            this.setFocusedStackFrameAndEvaluate(null).done(null, errors.onUnexpectedError);
             this.setStateAndEmit(debug.State.Inactive);
             // set breakpoints back to unverified since the session ended.
             // source reference changes across sessions, so we do not use it to persist the source.
@@ -627,7 +616,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         DebugService.prototype.getViewModel = function () {
             return this.viewModel;
         };
-        DebugService.prototype.openOrRevealEditor = function (source, lineNumber, preserveFocus, sideBySide) {
+        DebugService.prototype.openOrRevealSource = function (source, lineNumber, preserveFocus, sideBySide) {
             var _this = this;
             var visibleEditors = this.editorService.getVisibleEditors();
             for (var i = 0; i < visibleEditors.length; i++) {
@@ -681,31 +670,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             var editorInput = this.getDebugStringEditorInput(source, nls.localize('debugSourceNotAvailable', "Source {0} is not available.", source.uri.fsPath), 'text/plain');
             return this.editorService.openEditor(editorInput, wbeditorcommon.TextEditorOptions.create({ preserveFocus: true }), sideBySide);
         };
-        DebugService.prototype.revealRepl = function (focus) {
-            var _this = this;
-            if (focus === void 0) { focus = true; }
-            return this.panelService.openPanel(debug.REPL_ID, focus).then(function (repl) {
-                var elements = _this.model.getReplElements();
-                if (repl && elements.length > 0) {
-                    return repl.reveal(elements[elements.length - 1]);
-                }
-            });
-        };
-        DebugService.prototype.canSetBreakpointsIn = function (model) {
-            return this.configurationManager.canSetBreakpointsIn(model);
-        };
-        DebugService.prototype.getConfigurationName = function () {
-            return this.configurationManager.getConfigurationName();
-        };
-        DebugService.prototype.setConfiguration = function (name) {
-            var _this = this;
-            return this.configurationManager.setConfiguration(name).then(function () { return _this.emit(debug.ServiceEvents.CONFIGURATION_CHANGED); });
-        };
-        DebugService.prototype.openConfigFile = function (sideBySide) {
-            return this.configurationManager.openConfigFile(sideBySide);
-        };
-        DebugService.prototype.loadLaunchConfig = function () {
-            return this.configurationManager.loadLaunchConfig();
+        DebugService.prototype.getConfigurationManager = function () {
+            return this.configurationManager;
         };
         DebugService.prototype.getDebugStringEditorInput = function (source, value, mtype) {
             var filtered = this.debugStringEditorInputs.filter(function (input) { return input.getResource().toString() === source.uri.toString(); });
@@ -743,7 +709,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         };
         DebugService.prototype.sendFunctionBreakpoints = function () {
             var _this = this;
-            if (!this.session || !this.session.readyForBreakpoints || !this.session.capabilities.supportsFunctionBreakpoints) {
+            if (!this.session || !this.session.readyForBreakpoints || !this.session.configuration.capabilities.supportsFunctionBreakpoints) {
                 return winjs_base_1.TPromise.as(null);
             }
             var breakpointsToSend = this.model.getFunctionBreakpoints().filter(function (fbp) { return fbp.enabled && _this.model.areBreakpointsActivated(); });
@@ -772,7 +738,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             this.storageService.store(DEBUG_BREAKPOINTS_ACTIVATED_KEY, this.model.areBreakpointsActivated() ? 'true' : 'false', storage_1.StorageScope.WORKSPACE);
             this.storageService.store(DEBUG_FUNCTION_BREAKPOINTS_KEY, JSON.stringify(this.model.getFunctionBreakpoints()), storage_1.StorageScope.WORKSPACE);
             this.storageService.store(DEBUG_EXCEPTION_BREAKPOINTS_KEY, JSON.stringify(this.model.getExceptionBreakpoints()), storage_1.StorageScope.WORKSPACE);
-            this.storageService.store(DEBUG_SELECTED_CONFIG_NAME_KEY, this.configurationManager.getConfigurationName(), storage_1.StorageScope.WORKSPACE);
+            this.storageService.store(DEBUG_SELECTED_CONFIG_NAME_KEY, this.configurationManager.configurationName, storage_1.StorageScope.WORKSPACE);
             this.storageService.store(DEBUG_WATCH_EXPRESSIONS_KEY, JSON.stringify(this.model.getWatchExpressions()), storage_1.StorageScope.WORKSPACE);
         };
         DebugService.prototype.dispose = function () {
@@ -792,15 +758,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             __param(9, telemetry_1.ITelemetryService),
             __param(10, contextService_1.IWorkspaceContextService),
             __param(11, keybindingService_1.IKeybindingService),
-            __param(12, event_1.IEventService),
+            __param(12, event_2.IEventService),
             __param(13, lifecycle_1.ILifecycleService),
             __param(14, instantiation_1.IInstantiationService),
             __param(15, extensions_1.IExtensionService),
             __param(16, markers_1.IMarkerService),
-            __param(17, taskService_1.ITaskService)
+            __param(17, taskService_1.ITaskService),
+            __param(18, configuration_1.IConfigurationService)
         ], DebugService);
         return DebugService;
-    }(ee.EventEmitter));
+    }());
     exports.DebugService = DebugService;
 });
 //# sourceMappingURL=debugService.js.map

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', './testThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/markers/common/markers', 'vs/platform/thread/common/thread', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/services/modelService', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostApiCommands', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostDocuments'], function (require, exports, assert, errors_1, uri_1, winjs_base_1, types, EditorCommon, model_1, testThreadService_1, instantiationService_1, markerService_1, markers_1, thread_1, keybindingService_1, keybindingsRegistry_1, modelService_1, extHostLanguageFeatures_1, extHostApiCommands_1, extHostCommands_1, extHostDocuments_1) {
+define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', './testThreadService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/markers/common/markers', 'vs/platform/thread/common/thread', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/keybinding/common/keybindingsRegistry', 'vs/editor/common/services/modelService', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostApiCommands', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostDocuments', 'vs/workbench/api/node/extHostTypeConverters'], function (require, exports, assert, errors_1, uri_1, winjs_base_1, types, EditorCommon, model_1, testThreadService_1, serviceCollection_1, instantiationService_1, markerService_1, markers_1, thread_1, keybindingService_1, keybindingsRegistry_1, modelService_1, extHostLanguageFeatures_1, extHostApiCommands_1, extHostCommands_1, extHostDocuments_1, ExtHostTypeConverters) {
     'use strict';
     var defaultSelector = { scheme: 'far' };
     var model = new model_1.Model([
@@ -20,17 +20,18 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
         suiteSetup(function (done) {
             originalErrorHandler = errors_1.errorHandler.getUnexpectedErrorHandler();
             errors_1.setUnexpectedErrorHandler(function () { });
-            var instantiationService = instantiationService_1.createInstantiationService();
+            var services = new serviceCollection_1.ServiceCollection();
+            var instantiationService = new instantiationService_1.InstantiationService(services);
             threadService = new testThreadService_1.TestThreadService(instantiationService);
-            instantiationService.addSingleton(keybindingService_1.IKeybindingService, {
+            services.set(keybindingService_1.IKeybindingService, {
                 executeCommand: function (id, args) {
                     var handler = keybindingsRegistry_1.KeybindingsRegistry.getCommands()[id];
                     return winjs_base_1.TPromise.as(instantiationService.invokeFunction(handler, args));
                 }
             });
-            instantiationService.addSingleton(markers_1.IMarkerService, new markerService_1.MainProcessMarkerService(threadService));
-            instantiationService.addSingleton(thread_1.IThreadService, threadService);
-            instantiationService.addSingleton(modelService_1.IModelService, {
+            services.set(markers_1.IMarkerService, new markerService_1.MainProcessMarkerService(threadService));
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modelService_1.IModelService, {
                 serviceId: modelService_1.IModelService,
                 getModel: function () { return model; },
                 createModel: function () { throw new Error(); },
@@ -60,6 +61,7 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
             });
             threadService.getRemotable(extHostCommands_1.MainThreadCommands);
             commands = threadService.getRemotable(extHostCommands_1.ExtHostCommands);
+            ExtHostTypeConverters.Command.initialize(commands);
             extHostApiCommands_1.registerApiCommands(threadService);
             mainThread = threadService.getRemotable(extHostLanguageFeatures_1.MainThreadLanguageFeatures);
             extHost = threadService.getRemotable(extHostLanguageFeatures_1.ExtHostLanguageFeatures);
@@ -137,7 +139,7 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
             });
             // });
         });
-        test('Definition, back and forth', function (done) {
+        test('Definition, back and forth', function () {
             disposables.push(extHost.registerDefinitionProvider(defaultSelector, {
                 provideDefinition: function (doc) {
                     return new types.Location(doc.uri, new types.Range(0, 0, 0, 0));
@@ -152,12 +154,35 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                     ];
                 }
             }));
-            threadService.sync().then(function () {
-                commands.executeCommand('vscode.executeDefinitionProvider', model.getAssociatedResource(), new types.Position(0, 0)).then(function (values) {
+            return threadService.sync().then(function () {
+                return commands.executeCommand('vscode.executeDefinitionProvider', model.getAssociatedResource(), new types.Position(0, 0)).then(function (values) {
                     assert.equal(values.length, 4);
-                    done();
-                }, done);
-            }, done);
+                    for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
+                        var v = values_1[_i];
+                        assert.ok(v.uri instanceof uri_1.default);
+                        assert.ok(v.range instanceof types.Range);
+                    }
+                });
+            });
+        });
+        // --- references
+        test('reference search, back and forth', function () {
+            disposables.push(extHost.registerReferenceProvider(defaultSelector, {
+                provideReferences: function (doc) {
+                    return [
+                        new types.Location(uri_1.default.parse('some:uri/path'), new types.Range(0, 1, 0, 5))
+                    ];
+                }
+            }));
+            return commands.executeCommand('vscode.executeReferenceProvider', model.getAssociatedResource(), new types.Position(0, 0)).then(function (values) {
+                assert.equal(values.length, 1);
+                var first = values[0];
+                assert.equal(first.uri.toString(), 'some:uri/path');
+                assert.equal(first.range.start.line, 0);
+                assert.equal(first.range.start.character, 1);
+                assert.equal(first.range.end.line, 0);
+                assert.equal(first.range.end.character, 5);
+            });
         });
         // --- outline
         test('Outline, back and forth', function (done) {
@@ -250,25 +275,24 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
             });
         });
         // --- quickfix
-        test('QuickFix, back and forth', function (done) {
+        test('QuickFix, back and forth', function () {
             disposables.push(extHost.registerCodeActionProvider(defaultSelector, {
                 provideCodeActions: function () {
                     return [{ command: 'testing', title: 'Title', arguments: [1, 2, true] }];
                 }
             }));
-            threadService.sync().then(function () {
-                commands.executeCommand('vscode.executeCodeActionProvider', model.getAssociatedResource(), new types.Range(0, 0, 1, 1)).then(function (value) {
+            return threadService.sync().then(function () {
+                return commands.executeCommand('vscode.executeCodeActionProvider', model.getAssociatedResource(), new types.Range(0, 0, 1, 1)).then(function (value) {
                     assert.equal(value.length, 1);
                     var first = value[0];
                     assert.equal(first.title, 'Title');
                     assert.equal(first.command, 'testing');
                     assert.deepEqual(first.arguments, [1, 2, true]);
-                    done();
-                }, done);
+                });
             });
         });
         // --- code lens
-        test('CodeLens, back and forth', function (done) {
+        test('CodeLens, back and forth', function () {
             var complexArg = {
                 foo: function () { },
                 bar: function () { },
@@ -279,8 +303,8 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                     return [new types.CodeLens(new types.Range(0, 0, 1, 1), { title: 'Title', command: 'cmd', arguments: [1, true, complexArg] })];
                 }
             }));
-            threadService.sync().then(function () {
-                commands.executeCommand('vscode.executeCodeLensProvider', model.getAssociatedResource()).then(function (value) {
+            return threadService.sync().then(function () {
+                return commands.executeCommand('vscode.executeCodeLensProvider', model.getAssociatedResource()).then(function (value) {
                     assert.equal(value.length, 1);
                     var first = value[0];
                     assert.equal(first.command.title, 'Title');
@@ -288,8 +312,7 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                     assert.equal(first.command.arguments[0], 1);
                     assert.equal(first.command.arguments[1], true);
                     assert.equal(first.command.arguments[2], complexArg);
-                    done();
-                }, done);
+                });
             });
         });
     });

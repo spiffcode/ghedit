@@ -58,10 +58,13 @@ define(["require", "exports", 'path', 'fs', 'os', 'crypto', 'assert', 'vs/platfo
             this.workspaceWatcherToDispose = new watcherService_2.FileWatcher(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging).startWatching();
         };
         FileService.prototype.setupUnixWorkspaceWatching = function () {
-            this.workspaceWatcherToDispose = new watcherService_1.FileWatcher(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging).startWatching();
+            this.workspaceWatcherToDispose = new watcherService_1.FileWatcher(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging, this.options.debugBrkFileWatcherPort).startWatching();
         };
         FileService.prototype.resolveFile = function (resource, options) {
             return this.resolve(resource, options);
+        };
+        FileService.prototype.existsFile = function (resource) {
+            return this.resolveFile(resource).then(function () { return true; }, function () { return false; });
         };
         FileService.prototype.resolveContent = function (resource, options) {
             var _this = this;

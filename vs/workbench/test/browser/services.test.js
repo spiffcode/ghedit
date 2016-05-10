@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/common/editor/stringEditorModel', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/test/browser/servicesTestUtils', 'vs/workbench/common/events', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/progress/browser/progressService', 'vs/workbench/services/editor/browser/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/editor/common/editor', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, winjs_base_1, paths, uri_1, instantiationService_1, baseEditor_1, editor_1, stringEditorInput_1, stringEditorModel_1, fileEditorInput_1, textFileEditorModel_1, textFileServices_1, servicesTestUtils_1, events_1, telemetry_1, untitledEditorService_1, progressService_1, editorService_1, viewletService_1, editor_2, servicesTestUtils_2) {
+define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/platform/request/common/request', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modeService', 'vs/platform/workspace/common/workspace', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/common/editor/stringEditorModel', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/test/browser/servicesTestUtils', 'vs/workbench/common/events', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/progress/browser/progressService', 'vs/workbench/services/editor/browser/editorService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, winjs_base_1, paths, uri_1, request_1, modelService_1, modeService_1, workspace_1, storage_1, configuration_1, lifecycle_1, files_1, serviceCollection_1, instantiationService_1, editorService_1, PartService, baseEditor_1, editor_1, stringEditorInput_1, stringEditorModel_1, fileEditorInput_1, textFileEditorModel_1, files_2, textFileServices_1, servicesTestUtils_1, events_1, telemetry_1, untitledEditorService_1, progressService_1, editorService_2, viewletService_1, editor_2, event_1, servicesTestUtils_2) {
     'use strict';
     var activeViewlet = {};
     var activeEditor = {
@@ -177,30 +177,27 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
                 return null;
             });
             var telemetryService = telemetry_1.NullTelemetryService;
-            var services = {
-                eventService: eventService,
-                contextService: contextService,
-                requestService: requestService,
-                telemetryService: telemetryService,
-                configurationService: new servicesTestUtils_1.TestConfigurationService(),
-                untitledEditorService: new untitledEditorService_1.UntitledEditorService(),
-                storageService: new servicesTestUtils_1.TestStorageService(),
-                editorService: editorService,
-                partService: new servicesTestUtils_1.TestPartService(),
-                modeService: servicesTestUtils_2.createMockModeService(),
-                modelService: servicesTestUtils_2.createMockModelService(),
-                lifecycleService: new servicesTestUtils_1.TestLifecycleService(),
-                fileService: TestFileService
-            };
-            var inst = instantiationService_1.createInstantiationService(services);
-            var textFileService = inst.createInstance(textFileServices_1.TextFileService);
-            inst.registerService('textFileService', textFileService);
+            var services = new serviceCollection_1.ServiceCollection();
+            var inst = new instantiationService_1.InstantiationService(services);
+            services.set(event_1.IEventService, eventService);
+            services.set(workspace_1.IWorkspaceContextService, contextService);
+            services.set(request_1.IRequestService, requestService);
+            services.set(telemetry_1.ITelemetryService, telemetryService);
+            services.set(configuration_1.IConfigurationService, new servicesTestUtils_1.TestConfigurationService());
+            services.set(untitledEditorService_1.IUntitledEditorService, inst.createInstance(untitledEditorService_1.UntitledEditorService));
+            services.set(storage_1.IStorageService, new servicesTestUtils_1.TestStorageService());
+            services.set(editorService_1.IWorkbenchEditorService, editorService);
+            services.set(PartService.IPartService, new servicesTestUtils_1.TestPartService());
+            services.set(modeService_1.IModeService, servicesTestUtils_2.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_2.createMockModelService());
+            services.set(lifecycle_1.ILifecycleService, lifecycle_1.NullLifecycleService);
+            services.set(files_1.IFileService, TestFileService);
+            services.set(files_2.ITextFileService, inst.createInstance(textFileServices_1.TextFileService));
             services['instantiationService'] = inst;
             var activeInput = inst.createInstance(fileEditorInput_1.FileEditorInput, toResource('/something.js'), 'text/javascript', void 0);
             var testEditorPart = new TestEditorPart();
             testEditorPart.setActiveEditorInput(activeInput);
-            var service = inst.createInstance(editorService_1.WorkbenchEditorService, testEditorPart);
-            service.setInstantiationService(inst);
+            var service = inst.createInstance(editorService_2.WorkbenchEditorService, testEditorPart);
             assert.strictEqual(service.getActiveEditor(), activeEditor);
             assert.strictEqual(service.getActiveEditorInput(), activeInput);
             // Open EditorInput
@@ -261,27 +258,23 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
             var eventService = new servicesTestUtils_1.TestEventService();
             var requestService = new servicesTestUtils_1.TestRequestService();
             var telemetryService = telemetry_1.NullTelemetryService;
-            var services = {
-                eventService: eventService,
-                contextService: contextService,
-                requestService: requestService,
-                telemetryService: telemetryService,
-                storageService: new servicesTestUtils_1.TestStorageService(),
-                untitledEditorService: new untitledEditorService_1.UntitledEditorService(),
-                editorService: editorService,
-                partService: new servicesTestUtils_1.TestPartService(),
-                lifecycleService: new servicesTestUtils_1.TestLifecycleService(),
-                modelService: servicesTestUtils_2.createMockModelService(),
-                configurationService: new servicesTestUtils_1.TestConfigurationService()
-            };
-            var inst = instantiationService_1.createInstantiationService(services);
-            var textFileService = inst.createInstance(textFileServices_1.TextFileService);
-            inst.registerService('textFileService', textFileService);
-            services['instantiationService'] = inst;
+            var services = new serviceCollection_1.ServiceCollection();
+            var inst = new instantiationService_1.InstantiationService(services);
+            services.set(event_1.IEventService, eventService);
+            services.set(workspace_1.IWorkspaceContextService, contextService);
+            services.set(request_1.IRequestService, requestService);
+            services.set(telemetry_1.ITelemetryService, telemetryService);
+            services.set(storage_1.IStorageService, new servicesTestUtils_1.TestStorageService());
+            services.set(untitledEditorService_1.IUntitledEditorService, inst.createInstance(untitledEditorService_1.UntitledEditorService));
+            services.set(editorService_1.IWorkbenchEditorService, editorService);
+            services.set(PartService.IPartService, new servicesTestUtils_1.TestPartService());
+            services.set(lifecycle_1.ILifecycleService, lifecycle_1.NullLifecycleService);
+            services.set(configuration_1.IConfigurationService, new servicesTestUtils_1.TestConfigurationService());
+            services.set(files_2.ITextFileService, inst.createInstance(textFileServices_1.TextFileService));
             var activeInput = inst.createInstance(fileEditorInput_1.FileEditorInput, toResource('/something.js'), 'text/javascript', void 0);
             var testEditorPart = new TestEditorPart();
             testEditorPart.setActiveEditorInput(activeInput);
-            inst.createInstance(editorService_1.WorkbenchEditorService, testEditorPart);
+            inst.createInstance(editorService_2.WorkbenchEditorService, testEditorPart);
             var MyEditor = (function (_super) {
                 __extends(MyEditor, _super);
                 function MyEditor(id) {
@@ -298,7 +291,7 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
             }(baseEditor_1.BaseEditor));
             var ed = inst.createInstance(MyEditor, 'my.editor');
             var inp = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'hello world', 'text/plain', false);
-            var delegate = inst.createInstance(editorService_1.DelegatingWorkbenchEditorService, ed, function (editor, input, options) {
+            var delegate = inst.createInstance(editorService_2.DelegatingWorkbenchEditorService, ed, function (editor, input, options) {
                 assert.strictEqual(input, inp);
                 assert.strictEqual(editor, ed);
                 return winjs_base_1.TPromise.as(true);

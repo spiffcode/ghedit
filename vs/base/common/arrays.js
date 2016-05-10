@@ -165,15 +165,20 @@ define(["require", "exports"], function (require, exports) {
         });
     }
     exports.distinct = distinct;
-    function first(array, fn, notFoundValue) {
-        if (notFoundValue === void 0) { notFoundValue = null; }
+    function firstIndex(array, fn) {
         for (var i = 0; i < array.length; i++) {
             var element = array[i];
             if (fn(element)) {
-                return element;
+                return i;
             }
         }
-        return notFoundValue;
+        return -1;
+    }
+    exports.firstIndex = firstIndex;
+    function first(array, fn, notFoundValue) {
+        if (notFoundValue === void 0) { notFoundValue = null; }
+        var index = firstIndex(array, fn);
+        return index < 0 ? notFoundValue : array[index];
     }
     exports.first = first;
     function commonPrefixLength(one, other, equals) {

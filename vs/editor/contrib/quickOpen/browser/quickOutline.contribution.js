@@ -8,6 +8,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/editor/co
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(quickOutline_1.QuickOutlineAction, quickOutline_1.QuickOutlineAction.ID, nls.localize('label', "Go to Symbol..."), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_O
-    }));
+    }, 'Go to Symbol...'));
 });
 //# sourceMappingURL=quickOutline.contribution.js.map

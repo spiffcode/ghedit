@@ -16,12 +16,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/workbench/browser/parts/compositePart', 'vs/workbench/browser/viewlet', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/workbench/browser/actionBarRegistry', 'vs/base/common/keyCodes', 'vs/css!./media/sidebarpart'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, compositePart_1, viewlet_1, actionRegistry_1, actions_2, viewletService_1, partService_1, actionBarRegistry_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/workbench/browser/parts/compositePart', 'vs/workbench/browser/viewlet', 'vs/workbench/common/actionRegistry', 'vs/platform/actions/common/actions', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/workbench/browser/actionBarRegistry', 'vs/platform/storage/common/storage', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/base/common/keyCodes', 'vs/platform/instantiation/common/instantiation', 'vs/css!./media/sidebarpart'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, compositePart_1, viewlet_1, actionRegistry_1, actions_2, viewletService_1, partService_1, actionBarRegistry_1, storage_1, contextView_1, event_1, message_1, telemetry_1, keybindingService_1, keyCodes_1, instantiation_1) {
     "use strict";
     var SidebarPart = (function (_super) {
         __extends(SidebarPart, _super);
-        function SidebarPart(messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, id) {
-            _super.call(this, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, platform_1.Registry.as(viewlet_1.Extensions.Viewlets), SidebarPart.activeViewletSettingsKey, 'sideBar', 'viewlet', actionBarRegistry_1.Scope.VIEWLET, id);
+        function SidebarPart(id, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, instantiationService) {
+            _super.call(this, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, instantiationService, platform_1.Registry.as(viewlet_1.Extensions.Viewlets), SidebarPart.activeViewletSettingsKey, 'sideBar', 'viewlet', actionBarRegistry_1.Scope.VIEWLET, id);
             this.serviceId = viewletService_1.IViewletService;
         }
         SidebarPart.prototype.openViewlet = function (id, focus) {
@@ -50,6 +50,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
             return this.hideActiveComposite();
         };
         SidebarPart.activeViewletSettingsKey = 'workbench.sidebar.activeviewletid';
+        SidebarPart = __decorate([
+            __param(1, message_1.IMessageService),
+            __param(2, storage_1.IStorageService),
+            __param(3, event_1.IEventService),
+            __param(4, telemetry_1.ITelemetryService),
+            __param(5, contextView_1.IContextMenuService),
+            __param(6, partService_1.IPartService),
+            __param(7, keybindingService_1.IKeybindingService),
+            __param(8, instantiation_1.IInstantiationService)
+        ], SidebarPart);
         return SidebarPart;
     }(compositePart_1.CompositePart));
     exports.SidebarPart = SidebarPart;
@@ -85,6 +95,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusSideBarAction, FocusSideBarAction.ID, FocusSideBarAction.LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_0
-    }), nls.localize('viewCategory', "View"));
+    }), 'View: Focus into Side Bar', nls.localize('viewCategory', "View"));
 });
 //# sourceMappingURL=sidebarPart.js.map

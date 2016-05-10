@@ -82,7 +82,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TriggerParameterHintsAction, TriggerParameterHintsAction.ID, nls.localize('parameterHints.trigger.label', "Trigger Parameter Hints"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Space
-    }));
+    }, 'Trigger Parameter Hints'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand('closeParameterHints', weight, { primary: keyCodes_1.KeyCode.Escape, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Escape] }, true, CONTEXT_PARAMETER_HINTS_VISIBLE, function (ctx, editor, args) {
         ParameterHintsController.get(editor).closeWidget();
     });

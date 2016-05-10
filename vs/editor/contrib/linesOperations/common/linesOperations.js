@@ -215,54 +215,54 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(DeleteLinesAction, DeleteLinesAction.ID, nls.localize('lines.delete', "Delete Line"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_K
-    }));
+    }, 'Delete Line'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(SortLinesAscendingAction, SortLinesAscendingAction.ID, nls.localize('lines.sortAscending', "Sort Lines Ascending"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_2
-    }));
+    }, 'Sort Lines Ascending'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(SortLinesDescendingAction, SortLinesDescendingAction.ID, nls.localize('lines.sortDescending', "Sort Lines Descending"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_3
-    }));
+    }, 'Sort Lines Descending'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(TrimTrailingWhitespaceAction, TrimTrailingWhitespaceAction.ID, nls.localize('lines.trimTrailingWhitespace', "Trim Trailing Whitespace"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_X
-    }));
+    }, 'Trim Trailing Whitespace'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(MoveLinesDownAction, MoveLinesDownAction.ID, nls.localize('lines.moveDown', "Move Line Down"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.DownArrow,
         linux: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.DownArrow }
-    }));
+    }, 'Move Line Down'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(MoveLinesUpAction, MoveLinesUpAction.ID, nls.localize('lines.moveUp', "Move Line Up"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.UpArrow,
         linux: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.UpArrow }
-    }));
+    }, 'Move Line Up'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(CopyLinesDownAction, CopyLinesDownAction.ID, nls.localize('lines.copyDown', "Copy Line Down"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.DownArrow,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.DownArrow }
-    }));
+    }, 'Copy Line Down'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(CopyLinesUpAction, CopyLinesUpAction.ID, nls.localize('lines.copyUp', "Copy Line Up"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.UpArrow,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.UpArrow }
-    }));
+    }, 'Copy Line Up'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(IndentLinesAction, IndentLinesAction.ID, nls.localize('lines.indent', "Indent Line"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_CLOSE_SQUARE_BRACKET
-    }));
+    }, 'Indent Line'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(OutdentLinesAction, OutdentLinesAction.ID, nls.localize('lines.outdent', "Outdent Line"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_OPEN_SQUARE_BRACKET
-    }));
+    }, 'Outdent Line'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InsertLineBeforeAction, InsertLineBeforeAction.ID, nls.localize('lines.insertBefore', "Insert Line Above"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Enter
-    }));
+    }, 'Insert Line Above'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InsertLineAfterAction, InsertLineAfterAction.ID, nls.localize('lines.insertAfter', "Insert Line Below"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Enter
-    }));
+    }, 'Insert Line Below'));
 });
 //# sourceMappingURL=linesOperations.js.map

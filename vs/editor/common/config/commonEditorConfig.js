@@ -75,7 +75,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/base/common/
                 horizontalSliderSize: Number(input.scrollbar.horizontalSliderSize) | 0,
                 verticalScrollbarSize: Number(input.scrollbar.verticalScrollbarSize) | 0,
                 verticalSliderSize: Number(input.scrollbar.verticalSliderSize) | 0,
-                mouseWheelScrollSensitivity: Number(input.scrollbar.mouseWheelScrollSensitivity) | 0,
+                mouseWheelScrollSensitivity: Number(input.scrollbar.mouseWheelScrollSensitivity),
             };
             this.overviewRulerLanes = Number(input.overviewRulerLanes) | 0;
             this.cursorBlinking = String(input.cursorBlinking);
@@ -737,11 +737,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/base/common/
                 default: defaultConfig_1.DefaultConfig.editor.renderWhitespace,
                 description: nls.localize('renderWhitespace', "Controls whether the editor should render whitespace characters")
             },
-            'editor.indentGuides': {
-                'type': 'boolean',
-                default: defaultConfig_1.DefaultConfig.editor.indentGuides,
-                description: nls.localize('indentGuides', "Controls whether the editor should render indent guides")
-            },
+            // 'editor.indentGuides': {
+            // 	'type': 'boolean',
+            // 	default: DefaultConfig.editor.indentGuides,
+            // 	description: nls.localize('indentGuides', "Controls whether the editor should render indent guides")
+            // },
             'editor.referenceInfos': {
                 'type': 'boolean',
                 'default': defaultConfig_1.DefaultConfig.editor.referenceInfos,

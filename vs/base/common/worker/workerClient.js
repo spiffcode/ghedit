@@ -25,12 +25,12 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/marshalli
                 // Get the configuration from requirejs
                 loaderConfiguration = window.requirejs.s.contexts._.config;
             }
-            var MonacoEnvironment = window.MonacoEnvironment || null;
+            var GlobalEnvironment = window.GlobalEnvironment || null;
             this.onModuleLoaded = this._sendMessage(workerProtocol.MessageType.INITIALIZE, {
                 id: this._worker.getId(),
                 moduleId: moduleId,
                 loaderConfiguration: loaderConfiguration,
-                MonacoEnvironment: MonacoEnvironment
+                GlobalEnvironment: GlobalEnvironment
             });
             this.onModuleLoaded.then(null, function (e) { return _this._onError('Worker failed to load ' + moduleId, e); });
             this._remoteCom = new workerProtocol.RemoteCom(this);

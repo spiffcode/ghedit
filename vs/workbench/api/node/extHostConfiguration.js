@@ -24,7 +24,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/lifecycl
             enumerable: true,
             configurable: true
         });
-        ExtHostConfiguration.prototype._acceptConfigurationChanged = function (config) {
+        ExtHostConfiguration.prototype.$acceptConfigurationChanged = function (config) {
             this._config = config;
             this._hasConfig = true;
             this._onDidChangeConfiguration.fire(undefined);
@@ -72,11 +72,8 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/base/common/lifecycl
             var _this = this;
             this._configurationService = configurationService;
             this._proxy = threadService.getRemotable(ExtHostConfiguration);
-            this._toDispose = [];
-            this._toDispose.push(this._configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) {
-                _this._proxy._acceptConfigurationChanged(e.config);
-            }));
-            this._proxy._acceptConfigurationChanged(this._configurationService.getConfiguration());
+            this._toDispose = this._configurationService.onDidUpdateConfiguration(function (event) { return _this._proxy.$acceptConfigurationChanged(event.config); });
+            this._proxy.$acceptConfigurationChanged(this._configurationService.getConfiguration());
         }
         MainThreadConfiguration.prototype.dispose = function () {
             this._toDispose = lifecycle_1.dispose(this._toDispose);

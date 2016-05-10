@@ -487,6 +487,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             }
         };
         SelectionHighlighter.prototype._update = function () {
+            var model = this.editor.getModel();
+            if (!model) {
+                return;
+            }
             this.lastWordUnderCursor = null;
             if (!this.editor.getConfiguration().selectionHighlight) {
                 return;
@@ -496,7 +500,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
                 this.removeDecorations();
                 return;
             }
-            var model = this.editor.getModel();
             var hasFindOccurences = modes_1.OccurrencesRegistry.has(model);
             if (r.nextMatch) {
                 // This is an empty selection
@@ -585,48 +588,48 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(SelectHighlightsAction, SelectHighlightsAction.ID, nls.localize('selectAllOccurencesOfFindMatch', "Select All Occurences of Find Match"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_L
-    }));
+    }, 'Select All Occurences of Find Match'));
     // register SelectHighlightsAction again to replace the now removed Change All action
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(SelectHighlightsAction, SelectHighlightsAction.COMPAT_ID, nls.localize('changeAll.label', "Change All Occurrences"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.F2
-    }));
+    }, 'Change All Occurrences'));
     // register actions
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(StartFindAction, findModel_1.FIND_IDS.StartFindAction, nls.localize('startFindAction', "Find"), {
         context: editorCommonExtensions_1.ContextKey.None,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_F
-    }));
+    }, 'Find'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(NextMatchFindAction, findModel_1.FIND_IDS.NextMatchFindAction, nls.localize('findNextMatchAction', "Find Next"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyCode.F3,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_G, secondary: [keyCodes_1.KeyCode.F3] }
-    }));
+    }, 'Find Next'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PreviousMatchFindAction, findModel_1.FIND_IDS.PreviousMatchFindAction, nls.localize('findPreviousMatchAction', "Find Previous"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F3,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F3] }
-    }));
+    }, 'Find Previous'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(NextSelectionMatchFindAction, findModel_1.FIND_IDS.NextSelectionMatchFindAction, nls.localize('nextSelectionMatchFindAction', "Find Next Selection"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.F3
-    }));
+    }, 'Find Next Selection'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(PreviousSelectionMatchFindAction, findModel_1.FIND_IDS.PreviousSelectionMatchFindAction, nls.localize('previousSelectionMatchFindAction', "Find Previous Selection"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.F3
-    }));
+    }, 'Find Previous Selection'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(StartFindReplaceAction, findModel_1.FIND_IDS.StartFindReplaceAction, nls.localize('startReplace', "Replace"), {
         context: editorCommonExtensions_1.ContextKey.None,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_H,
         mac: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_F }
-    }));
+    }, 'Replace'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(MoveSelectionToNextFindMatchAction, MoveSelectionToNextFindMatchAction.ID, nls.localize('moveSelectionToNextFindMatch', "Move Last Selection To Next Find Match"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_D)
-    }));
+    }, 'Move Last Selection To Next Find Match'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(AddSelectionToNextFindMatchAction, AddSelectionToNextFindMatchAction.ID, nls.localize('addSelectionToNextFindMatch', "Add Selection To Next Find Match"), {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_D
-    }));
+    }, 'Add Selection To Next Find Match'));
     function registerFindCommand(id, callback, keybindings, needsKey) {
         if (needsKey === void 0) { needsKey = null; }
         editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand(id, editorCommonExtensions_1.CommonEditorRegistry.commandWeight(5), keybindings, false, needsKey, function (ctx, editor, args) {

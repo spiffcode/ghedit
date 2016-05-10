@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/noopGitService', 'vs/workbench/parts/git/browser/gitServices', 'vs/platform/lifecycle/common/lifecycle', 'vs/workbench/parts/output/common/output', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/base/node/service.cp', 'vs/workbench/parts/git/node/rawGitService', 'vs/base/common/uri', 'child_process', 'path', 'electron', 'vs/platform/storage/common/storage'], function (require, exports, winjs_base_1, git_1, noopGitService_1, gitServices_1, lifecycle_1, output_1, editorService_1, configuration_1, event_1, instantiation_1, message_1, workspace_1, service_cp_1, rawGitService_1, uri_1, child_process_1, path_1, electron_1, storage_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/common/noopGitService', 'vs/workbench/parts/git/browser/gitServices', 'vs/platform/lifecycle/common/lifecycle', 'vs/workbench/parts/output/common/output', 'vs/workbench/services/editor/common/editorService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/base/parts/ipc/common/ipc', 'vs/base/parts/ipc/node/ipc.cp', 'vs/workbench/parts/git/common/gitIpc', 'vs/workbench/parts/git/node/rawGitService', 'vs/base/common/uri', 'child_process', 'path', 'electron', 'vs/platform/storage/common/storage'], function (require, exports, winjs_base_1, git_1, noopGitService_1, gitServices_1, lifecycle_1, output_1, editorService_1, configuration_1, event_1, instantiation_1, message_1, workspace_1, ipc_1, ipc_cp_1, gitIpc_1, rawGitService_1, uri_1, child_process_1, path_1, electron_1, storage_1) {
     "use strict";
     function parseVersion(raw) {
         return raw.replace(/^git version /, '');
@@ -88,6 +88,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/g
         function UnavailableRawGitService() {
             _super.call(this, null);
         }
+        UnavailableRawGitService.prototype.serviceState = function () {
+            return winjs_base_1.TPromise.as(git_1.RawServiceState.GitNotFound);
+        };
         return UnavailableRawGitService;
     }(rawGitService_1.RawGitService));
     var DisabledRawGitService = (function (_super) {
@@ -100,46 +103,42 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/g
         };
         return DisabledRawGitService;
     }(rawGitService_1.RawGitService));
-    function createNativeRawGitService(workspaceRoot, path, defaultEncoding) {
-        return findGit(path).then(function (_a) {
-            var path = _a.path, version = _a.version;
-            var client = new service_cp_1.Client(uri_1.default.parse(require.toUrl('bootstrap')).fsPath, {
-                serverName: 'Git',
-                timeout: 1000 * 60,
-                args: [path, workspaceRoot, defaultEncoding, electron_1.remote.process.execPath, version],
-                env: {
-                    ATOM_SHELL_INTERNAL_RUN_AS_NODE: 1,
-                    AMD_ENTRYPOINT: 'vs/workbench/parts/git/electron-browser/gitApp'
-                }
-            });
-            return client.getService('GitService', rawGitService_1.RawGitService);
-        }, function () { return new UnavailableRawGitService(); });
-    }
-    var ElectronRawGitService = (function (_super) {
-        __extends(ElectronRawGitService, _super);
-        function ElectronRawGitService(workspaceRoot, configurationService) {
-            _super.call(this, winjs_base_1.TPromise.as(configurationService.getConfiguration()).then(function (conf) {
-                var enabled = conf.git ? conf.git.enabled : true;
-                if (!enabled) {
-                    return winjs_base_1.TPromise.as(new DisabledRawGitService());
-                }
-                var gitPath = (conf.git && conf.git.path) || null;
-                var encoding = (conf.files && conf.files.encoding) || 'utf8';
-                return createNativeRawGitService(workspaceRoot, gitPath, encoding);
-            }));
-        }
-        ElectronRawGitService = __decorate([
-            __param(1, configuration_1.IConfigurationService)
-        ], ElectronRawGitService);
-        return ElectronRawGitService;
-    }(rawGitService_1.DelayedRawGitService));
     var ElectronGitService = (function (_super) {
         __extends(ElectronGitService, _super);
-        function ElectronGitService(instantiationService, eventService, messageService, editorService, outputService, contextService, lifecycleService, storageService) {
+        function ElectronGitService(instantiationService, eventService, messageService, editorService, outputService, contextService, lifecycleService, storageService, configurationService) {
+            var conf = configurationService.getConfiguration();
+            var enabled = conf.git ? conf.git.enabled : true;
             var workspace = contextService.getWorkspace();
-            var raw = !workspace
-                ? new noopGitService_1.NoOpGitService()
-                : instantiationService.createInstance(ElectronRawGitService, workspace.resource.fsPath);
+            var raw;
+            if (!enabled) {
+                raw = new DisabledRawGitService();
+            }
+            else if (!workspace) {
+                raw = new noopGitService_1.NoOpGitService();
+            }
+            else {
+                var gitPath = (conf.git && conf.git.path) || null;
+                var encoding_1 = (conf.files && conf.files.encoding) || 'utf8';
+                var workspaceRoot_1 = workspace.resource.fsPath;
+                var promise = findGit(gitPath)
+                    .then(function (_a) {
+                    var path = _a.path, version = _a.version;
+                    var client = new ipc_cp_1.Client(uri_1.default.parse(require.toUrl('bootstrap')).fsPath, {
+                        serverName: 'Git',
+                        timeout: 1000 * 60,
+                        args: [path, workspaceRoot_1, encoding_1, electron_1.remote.process.execPath, version],
+                        env: {
+                            ATOM_SHELL_INTERNAL_RUN_AS_NODE: 1,
+                            PIPE_LOGGING: 'true',
+                            AMD_ENTRYPOINT: 'vs/workbench/parts/git/node/gitApp'
+                        }
+                    });
+                    return client.getChannel('git');
+                })
+                    .then(null, function () { return new gitIpc_1.UnavailableGitChannel(); });
+                var channel = ipc_1.getDelayedChannel(promise);
+                raw = new gitIpc_1.GitChannelClient(channel);
+            }
             _super.call(this, raw, instantiationService, eventService, messageService, editorService, outputService, contextService, lifecycleService, storageService);
         }
         ElectronGitService = __decorate([
@@ -150,7 +149,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/g
             __param(4, output_1.IOutputService),
             __param(5, workspace_1.IWorkspaceContextService),
             __param(6, lifecycle_1.ILifecycleService),
-            __param(7, storage_1.IStorageService)
+            __param(7, storage_1.IStorageService),
+            __param(8, configuration_1.IConfigurationService)
         ], ElectronGitService);
         return ElectronGitService;
     }(gitServices_1.GitService));

@@ -38,7 +38,7 @@ define(["require", "exports", 'vs/base/common/objects', 'vs/editor/browser/widge
             this._modeService = _modeService;
             this._themeService = _themeService;
             this.toUnbind.push(this._eventService.addListener(events_1.EventType.WORKBENCH_OPTIONS_CHANGED, function (e) { return _this.onOptionsChanged(e); }));
-            this.toUnbind.push(this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.applyConfiguration(e.config); }));
+            this.toUnbind.push(this.configurationService.onDidUpdateConfiguration(function (e) { return _this.applyConfiguration(e.config); }).dispose);
             this.toUnbind.push(_themeService.onDidThemeChange(function (_) { return _this.onThemeChanged(); }).dispose);
         }
         Object.defineProperty(BaseTextEditor.prototype, "instantiationService", {

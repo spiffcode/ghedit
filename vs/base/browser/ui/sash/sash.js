@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/builder', 'vs/base/browser/browser', 'vs/base/common/types', 'vs/base/browser/dom', 'vs/base/browser/touch', 'vs/base/common/eventEmitter', 'vs/base/browser/mouseEvent', 'vs/css!./sash'], function (require, exports, lifecycle_1, builder_1, browser_1, types, DOM, touch_1, eventEmitter_1, mouseEvent_1) {
+define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/builder', 'vs/base/browser/browser', 'vs/base/common/platform', 'vs/base/common/types', 'vs/base/browser/dom', 'vs/base/browser/touch', 'vs/base/common/eventEmitter', 'vs/base/browser/mouseEvent', 'vs/css!./sash'], function (require, exports, lifecycle_1, builder_1, browser_1, platform_1, types, DOM, touch_1, eventEmitter_1, mouseEvent_1) {
     'use strict';
     (function (Orientation) {
         Orientation[Orientation["VERTICAL"] = 0] = "VERTICAL";
@@ -21,6 +21,9 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/build
             if (options === void 0) { options = {}; }
             _super.call(this);
             this.$e = builder_1.$('.monaco-sash').appendTo(container);
+            if (platform_1.isMacintosh) {
+                this.$e.addClass('mac');
+            }
             this.gesture = new touch_1.Gesture(this.$e.getHTMLElement());
             this.$e.on(DOM.EventType.MOUSE_DOWN, function (e) { _this.onMouseDown(e); });
             this.$e.on(DOM.EventType.DBLCLICK, function (e) { _this.emit('reset', e); });
@@ -54,6 +57,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/build
             if (this.isDisabled) {
                 return;
             }
+            builder_1.$(DOM.getElementsByTagName('iframe')).style('pointer-events', 'none'); // disable mouse events on iframes as long as we drag the sash
             var mouseDownEvent = new mouseEvent_1.StandardMouseEvent(e);
             var startX = mouseDownEvent.posx;
             var startY = mouseDownEvent.posy;
@@ -66,7 +70,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/build
             this.$e.addClass('active');
             this.emit('start', startEvent);
             var $window = builder_1.$(window);
-            var containerCssClass = this.getOrientation() + "-cursor-container";
+            var containerCssClass = this.getOrientation() + "-cursor-container" + (platform_1.isMacintosh ? '-mac' : '');
             var lastCurrentX = startX;
             var lastCurrentY = startY;
             $window.on('mousemove', function (e) {
@@ -87,6 +91,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/browser/build
                 _this.emit('end');
                 $window.off('mousemove');
                 document.body.classList.remove(containerCssClass);
+                builder_1.$(DOM.getElementsByTagName('iframe')).style('pointer-events', 'auto');
             });
             document.body.classList.add(containerCssClass);
         };

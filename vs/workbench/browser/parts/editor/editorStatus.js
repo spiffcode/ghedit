@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/actions', 'vs/workbench/common/editor/untitledEditorInput', 'vs/workbench/common/editor', 'vs/base/common/lifecycle', 'vs/platform/message/common/message', 'vs/workbench/browser/actions/openSettings', 'vs/editor/contrib/linesOperations/common/linesOperations', 'vs/editor/common/editorCommon', 'vs/editor/contrib/indentation/common/indentation', 'vs/workbench/common/events', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/services/modeService', 'vs/base/browser/styleMutator', 'vs/css!./media/editorstatus'], function (require, exports, nls, winjs_base_1, dom_1, strings, paths, types, errors, actions_1, untitledEditorInput_1, editor_1, lifecycle_1, message_1, openSettings_1, linesOperations_1, editorCommon_1, indentation_1, events_1, textEditor_1, editorService_1, quickOpenService_1, configuration_1, event_1, files_1, instantiation_1, modeService_1, styleMutator_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/browser/dom', 'vs/base/common/strings', 'vs/base/common/paths', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/common/actions', 'vs/base/common/platform', 'vs/workbench/common/editor/untitledEditorInput', 'vs/workbench/common/editor', 'vs/base/common/lifecycle', 'vs/platform/message/common/message', 'vs/workbench/browser/actions/openSettings', 'vs/editor/contrib/linesOperations/common/linesOperations', 'vs/editor/common/editorCommon', 'vs/editor/contrib/indentation/common/indentation', 'vs/workbench/common/events', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/configuration/common/configuration', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/services/modeService', 'vs/base/browser/styleMutator', 'vs/css!./media/editorstatus'], function (require, exports, nls, winjs_base_1, dom_1, strings, paths, types, errors, actions_1, platform_1, untitledEditorInput_1, editor_1, lifecycle_1, message_1, openSettings_1, linesOperations_1, editorCommon_1, indentation_1, events_1, textEditor_1, editorService_1, quickOpenService_1, configuration_1, event_1, files_1, instantiation_1, modeService_1, styleMutator_1) {
     'use strict';
     function getCodeEditor(e) {
         if (e instanceof textEditor_1.BaseTextEditor) {
@@ -635,11 +635,24 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
                 return this.quickOpenService.pick([{ label: nls.localize('noWritableCodeEditor', "The active code editor is read-only.") }]);
             }
             var control = activeEditor.getControl();
-            var picks = [control.getAction(indentation_1.IndentUsingSpaces.ID), control.getAction(indentation_1.IndentUsingTabs.ID), control.getAction(indentation_1.DetectIndentation.ID),
-                control.getAction(indentation_1.IndentationToSpacesAction.ID), control.getAction(indentation_1.IndentationToTabsAction.ID), control.getAction(linesOperations_1.TrimTrailingWhitespaceAction.ID)];
+            var picks = [
+                control.getAction(indentation_1.IndentUsingSpaces.ID),
+                control.getAction(indentation_1.IndentUsingTabs.ID),
+                control.getAction(indentation_1.DetectIndentation.ID),
+                control.getAction(indentation_1.IndentationToSpacesAction.ID),
+                control.getAction(indentation_1.IndentationToTabsAction.ID),
+                control.getAction(linesOperations_1.TrimTrailingWhitespaceAction.ID)
+            ].map(function (a) {
+                return {
+                    id: a.id,
+                    label: a.label,
+                    detail: (platform_1.language === platform_1.LANGUAGE_DEFAULT) ? null : a.getAlias(),
+                    run: function () { return a.run(); }
+                };
+            });
             picks[0].separator = { label: nls.localize('indentView', "change view") };
             picks[3].separator = { label: nls.localize('indentConvert', "convert file"), border: true };
-            return this.quickOpenService.pick(picks, { placeHolder: nls.localize('pickAction', "Select Action") }).then(function (action) { return action && action.run(); });
+            return this.quickOpenService.pick(picks, { placeHolder: nls.localize('pickAction', "Select Action"), matchOnDetail: true }).then(function (action) { return action && action.run(); });
         };
         ChangeIndentationAction.ID = 'workbench.action.editor.changeIndentation';
         ChangeIndentationAction.LABEL = nls.localize('changeIndentation', "Change Indentation");
@@ -711,8 +724,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
                 return this.quickOpenService.pick([{ label: nls.localize('noFileEditor', "No file active at this time") }]);
             }
             var pickActionPromise;
-            var saveWithEncodingPick = { label: nls.localize('saveWithEncoding', "Save with Encoding") };
-            var reopenWithEncodingPick = { label: nls.localize('reopenWithEncoding', "Reopen with Encoding") };
+            var saveWithEncodingPick;
+            var reopenWithEncodingPick;
+            if (platform_1.language === platform_1.LANGUAGE_DEFAULT) {
+                saveWithEncodingPick = { label: nls.localize('saveWithEncoding', "Save with Encoding") };
+                reopenWithEncodingPick = { label: nls.localize('reopenWithEncoding', "Reopen with Encoding") };
+            }
+            else {
+                saveWithEncodingPick = { label: nls.localize('saveWithEncoding', "Save with Encoding"), detail: 'Save with Encoding', };
+                reopenWithEncodingPick = { label: nls.localize('reopenWithEncoding', "Reopen with Encoding"), detail: 'Reopen with Encoding' };
+            }
             if (encodingSupport instanceof untitledEditorInput_1.UntitledEditorInput) {
                 pickActionPromise = winjs_base_1.TPromise.as(saveWithEncodingPick);
             }
@@ -720,7 +741,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
                 pickActionPromise = winjs_base_1.TPromise.as(reopenWithEncodingPick);
             }
             else {
-                pickActionPromise = this.quickOpenService.pick([reopenWithEncodingPick, saveWithEncodingPick], { placeHolder: nls.localize('pickAction', "Select Action") });
+                pickActionPromise = this.quickOpenService.pick([reopenWithEncodingPick, saveWithEncodingPick], { placeHolder: nls.localize('pickAction', "Select Action"), matchOnDetail: true });
             }
             return pickActionPromise.then(function (action) {
                 if (!action) {

@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             });
         };
         OpenSnippetsAction.ID = 'workbench.action.openSnippets';
-        OpenSnippetsAction.LABEL = nls.localize('openSnippet.label', 'Snippets');
+        OpenSnippetsAction.LABEL = nls.localize('openSnippet.label', "Snippets");
         OpenSnippetsAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, quickOpenService_1.IQuickOpenService),
@@ -112,7 +112,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     }
     var preferencesCategory = nls.localize('preferences', "Preferences");
     var workbenchActionsRegistry = platform.Registry.as(workbenchActionRegistry.Extensions.WorkbenchActions);
-    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenSnippetsAction, OpenSnippetsAction.ID, OpenSnippetsAction.LABEL), preferencesCategory);
+    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenSnippetsAction, OpenSnippetsAction.ID, OpenSnippetsAction.LABEL), 'Preferences: Snippets', preferencesCategory);
     platform.Registry.as(workbenchContributions.Extensions.Workbench).registerWorkbenchContribution(snippetsTracker.SnippetsTracker);
     var schemaId = 'vscode://schemas/snippets';
     var schema = {
@@ -148,6 +148,5 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     };
     var schemaRegistry = platform.Registry.as(JSONContributionRegistry.Extensions.JSONContribution);
     schemaRegistry.registerSchema(schemaId, schema);
-    schemaRegistry.addSchemaFileAssociation('%APP_SETTINGS_HOME%/snippets/*.json', schemaId);
 });
 //# sourceMappingURL=snippets.contribution.js.map

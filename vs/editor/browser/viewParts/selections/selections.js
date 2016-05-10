@@ -101,16 +101,10 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
             return true;
         };
         SelectionsOverlay.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged;
         };
         SelectionsOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        SelectionsOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        SelectionsOverlay.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
         };
         // --- end event handlers
         SelectionsOverlay.prototype._visibleRangesHaveGaps = function (linesVisibleRanges) {

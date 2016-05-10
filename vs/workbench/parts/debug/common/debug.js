@@ -9,33 +9,7 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation'],
     exports.DEBUG_SERVICE_ID = 'debugService';
     exports.CONTEXT_IN_DEBUG_MODE = 'inDebugMode';
     exports.EDITOR_CONTRIBUTION_ID = 'editor.contrib.debug';
-    // events
-    exports.ModelEvents = {
-        BREAKPOINTS_UPDATED: 'BreakpointsUpdated',
-        CALLSTACK_UPDATED: 'CallStackUpdated',
-        WATCH_EXPRESSIONS_UPDATED: 'WatchExpressionsUpdated',
-        REPL_ELEMENTS_UPDATED: 'ReplElementsUpdated'
-    };
-    exports.ViewModelEvents = {
-        FOCUSED_STACK_FRAME_UPDATED: 'FocusedStackFrameUpdated',
-        SELECTED_EXPRESSION_UPDATED: 'SelectedExpressionUpdated',
-        SELECTED_FUNCTION_BREAKPOINT_UPDATED: 'SelectedFunctionBreakpointUpdated'
-    };
-    exports.ServiceEvents = {
-        STATE_CHANGED: 'StateChanged',
-        TYPE_NOT_SUPPORTED: 'TypeNotSupported',
-        CONFIGURATION_CHANGED: 'ConfigurationChanged'
-    };
-    exports.SessionEvents = {
-        INITIALIZED: 'initialized',
-        STOPPED: 'stopped',
-        DEBUGEE_TERMINATED: 'terminated',
-        SERVER_EXIT: 'exit',
-        CONTINUED: 'continued',
-        THREAD: 'thread',
-        OUTPUT: 'output',
-        BREAKPOINT: 'breakpoint'
-    };
+    ;
     // service enums
     (function (State) {
         State[State["Disabled"] = 0] = "Disabled";

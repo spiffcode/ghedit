@@ -192,7 +192,7 @@ define(["require", "exports", 'vs/base/common/types', './cssScanner', './cssNode
                 || this._parsePage()
                 || this._parseFontFace()
                 || this._parseKeyframe()
-                || this._parseMSViewPort()
+                || this._parseViewPort()
                 || this._parseNamespace()
                 || this._parseDocument();
         };
@@ -225,7 +225,7 @@ define(["require", "exports", 'vs/base/common/types', './cssScanner', './cssNode
         Parser.prototype._needsSemicolonAfter = function (node) {
             switch (node.type) {
                 case nodes.NodeType.Keyframe:
-                case nodes.NodeType.MSViewPort:
+                case nodes.NodeType.ViewPort:
                 case nodes.NodeType.Media:
                 case nodes.NodeType.Ruleset:
                 case nodes.NodeType.Namespace:
@@ -383,11 +383,13 @@ define(["require", "exports", 'vs/base/common/types', './cssScanner', './cssNode
             this.consumeToken(); // @font-face
             return this._parseBody(node, this._parseRuleSetDeclaration.bind(this));
         };
-        Parser.prototype._parseMSViewPort = function () {
-            if (!this.peek(scanner.TokenType.AtKeyword, '@-ms-viewport')) {
+        Parser.prototype._parseViewPort = function () {
+            if (!this.peek(scanner.TokenType.AtKeyword, '@-ms-viewport') &&
+                !this.peek(scanner.TokenType.AtKeyword, '@-o-viewport') &&
+                !this.peek(scanner.TokenType.AtKeyword, '@viewport')) {
                 return null;
             }
-            var node = this.create(nodes.MSViewPort);
+            var node = this.create(nodes.ViewPort);
             this.consumeToken(); // @-ms-viewport
             return this._parseBody(node, this._parseRuleSetDeclaration.bind(this));
         };

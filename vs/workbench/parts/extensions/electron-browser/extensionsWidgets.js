@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/common/objects', 'vs/workbench/parts/output/common/output', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/extensions/common/extensionsUtil'], function (require, exports, nls, severity_1, async_1, dom_1, lifecycle_1, errors_1, objects_1, output_1, extensions_1, instantiation_1, extensions_2, quickOpenService_1, extensionsUtil_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/common/async', 'vs/base/browser/dom', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/base/common/objects', 'vs/workbench/parts/output/common/output', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/parts/extensions/common/extensionsUtil', 'vs/platform/telemetry/common/telemetry'], function (require, exports, nls, severity_1, async_1, dom_1, lifecycle_1, errors_1, objects_1, output_1, extensions_1, instantiation_1, extensions_2, quickOpenService_1, extensionsUtil_1, telemetry_1) {
     "use strict";
     var InitialState = {
         errors: [],
@@ -23,12 +23,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/comm
     }
     var OutdatedPeriod = 5 * 60 * 1000; // every 5 minutes
     var ExtensionsStatusbarItem = (function () {
-        function ExtensionsStatusbarItem(extensionService, outputService, extensionsService, instantiationService, quickOpenService) {
+        function ExtensionsStatusbarItem(extensionService, outputService, extensionsService, instantiationService, quickOpenService, telemetrService) {
             this.extensionService = extensionService;
             this.outputService = outputService;
             this.extensionsService = extensionsService;
             this.instantiationService = instantiationService;
             this.quickOpenService = quickOpenService;
+            this.telemetrService = telemetrService;
             this.state = InitialState;
             this.outdatedDelayer = new async_1.ThrottledDelayer(OutdatedPeriod);
         }
@@ -87,13 +88,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/comm
         };
         ExtensionsStatusbarItem.prototype.onClick = function () {
             if (this.hasErrors) {
+                this.telemetrService.publicLog('extensionWidgetClick', { mode: 'hasErrors' });
                 this.showErrors(this.state.errors);
                 this.updateState({ errors: [] });
             }
             else if (this.hasUpdates) {
+                this.telemetrService.publicLog('extensionWidgetClick', { mode: 'hasUpdate' });
                 this.quickOpenService.show("ext update ");
             }
             else {
+                this.telemetrService.publicLog('extensionWidgetClick', { mode: 'none' });
                 this.quickOpenService.show(">" + extensions_2.ExtensionsLabel + ": ");
             }
         };
@@ -154,7 +158,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/severity', 'vs/base/comm
             __param(1, output_1.IOutputService),
             __param(2, extensions_2.IExtensionsService),
             __param(3, instantiation_1.IInstantiationService),
-            __param(4, quickOpenService_1.IQuickOpenService)
+            __param(4, quickOpenService_1.IQuickOpenService),
+            __param(5, telemetry_1.ITelemetryService)
         ], ExtensionsStatusbarItem);
         return ExtensionsStatusbarItem;
     }());

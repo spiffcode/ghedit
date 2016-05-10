@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/common/types', 'vs/base/common/objects', 'vs/platform/request/common/request', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/telemetry/common/telemetry'], function (require, exports, winjs_base_1, extensions_1, types_1, objects_1, request_1, contextService_1, telemetry_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/common/types', 'vs/base/common/objects', 'vs/platform/request/common/request', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/filters', './extensionsUtil'], function (require, exports, winjs_base_1, extensions_1, types_1, objects_1, request_1, contextService_1, telemetry_1, filters_1, extensionsUtil_1) {
     "use strict";
     var Flags;
     (function (Flags) {
@@ -166,12 +166,23 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/e
             }
         };
     }
+    var FIVE_MINUTES = 1000 * 60 * 5;
+    function extensionFilter(input) {
+        return function (extension) {
+            return !!filters_1.matchesContiguousSubString(input, extension.publisher + "." + extension.name)
+                || !!filters_1.matchesContiguousSubString(input, extension.name)
+                || !!filters_1.matchesContiguousSubString(input, extension.displayName)
+                || !!filters_1.matchesContiguousSubString(input, extension.description);
+        };
+    }
     var GalleryService = (function () {
         function GalleryService(requestService, contextService, telemetryService) {
             this.requestService = requestService;
+            this.telemetryService = telemetryService;
             this.serviceId = extensions_1.IGalleryService;
             var config = contextService.getConfiguration().env.extensionsGallery;
             this.extensionsGalleryUrl = config && config.serviceUrl;
+            this.extensionsCacheUrl = config && config.cacheUrl;
             this.machineId = telemetryService.getTelemetryInfo().then(function (_a) {
                 var machineId = _a.machineId;
                 return machineId;
@@ -190,6 +201,45 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/e
             if (!this.isEnabled()) {
                 return winjs_base_1.TPromise.wrapError(new Error('No extension gallery service configured.'));
             }
+            var type = options.ids ? 'ids' : (options.text ? 'text' : 'all');
+            var text = options.text || '';
+            this.telemetryService.publicLog('galleryService:query', { type: type, text: text });
+            var cache = this.queryCache().then(function (result) {
+                var rawLastModified = result.getResponseHeader('last-modified');
+                if (!rawLastModified) {
+                    return winjs_base_1.TPromise.wrapError('no last modified header');
+                }
+                var lastModified = new Date(rawLastModified).getTime();
+                var now = new Date().getTime();
+                var diff = now - lastModified;
+                if (diff > FIVE_MINUTES) {
+                    return winjs_base_1.TPromise.wrapError('stale');
+                }
+                return _this.getRequestHeaders().then(function (downloadHeaders) {
+                    var rawExtensions = JSON.parse(result.responseText).results[0].extensions || [];
+                    var extensions = rawExtensions
+                        .map(function (e) { return toExtension(e, _this.extensionsGalleryUrl, downloadHeaders); });
+                    if (options.ids) {
+                        extensions = extensions.filter(function (e) { return options.ids.indexOf(extensionsUtil_1.getExtensionId(e)) > -1; });
+                    }
+                    else if (options.text) {
+                        extensions = extensions.filter(extensionFilter(options.text));
+                    }
+                    extensions = extensions
+                        .sort(function (a, b) { return b.galleryInformation.installCount - a.galleryInformation.installCount; });
+                    return {
+                        firstPage: extensions,
+                        total: extensions.length,
+                        pageSize: extensions.length,
+                        getPage: function () { return winjs_base_1.TPromise.as([]); }
+                    };
+                });
+            });
+            return cache.then(null, function (_) { return _this._query(options); });
+        };
+        GalleryService.prototype._query = function (options) {
+            var _this = this;
+            if (options === void 0) { options = {}; }
             var text = objects_1.getOrDefault(options, function (o) { return o.text; }, '');
             var pageSize = objects_1.getOrDefault(options, function (o) { return o.pageSize; }, 30);
             var query = new Query()
@@ -244,6 +294,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/e
                 var total = resultCount && resultCount.metadataItems.filter(function (i) { return i.name === 'TotalCount'; })[0].count || 0;
                 return { galleryExtensions: galleryExtensions, total: total };
             });
+        };
+        GalleryService.prototype.queryCache = function () {
+            var url = this.extensionsCacheUrl;
+            if (!url) {
+                return winjs_base_1.TPromise.wrapError(new Error('No cache configured.'));
+            }
+            return this.requestService.makeRequest({ url: url });
         };
         GalleryService.prototype.getRequestHeaders = function () {
             return this.machineId.then(function (machineId) {

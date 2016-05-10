@@ -77,19 +77,19 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ToggleCommentLineAction, ToggleCommentLineAction.ID, nls.localize('comment.line', "Toggle Line Comment"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_SLASH
-    }));
+    }, 'Toggle Line Comment'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(AddLineCommentAction, AddLineCommentAction.ID, nls.localize('comment.line.add', "Add Line Comment"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C)
-    }));
+    }, 'Add Line Comment'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(RemoveLineCommentAction, RemoveLineCommentAction.ID, nls.localize('comment.line.remove', "Remove Line Comment"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_U)
-    }));
+    }, 'Remove Line Comment'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(BlockCommentAction, BlockCommentAction.ID, nls.localize('comment.block', "Toggle Block Comment"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_A,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_A }
-    }));
+    }, 'Toggle Block Comment'));
 });
 //# sourceMappingURL=comment.js.map

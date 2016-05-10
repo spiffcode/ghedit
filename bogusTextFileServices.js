@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'windowService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1, quickOpenService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'windowService'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1) {
     'use strict';
     var TextFileService = (function (_super) {
         __extends(TextFileService, _super);
@@ -28,6 +28,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             this.editorService = editorService;
             this.windowService = windowService;
             this.instService = instantiationService;
+            this.modeService = modeService;
             this.init();
         }
         TextFileService.prototype.beforeShutdown = function () {
@@ -123,16 +124,20 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             }
             // Button order
             // Windows: Save | Don't Save | Cancel
-            // Mac/Linux: Save | Cancel | Don't
+            // Mac: Save | Cancel | Don't Save
+            // Linux: Don't Save | Cancel | Save
             var save = { label: resourcesToConfirm.length > 1 ? this.mnemonicLabel(nls.localize({ key: 'saveAll', comment: ['&& denotes a mnemonic'] }, "&&Save All")) : this.mnemonicLabel(nls.localize({ key: 'save', comment: ['&& denotes a mnemonic'] }, "&&Save")), result: files_1.ConfirmResult.SAVE };
             var dontSave = { label: this.mnemonicLabel(nls.localize({ key: 'dontSave', comment: ['&& denotes a mnemonic'] }, "Do&&n't Save")), result: files_1.ConfirmResult.DONT_SAVE };
             var cancel = { label: nls.localize('cancel', "Cancel"), result: files_1.ConfirmResult.CANCEL };
-            var buttons = [save];
+            var buttons = [];
             if (platform_1.isWindows) {
-                buttons.push(dontSave, cancel);
+                buttons.push(save, dontSave, cancel);
+            }
+            else if (platform_1.isLinux) {
+                buttons.push(dontSave, cancel, save);
             }
             else {
-                buttons.push(cancel, dontSave);
+                buttons.push(save, cancel, dontSave);
             }
             var opts = {
                 title: this.contextService.getConfiguration().env.appName,
@@ -202,8 +207,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                 }
             }
             // Prompt for a commit message.
+            // We get the QuickOpenService here instead of via service injection because it hasn't
+            // yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+            // PLACE TO DO THIS.
             // TODO: validateInput fn to put appropriate constraints on the commit message.
-            var quickOpenService = this.instService.getInstance(quickOpenService_1.IQuickOpenService);
+            // TODO: let quickOpenService = this.instService.createInstance<IQuickOpenService>(IQuickOpenService);
+            var quickOpenService = null;
             return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message' }).then(function (result) {
                 // If user canceled the input box.
                 if (!result)
@@ -337,7 +346,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             };
             // Filters are working flaky in Electron and there are bugs. On Windows they are working
             // somewhat but we see issues:
-            // - https://github.com/atom/electron/issues/3556
+            // - https://github.com/electron/electron/issues/3556
             // - https://github.com/Microsoft/vscode/issues/451
             // - Bug on Windows: When "All Files" is picked, the path gets an extra ".*"
             // Until these issues are resolved, we disable the dialog file extension filtering.

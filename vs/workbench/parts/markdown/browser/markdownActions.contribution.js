@@ -98,7 +98,7 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/platform/act
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.EDITOR, MarkdownFilesActionContributor);
     var category = nls.localize('markdown', "Markdown");
     var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.GlobalTogglePreviewMarkdownAction, markdownActions_1.GlobalTogglePreviewMarkdownAction.ID, markdownActions_1.GlobalTogglePreviewMarkdownAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_V }), category);
-    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.OpenPreviewToSideAction, markdownActions_1.OpenPreviewToSideAction.ID, markdownActions_1.OpenPreviewToSideAction.LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.KEY_V) }), category);
+    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.GlobalTogglePreviewMarkdownAction, markdownActions_1.GlobalTogglePreviewMarkdownAction.ID, markdownActions_1.GlobalTogglePreviewMarkdownAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_V }), 'Markdown: Toggle Preview', category);
+    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markdownActions_1.OpenPreviewToSideAction, markdownActions_1.OpenPreviewToSideAction.ID, markdownActions_1.OpenPreviewToSideAction.LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.KEY_V) }), 'Markdown: Open Preview to the Side', category);
 });
 //# sourceMappingURL=markdownActions.contribution.js.map

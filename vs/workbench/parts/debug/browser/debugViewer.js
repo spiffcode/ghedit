@@ -21,6 +21,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     var $ = dom.emmet;
     var booleanRegex = /^true|false$/i;
     var stringRegex = /^(['"]).*\1$/;
+    var MAX_VALUE_RENDER_LENGTH = 5000;
     function renderExpressionValue(expressionOrValue, container, showChanged) {
         var value = typeof expressionOrValue === 'string' ? expressionOrValue : expressionOrValue.value;
         // remove stale classes
@@ -44,6 +45,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         if (showChanged && expressionOrValue.valueChanged) {
             // value changed color has priority over other colors.
             container.className = 'value changed';
+        }
+        if (value.length > MAX_VALUE_RENDER_LENGTH) {
+            value = value.substr(0, MAX_VALUE_RENDER_LENGTH) + '...';
         }
         container.textContent = value;
         container.title = value;
@@ -84,7 +88,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                     debugService.renameWatchExpression(element.getId(), inputBox.value).done(null, errors.onUnexpectedError);
                 }
                 else if (element instanceof model.Expression && !element.name) {
-                    debugService.clearWatchExpressions(element.getId());
+                    debugService.removeWatchExpressions(element.getId());
                 }
                 else if (element instanceof model.FunctionBreakpoint && renamed && inputBox.value) {
                     debugService.renameFunctionBreakpoint(element.getId(), inputBox.value).done(null, errors.onUnexpectedError);
@@ -186,16 +190,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                 return this.getThreadChildren(element);
             }
             var threads = element.getThreads();
-            var threadsArray = [];
-            Object.keys(threads).forEach(function (threadId) {
-                threadsArray.push(threads[threadId]);
-            });
-            if (threadsArray.length === 1) {
-                return this.getThreadChildren(threadsArray[0]);
-            }
-            else {
-                return winjs_base_1.TPromise.as(threadsArray);
-            }
+            return winjs_base_1.TPromise.as(Object.keys(threads).map(function (ref) { return threads[ref]; }));
         };
         CallStackDataSource.prototype.getThreadChildren = function (thread) {
             return thread.getCallStack(this.debugService).then(function (callStack) {
@@ -622,7 +617,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             var element = tree.getFocus();
             if (element instanceof model.Expression) {
                 var we = element;
-                this.debugService.clearWatchExpressions(we.getId());
+                this.debugService.removeWatchExpressions(we.getId());
                 return true;
             }
             return false;
@@ -748,7 +743,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             var _this = this;
             templateData.toDisposeBeforeRender = lifecycle.dispose(templateData.toDisposeBeforeRender);
             templateData.toDisposeBeforeRender.push(dom.addStandardDisposableListener(templateData.checkbox, 'change', function (e) {
-                _this.debugService.toggleEnablement(element);
+                _this.debugService.enableOrDisableBreakpoints(!element.enabled, element);
             }));
             if (templateId === BreakpointsRenderer.EXCEPTION_BREAKPOINT_TEMPLATE_ID) {
                 this.renderExceptionBreakpoint(element, templateData);
@@ -784,7 +779,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             data.filePath.textContent = labels.getPathLabel(paths.dirname(breakpoint.source.uri.fsPath), this.contextService);
             data.checkbox.checked = breakpoint.enabled;
             data.actionBar.context = breakpoint;
-            if (breakpoint.condition) {
+            var debugActive = this.debugService.state === debug.State.Running || this.debugService.state === debug.State.Stopped;
+            if (debugActive && !breakpoint.verified) {
+                tree.addTraits('disabled', [breakpoint]);
+                if (breakpoint.message) {
+                    data.breakpoint.title = breakpoint.message;
+                }
+            }
+            else if (breakpoint.condition) {
                 data.breakpoint.title = breakpoint.condition;
             }
         };
@@ -843,14 +845,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         BreakpointsController.prototype.onSpace = function (tree, event) {
             _super.prototype.onSpace.call(this, tree, event);
             var element = tree.getFocus();
-            this.debugService.toggleEnablement(element).done(null, errors.onUnexpectedError);
+            this.debugService.enableOrDisableBreakpoints(!element.enabled, element).done(null, errors.onUnexpectedError);
             return true;
         };
         BreakpointsController.prototype.onDelete = function (tree, event) {
             var element = tree.getFocus();
             if (element instanceof model.Breakpoint) {
-                var bp = element;
-                this.debugService.toggleBreakpoint({ uri: bp.source.uri, lineNumber: bp.lineNumber }).done(null, errors.onUnexpectedError);
+                this.debugService.removeBreakpoints(element.getId()).done(null, errors.onUnexpectedError);
                 return true;
             }
             else if (element instanceof model.FunctionBreakpoint) {

@@ -165,30 +165,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
             return id;
         };
         JSONSchemaService.prototype.setSchemaContributions = function (schemaContributions) {
-            var _this = this;
             if (schemaContributions.schemas) {
                 var schemas = schemaContributions.schemas;
                 for (var id in schemas) {
                     id = this.normalizeId(id);
                     this.contributionSchemas[id] = this.addSchemaHandle(id, schemas[id]);
-                }
-            }
-            if (schemaContributions.schemaAssociations) {
-                var schemaAssociations = schemaContributions.schemaAssociations;
-                for (var pattern in schemaAssociations) {
-                    var associations = schemaAssociations[pattern];
-                    if (this.contextService) {
-                        var env = this.contextService.getConfiguration().env;
-                        if (env) {
-                            pattern = pattern.replace(/%APP_SETTINGS_HOME%/, uri_1.default.file(env.appSettingsHome).toString());
-                        }
-                    }
-                    this.contributionAssociations[pattern] = associations;
-                    var fpa = this.getOrAddFilePatternAssociation(pattern);
-                    associations.forEach(function (schemaId) {
-                        var id = _this.normalizeId(schemaId);
-                        fpa.addSchema(id);
-                    });
                 }
             }
         };
@@ -305,32 +286,64 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
                 var toWalk = [node];
                 var seen = [];
                 var openPromises = [];
+                var collectEntries = function () {
+                    var entries = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        entries[_i - 0] = arguments[_i];
+                    }
+                    for (var _a = 0, entries_1 = entries; _a < entries_1.length; _a++) {
+                        var entry = entries_1[_a];
+                        if (typeof entry === 'object') {
+                            toWalk.push(entry);
+                        }
+                    }
+                };
+                var collectMapEntries = function () {
+                    var maps = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        maps[_i - 0] = arguments[_i];
+                    }
+                    for (var _a = 0, maps_1 = maps; _a < maps_1.length; _a++) {
+                        var map = maps_1[_a];
+                        if (typeof map === 'object') {
+                            for (var key in map) {
+                                var entry = map[key];
+                                toWalk.push(entry);
+                            }
+                        }
+                    }
+                };
+                var collectArrayEntries = function () {
+                    var arrays = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        arrays[_i - 0] = arguments[_i];
+                    }
+                    for (var _a = 0, arrays_1 = arrays; _a < arrays_1.length; _a++) {
+                        var array = arrays_1[_a];
+                        if (Array.isArray(array)) {
+                            toWalk.push.apply(toWalk, array);
+                        }
+                    }
+                };
                 while (toWalk.length) {
                     var next = toWalk.pop();
                     if (seen.indexOf(next) >= 0) {
                         continue;
                     }
                     seen.push(next);
-                    if (Array.isArray(next)) {
-                        next.forEach(function (item) {
-                            toWalk.push(item);
-                        });
-                    }
-                    else if (Types.isObject(next)) {
-                        if (next.$ref) {
-                            var segments = next.$ref.split('#', 2);
-                            if (segments[0].length > 0) {
-                                openPromises.push(resolveExternalLink(next, segments[0], segments[1]));
-                                continue;
-                            }
-                            else {
-                                resolveLink(next, parentSchema, segments[1]);
-                            }
+                    if (next.$ref) {
+                        var segments = next.$ref.split('#', 2);
+                        if (segments[0].length > 0) {
+                            openPromises.push(resolveExternalLink(next, segments[0], segments[1]));
+                            continue;
                         }
-                        for (var key in next) {
-                            toWalk.push(next[key]);
+                        else {
+                            resolveLink(next, parentSchema, segments[1]);
                         }
                     }
+                    collectEntries(next.items, next.additionalProperties, next.not);
+                    collectMapEntries(next.definitions, next.properties, next.patternProperties, next.dependencies);
+                    collectArrayEntries(next.anyOf, next.allOf, next.oneOf, next.items);
                 }
                 return WinJS.Promise.join(openPromises);
             };

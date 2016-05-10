@@ -26,9 +26,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/uri',
             this.editorPart = editorPart;
             this.fileInputDescriptor = platform_1.Registry.as(baseEditor_1.Extensions.Editors).getDefaultFileInput();
         }
-        WorkbenchEditorService.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         WorkbenchEditorService.prototype.getActiveEditor = function () {
             return this.editorPart.getActiveEditor();
         };

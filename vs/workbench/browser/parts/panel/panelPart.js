@@ -16,12 +16,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/keyCodes', 'vs/base/common/actions', 'vs/base/browser/dom', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/browser/parts/compositePart', 'vs/workbench/browser/panel', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/css!./media/panelPart'], function (require, exports, nls, winjs_base_1, keyCodes_1, actions_1, dom, platform_1, actionBarRegistry_1, actions_2, actionRegistry_1, compositePart_1, panel_1, panelService_1, partService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/keyCodes', 'vs/base/common/actions', 'vs/base/browser/dom', 'vs/platform/platform', 'vs/workbench/browser/actionBarRegistry', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/browser/parts/compositePart', 'vs/workbench/browser/panel', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/instantiation/common/instantiation', 'vs/css!./media/panelPart'], function (require, exports, nls, winjs_base_1, keyCodes_1, actions_1, dom, platform_1, actionBarRegistry_1, actions_2, actionRegistry_1, compositePart_1, panel_1, panelService_1, partService_1, storage_1, contextView_1, event_1, message_1, telemetry_1, keybindingService_1, instantiation_1) {
     "use strict";
     var PanelPart = (function (_super) {
         __extends(PanelPart, _super);
-        function PanelPart(messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, id) {
-            _super.call(this, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, platform_1.Registry.as(panel_1.Extensions.Panels), PanelPart.activePanelSettingsKey, 'panel', 'panel', actionBarRegistry_1.Scope.PANEL, id);
+        function PanelPart(id, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, instantiationService) {
+            _super.call(this, messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, instantiationService, platform_1.Registry.as(panel_1.Extensions.Panels), PanelPart.activePanelSettingsKey, 'panel', 'panel', actionBarRegistry_1.Scope.PANEL, id);
             this.serviceId = panelService_1.IPanelService;
         }
         PanelPart.prototype.create = function (parent) {
@@ -63,6 +63,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             return this.hideActiveComposite();
         };
         PanelPart.activePanelSettingsKey = 'workbench.panelpart.activepanelid';
+        PanelPart = __decorate([
+            __param(1, message_1.IMessageService),
+            __param(2, storage_1.IStorageService),
+            __param(3, event_1.IEventService),
+            __param(4, telemetry_1.ITelemetryService),
+            __param(5, contextView_1.IContextMenuService),
+            __param(6, partService_1.IPartService),
+            __param(7, keybindingService_1.IKeybindingService),
+            __param(8, instantiation_1.IInstantiationService)
+        ], PanelPart);
         return PanelPart;
     }(compositePart_1.CompositePart));
     exports.PanelPart = PanelPart;
@@ -101,6 +111,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         return TogglePanelAction;
     }(actions_1.Action));
     var actionRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(TogglePanelAction, TogglePanelAction.ID, TogglePanelAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_J }), nls.localize('view', "View"));
+    actionRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(TogglePanelAction, TogglePanelAction.ID, TogglePanelAction.LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_J }), 'View: Toggle Panel Visibility', nls.localize('view', "View"));
 });
 //# sourceMappingURL=panelPart.js.map

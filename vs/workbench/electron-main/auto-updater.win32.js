@@ -7,12 +7,24 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 define(["require", "exports", 'events', 'path', 'os', 'child_process', 'vs/base/node/pfs', 'vs/base/node/extfs', 'vs/base/common/types', 'vs/base/common/winjs.base', 'vs/base/node/request', 'vs/base/node/proxy', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/lifecycle', './env'], function (require, exports, events, path, os, cp, pfs, extfs_1, types_1, winjs_base_1, request_1, proxy_1, settings_1, lifecycle_1, env_1) {
     'use strict';
     var Win32AutoUpdaterImpl = (function (_super) {
         __extends(Win32AutoUpdaterImpl, _super);
-        function Win32AutoUpdaterImpl() {
+        function Win32AutoUpdaterImpl(lifecycleService, envService, settingsManager) {
             _super.call(this);
+            this.lifecycleService = lifecycleService;
+            this.envService = envService;
+            this.settingsManager = settingsManager;
             this.url = null;
             this.currentRequest = null;
         }
@@ -36,8 +48,8 @@ define(["require", "exports", 'events', 'path', 'os', 'child_process', 'vs/base/
                 return;
             }
             this.emit('checking-for-update');
-            var proxyUrl = settings_1.manager.getValue('http.proxy');
-            var strictSSL = settings_1.manager.getValue('http.proxyStrictSSL', true);
+            var proxyUrl = this.settingsManager.getValue('http.proxy');
+            var strictSSL = this.settingsManager.getValue('http.proxyStrictSSL', true);
             var agent = proxy_1.getProxyAgent(this.url, { proxyUrl: proxyUrl, strictSSL: strictSSL });
             this.currentRequest = request_1.json({ url: this.url, agent: agent })
                 .then(function (update) {
@@ -74,10 +86,11 @@ define(["require", "exports", 'events', 'path', 'os', 'child_process', 'vs/base/
                 .then(function () { return _this.currentRequest = null; });
         };
         Win32AutoUpdaterImpl.prototype.getUpdatePackagePath = function (version) {
-            return this.cachePath.then(function (cachePath) { return path.join(cachePath, "CodeSetup-" + env_1.quality + "-" + version + ".exe"); });
+            var _this = this;
+            return this.cachePath.then(function (cachePath) { return path.join(cachePath, "CodeSetup-" + _this.envService.quality + "-" + version + ".exe"); });
         };
         Win32AutoUpdaterImpl.prototype.quitAndUpdate = function (updatePackagePath) {
-            lifecycle_1.manager.quit().done(function (vetod) {
+            this.lifecycleService.quit().done(function (vetod) {
                 if (vetod) {
                     return;
                 }
@@ -88,14 +101,20 @@ define(["require", "exports", 'events', 'path', 'os', 'child_process', 'vs/base/
             });
         };
         Win32AutoUpdaterImpl.prototype.cleanup = function (exceptVersion) {
+            var _this = this;
             if (exceptVersion === void 0) { exceptVersion = null; }
-            var filter = exceptVersion ? function (one) { return !(new RegExp(env_1.quality + "-" + exceptVersion + "\\.exe$").test(one)); } : function () { return true; };
+            var filter = exceptVersion ? function (one) { return !(new RegExp(_this.envService.quality + "-" + exceptVersion + "\\.exe$").test(one)); } : function () { return true; };
             return this.cachePath
                 .then(function (cachePath) { return pfs.readdir(cachePath)
                 .then(function (all) { return winjs_base_1.Promise.join(all
                 .filter(filter)
                 .map(function (one) { return pfs.unlink(path.join(cachePath, one)).then(null, function () { return null; }); })); }); });
         };
+        Win32AutoUpdaterImpl = __decorate([
+            __param(0, lifecycle_1.ILifecycleService),
+            __param(1, env_1.IEnvironmentService),
+            __param(2, settings_1.ISettingsService)
+        ], Win32AutoUpdaterImpl);
         return Win32AutoUpdaterImpl;
     }(events.EventEmitter));
     exports.Win32AutoUpdaterImpl = Win32AutoUpdaterImpl;

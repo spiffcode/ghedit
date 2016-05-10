@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs/base/node/pfs', 'vs/base/common/async', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/message/common/message', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation'], function (require, exports, nls, path, fs, os, cp, pfs, async_1, winjs_base_1, uri_1, actions_1, actionRegistry_1, contributions_1, platform_1, actions_2, contextService_1, message_1, editor_1, instantiation_1) {
+define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs/base/node/pfs', 'vs/base/common/async', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/common/contributions', 'vs/platform/platform', 'vs/platform/actions/common/actions', 'vs/platform/message/common/message', 'vs/platform/editor/common/editor', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/electron-main/product'], function (require, exports, nls, path, fs, os, cp, pfs, async_1, winjs_base_1, uri_1, actions_1, actionRegistry_1, contributions_1, platform_1, actions_2, message_1, editor_1, instantiation_1, product_1) {
     "use strict";
     function ignore(code, value) {
         if (value === void 0) { value = null; }
@@ -30,22 +30,14 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
     var isAvailable = fs.existsSync(source);
     var InstallAction = (function (_super) {
         __extends(InstallAction, _super);
-        function InstallAction(id, label, contextService, messageService, editorService) {
+        function InstallAction(id, label, messageService, editorService) {
             _super.call(this, id, label);
-            this.contextService = contextService;
             this.messageService = messageService;
             this.editorService = editorService;
         }
-        Object.defineProperty(InstallAction.prototype, "applicationName", {
-            get: function () {
-                return this.contextService.getConfiguration().env.applicationName;
-            },
-            enumerable: true,
-            configurable: true
-        });
         Object.defineProperty(InstallAction.prototype, "target", {
             get: function () {
-                return "/usr/local/bin/" + this.applicationName;
+                return "/usr/local/bin/" + product_1.default.applicationName;
             },
             enumerable: true,
             configurable: true
@@ -56,14 +48,13 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
                 .then(function (uses) {
                 if (uses.length > 0) {
                     var _a = uses[0], file_1 = _a.file, lineNumber = _a.lineNumber;
+                    var message = nls.localize('exists', "Please remove the alias referencing '{0}' in '{1}' (line {2}) and retry this action.", product_1.default.darwinBundleIdentifier, file_1, lineNumber);
                     var resource = uri_1.default.create('file', null, file_1);
-                    var env = _this.contextService.getConfiguration().env;
-                    var message = nls.localize('exists', "Please remove the alias referencing '{0}' in '{1}' (line {2}) and retry this action.", env.darwinBundleIdentifier, file_1, lineNumber);
                     var input_1 = { resource: resource, mime: 'text/x-shellscript' };
                     var actions = [
                         new actions_1.Action('inlineEdit', nls.localize('editFile', "Edit '{0}'", file_1), '', true, function () {
                             return _this.editorService.openEditor(input_1).then(function () {
-                                var message = nls.localize('again', "Please remove the '{0}' alias from '{1}' before continuing.", _this.applicationName, file_1);
+                                var message = nls.localize('again', "Please remove the '{0}' alias from '{1}' before continuing.", product_1.default.applicationName, file_1);
                                 var actions = [
                                     new actions_1.Action('cancel', nls.localize('cancel', "Cancel")),
                                     new actions_1.Action('continue', nls.localize('continue', "Continue"), '', true, function () { return _this.run(); })
@@ -95,7 +86,7 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
                         });
                     }
                 })
-                    .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successIn', "Shell command '{0}' successfully installed in PATH.", _this.applicationName)); });
+                    .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successIn', "Shell command '{0}' successfully installed in PATH.", product_1.default.applicationName)); });
             });
         };
         InstallAction.prototype.isInstalled = function () {
@@ -124,7 +115,6 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
             });
         };
         InstallAction.prototype.checkLegacy = function () {
-            var _this = this;
             var files = [
                 path.join(os.homedir(), '.bash_profile'),
                 path.join(os.homedir(), '.bashrc'),
@@ -133,10 +123,9 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
             return winjs_base_1.TPromise.join(files.map(function (f) { return readOrEmpty(f); })).then(function (result) {
                 return result.reduce(function (result, contents, index) {
                     var file = files[index];
-                    var env = _this.contextService.getConfiguration().env;
                     var lines = contents.split(/\r?\n/);
                     lines.some(function (line, index) {
-                        if (line.indexOf(env.darwinBundleIdentifier) > -1 && !/^\s*#/.test(line)) {
+                        if (line.indexOf(product_1.default.darwinBundleIdentifier) > -1 && !/^\s*#/.test(line)) {
                             result.push({ file: file, lineNumber: index + 1 });
                             return true;
                         }
@@ -147,31 +136,22 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
             });
         };
         InstallAction.ID = 'workbench.action.installCommandLine';
-        InstallAction.LABEL = nls.localize('install', "Install 'code' command in PATH");
+        InstallAction.LABEL = nls.localize('install', "Install '{0}' command in PATH", product_1.default.applicationName);
         InstallAction = __decorate([
-            __param(2, contextService_1.IWorkspaceContextService),
-            __param(3, message_1.IMessageService),
-            __param(4, editor_1.IEditorService)
+            __param(2, message_1.IMessageService),
+            __param(3, editor_1.IEditorService)
         ], InstallAction);
         return InstallAction;
     }(actions_1.Action));
     var UninstallAction = (function (_super) {
         __extends(UninstallAction, _super);
-        function UninstallAction(id, label, contextService, messageService) {
+        function UninstallAction(id, label, messageService) {
             _super.call(this, id, label);
-            this.contextService = contextService;
             this.messageService = messageService;
         }
-        Object.defineProperty(UninstallAction.prototype, "applicationName", {
-            get: function () {
-                return this.contextService.getConfiguration().env.applicationName;
-            },
-            enumerable: true,
-            configurable: true
-        });
         Object.defineProperty(UninstallAction.prototype, "target", {
             get: function () {
-                return "/usr/local/bin/" + this.applicationName;
+                return "/usr/local/bin/" + product_1.default.applicationName;
             },
             enumerable: true,
             configurable: true
@@ -180,13 +160,12 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
             var _this = this;
             return pfs.unlink(this.target)
                 .then(null, ignore('ENOENT'))
-                .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successFrom', "Shell command '{0}' successfully uninstalled from PATH.", _this.applicationName)); });
+                .then(function () { return _this.messageService.show(message_1.Severity.Info, nls.localize('successFrom', "Shell command '{0}' successfully uninstalled from PATH.", product_1.default.applicationName)); });
         };
         UninstallAction.ID = 'workbench.action.uninstallCommandLine';
-        UninstallAction.LABEL = nls.localize('uninstall', "Uninstall 'code' command from PATH");
+        UninstallAction.LABEL = nls.localize('uninstall', "Uninstall '{0}' command from PATH", product_1.default.applicationName);
         UninstallAction = __decorate([
-            __param(2, contextService_1.IWorkspaceContextService),
-            __param(3, message_1.IMessageService)
+            __param(2, message_1.IMessageService)
         ], UninstallAction);
         return UninstallAction;
     }(actions_1.Action));
@@ -195,7 +174,7 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
             var installAction = instantiationService.createInstance(InstallAction, InstallAction.ID, InstallAction.LABEL);
             installAction.checkLegacy().done(function (files) {
                 if (files.length > 0) {
-                    var message = nls.localize('update', "Code needs to change the '{0}' shell command. Would you like to do this now?", installAction.applicationName);
+                    var message = nls.localize('update', "Code needs to change the '{0}' shell command. Would you like to do this now?", product_1.default.applicationName);
                     var now = new actions_1.Action('changeNow', nls.localize('changeNow', "Change Now"), '', true, function () { return installAction.run(); });
                     var later = new actions_1.Action('later', nls.localize('later', "Later"), '', true, function () {
                         messageService.show(message_1.Severity.Info, nls.localize('laterInfo', "Remember you can always run the '{0}' action from the Command Palette.", installAction.label));
@@ -218,8 +197,8 @@ define(["require", "exports", 'vs/nls', 'path', 'fs', 'os', 'child_process', 'vs
     if (isAvailable && process.platform === 'darwin') {
         var category = nls.localize('shellCommand', "Shell Command");
         var workbenchActionsRegistry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-        workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(InstallAction, InstallAction.ID, InstallAction.LABEL), category);
-        workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(UninstallAction, UninstallAction.ID, UninstallAction.LABEL), category);
+        workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(InstallAction, InstallAction.ID, InstallAction.LABEL), 'Shell Command: Install \'code\' command in PATH', category);
+        workbenchActionsRegistry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(UninstallAction, UninstallAction.ID, UninstallAction.LABEL), 'Shell Command: Uninstall \'code\' command from PATH', category);
         var workbenchRegistry = platform_1.Registry.as(contributions_1.Extensions.Workbench);
         workbenchRegistry.registerWorkbenchContribution(DarwinCLIHelper);
     }

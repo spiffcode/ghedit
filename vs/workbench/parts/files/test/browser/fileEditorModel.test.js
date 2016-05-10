@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/paths', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/files', 'vs/workbench/test/browser/servicesTestUtils', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, winjs_base_1, uri_1, paths, fileEditorInput_1, textFileEditorModel_1, telemetry_1, instantiationService_1, textFileServices_1, files_1, servicesTestUtils_1, servicesTestUtils_2) {
+define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/common/uri', 'vs/base/common/paths', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/event/common/event', 'vs/platform/message/common/message', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modeService', 'vs/platform/workspace/common/workspace', 'vs/platform/storage/common/storage', 'vs/platform/configuration/common/configuration', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/serviceCollection', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/files', 'vs/workbench/test/browser/servicesTestUtils', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, winjs_base_1, uri_1, paths, fileEditorInput_1, textFileEditorModel_1, telemetry_1, event_1, message_1, modelService_1, modeService_1, workspace_1, storage_1, configuration_1, lifecycle_1, files_1, serviceCollection_1, untitledEditorService_1, instantiationService_1, editorService_1, PartService, textFileServices_1, files_2, servicesTestUtils_1, servicesTestUtils_2) {
     'use strict';
     function toResource(path) {
         return uri_1.default.file(paths.join('C:\\', path));
@@ -15,23 +15,23 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
         setup(function () {
             eventService = new servicesTestUtils_1.TestEventService();
             messageService = new servicesTestUtils_1.TestMessageService();
-            baseInstantiationService = instantiationService_1.createInstantiationService({
-                eventService: eventService,
-                messageService: messageService,
-                fileService: servicesTestUtils_1.TestFileService,
-                contextService: new servicesTestUtils_1.TestContextService(),
-                telemetryService: telemetry_1.NullTelemetryService,
-                storageService: new servicesTestUtils_1.TestStorageService(),
-                untitledEditorService: new servicesTestUtils_1.TestUntitledEditorService(),
-                editorService: new servicesTestUtils_1.TestEditorService(),
-                partService: new servicesTestUtils_1.TestPartService(),
-                modeService: servicesTestUtils_2.createMockModeService(),
-                modelService: servicesTestUtils_2.createMockModelService(),
-                lifecycleService: new servicesTestUtils_1.TestLifecycleService(),
-                configurationService: new servicesTestUtils_1.TestConfigurationService()
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(event_1.IEventService, eventService);
+            services.set(message_1.IMessageService, messageService);
+            services.set(files_1.IFileService, servicesTestUtils_1.TestFileService);
+            services.set(workspace_1.IWorkspaceContextService, new servicesTestUtils_1.TestContextService());
+            services.set(telemetry_1.ITelemetryService, telemetry_1.NullTelemetryService);
+            services.set(storage_1.IStorageService, new servicesTestUtils_1.TestStorageService());
+            services.set(untitledEditorService_1.IUntitledEditorService, new servicesTestUtils_1.TestUntitledEditorService());
+            services.set(editorService_1.IWorkbenchEditorService, new servicesTestUtils_1.TestEditorService());
+            services.set(PartService.IPartService, new servicesTestUtils_1.TestPartService());
+            services.set(modeService_1.IModeService, servicesTestUtils_2.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_2.createMockModelService());
+            services.set(lifecycle_1.ILifecycleService, lifecycle_1.NullLifecycleService);
+            services.set(configuration_1.IConfigurationService, new servicesTestUtils_1.TestConfigurationService());
+            baseInstantiationService = new instantiationService_1.InstantiationService(services);
             textFileService = baseInstantiationService.createInstance(textFileServices_1.TextFileService);
-            baseInstantiationService.registerService('textFileService', textFileService);
+            services.set(files_2.ITextFileService, textFileService);
         });
         teardown(function () {
             eventService.dispose();
@@ -64,10 +64,10 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
             eventService.addListener('files:internalFileChanged', function () {
                 assert.ok(false);
             });
-            eventService.addListener(files_1.EventType.FILE_DIRTY, function () {
+            eventService.addListener(files_2.EventType.FILE_DIRTY, function () {
                 assert.ok(false);
             });
-            eventService.addListener(files_1.EventType.FILE_SAVED, function () {
+            eventService.addListener(files_2.EventType.FILE_SAVED, function () {
                 assert.ok(false);
             });
             m1.load().then(function () {
@@ -129,10 +129,10 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
             var m1 = baseInstantiationService.createInstance(textFileEditorModel_1.TextFileEditorModel, toResource('/path/index.txt'), 'utf8');
             m1.autoSaveAfterMillies = 10;
             m1.autoSaveAfterMilliesEnabled = true;
-            eventService.addListener(files_1.EventType.FILE_DIRTY, function () {
+            eventService.addListener(files_2.EventType.FILE_DIRTY, function () {
                 eventCounter++;
             });
-            eventService.addListener(files_1.EventType.FILE_SAVED, function () {
+            eventService.addListener(files_2.EventType.FILE_SAVED, function () {
                 eventCounter++;
             });
             m1.load().then(function () {
@@ -192,12 +192,12 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/base/co
         test('Save Participant', function (done) {
             var eventCounter = 0;
             var m1 = baseInstantiationService.createInstance(textFileEditorModel_1.TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
-            eventService.addListener(files_1.EventType.FILE_SAVED, function (e) {
+            eventService.addListener(files_2.EventType.FILE_SAVED, function (e) {
                 assert.equal(m1.getValue(), 'bar');
                 assert.ok(!m1.isDirty());
                 eventCounter++;
             });
-            eventService.addListener(files_1.EventType.FILE_SAVING, function (e) {
+            eventService.addListener(files_2.EventType.FILE_SAVING, function (e) {
                 assert.ok(m1.isDirty());
                 m1.textEditorModel.setValue('bar');
                 assert.ok(m1.isDirty());

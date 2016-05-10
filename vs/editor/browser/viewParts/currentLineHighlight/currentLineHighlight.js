@@ -74,17 +74,11 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
             return true;
         };
         CurrentLineHighlightOverlay.prototype.onScrollChanged = function (e) {
-            return true;
+            this._scrollWidth = e.scrollWidth;
+            return e.scrollWidthChanged;
         };
         CurrentLineHighlightOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        CurrentLineHighlightOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            if (this._scrollWidth !== scrollWidth) {
-                this._scrollWidth = scrollWidth;
-                return true;
-            }
-            return false;
         };
         // --- end event handlers
         CurrentLineHighlightOverlay.prototype.prepareRender = function (ctx) {

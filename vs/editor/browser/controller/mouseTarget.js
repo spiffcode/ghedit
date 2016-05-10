@@ -425,7 +425,7 @@ define(["require", "exports", 'vs/editor/common/core/position', 'vs/editor/commo
             // Webkit:
             //    - they have implemented a previous version of the spec which was using document.caretRangeFromPoint
             // IE:
-            //    - they have a proprietary method on ranges, moveToPoint: http://msdn.microsoft.com/en-us/library/ie/ms536632(v=vs.85).aspx
+            //    - they have a proprietary method on ranges, moveToPoint: https://msdn.microsoft.com/en-us/library/ie/ms536632(v=vs.85).aspx
             // Thank you browsers for making this so 'easy' :)
             if (document.caretRangeFromPoint) {
                 return this._doHitTestWithCaretRangeFromPoint(editorContent, e, mouseVerticalOffset);

@@ -94,7 +94,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/part
             // listen to files being opened
             this.toDispose.push(this.eventService.addListener2(events_1.EventType.EDITOR_INPUT_CHANGED, function (e) { return _this.onEditorInputChanged(e); }));
             // Also handle configuration updates
-            this.toDispose.push(this.configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationUpdated(e.config); }));
+            this.toDispose.push(this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationUpdated(e.config); }));
         };
         WorkingFilesView.prototype.onTextFileDirty = function (e) {
             if (this.textFileService.getAutoSaveMode() !== files_1.AutoSaveMode.AFTER_SHORT_DELAY) {

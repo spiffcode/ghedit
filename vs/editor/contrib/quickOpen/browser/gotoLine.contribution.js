@@ -9,6 +9,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/editor/co
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_G,
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.KEY_G }
-    }));
+    }, 'Go to Line...'));
 });
 //# sourceMappingURL=gotoLine.contribution.js.map

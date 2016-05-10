@@ -14,6 +14,7 @@ define(["require", "exports"], function (require, exports) {
     var _isQunit = false;
     var _locale = undefined;
     var _language = undefined;
+    exports.LANGUAGE_DEFAULT = 'en';
     // OS detection
     if (typeof process === 'object') {
         _isWindows = (process.platform === 'win32');
@@ -27,7 +28,7 @@ define(["require", "exports"], function (require, exports) {
                 var resolved = nlsConfig.availableLanguages['*'];
                 _locale = nlsConfig.locale;
                 // VSCode's default language is 'en'
-                _language = resolved ? resolved : 'en';
+                _language = resolved ? resolved : exports.LANGUAGE_DEFAULT;
             }
             catch (e) {
             }

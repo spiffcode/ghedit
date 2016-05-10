@@ -347,8 +347,6 @@ define(["require", "exports", 'vs/editor/common/core/arrays'], function (require
         ViewFocusGained: 'focusGained',
         ViewFocusLost: 'focusLost',
         ViewFocusChanged: 'focusChanged',
-        ViewScrollWidthChanged: 'scrollWidthChanged',
-        ViewScrollHeightChanged: 'scrollHeightChanged',
         ViewScrollChanged: 'scrollChanged',
         ViewZonesChanged: 'zonesChanged',
         ViewLayoutChanged: 'viewLayoutChanged',

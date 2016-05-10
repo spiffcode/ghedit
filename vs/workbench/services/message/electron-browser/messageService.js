@@ -11,8 +11,8 @@ define(["require", "exports", 'vs/nls', 'vs/workbench/services/message/browser/m
     'use strict';
     var MessageService = (function (_super) {
         __extends(MessageService, _super);
-        function MessageService(contextService, windowService, telemetryService, keybindingService) {
-            _super.call(this, telemetryService, keybindingService);
+        function MessageService(contextService, windowService, telemetryService) {
+            _super.call(this, telemetryService);
             this.contextService = contextService;
             this.windowService = windowService;
         }

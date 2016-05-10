@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/eventEmitter', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/editor/common/modes', '../common/parameterHints'], function (require, exports, async_1, errors_1, eventEmitter_1, lifecycle_1, editorCommon_1, modes_1, parameterHints_1) {
+define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', 'vs/base/common/event', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/editor/common/modes', '../common/parameterHints'], function (require, exports, async_1, errors_1, event_1, lifecycle_1, editorCommon_1, modes_1, parameterHints_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -13,30 +13,28 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
         __extends(ParameterHintsModel, _super);
         function ParameterHintsModel(editor) {
             var _this = this;
-            _super.call(this, ['cancel', 'hint', 'destroy']);
+            _super.call(this);
+            this._onHint = this._register(new event_1.Emitter());
+            this.onHint = this._onHint.event;
+            this._onCancel = this._register(new event_1.Emitter());
+            this.onCancel = this._onCancel.event;
             this.editor = editor;
-            this.toDispose = [];
             this.triggerCharactersListeners = [];
             this.throttledDelayer = new async_1.ThrottledDelayer(ParameterHintsModel.DELAY);
             this.active = false;
-            this.prevResult = null;
-            this.event(this.editor, editorCommon_1.EventType.ModelChanged, function (e) { return _this.onModelChanged(); });
-            this.event(this.editor, editorCommon_1.EventType.ModelModeChanged, function (encodeURI) { return _this.onModelChanged(); });
-            this.event(this.editor, editorCommon_1.EventType.ModelModeSupportChanged, function (e) { return _this.onModeChanged(e); });
-            this.event(this.editor, editorCommon_1.EventType.CursorSelectionChanged, function (e) { return _this.onCursorChange(e); });
-            this.toDispose.push(modes_1.ParameterHintsRegistry.onDidChange(this.onModelChanged, this));
+            this._register(this.editor.addListener2(editorCommon_1.EventType.ModelChanged, function (e) { return _this.onModelChanged(); }));
+            this._register(this.editor.addListener2(editorCommon_1.EventType.ModelModeChanged, function (_) { return _this.onModelChanged(); }));
+            this._register(this.editor.addListener2(editorCommon_1.EventType.ModelModeSupportChanged, function (e) { return _this.onModeChanged(e); }));
+            this._register(this.editor.addListener2(editorCommon_1.EventType.CursorSelectionChanged, function (e) { return _this.onCursorChange(e); }));
+            this._register(modes_1.ParameterHintsRegistry.onDidChange(this.onModelChanged, this));
             this.onModelChanged();
         }
-        ParameterHintsModel.prototype.cancel = function (silent, refresh) {
+        ParameterHintsModel.prototype.cancel = function (silent) {
             if (silent === void 0) { silent = false; }
-            if (refresh === void 0) { refresh = false; }
             this.active = false;
-            if (!refresh) {
-                this.prevResult = null;
-            }
             this.throttledDelayer.cancel();
             if (!silent) {
-                this.emit('cancel');
+                this._onCancel.fire(void 0);
             }
         };
         ParameterHintsModel.prototype.trigger = function (triggerCharacter, delay) {
@@ -45,7 +43,7 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
             if (!modes_1.ParameterHintsRegistry.has(this.editor.getModel())) {
                 return;
             }
-            this.cancel(true, true);
+            this.cancel(true);
             return this.throttledDelayer.trigger(function () { return _this.doTrigger(triggerCharacter); }, delay);
         };
         ParameterHintsModel.prototype.doTrigger = function (triggerCharacter) {
@@ -55,13 +53,12 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
                 .then(function (result) {
                 if (!result || result.signatures.length === 0) {
                     _this.cancel();
-                    _this.emit('cancel');
+                    _this._onCancel.fire(void 0);
                     return false;
                 }
                 _this.active = true;
-                _this.prevResult = result;
                 var event = { hints: result };
-                _this.emit('hint', event);
+                _this._onHint.fire(event);
                 return true;
             });
         };
@@ -70,6 +67,9 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
         };
         ParameterHintsModel.prototype.onModelChanged = function () {
             var _this = this;
+            if (this.active) {
+                this.cancel();
+            }
             this.triggerCharactersListeners = lifecycle_1.dispose(this.triggerCharactersListeners);
             var model = this.editor.getModel();
             if (!model) {
@@ -104,19 +104,14 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
                 this.trigger();
             }
         };
-        ParameterHintsModel.prototype.event = function (emitter, eventType, cb) {
-            this.toDispose.push(emitter.addListener2(eventType, cb));
-        };
         ParameterHintsModel.prototype.dispose = function () {
             this.cancel(true);
             this.triggerCharactersListeners = lifecycle_1.dispose(this.triggerCharactersListeners);
-            this.toDispose = lifecycle_1.dispose(this.toDispose);
-            this.emit('destroy', null);
             _super.prototype.dispose.call(this);
         };
         ParameterHintsModel.DELAY = 120; // ms
         return ParameterHintsModel;
-    }(eventEmitter_1.EventEmitter));
+    }(lifecycle_1.Disposable));
     exports.ParameterHintsModel = ParameterHintsModel;
 });
 //# sourceMappingURL=parameterHintsModel.js.map

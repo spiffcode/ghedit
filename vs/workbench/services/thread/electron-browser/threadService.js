@@ -60,7 +60,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this.isExtensionDevelopmentTestFromCli = this.isExtensionDevelopmentHost && !!config.env.extensionTestsPath && !config.env.debugBrkExtensionHost;
             this.unsentMessages = [];
             this.extensionHostProcessReady = false;
-            lifecycleService.addBeforeShutdownParticipant(this);
+            lifecycleService.onWillShutdown(this._onWillShutdown, this);
         }
         ExtensionHostProcessManager.prototype.startExtensionHostProcess = function (onExtensionHostMessage) {
             var _this = this;
@@ -192,7 +192,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             var _this = this;
             // Check for a free debugging port
             if (typeof config.env.debugExtensionHostPort === 'number') {
-                return ports_1.findFreePort(config.env.debugExtensionHostPort, 10 /* try 10 ports */, function (port) {
+                return ports_1.findFreePort(config.env.debugExtensionHostPort, 10 /* try 10 ports */, 5000 /* try up to 5 seconds */, function (port) {
                     if (!port) {
                         console.warn('%c[Extension Host] %cCould not find a free port for debugging', 'color: blue', 'color: black');
                         return clb(void 0);
@@ -232,7 +232,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
                 });
             }
         };
-        ExtensionHostProcessManager.prototype.beforeShutdown = function () {
+        ExtensionHostProcessManager.prototype._onWillShutdown = function (event) {
             // If the extension development host was started without debugger attached we need
             // to communicate this back to the main side to terminate the debug session
             if (this.isExtensionDevelopmentHost && !this.isExtensionDevelopmentTestFromCli && !this.isExtensionDevelopmentDebugging) {
@@ -240,9 +240,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
                     channel: exports.EXTENSION_TERMINATE_BROADCAST_CHANNEL,
                     payload: true
                 }, this.contextService.getConfiguration().env.extensionDevelopmentPath /* target */);
-                return winjs_base_1.TPromise.timeout(100 /* wait a bit for IPC to get delivered */).then(function () { return false; });
+                event.veto(winjs_base_1.TPromise.timeout(100 /* wait a bit for IPC to get delivered */).then(function () { return false; }));
             }
-            return false;
         };
         return ExtensionHostProcessManager;
     }());

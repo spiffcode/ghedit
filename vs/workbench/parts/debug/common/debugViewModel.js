@@ -1,14 +1,15 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/workbench/parts/debug/common/debug'], function (require, exports, ee, debug) {
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(["require", "exports", 'vs/base/common/event'], function (require, exports, event_1) {
     "use strict";
-    var ViewModel = (function (_super) {
-        __extends(ViewModel, _super);
+    var ViewModel = (function () {
         function ViewModel() {
-            _super.apply(this, arguments);
+            this._onDidFocusStackFrame = new event_1.Emitter();
+            this._onDidSelectExpression = new event_1.Emitter();
+            this._onDidSelectFunctionBreakpoint = new event_1.Emitter();
+            this.changedWorkbenchViewState = false;
         }
         ViewModel.prototype.getId = function () {
             return 'root';
@@ -18,8 +19,15 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/workbench/parts
         };
         ViewModel.prototype.setFocusedStackFrame = function (focusedStackFrame) {
             this.focusedStackFrame = focusedStackFrame;
-            this.emit(debug.ViewModelEvents.FOCUSED_STACK_FRAME_UPDATED);
+            this._onDidFocusStackFrame.fire(focusedStackFrame);
         };
+        Object.defineProperty(ViewModel.prototype, "onDidFocusStackFrame", {
+            get: function () {
+                return this._onDidFocusStackFrame.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         ViewModel.prototype.getFocusedThreadId = function () {
             return this.focusedStackFrame ? this.focusedStackFrame.threadId : 0;
         };
@@ -28,17 +36,31 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/workbench/parts
         };
         ViewModel.prototype.setSelectedExpression = function (expression) {
             this.selectedExpression = expression;
-            this.emit(debug.ViewModelEvents.SELECTED_EXPRESSION_UPDATED, expression);
+            this._onDidSelectExpression.fire(expression);
         };
+        Object.defineProperty(ViewModel.prototype, "onDidSelectExpression", {
+            get: function () {
+                return this._onDidSelectExpression.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         ViewModel.prototype.getSelectedFunctionBreakpoint = function () {
             return this.selectedFunctionBreakpoint;
         };
         ViewModel.prototype.setSelectedFunctionBreakpoint = function (functionBreakpoint) {
             this.selectedFunctionBreakpoint = functionBreakpoint;
-            this.emit(debug.ViewModelEvents.SELECTED_FUNCTION_BREAKPOINT_UPDATED, functionBreakpoint);
+            this._onDidSelectFunctionBreakpoint.fire(functionBreakpoint);
         };
+        Object.defineProperty(ViewModel.prototype, "onDidSelectFunctionBreakpoint", {
+            get: function () {
+                return this._onDidSelectFunctionBreakpoint.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         return ViewModel;
-    }(ee.EventEmitter));
+    }());
     exports.ViewModel = ViewModel;
 });
 //# sourceMappingURL=debugViewModel.js.map

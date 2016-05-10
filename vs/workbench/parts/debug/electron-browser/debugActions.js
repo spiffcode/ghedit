@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/common/events', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/viewlet/common/viewletService', 'electron'], function (require, exports, nls, actions, lifecycle, winjs_base_1, range_1, editorAction_1, editorActionEnablement_1, event_1, keybindingService_1, events_1, debug, model, partService_1, panelService_1, viewletService_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/common/lifecycle', 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/platform/event/common/event', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/common/events', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugModel', 'vs/workbench/parts/debug/browser/breakpointWidget', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/instantiation/common/instantiation', 'electron'], function (require, exports, nls, actions, lifecycle, winjs_base_1, range_1, editorAction_1, editorActionEnablement_1, event_1, keybindingService_1, events_1, debug, model, breakpointWidget_1, partService_1, panelService_1, viewletService_1, instantiation_1, electron_1) {
     "use strict";
     var IDebugService = debug.IDebugService;
     var AbstractDebugAction = (function (_super) {
@@ -27,13 +27,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this.debugService = debugService;
             this.keybindingService = keybindingService;
             this.toDispose = [];
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) { return _this.updateEnablement(state); }));
             var keys = this.keybindingService.lookupKeybindings(id).map(function (k) { return _this.keybindingService.getLabelFor(k); });
             if (keys && keys.length) {
                 this.keybinding = keys[0];
             }
             this.updateLabel(label);
-            this.updateEnablement();
+            this.updateEnablement(this.debugService.state);
         }
         AbstractDebugAction.prototype.run = function (e) {
             throw new Error('implement me');
@@ -46,11 +46,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
                 this.label = newLabel;
             }
         };
-        AbstractDebugAction.prototype.updateEnablement = function () {
-            this.enabled = this.isEnabled();
+        AbstractDebugAction.prototype.updateEnablement = function (state) {
+            this.enabled = this.isEnabled(state);
         };
-        AbstractDebugAction.prototype.isEnabled = function () {
-            return this.debugService.getState() !== debug.State.Disabled;
+        AbstractDebugAction.prototype.isEnabled = function (state) {
+            return state !== debug.State.Disabled;
         };
         AbstractDebugAction.prototype.dispose = function () {
             this.debugService = null;
@@ -69,13 +69,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function ConfigureAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action configure', debugService, keybindingService);
-            this.toDispose.push(debugService.addListener2(debug.ServiceEvents.CONFIGURATION_CHANGED, function (e) {
-                _this.class = _this.debugService.getConfigurationName() ? 'debug-action configure' : 'debug-action configure notification';
+            this.toDispose.push(debugService.getConfigurationManager().onDidConfigurationChange(function (configurationName) {
+                _this.class = configurationName ? 'debug-action configure' : 'debug-action configure notification';
             }));
         }
         ConfigureAction.prototype.run = function (event) {
             var sideBySide = !!(event && (event.ctrlKey || event.metaKey));
-            return this.debugService.openConfigFile(sideBySide);
+            return this.debugService.getConfigurationManager().openConfigFile(sideBySide);
         };
         ConfigureAction.ID = 'workbench.action.debug.configure';
         ConfigureAction.LABEL = nls.localize('openLaunchJson', "Open {0}", 'launch.json');
@@ -92,10 +92,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             _super.call(this, id, label, 'debug-action select-active-config', debugService, keybindingService);
         }
         SelectConfigAction.prototype.run = function (configName) {
-            return this.debugService.setConfiguration(configName);
+            return this.debugService.getConfigurationManager().setConfiguration(configName);
         };
-        SelectConfigAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
+        SelectConfigAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Inactive;
         };
         SelectConfigAction.ID = 'workbench.debug.action.setActiveConfig';
         SelectConfigAction.LABEL = nls.localize('selectConfig', "Select Configuration");
@@ -110,13 +110,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         __extends(StartDebugAction, _super);
         function StartDebugAction(id, label, debugService, keybindingService) {
             _super.call(this, id, label, 'debug-action start', debugService, keybindingService);
-            this.updateEnablement();
         }
         StartDebugAction.prototype.run = function () {
             return this.debugService.createSession(false);
         };
-        StartDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
+        StartDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Inactive;
         };
         StartDebugAction.ID = 'workbench.action.debug.start';
         StartDebugAction.LABEL = nls.localize('startDebug', "Start Debugging");
@@ -132,19 +131,18 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function RestartDebugAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action restart', debugService, keybindingService);
-            this.updateEnablement();
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () {
+            this.toDispose.push(this.debugService.onDidChangeState(function () {
                 var session = _this.debugService.getActiveSession();
                 if (session) {
-                    _this.updateLabel(session.isAttach ? RestartDebugAction.RECONNECT_LABEL : RestartDebugAction.LABEL);
+                    _this.updateLabel(session.configuration.isAttach ? RestartDebugAction.RECONNECT_LABEL : RestartDebugAction.LABEL);
                 }
             }));
         }
         RestartDebugAction.prototype.run = function () {
             return this.debugService.restartSession();
         };
-        RestartDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() !== debug.State.Inactive;
+        RestartDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state !== debug.State.Inactive;
         };
         RestartDebugAction.ID = 'workbench.action.debug.restart';
         RestartDebugAction.LABEL = nls.localize('restartDebug', "Restart");
@@ -164,8 +162,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         StepOverDebugAction.prototype.run = function () {
             return this.debugService.getActiveSession().next({ threadId: this.debugService.getViewModel().getFocusedThreadId() });
         };
-        StepOverDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
+        StepOverDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Stopped;
         };
         StepOverDebugAction.ID = 'workbench.action.debug.stepOver';
         StepOverDebugAction.LABEL = nls.localize('stepOverDebug', "Step Over");
@@ -184,8 +182,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         StepIntoDebugAction.prototype.run = function () {
             return this.debugService.getActiveSession().stepIn({ threadId: this.debugService.getViewModel().getFocusedThreadId() });
         };
-        StepIntoDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
+        StepIntoDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Stopped;
         };
         StepIntoDebugAction.ID = 'workbench.action.debug.stepInto';
         StepIntoDebugAction.LABEL = nls.localize('stepIntoDebug', "Step Into");
@@ -204,8 +202,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         StepOutDebugAction.prototype.run = function () {
             return this.debugService.getActiveSession().stepOut({ threadId: this.debugService.getViewModel().getFocusedThreadId() });
         };
-        StepOutDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
+        StepOutDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Stopped;
         };
         StepOutDebugAction.ID = 'workbench.action.debug.stepOut';
         StepOutDebugAction.LABEL = nls.localize('stepOutDebug', "Step Out");
@@ -221,10 +219,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function StopDebugAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action stop', debugService, keybindingService);
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () {
+            this.toDispose.push(this.debugService.onDidChangeState(function () {
                 var session = _this.debugService.getActiveSession();
                 if (session) {
-                    _this.updateLabel(session.isAttach ? StopDebugAction.DISCONNECT_LABEL : StopDebugAction.LABEL);
+                    _this.updateLabel(session.configuration.isAttach ? StopDebugAction.DISCONNECT_LABEL : StopDebugAction.LABEL);
                 }
             }));
         }
@@ -232,8 +230,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             var session = this.debugService.getActiveSession();
             return session ? session.disconnect(false, true) : winjs_base_1.TPromise.as(null);
         };
-        StopDebugAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() !== debug.State.Inactive;
+        StopDebugAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state !== debug.State.Inactive;
         };
         StopDebugAction.ID = 'workbench.action.debug.stop';
         StopDebugAction.LABEL = nls.localize('stopDebug', "Stop");
@@ -253,8 +251,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         ContinueAction.prototype.run = function () {
             return this.debugService.getActiveSession().continue({ threadId: this.debugService.getViewModel().getFocusedThreadId() });
         };
-        ContinueAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Stopped;
+        ContinueAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Stopped;
         };
         ContinueAction.ID = 'workbench.action.debug.continue';
         ContinueAction.LABEL = nls.localize('continueDebug', "Continue");
@@ -273,8 +271,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         PauseAction.prototype.run = function () {
             return this.debugService.getActiveSession().pause({ threadId: this.debugService.getViewModel().getFocusedThreadId() });
         };
-        PauseAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Running;
+        PauseAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Running;
         };
         PauseAction.ID = 'workbench.action.debug.pause';
         PauseAction.LABEL = nls.localize('pauseDebug', "Pause");
@@ -289,10 +287,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         __extends(RemoveBreakpointAction, _super);
         function RemoveBreakpointAction(id, label, debugService, keybindingService) {
             _super.call(this, id, label, 'debug-action remove', debugService, keybindingService);
-            this.updateEnablement();
         }
         RemoveBreakpointAction.prototype.run = function (breakpoint) {
-            return breakpoint instanceof model.Breakpoint ? this.debugService.toggleBreakpoint({ uri: breakpoint.source.uri, lineNumber: breakpoint.lineNumber })
+            return breakpoint instanceof model.Breakpoint ? this.debugService.removeBreakpoints(breakpoint.getId())
                 : this.debugService.removeFunctionBreakpoints(breakpoint.getId());
         };
         RemoveBreakpointAction.ID = 'workbench.debug.viewlet.action.removeBreakpoint';
@@ -309,13 +306,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function RemoveAllBreakpointsAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action remove-all', debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         RemoveAllBreakpointsAction.prototype.run = function () {
-            return winjs_base_1.TPromise.join([this.debugService.removeAllBreakpoints(), this.debugService.removeFunctionBreakpoints()]);
+            return winjs_base_1.TPromise.join([this.debugService.removeBreakpoints(), this.debugService.removeFunctionBreakpoints()]);
         };
-        RemoveAllBreakpointsAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && (this.debugService.getModel().getBreakpoints().length > 0 || this.debugService.getModel().getFunctionBreakpoints().length > 0);
+        RemoveAllBreakpointsAction.prototype.isEnabled = function (state) {
+            var model = this.debugService.getModel();
+            return _super.prototype.isEnabled.call(this, state) && (model.getBreakpoints().length > 0 || model.getFunctionBreakpoints().length > 0);
         };
         RemoveAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.removeAllBreakpoints';
         RemoveAllBreakpointsAction.LABEL = nls.localize('removeAllBreakpoints', "Remove All Breakpoints");
@@ -332,7 +330,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             _super.call(this, id, label, 'debug-action toggle-enablement', debugService, keybindingService);
         }
         ToggleEnablementAction.prototype.run = function (element) {
-            return this.debugService.toggleEnablement(element);
+            return this.debugService.enableOrDisableBreakpoints(!element.enabled, element);
         };
         ToggleEnablementAction.ID = 'workbench.debug.viewlet.action.toggleBreakpointEnablement';
         ToggleEnablementAction.LABEL = nls.localize('toggleEnablement', "Enable/Disable Breakpoint");
@@ -348,14 +346,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function EnableAllBreakpointsAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action enable-all-breakpoints', debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         EnableAllBreakpointsAction.prototype.run = function () {
-            return this.debugService.enableOrDisableAllBreakpoints(true);
+            return this.debugService.enableOrDisableBreakpoints(true);
         };
-        EnableAllBreakpointsAction.prototype.isEnabled = function () {
+        EnableAllBreakpointsAction.prototype.isEnabled = function (state) {
             var model = this.debugService.getModel();
-            return _super.prototype.isEnabled.call(this) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return !bp.enabled; });
+            return _super.prototype.isEnabled.call(this, state) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return !bp.enabled; });
         };
         EnableAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.enableAllBreakpoints';
         EnableAllBreakpointsAction.LABEL = nls.localize('enableAllBreakpoints', "Enable All Breakpoints");
@@ -371,14 +369,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function DisableAllBreakpointsAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action disable-all-breakpoints', debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         DisableAllBreakpointsAction.prototype.run = function () {
-            return this.debugService.enableOrDisableAllBreakpoints(false);
+            return this.debugService.enableOrDisableBreakpoints(false);
         };
-        DisableAllBreakpointsAction.prototype.isEnabled = function () {
+        DisableAllBreakpointsAction.prototype.isEnabled = function (state) {
             var model = this.debugService.getModel();
-            return _super.prototype.isEnabled.call(this) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return bp.enabled; });
+            return _super.prototype.isEnabled.call(this, state) && model.getBreakpoints().concat(model.getFunctionBreakpoints()).concat(model.getExceptionBreakpoints()).some(function (bp) { return bp.enabled; });
         };
         DisableAllBreakpointsAction.ID = 'workbench.debug.viewlet.action.disableAllBreakpoints';
         DisableAllBreakpointsAction.LABEL = nls.localize('disableAllBreakpoints', "Disable All Breakpoints");
@@ -395,15 +393,15 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             var _this = this;
             _super.call(this, id, label, 'debug-action breakpoints-activate', debugService, keybindingService);
             this.updateLabel(this.debugService.getModel().areBreakpointsActivated() ? ToggleBreakpointsActivatedAction.DEACTIVATE_LABEL : ToggleBreakpointsActivatedAction.ACTIVATE_LABEL);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () {
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () {
                 _this.updateLabel(_this.debugService.getModel().areBreakpointsActivated() ? ToggleBreakpointsActivatedAction.DEACTIVATE_LABEL : ToggleBreakpointsActivatedAction.ACTIVATE_LABEL);
-                _this.updateEnablement();
+                _this.updateEnablement(_this.debugService.state);
             }));
         }
         ToggleBreakpointsActivatedAction.prototype.run = function () {
-            return this.debugService.toggleBreakpointsActivated();
+            return this.debugService.setBreakpointsActivated(!this.debugService.getModel().areBreakpointsActivated());
         };
-        ToggleBreakpointsActivatedAction.prototype.isEnabled = function () {
+        ToggleBreakpointsActivatedAction.prototype.isEnabled = function (state) {
             return (this.debugService.getModel().getFunctionBreakpoints().length + this.debugService.getModel().getBreakpoints().length) > 0;
         };
         ToggleBreakpointsActivatedAction.ID = 'workbench.debug.viewlet.action.toggleBreakpointsActivatedAction';
@@ -421,14 +419,15 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function ReapplyBreakpointsAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, null, debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         ReapplyBreakpointsAction.prototype.run = function () {
-            return this.debugService.sendAllBreakpoints();
+            return this.debugService.setBreakpointsActivated(true);
         };
-        ReapplyBreakpointsAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() !== debug.State.Disabled && this.debugService.getState() !== debug.State.Inactive &&
-                ((this.debugService.getModel().getFunctionBreakpoints().length + this.debugService.getModel().getBreakpoints().length) > 0);
+        ReapplyBreakpointsAction.prototype.isEnabled = function (state) {
+            var model = this.debugService.getModel();
+            return _super.prototype.isEnabled.call(this, state) && state !== debug.State.Disabled && state !== debug.State.Inactive &&
+                (model.getFunctionBreakpoints().length + model.getBreakpoints().length > 0);
         };
         ReapplyBreakpointsAction.ID = 'workbench.debug.viewlet.action.reapplyBreakpointsAction';
         ReapplyBreakpointsAction.LABEL = nls.localize('reapplyAllBreakpoints', "Reapply All Breakpoints");
@@ -477,38 +476,44 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
     exports.RenameFunctionBreakpointAction = RenameFunctionBreakpointAction;
     var AddConditionalBreakpointAction = (function (_super) {
         __extends(AddConditionalBreakpointAction, _super);
-        function AddConditionalBreakpointAction(id, label, editor, lineNumber, debugService, keybindingService) {
+        function AddConditionalBreakpointAction(id, label, editor, lineNumber, debugService, keybindingService, instantiationService) {
             _super.call(this, id, label, null, debugService, keybindingService);
             this.editor = editor;
             this.lineNumber = lineNumber;
+            this.instantiationService = instantiationService;
         }
         AddConditionalBreakpointAction.prototype.run = function () {
-            return this.debugService.editBreakpoint(this.editor, this.lineNumber);
+            breakpointWidget_1.BreakpointWidget.createInstance(this.editor, this.lineNumber, this.instantiationService);
+            return winjs_base_1.TPromise.as(null);
         };
         AddConditionalBreakpointAction.ID = 'workbench.debug.viewlet.action.addConditionalBreakpointAction';
         AddConditionalBreakpointAction.LABEL = nls.localize('addConditionalBreakpoint', "Add Conditional Breakpoint");
         AddConditionalBreakpointAction = __decorate([
             __param(4, IDebugService),
-            __param(5, keybindingService_1.IKeybindingService)
+            __param(5, keybindingService_1.IKeybindingService),
+            __param(6, instantiation_1.IInstantiationService)
         ], AddConditionalBreakpointAction);
         return AddConditionalBreakpointAction;
     }(AbstractDebugAction));
     exports.AddConditionalBreakpointAction = AddConditionalBreakpointAction;
     var EditConditionalBreakpointAction = (function (_super) {
         __extends(EditConditionalBreakpointAction, _super);
-        function EditConditionalBreakpointAction(id, label, editor, lineNumber, debugService, keybindingService) {
+        function EditConditionalBreakpointAction(id, label, editor, lineNumber, debugService, keybindingService, instantiationService) {
             _super.call(this, id, label, null, debugService, keybindingService);
             this.editor = editor;
             this.lineNumber = lineNumber;
+            this.instantiationService = instantiationService;
         }
         EditConditionalBreakpointAction.prototype.run = function (breakpoint) {
-            return this.debugService.editBreakpoint(this.editor, this.lineNumber);
+            breakpointWidget_1.BreakpointWidget.createInstance(this.editor, this.lineNumber, this.instantiationService);
+            return winjs_base_1.TPromise.as(null);
         };
         EditConditionalBreakpointAction.ID = 'workbench.debug.viewlet.action.editConditionalBreakpointAction';
         EditConditionalBreakpointAction.LABEL = nls.localize('editConditionalBreakpoint', "Edit Breakpoint");
         EditConditionalBreakpointAction = __decorate([
             __param(4, IDebugService),
-            __param(5, keybindingService_1.IKeybindingService)
+            __param(5, keybindingService_1.IKeybindingService),
+            __param(6, instantiation_1.IInstantiationService)
         ], EditConditionalBreakpointAction);
         return EditConditionalBreakpointAction;
     }(AbstractDebugAction));
@@ -520,14 +525,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this.debugService = debugService;
         }
         ToggleBreakpointAction.prototype.run = function () {
-            if (this.debugService.getState() !== debug.State.Disabled) {
-                var lineNumber = this.editor.getPosition().lineNumber;
-                var modelUrl = this.editor.getModel().getAssociatedResource();
-                if (this.debugService.canSetBreakpointsIn(this.editor.getModel())) {
-                    return this.debugService.toggleBreakpoint({ uri: modelUrl, lineNumber: lineNumber });
-                }
+            var lineNumber = this.editor.getPosition().lineNumber;
+            var modelUrl = this.editor.getModel().getAssociatedResource();
+            if (this.debugService.getConfigurationManager().canSetBreakpointsIn(this.editor.getModel())) {
+                var bp = this.debugService.getModel().getBreakpoints()
+                    .filter(function (bp) { return bp.lineNumber === lineNumber && bp.source.uri.toString() === modelUrl.toString(); }).pop();
+                return bp ? this.debugService.removeBreakpoints(bp.getId())
+                    : this.debugService.addBreakpoints([{ uri: modelUrl, lineNumber: lineNumber }]);
             }
-            return winjs_base_1.TPromise.as(null);
         };
         ToggleBreakpointAction.ID = 'editor.debug.action.toggleBreakpoint';
         ToggleBreakpointAction = __decorate([
@@ -538,22 +543,22 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
     exports.ToggleBreakpointAction = ToggleBreakpointAction;
     var EditorConditionalBreakpointAction = (function (_super) {
         __extends(EditorConditionalBreakpointAction, _super);
-        function EditorConditionalBreakpointAction(descriptor, editor, debugService) {
+        function EditorConditionalBreakpointAction(descriptor, editor, debugService, instantiationService) {
             _super.call(this, descriptor, editor, editorActionEnablement_1.Behaviour.TextFocus);
             this.debugService = debugService;
+            this.instantiationService = instantiationService;
         }
         EditorConditionalBreakpointAction.prototype.run = function () {
-            if (this.debugService.getState() !== debug.State.Disabled) {
-                var lineNumber = this.editor.getPosition().lineNumber;
-                if (this.debugService.canSetBreakpointsIn(this.editor.getModel())) {
-                    return this.debugService.editBreakpoint(this.editor, lineNumber);
-                }
+            var lineNumber = this.editor.getPosition().lineNumber;
+            if (this.debugService.getConfigurationManager().canSetBreakpointsIn(this.editor.getModel())) {
+                breakpointWidget_1.BreakpointWidget.createInstance(this.editor, lineNumber, this.instantiationService);
             }
             return winjs_base_1.TPromise.as(null);
         };
         EditorConditionalBreakpointAction.ID = 'editor.debug.action.conditionalBreakpoint';
         EditorConditionalBreakpointAction = __decorate([
-            __param(2, IDebugService)
+            __param(2, IDebugService),
+            __param(3, instantiation_1.IInstantiationService)
         ], EditorConditionalBreakpointAction);
         return EditorConditionalBreakpointAction;
     }(editorAction_1.EditorAction));
@@ -569,7 +574,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             if (this.value instanceof model.Variable) {
                 var frameId = this.debugService.getViewModel().getFocusedStackFrame().frameId;
                 var session = this.debugService.getActiveSession();
-                return session.evaluate({ expression: model.getFullExpressionName(this.value, session.getType()), frameId: frameId }).then(function (result) {
+                return session.evaluate({ expression: model.getFullExpressionName(this.value, session.configuration.type), frameId: frameId }).then(function (result) {
                     electron_1.clipboard.writeText(result.body.result);
                 }, function (err) { return electron_1.clipboard.writeText(_this.value.value); });
             }
@@ -595,20 +600,21 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             var _this = this;
             var lineNumber = this.editor.getPosition().lineNumber;
             var uri = this.editor.getModel().getAssociatedResource();
-            this.debugService.getActiveSession().addOneTimeListener(debug.SessionEvents.STOPPED, function () {
-                _this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber });
+            var oneTimeListener = this.debugService.getActiveSession().onDidStop(function () {
+                var toRemove = _this.debugService.getModel().getBreakpoints()
+                    .filter(function (bp) { return bp.lineNumber === lineNumber && bp.source.uri.toString() === uri.toString(); }).pop();
+                _this.debugService.removeBreakpoints(toRemove.getId());
+                oneTimeListener.dispose();
             });
-            return this.debugService.toggleBreakpoint({ uri: uri, lineNumber: lineNumber }).then(function () {
-                return _this.debugService.getActiveSession().continue({ threadId: _this.debugService.getViewModel().getFocusedThreadId() }).then(function (response) {
-                    return response.success;
-                });
+            return this.debugService.addBreakpoints([{ uri: uri, lineNumber: lineNumber }]).then(function () {
+                _this.debugService.getActiveSession().continue({ threadId: _this.debugService.getViewModel().getFocusedThreadId() });
             });
         };
         RunToCursorAction.prototype.getGroupId = function () {
             return '5_debug/1_run_to_cursor';
         };
         RunToCursorAction.prototype.shouldShowInContextMenu = function () {
-            if (this.debugService.getState() !== debug.State.Stopped) {
+            if (this.debugService.state !== debug.State.Stopped) {
                 return false;
             }
             var lineNumber = this.editor.getPosition().lineNumber;
@@ -629,13 +635,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function AddWatchExpressionAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action add-watch-expression', debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeWatchExpressions(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         AddWatchExpressionAction.prototype.run = function () {
             return this.debugService.addWatchExpression();
         };
-        AddWatchExpressionAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getModel().getWatchExpressions().every(function (we) { return !!we.name; });
+        AddWatchExpressionAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && this.debugService.getModel().getWatchExpressions().every(function (we) { return !!we.name; });
         };
         AddWatchExpressionAction.ID = 'workbench.debug.viewlet.action.addWatchExpression';
         AddWatchExpressionAction.LABEL = nls.localize('addWatchExpression', "Add Expression");
@@ -664,7 +670,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         SelectionToWatchExpressionsAction.prototype.shouldShowInContextMenu = function () {
             var selection = this.editor.getSelection();
             var text = this.editor.getModel().getValueInRange(selection);
-            return !!selection && !selection.isEmpty() && this.debugService.getConfigurationName() && text && /\S/.test(text);
+            return !!selection && !selection.isEmpty() && this.debugService.getConfigurationManager().configurationName && text && /\S/.test(text);
         };
         SelectionToWatchExpressionsAction.ID = 'editor.debug.action.selectionToWatch';
         SelectionToWatchExpressionsAction = __decorate([
@@ -676,25 +682,28 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
     exports.SelectionToWatchExpressionsAction = SelectionToWatchExpressionsAction;
     var SelectionToReplAction = (function (_super) {
         __extends(SelectionToReplAction, _super);
-        function SelectionToReplAction(descriptor, editor, debugService) {
+        function SelectionToReplAction(descriptor, editor, debugService, panelService) {
             _super.call(this, descriptor, editor, editorActionEnablement_1.Behaviour.TextFocus);
             this.debugService = debugService;
+            this.panelService = panelService;
         }
         SelectionToReplAction.prototype.run = function () {
             var _this = this;
             var text = this.editor.getModel().getValueInRange(this.editor.getSelection());
-            return this.debugService.addReplExpression(text).then(function () { return _this.debugService.revealRepl(); });
+            return this.debugService.addReplExpression(text)
+                .then(function () { return _this.panelService.openPanel(debug.REPL_ID, true); });
         };
         SelectionToReplAction.prototype.getGroupId = function () {
             return '5_debug/2_selection_to_repl';
         };
         SelectionToReplAction.prototype.shouldShowInContextMenu = function () {
             var selection = this.editor.getSelection();
-            return !!selection && !selection.isEmpty() && this.debugService.getState() === debug.State.Stopped;
+            return !!selection && !selection.isEmpty() && this.debugService.state === debug.State.Stopped;
         };
         SelectionToReplAction.ID = 'editor.debug.action.selectionToRepl';
         SelectionToReplAction = __decorate([
-            __param(2, IDebugService)
+            __param(2, IDebugService),
+            __param(3, panelService_1.IPanelService)
         ], SelectionToReplAction);
         return SelectionToReplAction;
     }(editorAction_1.EditorAction));
@@ -724,7 +733,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this.expression = expression;
         }
         AddToWatchExpressionsAction.prototype.run = function () {
-            return this.debugService.addWatchExpression(model.getFullExpressionName(this.expression, this.debugService.getActiveSession().getType()));
+            return this.debugService.addWatchExpression(model.getFullExpressionName(this.expression, this.debugService.getActiveSession().configuration.type));
         };
         AddToWatchExpressionsAction.ID = 'workbench.debug.viewlet.action.addToWatchExpressions';
         AddToWatchExpressionsAction.LABEL = nls.localize('addToWatchExpressions', "Add to Watch");
@@ -760,7 +769,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             _super.call(this, id, label, 'debug-action remove', debugService, keybindingService);
         }
         RemoveWatchExpressionAction.prototype.run = function (expression) {
-            this.debugService.clearWatchExpressions(expression.getId());
+            this.debugService.removeWatchExpressions(expression.getId());
             return winjs_base_1.TPromise.as(null);
         };
         RemoveWatchExpressionAction.ID = 'workbench.debug.viewlet.action.removeWatchExpression';
@@ -777,14 +786,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         function RemoveAllWatchExpressionsAction(id, label, debugService, keybindingService) {
             var _this = this;
             _super.call(this, id, label, 'debug-action remove-all', debugService, keybindingService);
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, function () { return _this.updateEnablement(); }));
+            this.toDispose.push(this.debugService.getModel().onDidChangeWatchExpressions(function () { return _this.updateEnablement(_this.debugService.state); }));
         }
         RemoveAllWatchExpressionsAction.prototype.run = function () {
-            this.debugService.clearWatchExpressions();
+            this.debugService.removeWatchExpressions();
             return winjs_base_1.TPromise.as(null);
         };
-        RemoveAllWatchExpressionsAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getModel().getWatchExpressions().length > 0;
+        RemoveAllWatchExpressionsAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && this.debugService.getModel().getWatchExpressions().length > 0;
         };
         RemoveAllWatchExpressionsAction.ID = 'workbench.debug.viewlet.action.removeAllWatchExpressions';
         RemoveAllWatchExpressionsAction.LABEL = nls.localize('removeAllWatchExpressions', "Remove All Expressions");
@@ -797,19 +806,21 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
     exports.RemoveAllWatchExpressionsAction = RemoveAllWatchExpressionsAction;
     var ClearReplAction = (function (_super) {
         __extends(ClearReplAction, _super);
-        function ClearReplAction(id, label, debugService, keybindingService) {
+        function ClearReplAction(id, label, debugService, keybindingService, panelService) {
             _super.call(this, id, label, 'debug-action clear-repl', debugService, keybindingService);
+            this.panelService = panelService;
         }
         ClearReplAction.prototype.run = function () {
-            this.debugService.clearReplExpressions();
+            this.debugService.removeReplExpressions();
             // focus back to repl
-            return this.debugService.revealRepl();
+            return this.panelService.openPanel(debug.REPL_ID, true);
         };
         ClearReplAction.ID = 'workbench.debug.panel.action.clearReplAction';
         ClearReplAction.LABEL = nls.localize('clearRepl', "Clear Console");
         ClearReplAction = __decorate([
             __param(2, IDebugService),
-            __param(3, keybindingService_1.IKeybindingService)
+            __param(3, keybindingService_1.IKeybindingService),
+            __param(4, panelService_1.IPanelService)
         ], ClearReplAction);
         return ClearReplAction;
     }(AbstractDebugAction));
@@ -835,7 +846,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
             this.partService = partService;
             this.panelService = panelService;
             this.eventService = eventService;
-            this.enabled = this.debugService.getState() !== debug.State.Disabled;
+            this.enabled = this.debugService.state !== debug.State.Disabled;
             this.registerListeners();
         }
         ToggleReplAction.prototype.run = function () {
@@ -843,11 +854,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
                 this.partService.setPanelHidden(true);
                 return winjs_base_1.TPromise.as(null);
             }
-            return this.debugService.revealRepl();
+            return this.panelService.openPanel(debug.REPL_ID, true);
         };
         ToggleReplAction.prototype.registerListeners = function () {
             var _this = this;
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.REPL_ELEMENTS_UPDATED, function () {
+            this.toDispose.push(this.debugService.getModel().onDidChangeReplElements(function () {
                 if (!_this.isReplVisible()) {
                     _this.class = 'debug-action toggle-repl notification';
                 }
@@ -882,8 +893,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/base/commo
         RunAction.prototype.run = function () {
             return this.debugService.createSession(true);
         };
-        RunAction.prototype.isEnabled = function () {
-            return _super.prototype.isEnabled.call(this) && this.debugService.getState() === debug.State.Inactive;
+        RunAction.prototype.isEnabled = function (state) {
+            return _super.prototype.isEnabled.call(this, state) && state === debug.State.Inactive;
         };
         RunAction.ID = 'workbench.action.debug.run';
         RunAction.LABEL = nls.localize('startWithoutDebugging', "Start Without Debugging");

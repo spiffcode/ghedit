@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/languages/json/common/json', 'vs/editor/test/common/modesUtil', 'vs/languages/json/common/features/jsonTokenTypes', 'vs/platform/test/common/nullThreadService', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, jsonMode, modesUtil, jsonTokenTypes, nullThreadService_1, instantiationService_1) {
+define(["require", "exports", 'vs/languages/json/common/json', 'vs/editor/test/common/modesUtil', 'vs/languages/json/common/features/jsonTokenTypes', 'vs/platform/test/common/nullThreadService', 'vs/platform/thread/common/thread', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, jsonMode, modesUtil, jsonTokenTypes, nullThreadService_1, thread_1, serviceCollection_1, instantiationService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,9 +9,9 @@ define(["require", "exports", 'vs/languages/json/common/json', 'vs/editor/test/c
         var assertOnEnter;
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             var mode = new jsonMode.JSONMode({ id: 'json' }, inst, threadService);
             tokenizationSupport = mode.tokenizationSupport;

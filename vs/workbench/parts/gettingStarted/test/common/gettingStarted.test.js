@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'assert', 'vs/workbench/parts/gettingStarted/common/abstractGettingStarted', 'vs/platform/instantiation/common/instantiationService', 'vs/base/common/winjs.base'], function (require, exports, assert, abstractGettingStarted_1, instantiationService_1, winjs_base_1) {
+define(["require", "exports", 'assert', 'vs/workbench/parts/gettingStarted/common/abstractGettingStarted', 'vs/platform/workspace/common/workspace', 'vs/platform/telemetry/common/telemetry', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/base/common/winjs.base'], function (require, exports, assert, abstractGettingStarted_1, workspace_1, telemetry_1, storage_1, serviceCollection_1, instantiationService_1, winjs_base_1) {
     'use strict';
     var TestGettingStarted = (function (_super) {
         __extends(TestGettingStarted, _super);
@@ -26,25 +26,25 @@ define(["require", "exports", 'assert', 'vs/workbench/parts/gettingStarted/commo
         var machineId = null;
         var appName = null;
         suiteSetup(function () {
-            instantiation = instantiationService_1.createInstantiationService({
-                contextService: {
-                    getConfiguration: function () {
-                        return {
-                            env: {
-                                welcomePage: welcomePageEnvConfig,
-                                appName: appName
-                            }
-                        };
-                    }
-                },
-                telemetryService: {
-                    getTelemetryInfo: function () { return winjs_base_1.TPromise.as({ machineId: machineId }); }
-                },
-                storageService: {
-                    get: function () { return hideWelcomeSettingsValue; },
-                    store: function (value) { return hideWelcomeSettingsValue = value; }
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(workspace_1.IWorkspaceContextService, {
+                getConfiguration: function () {
+                    return {
+                        env: {
+                            welcomePage: welcomePageEnvConfig,
+                            appName: appName
+                        }
+                    };
                 }
             });
+            services.set(telemetry_1.ITelemetryService, {
+                getTelemetryInfo: function () { return winjs_base_1.TPromise.as({ machineId: machineId }); }
+            });
+            services.set(storage_1.IStorageService, {
+                get: function () { return hideWelcomeSettingsValue; },
+                store: function (value) { return hideWelcomeSettingsValue = value; }
+            });
+            instantiation = new instantiationService_1.InstantiationService(services);
         });
         suiteTeardown(function () {
             instantiation = null;

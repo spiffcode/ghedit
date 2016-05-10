@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/workbench/node/extensionHostMain', 'vs/base/node/service.net', 'vs/platform/extensions/common/ipcRemoteCom', 'vs/base/common/marshalling'], function (require, exports, errors_1, winjs_base_1, extensionHostMain_1, service_net_1, ipcRemoteCom_1, marshalling) {
+define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/workbench/node/extensionHostMain', 'vs/base/parts/ipc/node/ipc.net', 'vs/platform/extensions/common/ipcRemoteCom', 'vs/base/common/marshalling'], function (require, exports, errors_1, winjs_base_1, extensionHostMain_1, ipc_net_1, ipcRemoteCom_1, marshalling) {
     'use strict';
     // This calls exit directly in case the initialization is not finished and we need to exit
     // Otherwise, if initialization completed we go to extensionHostMain.terminate()
@@ -79,7 +79,7 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/winjs.bas
         });
     }
     function connectToSharedProcess() {
-        return service_net_1.connect(process.env['VSCODE_SHARED_IPC_HOOK']);
+        return ipc_net_1.connect(process.env['VSCODE_SHARED_IPC_HOOK']);
     }
     winjs_base_1.TPromise.join([connectToRenderer(), connectToSharedProcess()])
         .done(function (result) {

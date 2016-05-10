@@ -2,12 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/winjs.base', 'child_process'], function (require, exports, platform, winjs_base_1, cp) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'child_process'], function (require, exports, winjs_base_1, cp) {
     'use strict';
-    function getUserEnvironment() {
-        if (platform.isWindows) {
-            return winjs_base_1.TPromise.as({});
-        }
+    function getUnixUserEnvironment() {
         return new winjs_base_1.TPromise(function (c, e) {
             var child = cp.spawn(process.env.SHELL, ['-ilc', 'env'], {
                 detached: true,
@@ -25,7 +22,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/winjs.b
             });
         });
     }
-    exports.getUserEnvironment = getUserEnvironment;
+    exports.getUnixUserEnvironment = getUnixUserEnvironment;
     /**
      * Parse output from `env`, attempting to retain any multiple-line variables.
      */

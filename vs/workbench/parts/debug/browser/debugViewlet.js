@@ -32,8 +32,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/comm
             this.progressRunner = null;
             this.viewletSettings = this.getMemento(storageService, memento.Scope.WORKSPACE);
             this.toDispose = [];
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () {
-                _this.onDebugServiceStateChange();
+            this.views = [];
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) {
+                _this.onDebugServiceStateChange(state);
             }));
         }
         // viewlet
@@ -85,7 +86,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/comm
         };
         DebugViewlet.prototype.getActions = function () {
             var _this = this;
-            if (this.debugService.getState() === debug.State.Disabled) {
+            if (this.debugService.state === debug.State.Disabled) {
                 return [];
             }
             if (!this.actions) {
@@ -107,11 +108,11 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/builder', 'vs/base/comm
             }
             return null;
         };
-        DebugViewlet.prototype.onDebugServiceStateChange = function () {
+        DebugViewlet.prototype.onDebugServiceStateChange = function (newState) {
             if (this.progressRunner) {
                 this.progressRunner.done();
             }
-            if (this.debugService.getState() === debug.State.Initializing) {
+            if (newState === debug.State.Initializing) {
                 this.progressRunner = this.progressService.show(true);
             }
             else {

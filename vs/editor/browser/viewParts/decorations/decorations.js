@@ -58,16 +58,10 @@ define(["require", "exports", 'vs/editor/browser/view/dynamicViewOverlay', 'vs/c
             return true;
         };
         DecorationsOverlay.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged || e.scrollWidthChanged;
         };
         DecorationsOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        DecorationsOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return true;
-        };
-        DecorationsOverlay.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
         };
         // --- end event handlers
         DecorationsOverlay.prototype.prepareRender = function (ctx) {

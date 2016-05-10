@@ -54,7 +54,7 @@ define(["require", "exports", 'vs/base/common/strings'], function (require, expo
     exports.matchesStrictPrefix = function (word, wordToMatchAgainst) { return _matchesPrefix(false, word, wordToMatchAgainst); };
     exports.matchesPrefix = function (word, wordToMatchAgainst) { return _matchesPrefix(true, word, wordToMatchAgainst); };
     function _matchesPrefix(ignoreCase, word, wordToMatchAgainst) {
-        if (wordToMatchAgainst.length === 0 || wordToMatchAgainst.length < word.length) {
+        if (!wordToMatchAgainst || wordToMatchAgainst.length === 0 || wordToMatchAgainst.length < word.length) {
             return null;
         }
         if (ignoreCase) {
@@ -209,7 +209,7 @@ define(["require", "exports", 'vs/base/common/strings'], function (require, expo
         }
     }
     function matchesCamelCase(word, camelCaseWord) {
-        if (camelCaseWord.length === 0) {
+        if (!camelCaseWord || camelCaseWord.length === 0) {
             return null;
         }
         if (!isCamelCasePattern(word)) {
@@ -230,7 +230,7 @@ define(["require", "exports", 'vs/base/common/strings'], function (require, expo
     // E.g. "gp" or "g p" will match "Git: Pull"
     // Useful in cases where the target is words (e.g. command labels)
     function matchesWords(word, target) {
-        if (target.length === 0) {
+        if (!target || target.length === 0) {
             return null;
         }
         var result = null;

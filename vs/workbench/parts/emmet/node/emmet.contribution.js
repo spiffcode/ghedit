@@ -4,7 +4,7 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/editor/commo
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(emmetActions_1.ExpandAbbreviationAction, emmetActions_1.ExpandAbbreviationAction.ID, nls.localize('expandAbbreviationAction', "Emmet: Expand Abbreviation")));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(emmetActions_1.ExpandAbbreviationAction, emmetActions_1.ExpandAbbreviationAction.ID, nls.localize('expandAbbreviationAction', "Emmet: Expand Abbreviation"), void 0, 'Emmet: Expand Abbreviation'));
     keybindingsRegistry_1.KeybindingsRegistry.registerCommandRule({
         id: emmetActions_1.ExpandAbbreviationAction.ID,
         weight: keybindingsRegistry_1.KeybindingsRegistry.WEIGHT.editorContrib(),

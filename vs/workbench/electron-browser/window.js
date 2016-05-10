@@ -123,7 +123,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/paths',
             if (callback) {
                 return dialog.showSaveDialog(this.win, options, callback);
             }
-            return dialog.showSaveDialog(this.win, options); // https://github.com/atom/electron/issues/4936
+            return dialog.showSaveDialog(this.win, options); // https://github.com/electron/electron/issues/4936
         };
         ElectronWindow.prototype.setFullScreen = function (fullscreen) {
             electron_1.ipcRenderer.send('vscode:setFullScreen', this.windowId, fullscreen); // handled from browser process

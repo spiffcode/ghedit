@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'assert', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/platform', 'vs/platform/instantiation/common/descriptors', 'vs/workbench/common/editor/stringEditorInput', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/mime'], function (require, exports, assert, baseEditor_1, editor_1, InstantiationService, Platform, descriptors_1, stringEditorInput_1, telemetry_1, mime) {
+define(["require", "exports", 'assert', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/platform', 'vs/platform/instantiation/common/descriptors', 'vs/workbench/common/editor/stringEditorInput', 'vs/platform/telemetry/common/telemetry', 'vs/base/common/mime'], function (require, exports, assert, baseEditor_1, editor_1, instantiationService_1, Platform, descriptors_1, stringEditorInput_1, telemetry_1, mime) {
     'use strict';
     var EditorRegistry = Platform.Registry.as(baseEditor_1.Extensions.Editors);
     var MyEditor = (function (_super) {
@@ -204,7 +204,7 @@ define(["require", "exports", 'assert', 'vs/workbench/browser/parts/editor/baseE
             EditorRegistry.setEditors([]);
             EditorRegistry.registerEditor(d2, new descriptors_1.SyncDescriptor(stringEditorInput_1.StringEditorInput));
             EditorRegistry.registerEditor(d1, new descriptors_1.SyncDescriptor(MyStringInput));
-            var inst = InstantiationService.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             inst.createInstance(EditorRegistry.getEditor(inst.createInstance(MyStringInput, 'fake', '', '', mime.MIME_TEXT, false)), 'id').then(function (editor) {
                 assert.strictEqual(editor.getId(), 'myEditor');
                 return inst.createInstance(EditorRegistry.getEditor(inst.createInstance(stringEditorInput_1.StringEditorInput, 'fake', '', '', mime.MIME_TEXT, false)), 'id').then(function (editor) {
@@ -218,20 +218,20 @@ define(["require", "exports", 'assert', 'vs/workbench/browser/parts/editor/baseE
             var oldEditors = EditorRegistry.getEditors();
             EditorRegistry.setEditors([]);
             EditorRegistry.registerEditor(d1, new descriptors_1.SyncDescriptor(stringEditorInput_1.StringEditorInput));
-            var inst = InstantiationService.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             inst.createInstance(EditorRegistry.getEditor(inst.createInstance(MyStringInput, 'fake', '', '', mime.MIME_TEXT, false)), 'id').then(function (editor) {
                 assert.strictEqual('myOtherEditor', editor.getId());
                 EditorRegistry.setEditors(oldEditors);
             }).done(function () { return done(); });
         });
         test('Editor Input Action - triggers isEnabled properly', function () {
-            var inst = InstantiationService.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             var action = new MyAction('id', 'label');
             action.input = inst.createInstance(stringEditorInput_1.StringEditorInput, 'input', '', '', mime.MIME_TEXT, false);
             assert.equal(action.didCallIsEnabled, true);
         });
         test('Editor Input Action Contributor', function () {
-            var inst = InstantiationService.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             var contributor = new MyEditorInputActionContributor();
             assert(!contributor.hasActions(null));
             assert(contributor.hasActions({ editor: new MyEditor('id', telemetry_1.NullTelemetryService), input: inst.createInstance(stringEditorInput_1.StringEditorInput, 'fake', '', '', mime.MIME_TEXT, false), position: 0 }));
@@ -259,7 +259,7 @@ define(["require", "exports", 'assert', 'vs/workbench/browser/parts/editor/baseE
             assert(!actionsFirst[1].input);
         });
         test('Editor Input Factory', function () {
-            EditorRegistry.setInstantiationService(InstantiationService.createInstantiationService({}));
+            EditorRegistry.setInstantiationService(new instantiationService_1.InstantiationService());
             EditorRegistry.registerEditorInputFactory('myInputId', MyInputFactory);
             var factory = EditorRegistry.getEditorInputFactory('myInputId');
             assert(factory);

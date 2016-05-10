@@ -39,6 +39,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
     }(actions_1.Action));
     exports.ToggleSidebarVisibilityAction = ToggleSidebarVisibilityAction;
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarVisibilityAction, ID, LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_B }), nls.localize('view', "View"));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarVisibilityAction, ID, LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_B }), 'View: Toggle Side Bar Visibility', nls.localize('view', "View"));
 });
 //# sourceMappingURL=toggleSidebarVisibility.js.map

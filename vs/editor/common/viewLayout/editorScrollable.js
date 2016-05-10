@@ -21,6 +21,7 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
             this.scrollHeight = 0;
             this.width = 0;
             this.height = 0;
+            this._lastScrollEvent = new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
         }
         EditorScrollable.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
@@ -54,7 +55,7 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
                 this.scrollWidth = scrollWidth;
                 // Revalidate
                 this.setScrollLeft(this.scrollLeft);
-                this._emitScrollEvent(false, false);
+                this._emitScrollEvent();
             }
         };
         // ------------ scroll left
@@ -71,7 +72,7 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
             }
             if (this.scrollLeft !== scrollLeft) {
                 this.scrollLeft = scrollLeft;
-                this._emitScrollEvent(false, true);
+                this._emitScrollEvent();
             }
         };
         // ------------ (visible) height
@@ -103,7 +104,7 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
                 this.scrollHeight = scrollHeight;
                 // Revalidate
                 this.setScrollTop(this.scrollTop);
-                this._emitScrollEvent(false, false);
+                this._emitScrollEvent();
             }
         };
         // ------------ scroll top
@@ -120,12 +121,12 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/scr
             }
             if (this.scrollTop !== scrollTop) {
                 this.scrollTop = scrollTop;
-                this._emitScrollEvent(true, false);
+                this._emitScrollEvent();
             }
         };
-        EditorScrollable.prototype._emitScrollEvent = function (vertical, horizontal) {
-            var e = new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight(), vertical, horizontal);
-            this.emit(EditorScrollable._SCROLL_EVENT, e);
+        EditorScrollable.prototype._emitScrollEvent = function () {
+            this._lastScrollEvent = this._lastScrollEvent.create(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
+            this.emit(EditorScrollable._SCROLL_EVENT, this._lastScrollEvent);
         };
         EditorScrollable.prototype.addScrollListener = function (listener) {
             return this.addListener2(EditorScrollable._SCROLL_EVENT, listener);

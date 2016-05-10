@@ -1,89 +1,84 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/errors', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/base/common/severity', 'electron'], function (require, exports, winjs_base_1, errors, baseLifecycleService_1, severity_1, electron_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/base/common/errors', 'vs/platform/lifecycle/common/lifecycle', 'electron', 'vs/base/common/event'], function (require, exports, winjs_base_1, severity_1, errors, lifecycle_1, electron_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    var LifecycleService = (function (_super) {
-        __extends(LifecycleService, _super);
-        function LifecycleService(messageService, windowService) {
-            _super.call(this);
-            this.messageService = messageService;
+    var LifecycleService = (function () {
+        function LifecycleService(_messageService, windowService) {
+            this._messageService = _messageService;
             this.windowService = windowService;
-            this.registerListeners();
+            this.serviceId = lifecycle_1.ILifecycleService;
+            this._onWillShutdown = new event_1.Emitter();
+            this._onShutdown = new event_1.Emitter();
+            this._registerListeners();
         }
-        LifecycleService.prototype.registerListeners = function () {
+        Object.defineProperty(LifecycleService.prototype, "onWillShutdown", {
+            get: function () {
+                return this._onWillShutdown.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LifecycleService.prototype, "onShutdown", {
+            get: function () {
+                return this._onShutdown.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        LifecycleService.prototype._registerListeners = function () {
             var _this = this;
             var windowId = this.windowService.getWindowId();
             // Main side indicates that window is about to unload, check for vetos
             electron_1.ipcRenderer.on('vscode:beforeUnload', function (event, reply) {
-                var veto = _this.beforeUnload();
-                if (typeof veto === 'boolean') {
-                    electron_1.ipcRenderer.send(veto ? reply.cancelChannel : reply.okChannel, windowId);
-                }
-                else {
-                    veto.done(function (v) { return electron_1.ipcRenderer.send(v ? reply.cancelChannel : reply.okChannel, windowId); });
-                }
+                _this._onBeforeUnload().done(function (veto) {
+                    if (veto) {
+                        electron_1.ipcRenderer.send(reply.cancelChannel, windowId);
+                    }
+                    else {
+                        _this._onShutdown.fire();
+                        electron_1.ipcRenderer.send(reply.okChannel, windowId);
+                    }
+                });
             });
         };
-        LifecycleService.prototype.beforeUnload = function () {
+        LifecycleService.prototype._onBeforeUnload = function () {
             var _this = this;
-            var veto = this.vetoShutdown();
-            if (typeof veto === 'boolean') {
-                return this.handleVeto(veto);
-            }
-            else {
-                return veto.then(function (v) { return _this.handleVeto(v); });
-            }
-        };
-        LifecycleService.prototype.handleVeto = function (veto) {
-            if (!veto) {
-                try {
-                    this.fireShutdown();
+            var vetos = [];
+            this._onWillShutdown.fire({
+                veto: function (value) {
+                    vetos.push(value);
                 }
-                catch (error) {
-                    errors.onUnexpectedError(error); // unexpected program error and we cause shutdown to cancel in this case
-                    return false;
+            });
+            if (vetos.length === 0) {
+                return winjs_base_1.TPromise.as(false);
+            }
+            var promises = [];
+            var lazyValue = false;
+            for (var _i = 0, vetos_1 = vetos; _i < vetos_1.length; _i++) {
+                var valueOrPromise = vetos_1[_i];
+                // veto, done
+                if (valueOrPromise === true) {
+                    return winjs_base_1.TPromise.as(true);
+                }
+                if (winjs_base_1.TPromise.is(valueOrPromise)) {
+                    promises.push(valueOrPromise.then(function (value) {
+                        if (value) {
+                            // veto, done
+                            lazyValue = true;
+                        }
+                    }, function (err) {
+                        // error, treated like a veto, done
+                        _this._messageService.show(severity_1.default.Error, errors.toErrorMessage(err));
+                        lazyValue = true;
+                    }));
                 }
             }
-            return veto;
-        };
-        LifecycleService.prototype.vetoShutdown = function () {
-            var _this = this;
-            var participants = this.beforeShutdownParticipants;
-            var vetoPromises = [];
-            var hasPromiseWithVeto = false;
-            for (var i = 0; i < participants.length; i++) {
-                var participantVeto = participants[i].beforeShutdown();
-                if (participantVeto === true) {
-                    return true; // return directly when any veto was provided
-                }
-                else if (participantVeto === false) {
-                    continue; // skip
-                }
-                // We have a promise
-                var vetoPromise = participantVeto.then(function (veto) {
-                    if (veto) {
-                        hasPromiseWithVeto = true;
-                    }
-                }, function (error) {
-                    hasPromiseWithVeto = true;
-                    _this.messageService.show(severity_1.default.Error, errors.toErrorMessage(error));
-                });
-                vetoPromises.push(vetoPromise);
-            }
-            if (vetoPromises.length === 0) {
-                return false; // return directly when no veto was provided
-            }
-            return winjs_base_1.TPromise.join(vetoPromises).then(function () { return hasPromiseWithVeto; });
+            return winjs_base_1.TPromise.join(promises).then(function () { return lazyValue; });
         };
         return LifecycleService;
-    }(baseLifecycleService_1.BaseLifecycleService));
+    }());
     exports.LifecycleService = LifecycleService;
 });
 //# sourceMappingURL=lifecycleService.js.map

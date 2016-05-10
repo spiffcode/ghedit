@@ -33,8 +33,8 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/errors
         }
         DebugActionsWidget.prototype.registerListeners = function () {
             var _this = this;
-            this.toDispose.push(this.debugService.addListener2(debug.ServiceEvents.STATE_CHANGED, function () {
-                _this.onDebugStateChange();
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) {
+                _this.onDebugStateChange(state);
             }));
             this.toDispose.push(this.actionBar.actionRunner.addListener2(events.EventType.RUN, function (e) {
                 // check for error
@@ -50,13 +50,12 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/errors
         DebugActionsWidget.prototype.getId = function () {
             return DebugActionsWidget.ID;
         };
-        DebugActionsWidget.prototype.onDebugStateChange = function () {
-            var state = this.debugService.getState();
-            if (state === debug.State.Disabled || state === debug.State.Inactive || state === debug.State.Initializing) {
+        DebugActionsWidget.prototype.onDebugStateChange = function (state) {
+            if (state === debug.State.Disabled || state === debug.State.Inactive) {
                 return this.hide();
             }
             this.actionBar.clear();
-            this.actionBar.push(this.getActions(this.instantiationService, this.debugService.getState()), { icon: true, label: false });
+            this.actionBar.push(this.getActions(this.instantiationService, this.debugService.state), { icon: true, label: false });
             this.show();
         };
         DebugActionsWidget.prototype.show = function () {

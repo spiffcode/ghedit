@@ -16,7 +16,6 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/
     var JSONContributionRegistry = (function () {
         function JSONContributionRegistry() {
             this.schemasById = {};
-            this.schemaAssociations = {};
             this.eventEmitter = new eventEmitter_1.EventEmitter();
         }
         JSONContributionRegistry.prototype.addRegistryChangedListener = function (callback) {
@@ -26,19 +25,9 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/
             this.schemasById[normalizeId(uri)] = unresolvedSchemaContent;
             this.eventEmitter.emit('registryChanged', {});
         };
-        JSONContributionRegistry.prototype.addSchemaFileAssociation = function (pattern, uri) {
-            var uris = this.schemaAssociations[pattern];
-            if (!uris) {
-                uris = [];
-                this.schemaAssociations[pattern] = uris;
-            }
-            uris.push(uri);
-            this.eventEmitter.emit('registryChanged', {});
-        };
         JSONContributionRegistry.prototype.getSchemaContributions = function () {
             return {
                 schemas: this.schemasById,
-                schemaAssociations: this.schemaAssociations
             };
         };
         return JSONContributionRegistry;

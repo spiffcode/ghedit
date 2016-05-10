@@ -155,9 +155,9 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/styleM
             this.domNode.setWidth(this._scrollWidth);
             this.domNode.setHeight(0);
         }
-        ContentViewOverlays.prototype.onScrollWidthChanged = function (scrollWidth) {
-            this._scrollWidth = this._layoutProvider.getScrollWidth();
-            return true;
+        ContentViewOverlays.prototype.onScrollChanged = function (e) {
+            this._scrollWidth = e.scrollWidth;
+            return _super.prototype.onScrollChanged.call(this, e) || e.scrollWidthChanged;
         };
         ContentViewOverlays.prototype._viewOverlaysRender = function (ctx) {
             _super.prototype._viewOverlaysRender.call(this, ctx);
@@ -193,9 +193,9 @@ define(["require", "exports", 'vs/base/browser/browser', 'vs/base/browser/styleM
         MarginViewOverlays.prototype._getGlyphMarginDomNode = function () {
             return this.domNode.domNode.children[0];
         };
-        MarginViewOverlays.prototype.onScrollHeightChanged = function (scrollHeight) {
-            this._scrollHeight = scrollHeight;
-            return _super.prototype.onScrollHeightChanged.call(this, scrollHeight) || true;
+        MarginViewOverlays.prototype.onScrollChanged = function (e) {
+            this._scrollHeight = e.scrollHeight;
+            return _super.prototype.onScrollChanged.call(this, e) || e.scrollHeightChanged;
         };
         MarginViewOverlays.prototype.onLayoutChanged = function (layoutInfo) {
             this._glyphMarginLeft = layoutInfo.glyphMarginLeft;

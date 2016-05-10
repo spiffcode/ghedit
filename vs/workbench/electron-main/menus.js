@@ -2,14 +2,26 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/arrays', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/update-manager', 'vs/base/common/keyCodes'], function (require, exports, electron_1, nls, platform, arrays, windows, env, storage, um, keyCodes_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/arrays', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage', 'vs/workbench/electron-main/update-manager', 'vs/base/common/keyCodes'], function (require, exports, electron_1, nls, platform, arrays, windows_1, env, storage_1, update_manager_1, keyCodes_1) {
     'use strict';
-    var UpdateManager = um.Instance;
     var VSCodeMenu = (function () {
-        function VSCodeMenu() {
+        function VSCodeMenu(storageService, updateManager, windowsManager, envService) {
+            this.storageService = storageService;
+            this.updateManager = updateManager;
+            this.windowsManager = windowsManager;
+            this.envService = envService;
             this.actionIdKeybindingRequests = [];
             this.mapResolvedKeybindingToActionId = Object.create(null);
-            this.mapLastKnownKeybindingToActionId = storage.getItem(VSCodeMenu.lastKnownKeybindingsMapStorageKey) || Object.create(null);
+            this.mapLastKnownKeybindingToActionId = this.storageService.getItem(VSCodeMenu.lastKnownKeybindingsMapStorageKey) || Object.create(null);
         }
         VSCodeMenu.prototype.ready = function () {
             this.registerListeners();
@@ -22,10 +34,10 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                 _this.isQuitting = true;
             });
             // Listen to "open" & "close" event from window manager
-            windows.onOpen(function (paths) { return _this.onOpen(paths); });
-            windows.onClose(function (_) { return _this.onClose(windows.manager.getWindowCount()); });
+            this.windowsManager.onOpen(function (paths) { return _this.onOpen(paths); });
+            this.windowsManager.onClose(function (_) { return _this.onClose(_this.windowsManager.getWindowCount()); });
             // Resolve keybindings when any first workbench is loaded
-            windows.onReady(function (win) { return _this.resolveKeybindings(win); });
+            this.windowsManager.onReady(function (win) { return _this.resolveKeybindings(win); });
             // Listen to resolved keybindings
             electron_1.ipcMain.on('vscode:keybindingsResolved', function (event, rawKeybindings) {
                 var keybindings = [];
@@ -50,13 +62,13 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                     needsMenuUpdate = true;
                 }
                 if (needsMenuUpdate) {
-                    storage.setItem(VSCodeMenu.lastKnownKeybindingsMapStorageKey, _this.mapResolvedKeybindingToActionId); // keep to restore instantly after restart
+                    _this.storageService.setItem(VSCodeMenu.lastKnownKeybindingsMapStorageKey, _this.mapResolvedKeybindingToActionId); // keep to restore instantly after restart
                     _this.mapLastKnownKeybindingToActionId = _this.mapResolvedKeybindingToActionId; // update our last known map
                     _this.updateMenu();
                 }
             });
             // Listen to update manager
-            UpdateManager.on('change', function () { return _this.updateMenu(); });
+            this.updateManager.on('change', function () { return _this.updateMenu(); });
         };
         VSCodeMenu.prototype.resolveKeybindings = function (win) {
             if (this.keybindingsResolved) {
@@ -72,7 +84,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             var _this = this;
             // Due to limitations in Electron, it is not possible to update menu items dynamically. The suggested
             // workaround from Electron is to set the application menu again.
-            // See also https://github.com/atom/electron/issues/846
+            // See also https://github.com/electron/electron/issues/846
             //
             // Run delayed to prevent updating menu while it is open
             if (!this.isQuitting) {
@@ -93,13 +105,14 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             }
         };
         VSCodeMenu.prototype.install = function () {
+            var _this = this;
             // Menus
             var menubar = new electron_1.Menu();
             // Mac: Application
             var macApplicationMenuItem;
             if (platform.isMacintosh) {
                 var applicationMenu = new electron_1.Menu();
-                macApplicationMenuItem = new electron_1.MenuItem({ label: env.product.nameShort, submenu: applicationMenu });
+                macApplicationMenuItem = new electron_1.MenuItem({ label: this.envService.product.nameShort, submenu: applicationMenu });
                 this.setMacApplicationMenu(applicationMenu);
             }
             // File
@@ -146,7 +159,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             if (platform.isMacintosh && !this.appMenuInstalled) {
                 this.appMenuInstalled = true;
                 var dockMenu = new electron_1.Menu();
-                dockMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), click: function () { return windows.manager.openNewWindow(); } }));
+                dockMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), click: function () { return _this.windowsManager.openNewWindow(); } }));
                 electron_1.app.dock.setMenu(dockMenu);
             }
         };
@@ -166,7 +179,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             // Make sure its bounded
             mru.folders = mru.folders.slice(0, VSCodeMenu.MAX_RECENT_ENTRIES);
             mru.files = mru.files.slice(0, VSCodeMenu.MAX_RECENT_ENTRIES);
-            storage.setItem(windows.WindowsManager.openedPathsListStorageKey, mru);
+            this.storageService.setItem(windows_1.WindowsManager.openedPathsListStorageKey, mru);
         };
         VSCodeMenu.prototype.removeFromOpenedPathsList = function (path) {
             var mru = this.getOpenedPathsList();
@@ -178,15 +191,15 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             if (index >= 0) {
                 mru.folders.splice(index, 1);
             }
-            storage.setItem(windows.WindowsManager.openedPathsListStorageKey, mru);
+            this.storageService.setItem(windows_1.WindowsManager.openedPathsListStorageKey, mru);
         };
         VSCodeMenu.prototype.clearOpenedPathsList = function () {
-            storage.setItem(windows.WindowsManager.openedPathsListStorageKey, { folders: [], files: [] });
+            this.storageService.setItem(windows_1.WindowsManager.openedPathsListStorageKey, { folders: [], files: [] });
             electron_1.app.clearRecentDocuments();
             this.updateMenu();
         };
         VSCodeMenu.prototype.getOpenedPathsList = function () {
-            var mru = storage.getItem(windows.WindowsManager.openedPathsListStorageKey);
+            var mru = this.storageService.getItem(windows_1.WindowsManager.openedPathsListStorageKey);
             if (!mru) {
                 mru = { folders: [], files: [] };
             }
@@ -194,13 +207,13 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
         };
         VSCodeMenu.prototype.setMacApplicationMenu = function (macApplicationMenu) {
             var _this = this;
-            var about = new electron_1.MenuItem({ label: nls.localize('mAbout', "About {0}", env.product.nameLong), role: 'about' });
+            var about = new electron_1.MenuItem({ label: nls.localize('mAbout', "About {0}", this.envService.product.nameLong), role: 'about' });
             var checkForUpdates = this.getUpdateMenuItems();
             var preferences = this.getPreferencesMenu();
-            var hide = new electron_1.MenuItem({ label: nls.localize('mHide', "Hide {0}", env.product.nameLong), role: 'hide', accelerator: 'Command+H' });
+            var hide = new electron_1.MenuItem({ label: nls.localize('mHide', "Hide {0}", this.envService.product.nameLong), role: 'hide', accelerator: 'Command+H' });
             var hideOthers = new electron_1.MenuItem({ label: nls.localize('mHideOthers', "Hide Others"), role: 'hideothers', accelerator: 'Command+Alt+H' });
             var showAll = new electron_1.MenuItem({ label: nls.localize('mShowAll', "Show All"), role: 'unhide' });
-            var quit = new electron_1.MenuItem({ label: nls.localize('miQuit', "Quit {0}", env.product.nameLong), click: function () { return _this.quit(); }, accelerator: 'Command+Q' });
+            var quit = new electron_1.MenuItem({ label: nls.localize('miQuit', "Quit {0}", this.envService.product.nameLong), click: function () { return _this.quit(); }, accelerator: 'Command+Q' });
             var actions = [about];
             actions.push.apply(actions, checkForUpdates);
             actions.push.apply(actions, [
@@ -217,27 +230,27 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
         };
         VSCodeMenu.prototype.setFileMenu = function (fileMenu) {
             var _this = this;
-            var hasNoWindows = (windows.manager.getWindowCount() === 0);
+            var hasNoWindows = (this.windowsManager.getWindowCount() === 0);
             var newFile;
             if (hasNoWindows) {
-                newFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File")), accelerator: this.getAccelerator('workbench.action.files.newUntitledFile'), click: function () { return windows.manager.openNewWindow(); } });
+                newFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File")), accelerator: this.getAccelerator('workbench.action.files.newUntitledFile'), click: function () { return _this.windowsManager.openNewWindow(); } });
             }
             else {
                 newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File"), 'workbench.action.files.newUntitledFile');
             }
-            var open = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpen', comment: ['&& denotes a mnemonic'] }, "&&Open...")), accelerator: this.getAccelerator('workbench.action.files.openFileFolder'), click: function () { return windows.manager.openFileFolderPicker(); } });
-            var openFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFile', comment: ['&& denotes a mnemonic'] }, "&&Open File...")), accelerator: this.getAccelerator('workbench.action.files.openFile'), click: function () { return windows.manager.openFilePicker(); } });
-            var openFolder = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFolder', comment: ['&& denotes a mnemonic'] }, "Open &&Folder...")), accelerator: this.getAccelerator('workbench.action.files.openFolder'), click: function () { return windows.manager.openFolderPicker(); } });
+            var open = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpen', comment: ['&& denotes a mnemonic'] }, "&&Open...")), accelerator: this.getAccelerator('workbench.action.files.openFileFolder'), click: function () { return _this.windowsManager.openFileFolderPicker(); } });
+            var openFile = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFile', comment: ['&& denotes a mnemonic'] }, "&&Open File...")), accelerator: this.getAccelerator('workbench.action.files.openFile'), click: function () { return _this.windowsManager.openFilePicker(); } });
+            var openFolder = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenFolder', comment: ['&& denotes a mnemonic'] }, "Open &&Folder...")), accelerator: this.getAccelerator('workbench.action.files.openFolder'), click: function () { return _this.windowsManager.openFolderPicker(); } });
             var openRecentMenu = new electron_1.Menu();
             this.setOpenRecentMenu(openRecentMenu);
             var openRecent = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpenRecent', comment: ['&& denotes a mnemonic'] }, "Open &&Recent")), submenu: openRecentMenu, enabled: openRecentMenu.items.length > 0 });
-            var saveFile = this.createMenuItem(nls.localize({ key: 'miSave', comment: ['&& denotes a mnemonic'] }, "&&Save"), 'workbench.action.files.save', windows.manager.getWindowCount() > 0);
-            var saveFileAs = this.createMenuItem(nls.localize({ key: 'miSaveAs', comment: ['&& denotes a mnemonic'] }, "Save &&As..."), 'workbench.action.files.saveAs', windows.manager.getWindowCount() > 0);
-            var saveAllFiles = this.createMenuItem(nls.localize({ key: 'miSaveAll', comment: ['&& denotes a mnemonic'] }, "Save A&&ll"), 'workbench.action.files.saveAll', windows.manager.getWindowCount() > 0);
+            var saveFile = this.createMenuItem(nls.localize({ key: 'miSave', comment: ['&& denotes a mnemonic'] }, "&&Save"), 'workbench.action.files.save', this.windowsManager.getWindowCount() > 0);
+            var saveFileAs = this.createMenuItem(nls.localize({ key: 'miSaveAs', comment: ['&& denotes a mnemonic'] }, "Save &&As..."), 'workbench.action.files.saveAs', this.windowsManager.getWindowCount() > 0);
+            var saveAllFiles = this.createMenuItem(nls.localize({ key: 'miSaveAll', comment: ['&& denotes a mnemonic'] }, "Save A&&ll"), 'workbench.action.files.saveAll', this.windowsManager.getWindowCount() > 0);
             var preferences = this.getPreferencesMenu();
-            var newWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), accelerator: this.getAccelerator('workbench.action.newWindow'), click: function () { return windows.manager.openNewWindow(); } });
-            var revertFile = this.createMenuItem(nls.localize({ key: 'miRevert', comment: ['&& denotes a mnemonic'] }, "Revert F&&ile"), 'workbench.action.files.revert', windows.manager.getWindowCount() > 0);
-            var closeWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Close &&Window")), accelerator: this.getAccelerator('workbench.action.closeWindow'), click: function () { return windows.manager.getLastActiveWindow().win.close(); }, enabled: windows.manager.getWindowCount() > 0 });
+            var newWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewWindow', comment: ['&& denotes a mnemonic'] }, "&&New Window")), accelerator: this.getAccelerator('workbench.action.newWindow'), click: function () { return _this.windowsManager.openNewWindow(); } });
+            var revertFile = this.createMenuItem(nls.localize({ key: 'miRevert', comment: ['&& denotes a mnemonic'] }, "Revert F&&ile"), 'workbench.action.files.revert', this.windowsManager.getWindowCount() > 0);
+            var closeWindow = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Close &&Window")), accelerator: this.getAccelerator('workbench.action.closeWindow'), click: function () { return _this.windowsManager.getLastActiveWindow().win.close(); }, enabled: this.windowsManager.getWindowCount() > 0 });
             var closeFolder = this.createMenuItem(nls.localize({ key: 'miCloseFolder', comment: ['&& denotes a mnemonic'] }, "Close &&Folder"), 'workbench.action.closeFolder');
             var closeEditor = this.createMenuItem(nls.localize({ key: 'miCloseEditor', comment: ['&& denotes a mnemonic'] }, "Close &&Editor"), 'workbench.action.closeActiveEditor');
             var exit = this.createMenuItem(nls.localize({ key: 'miExit', comment: ['&& denotes a mnemonic'] }, "E&&xit"), function () { return _this.quit(); });
@@ -285,8 +298,8 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             var _this = this;
             // If the user selected to exit from an extension development host window, do not quit, but just
             // close the window unless this is the last window that is opened.
-            var vscodeWindow = windows.manager.getFocusedWindow();
-            if (vscodeWindow && vscodeWindow.isPluginDevelopmentHost && windows.manager.getWindowCount() > 1) {
+            var vscodeWindow = this.windowsManager.getFocusedWindow();
+            if (vscodeWindow && vscodeWindow.isPluginDevelopmentHost && this.windowsManager.getWindowCount() > 1) {
                 vscodeWindow.win.close();
             }
             else {
@@ -298,22 +311,24 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
         };
         VSCodeMenu.prototype.setOpenRecentMenu = function (openRecentMenu) {
             var _this = this;
+            openRecentMenu.append(this.createMenuItem(nls.localize({ key: 'miReopenClosedFile', comment: ['&& denotes a mnemonic'] }, "&&Reopen Closed File"), 'workbench.files.action.reopenClosedFile'));
             var recentList = this.getOpenedPathsList();
             // Folders
-            recentList.folders.forEach(function (folder, index) {
-                if (index < VSCodeMenu.MAX_RECENT_ENTRIES) {
-                    openRecentMenu.append(_this.createOpenRecentMenuItem(folder));
-                }
-            });
+            if (recentList.folders.length > 0) {
+                openRecentMenu.append(__separator__());
+                recentList.folders.forEach(function (folder, index) {
+                    if (index < VSCodeMenu.MAX_RECENT_ENTRIES) {
+                        openRecentMenu.append(_this.createOpenRecentMenuItem(folder));
+                    }
+                });
+            }
             // Files
             var files = recentList.files;
             if (platform.isMacintosh && recentList.files.length > 0) {
                 files = recentList.files.filter(function (f) { return recentList.folders.indexOf(f) < 0; }); // TODO@Ben migration (remove in the future)
             }
             if (files.length > 0) {
-                if (recentList.folders.length > 0) {
-                    openRecentMenu.append(__separator__());
-                }
+                openRecentMenu.append(__separator__());
                 files.forEach(function (file, index) {
                     if (index < VSCodeMenu.MAX_RECENT_ENTRIES) {
                         openRecentMenu.append(_this.createOpenRecentMenuItem(file));
@@ -329,7 +344,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             var _this = this;
             return new electron_1.MenuItem({
                 label: path, click: function () {
-                    var success = !!windows.manager.open({ cli: env.cliArgs, pathsToOpen: [path] });
+                    var success = !!_this.windowsManager.open({ cli: _this.envService.cliArgs, pathsToOpen: [path] });
                     if (!success) {
                         _this.removeFromOpenedPathsList(path);
                         _this.updateMenu();
@@ -388,6 +403,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             ].forEach(function (item) { return winLinuxEditMenu.append(item); });
         };
         VSCodeMenu.prototype.setViewMenu = function (viewMenu) {
+            var _this = this;
             var explorer = this.createMenuItem(nls.localize({ key: 'miViewExplorer', comment: ['&& denotes a mnemonic'] }, "&&Explorer"), 'workbench.view.explorer');
             var search = this.createMenuItem(nls.localize({ key: 'miViewSearch', comment: ['&& denotes a mnemonic'] }, "&&Search"), 'workbench.view.search');
             var git = this.createMenuItem(nls.localize({ key: 'miViewGit', comment: ['&& denotes a mnemonic'] }, "&&Git"), 'workbench.view.git');
@@ -396,7 +412,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             var markers = this.createMenuItem(nls.localize({ key: 'miMarker', comment: ['&& denotes a mnemonic'] }, "&&Errors and Warnings..."), 'workbench.action.showErrorsWarnings');
             var output = this.createMenuItem(nls.localize({ key: 'miToggleOutput', comment: ['&& denotes a mnemonic'] }, "Toggle &&Output"), 'workbench.action.output.toggleOutput');
             var debugConsole = this.createMenuItem(nls.localize({ key: 'miToggleDebugConsole', comment: ['&& denotes a mnemonic'] }, "Toggle De&&bug Console"), 'workbench.debug.action.toggleRepl');
-            var fullscreen = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miToggleFullScreen', comment: ['&& denotes a mnemonic'] }, "Toggle &&Full Screen")), accelerator: this.getAccelerator('workbench.action.toggleFullScreen'), click: function () { return windows.manager.getLastActiveWindow().toggleFullScreen(); }, enabled: windows.manager.getWindowCount() > 0 });
+            var fullscreen = new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miToggleFullScreen', comment: ['&& denotes a mnemonic'] }, "Toggle &&Full Screen")), accelerator: this.getAccelerator('workbench.action.toggleFullScreen'), click: function () { return _this.windowsManager.getLastActiveWindow().toggleFullScreen(); }, enabled: this.windowsManager.getWindowCount() > 0 });
             var toggleMenuBar = this.createMenuItem(nls.localize({ key: 'miToggleMenuBar', comment: ['&& denotes a mnemonic'] }, "Toggle Menu &&Bar"), 'workbench.action.toggleMenuBar');
             var splitEditor = this.createMenuItem(nls.localize({ key: 'miSplitEditor', comment: ['&& denotes a mnemonic'] }, "Split &&Editor"), 'workbench.action.splitEditor');
             var toggleSidebar = this.createMenuItem(nls.localize({ key: 'miToggleSidebar', comment: ['&& denotes a mnemonic'] }, "&&Toggle Side Bar"), 'workbench.action.toggleSidebarVisibility');
@@ -454,9 +470,9 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             ].forEach(function (item) { return gotoMenu.append(item); });
         };
         VSCodeMenu.prototype.setMacWindowMenu = function (macWindowMenu) {
-            var minimize = new electron_1.MenuItem({ label: nls.localize('mMinimize', "Minimize"), role: 'minimize', accelerator: 'Command+M', enabled: windows.manager.getWindowCount() > 0 });
-            var close = new electron_1.MenuItem({ label: nls.localize('mClose', "Close"), role: 'close', accelerator: 'Command+W', enabled: windows.manager.getWindowCount() > 0 });
-            var bringAllToFront = new electron_1.MenuItem({ label: nls.localize('mBringToFront', "Bring All to Front"), role: 'front', enabled: windows.manager.getWindowCount() > 0 });
+            var minimize = new electron_1.MenuItem({ label: nls.localize('mMinimize', "Minimize"), role: 'minimize', accelerator: 'Command+M', enabled: this.windowsManager.getWindowCount() > 0 });
+            var close = new electron_1.MenuItem({ label: nls.localize('mClose', "Close"), role: 'close', accelerator: 'Command+W', enabled: this.windowsManager.getWindowCount() > 0 });
+            var bringAllToFront = new electron_1.MenuItem({ label: nls.localize('mBringToFront', "Bring All to Front"), role: 'front', enabled: this.windowsManager.getWindowCount() > 0 });
             [
                 minimize,
                 close,
@@ -464,34 +480,51 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                 bringAllToFront
             ].forEach(function (item) { return macWindowMenu.append(item); });
         };
+        VSCodeMenu.prototype.toggleDevTools = function () {
+            var w = this.windowsManager.getFocusedWindow();
+            if (w && w.win) {
+                w.win.webContents.toggleDevTools();
+            }
+        };
         VSCodeMenu.prototype.setHelpMenu = function (helpMenu) {
+            var _this = this;
             var toggleDevToolsItem = new electron_1.MenuItem({
                 label: mnemonicLabel(nls.localize({ key: 'miToggleDevTools', comment: ['&& denotes a mnemonic'] }, "&&Toggle Developer Tools")),
                 accelerator: this.getAccelerator('workbench.action.toggleDevTools'),
-                click: toggleDevTools,
-                enabled: (windows.manager.getWindowCount() > 0)
+                click: function () { return _this.toggleDevTools(); },
+                enabled: (this.windowsManager.getWindowCount() > 0)
             });
             arrays.coalesce([
-                env.product.documentationUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miDocumentation', comment: ['&& denotes a mnemonic'] }, "&&Documentation")), click: function () { return openUrl(env.product.documentationUrl, 'openDocumentationUrl'); } }) : null,
-                env.product.releaseNotesUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "&&Release Notes")), click: function () { return openUrl(env.product.releaseNotesUrl, 'openReleaseNotesUrl'); } }) : null,
-                (env.product.documentationUrl || env.product.releaseNotesUrl) ? __separator__() : null,
-                env.product.twitterUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: function () { return openUrl(env.product.twitterUrl, 'openTwitterUrl'); } }) : null,
-                env.product.requestFeatureUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Request Features")), click: function () { return openUrl(env.product.requestFeatureUrl, 'openUserVoiceUrl'); } }) : null,
-                env.product.reportIssueUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReportIssues', comment: ['&& denotes a mnemonic'] }, "Report &&Issues")), click: function () { return openUrl(env.product.reportIssueUrl, 'openReportIssues'); } }) : null,
-                (env.product.twitterUrl || env.product.requestFeatureUrl || env.product.reportIssueUrl) ? __separator__() : null,
-                env.product.licenseUrl ? new electron_1.MenuItem({
+                this.envService.product.documentationUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miDocumentation', comment: ['&& denotes a mnemonic'] }, "&&Documentation")), click: function () { return _this.openUrl(_this.envService.product.documentationUrl, 'openDocumentationUrl'); } }) : null,
+                this.envService.product.releaseNotesUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "&&Release Notes")), click: function () { return _this.openUrl(_this.envService.product.releaseNotesUrl, 'openReleaseNotesUrl'); } }) : null,
+                (this.envService.product.documentationUrl || this.envService.product.releaseNotesUrl) ? __separator__() : null,
+                this.envService.product.twitterUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: function () { return _this.openUrl(_this.envService.product.twitterUrl, 'openTwitterUrl'); } }) : null,
+                this.envService.product.requestFeatureUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Request Features")), click: function () { return _this.openUrl(_this.envService.product.requestFeatureUrl, 'openUserVoiceUrl'); } }) : null,
+                this.envService.product.reportIssueUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReportIssues', comment: ['&& denotes a mnemonic'] }, "Report &&Issues")), click: function () { return _this.openUrl(_this.envService.product.reportIssueUrl, 'openReportIssues'); } }) : null,
+                (this.envService.product.twitterUrl || this.envService.product.requestFeatureUrl || this.envService.product.reportIssueUrl) ? __separator__() : null,
+                this.envService.product.licenseUrl ? new electron_1.MenuItem({
                     label: mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "&&View License")), click: function () {
                         if (platform.language) {
-                            var queryArgChar = env.product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-                            openUrl("" + env.product.licenseUrl + queryArgChar + "lang=" + platform.language, 'openLicenseUrl');
+                            var queryArgChar = _this.envService.product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+                            _this.openUrl("" + _this.envService.product.licenseUrl + queryArgChar + "lang=" + platform.language, 'openLicenseUrl');
                         }
                         else {
-                            openUrl(env.product.licenseUrl, 'openLicenseUrl');
+                            _this.openUrl(_this.envService.product.licenseUrl, 'openLicenseUrl');
                         }
                     }
                 }) : null,
-                env.product.privacyStatementUrl ? new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: function () { return openUrl(env.product.privacyStatementUrl, 'openPrivacyStatement'); } }) : null,
-                (env.product.licenseUrl || env.product.privacyStatementUrl) ? __separator__() : null,
+                this.envService.product.privacyStatementUrl ? new electron_1.MenuItem({
+                    label: mnemonicLabel(nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "&&Privacy Statement")), click: function () {
+                        if (platform.language) {
+                            var queryArgChar = _this.envService.product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
+                            _this.openUrl("" + _this.envService.product.privacyStatementUrl + queryArgChar + "lang=" + platform.language, 'openPrivacyStatement');
+                        }
+                        else {
+                            _this.openUrl(_this.envService.product.privacyStatementUrl, 'openPrivacyStatement');
+                        }
+                    }
+                }) : null,
+                (this.envService.product.licenseUrl || this.envService.product.privacyStatementUrl) ? __separator__() : null,
                 toggleDevToolsItem,
             ]).forEach(function (item) { return helpMenu.append(item); });
             if (!platform.isMacintosh) {
@@ -501,26 +534,27 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                     updateMenuItems.forEach(function (i) { return helpMenu.append(i); });
                 }
                 helpMenu.append(__separator__());
-                helpMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miAbout', comment: ['&& denotes a mnemonic'] }, "&&About")), click: openAboutDialog }));
+                helpMenu.append(new electron_1.MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miAbout', comment: ['&& denotes a mnemonic'] }, "&&About")), click: function () { return _this.openAboutDialog(); } }));
             }
         };
         VSCodeMenu.prototype.getUpdateMenuItems = function () {
-            switch (UpdateManager.state) {
-                case um.State.Uninitialized:
+            var _this = this;
+            switch (this.updateManager.state) {
+                case update_manager_1.State.Uninitialized:
                     return [];
-                case um.State.UpdateDownloaded:
-                    var update_1 = UpdateManager.availableUpdate;
+                case update_manager_1.State.UpdateDownloaded:
+                    var update_1 = this.updateManager.availableUpdate;
                     return [new electron_1.MenuItem({
                             label: nls.localize('miRestartToUpdate', "Restart To Update..."), click: function () {
-                                reportMenuActionTelemetry('RestartToUpdate');
+                                _this.reportMenuActionTelemetry('RestartToUpdate');
                                 update_1.quitAndUpdate();
                             }
                         })];
-                case um.State.CheckingForUpdate:
+                case update_manager_1.State.CheckingForUpdate:
                     return [new electron_1.MenuItem({ label: nls.localize('miCheckingForUpdates', "Checking For Updates..."), enabled: false })];
-                case um.State.UpdateAvailable:
+                case update_manager_1.State.UpdateAvailable:
                     if (platform.isLinux) {
-                        var update_2 = UpdateManager.availableUpdate;
+                        var update_2 = this.updateManager.availableUpdate;
                         return [new electron_1.MenuItem({
                                 label: nls.localize('miDownloadUpdate', "Download Available Update"), click: function () {
                                     update_2.quitAndUpdate();
@@ -534,20 +568,21 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                 default:
                     var result = [new electron_1.MenuItem({
                             label: nls.localize('miCheckForUpdates', "Check For Updates..."), click: function () { return setTimeout(function () {
-                                reportMenuActionTelemetry('CheckForUpdate');
-                                UpdateManager.checkForUpdates(true);
+                                _this.reportMenuActionTelemetry('CheckForUpdate');
+                                _this.updateManager.checkForUpdates(true);
                             }, 0); }
                         })];
-                    if (UpdateManager.lastCheckDate) {
-                        result.push(new electron_1.MenuItem({ label: nls.localize('miLastCheckedAt', "Last checked at {0}", UpdateManager.lastCheckDate.toLocaleTimeString()), enabled: false }));
+                    if (this.updateManager.lastCheckDate) {
+                        result.push(new electron_1.MenuItem({ label: nls.localize('miLastCheckedAt', "Last checked at {0}", this.updateManager.lastCheckDate.toLocaleTimeString()), enabled: false }));
                     }
                     return result;
             }
         };
         VSCodeMenu.prototype.createMenuItem = function (arg1, arg2, arg3) {
+            var _this = this;
             var label = mnemonicLabel(arg1);
-            var click = (typeof arg2 === 'function') ? arg2 : function () { return windows.manager.sendToFocused('vscode:runAction', arg2); };
-            var enabled = typeof arg3 === 'boolean' ? arg3 : windows.manager.getWindowCount() > 0;
+            var click = (typeof arg2 === 'function') ? arg2 : function () { return _this.windowsManager.sendToFocused('vscode:runAction', arg2); };
+            var enabled = typeof arg3 === 'boolean' ? arg3 : this.windowsManager.getWindowCount() > 0;
             var actionId;
             if (typeof arg2 === 'string') {
                 actionId = arg2;
@@ -561,12 +596,13 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             return new electron_1.MenuItem(options);
         };
         VSCodeMenu.prototype.createDevToolsAwareMenuItem = function (label, actionId, devToolsFocusedFn) {
+            var _this = this;
             return new electron_1.MenuItem({
                 label: mnemonicLabel(label),
                 accelerator: this.getAccelerator(actionId),
-                enabled: windows.manager.getWindowCount() > 0,
+                enabled: this.windowsManager.getWindowCount() > 0,
                 click: function () {
-                    var windowInFocus = windows.manager.getFocusedWindow();
+                    var windowInFocus = _this.windowsManager.getFocusedWindow();
                     if (!windowInFocus) {
                         return;
                     }
@@ -574,7 +610,7 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
                         devToolsFocusedFn(windowInFocus.win.devToolsWebContents);
                     }
                     else {
-                        windows.manager.sendToFocused('vscode:runAction', actionId);
+                        _this.windowsManager.sendToFocused('vscode:runAction', actionId);
                     }
                 }
             });
@@ -593,36 +629,36 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
             }
             return void (0);
         };
+        VSCodeMenu.prototype.openAboutDialog = function () {
+            var lastActiveWindow = this.windowsManager.getFocusedWindow() || this.windowsManager.getLastActiveWindow();
+            electron_1.dialog.showMessageBox(lastActiveWindow && lastActiveWindow.win, {
+                title: this.envService.product.nameLong,
+                type: 'info',
+                message: this.envService.product.nameLong,
+                detail: nls.localize('aboutDetail', "\nVersion {0}\nCommit {1}\nDate {2}\nShell {3}\nRenderer {4}\nNode {5}", electron_1.app.getVersion(), this.envService.product.commit || 'Unknown', this.envService.product.date || 'Unknown', process.versions['electron'], process.versions['chrome'], process.versions['node']),
+                buttons: [nls.localize('okButton', "OK")],
+                noLink: true
+            }, function (result) { return null; });
+            this.reportMenuActionTelemetry('showAboutDialog');
+        };
+        VSCodeMenu.prototype.openUrl = function (url, id) {
+            electron_1.shell.openExternal(url);
+            this.reportMenuActionTelemetry(id);
+        };
+        VSCodeMenu.prototype.reportMenuActionTelemetry = function (id) {
+            this.windowsManager.sendToFocused('vscode:telemetry', { eventName: 'workbenchActionExecuted', data: { id: id, from: 'menu' } });
+        };
         VSCodeMenu.lastKnownKeybindingsMapStorageKey = 'lastKnownKeybindings';
         VSCodeMenu.MAX_RECENT_ENTRIES = 10;
+        VSCodeMenu = __decorate([
+            __param(0, storage_1.IStorageService),
+            __param(1, update_manager_1.IUpdateService),
+            __param(2, windows_1.IWindowsService),
+            __param(3, env.IEnvironmentService)
+        ], VSCodeMenu);
         return VSCodeMenu;
     }());
     exports.VSCodeMenu = VSCodeMenu;
-    function openAboutDialog() {
-        var lastActiveWindow = windows.manager.getFocusedWindow() || windows.manager.getLastActiveWindow();
-        electron_1.dialog.showMessageBox(lastActiveWindow && lastActiveWindow.win, {
-            title: env.product.nameLong,
-            type: 'info',
-            message: env.product.nameLong,
-            detail: nls.localize('aboutDetail', "\nVersion {0}\nCommit {1}\nDate {2}\nShell {3}\nRenderer {4}\nNode {5}", electron_1.app.getVersion(), env.product.commit || 'Unknown', env.product.date || 'Unknown', process.versions['electron'], process.versions['chrome'], process.versions['node']),
-            buttons: [nls.localize('okButton', "OK")],
-            noLink: true
-        }, function (result) { return null; });
-        reportMenuActionTelemetry('showAboutDialog');
-    }
-    function openUrl(url, id) {
-        electron_1.shell.openExternal(url);
-        reportMenuActionTelemetry(id);
-    }
-    function toggleDevTools() {
-        var w = windows.manager.getFocusedWindow();
-        if (w && w.win) {
-            w.win.webContents.toggleDevTools();
-        }
-    }
-    function reportMenuActionTelemetry(id) {
-        windows.manager.sendToFocused('vscode:telemetry', { eventName: 'workbenchActionExecuted', data: { id: id, from: 'menu' } });
-    }
     function __separator__() {
         return new electron_1.MenuItem({ type: 'separator' });
     }
@@ -632,6 +668,5 @@ define(["require", "exports", 'electron', 'vs/nls', 'vs/base/common/platform', '
         }
         return label.replace(/&&/g, '&');
     }
-    exports.manager = new VSCodeMenu();
 });
 //# sourceMappingURL=menus.js.map

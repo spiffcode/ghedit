@@ -174,7 +174,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/arrays', 'vs/base/common
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.KEY_F,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_I }
-    }));
+    }, 'Format Code'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorContribution(FormatOnType);
 });
 //# sourceMappingURL=formatActions.js.map

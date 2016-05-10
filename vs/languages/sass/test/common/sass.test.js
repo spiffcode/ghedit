@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/languages/sass/common/sass', 'vs/editor/test/common/modesUtil', 'vs/languages/sass/common/sassTokenTypes', 'vs/platform/test/common/nullThreadService', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, SASS, modesUtil, sassTokenTypes, nullThreadService_1, mockModeService_1, instantiationService_1) {
+define(["require", "exports", 'vs/languages/sass/common/sass', 'vs/editor/test/common/modesUtil', 'vs/languages/sass/common/sassTokenTypes', 'vs/platform/test/common/nullThreadService', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/thread/common/thread', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, SASS, modesUtil, sassTokenTypes, nullThreadService_1, mockModeService_1, thread_1, modeService_1, serviceCollection_1, instantiationService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -10,10 +10,10 @@ define(["require", "exports", 'vs/languages/sass/common/sass', 'vs/editor/test/c
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
             var modeService = new mockModeService_1.MockModeService();
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-                modeService: modeService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modeService_1.IModeService, modeService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             var mode = new SASS.SASSMode({ id: 'sass' }, inst, threadService, modeService, null, null);
             tokenizationSupport = mode.tokenizationSupport;
@@ -1251,7 +1251,7 @@ define(["require", "exports", 'vs/languages/sass/common/sass', 'vs/editor/test/c
                             { startIndex: 19, type: 'variable.ref.sass' },
                             { startIndex: 25, type: 'punctuation.sass' },
                             { startIndex: 26, type: '' },
-                            { startIndex: 27, type: sassTokenTypes.TOKEN_PROPERTY + '.sass' },
+                            { startIndex: 27, type: 'variable.sass' },
                             { startIndex: 34, type: '' },
                             { startIndex: 35, type: 'constant.numeric.sass' },
                             { startIndex: 38, type: 'support.function.name.sass' },
@@ -1519,7 +1519,7 @@ define(["require", "exports", 'vs/languages/sass/common/sass', 'vs/editor/test/c
                             { startIndex: 0, type: sassTokenTypes.TOKEN_AT_KEYWORD + '.sass' },
                             { startIndex: 6, type: '' },
                             { startIndex: 7, type: 'support.function.name.sass' },
-                            { startIndex: 13, type: sassTokenTypes.TOKEN_PROPERTY + '.sass' },
+                            { startIndex: 13, type: 'variable.sass' },
                             { startIndex: 16, type: '' },
                             { startIndex: 17, type: sassTokenTypes.TOKEN_VALUE + '.sass' },
                             { startIndex: 22, type: 'support.function.name.sass' },

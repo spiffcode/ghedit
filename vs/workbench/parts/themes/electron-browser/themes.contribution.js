@@ -70,7 +70,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/platform/a
             });
         };
         SelectThemeAction.ID = 'workbench.action.selectTheme';
-        SelectThemeAction.LABEL = nls.localize('selectTheme.label', 'Color Theme');
+        SelectThemeAction.LABEL = nls.localize('selectTheme.label', "Color Theme");
         SelectThemeAction = __decorate([
             __param(2, workspace_1.IWorkspaceContextService),
             __param(3, quickOpenService_1.IQuickOpenService),
@@ -81,6 +81,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/actions', 'vs/platform/a
     }(actions.Action));
     var category = nls.localize('preferences', "Preferences");
     var workbenchActionsRegistry = platform.Registry.as(workbenchActionRegistry.Extensions.WorkbenchActions);
-    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(SelectThemeAction, SelectThemeAction.ID, SelectThemeAction.LABEL), category);
+    workbenchActionsRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(SelectThemeAction, SelectThemeAction.ID, SelectThemeAction.LABEL), 'Preferences: Color Theme', category);
 });
 //# sourceMappingURL=themes.contribution.js.map

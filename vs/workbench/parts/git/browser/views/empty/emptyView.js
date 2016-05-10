@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/dom', 'vs/base/browser/ui/button/button', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/selection/common/selection', 'vs/css!./emptyView'], function (require, exports, nls, Lifecycle, EventEmitter, DOM, button_1, WinJS, Builder, git, GitActions, files_1, instantiation_1, message_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/browser/dom', 'vs/base/browser/ui/button/button', 'vs/base/common/winjs.base', 'vs/base/browser/builder', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitActions', 'vs/platform/files/common/files', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/css!./emptyView'], function (require, exports, nls, Lifecycle, EventEmitter, DOM, button_1, WinJS, Builder, git, GitActions, files_1, instantiation_1, message_1) {
     'use strict';
     var IGitService = git.IGitService;
     var $ = Builder.$;
@@ -101,9 +101,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
         EmptyView.prototype.setVisible = function (visible) {
             this.isVisible = visible;
             return WinJS.TPromise.as(null);
-        };
-        EmptyView.prototype.getSelection = function () {
-            return selection_1.Selection.EMPTY;
         };
         EmptyView.prototype.getControl = function () {
             return null;

@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./disabledView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/css!./disabledView'], function (require, exports, nls, winjs, ee, builder) {
     'use strict';
     var $ = builder.$;
     var DisabledView = (function (_super) {
@@ -41,9 +41,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         };
         DisabledView.prototype.setVisible = function (visible) {
             return winjs.TPromise.as(null);
-        };
-        DisabledView.prototype.getSelection = function () {
-            return selection_1.Selection.EMPTY;
         };
         DisabledView.prototype.getControl = function () {
             return null;

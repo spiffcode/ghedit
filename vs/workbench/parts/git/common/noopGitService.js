@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/workbench/parts/git/common/git', 'vs/base/common/winjs.base'], function (require, exports, git, winjs_base_1) {
+define(["require", "exports", 'vs/workbench/parts/git/common/git', 'vs/base/common/winjs.base', 'vs/base/common/event'], function (require, exports, git, winjs_base_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,7 +6,13 @@ define(["require", "exports", 'vs/workbench/parts/git/common/git', 'vs/base/comm
     'use strict';
     var NoOpGitService = (function () {
         function NoOpGitService() {
+            this._onOutput = new event_1.Emitter();
         }
+        Object.defineProperty(NoOpGitService.prototype, "onOutput", {
+            get: function () { return this._onOutput.event; },
+            enumerable: true,
+            configurable: true
+        });
         NoOpGitService.prototype.getVersion = function () {
             return winjs_base_1.TPromise.as(null);
         };
@@ -63,9 +69,6 @@ define(["require", "exports", 'vs/workbench/parts/git/common/git', 'vs/base/comm
         };
         NoOpGitService.prototype.show = function (path, treeish) {
             return winjs_base_1.TPromise.as(null);
-        };
-        NoOpGitService.prototype.onOutput = function () {
-            return winjs_base_1.TPromise.as(function () { return null; });
         };
         NoOpGitService.STATUS = {
             repositoryRoot: null,

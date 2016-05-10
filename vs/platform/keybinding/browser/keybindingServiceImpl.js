@@ -102,11 +102,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             this.serviceId = keybindingService_1.IKeybindingService;
             this._myContextId = myContextId;
             this._instantiationService = null;
-            this._messageService = null;
         }
-        AbstractKeybindingService.prototype.setMessageService = function (messageService) {
-            this._messageService = messageService;
-        };
         AbstractKeybindingService.prototype.createKey = function (key, defaultValue) {
             return new KeybindingContextKey(this, key, defaultValue);
         };
@@ -130,7 +126,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     exports.AbstractKeybindingService = AbstractKeybindingService;
     var KeybindingService = (function (_super) {
         __extends(KeybindingService, _super);
-        function KeybindingService(configurationService) {
+        function KeybindingService(configurationService, messageService) {
             _super.call(this, 0);
             this._toDispose = [];
             this._lastContextId = 0;
@@ -142,6 +138,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             this._currentChordStatusMessage = null;
             this._configurationContext = new ConfigurationContext(configurationService);
             this._toDispose.push(this._configurationContext);
+            this._messageService = messageService;
         }
         KeybindingService.prototype._beginListening = function (domNode) {
             var _this = this;

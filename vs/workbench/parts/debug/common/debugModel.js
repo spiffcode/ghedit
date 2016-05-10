@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/eventEmitter', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/common/arrays', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/common/debugSource'], function (require, exports, winjs_base_1, nls, lifecycle, ee, uuid, types, arrays, debug, debugSource_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/common/event', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/common/arrays', 'vs/workbench/parts/debug/common/debugSource'], function (require, exports, winjs_base_1, nls, lifecycle, event_1, uuid, types, arrays, debugSource_1) {
     "use strict";
     var MAX_REPL_LENGTH = 10000;
     function resolveChildren(debugService, parent) {
@@ -120,7 +120,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             var _this = this;
             var session = debugService.getActiveSession();
             return session.stackTrace({ threadId: this.threadId, startFrame: startFrame, levels: 20 }).then(function (response) {
-                _this.stoppedDetails.totalFrames = response.body.totalFrames || response.body.stackFrames.length;
+                _this.stoppedDetails.totalFrames = response.body.totalFrames;
                 return response.body.stackFrames.map(function (rsf, level) {
                     if (!rsf) {
                         return new StackFrame(_this.threadId, 0, new debugSource_1.Source({ name: 'unknown' }, false), nls.localize('unknownStack', "Unknown stack location"), undefined, undefined);
@@ -367,10 +367,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         return ExceptionBreakpoint;
     }());
     exports.ExceptionBreakpoint = ExceptionBreakpoint;
-    var Model = (function (_super) {
-        __extends(Model, _super);
+    var Model = (function () {
         function Model(breakpoints, breakpointsActivated, functionBreakpoints, exceptionBreakpoints, watchExpressions) {
-            _super.call(this);
             this.breakpoints = breakpoints;
             this.breakpointsActivated = breakpointsActivated;
             this.functionBreakpoints = functionBreakpoints;
@@ -379,47 +377,70 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             this.threads = {};
             this.replElements = [];
             this.toDispose = [];
+            this._onDidChangeBreakpoints = new event_1.Emitter();
+            this._onDidChangeCallStack = new event_1.Emitter();
+            this._onDidChangeWatchExpressions = new event_1.Emitter();
+            this._onDidChangeREPLElements = new event_1.Emitter();
         }
         Model.prototype.getId = function () {
             return 'root';
         };
+        Object.defineProperty(Model.prototype, "onDidChangeBreakpoints", {
+            get: function () {
+                return this._onDidChangeBreakpoints.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Model.prototype, "onDidChangeCallStack", {
+            get: function () {
+                return this._onDidChangeCallStack.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Model.prototype, "onDidChangeWatchExpressions", {
+            get: function () {
+                return this._onDidChangeWatchExpressions.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Model.prototype, "onDidChangeReplElements", {
+            get: function () {
+                return this._onDidChangeREPLElements.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Model.prototype.getThreads = function () {
             return this.threads;
         };
         Model.prototype.clearThreads = function (removeThreads, reference) {
+            var _this = this;
             if (reference === void 0) { reference = undefined; }
             if (reference) {
-                if (removeThreads) {
-                    delete this.threads[reference];
-                }
-                else {
+                if (this.threads[reference]) {
                     this.threads[reference].clearCallStack();
                     this.threads[reference].stoppedDetails = undefined;
+                    this.threads[reference].stopped = false;
+                    if (removeThreads) {
+                        delete this.threads[reference];
+                    }
                 }
             }
             else {
+                Object.keys(this.threads).forEach(function (ref) {
+                    _this.threads[ref].clearCallStack();
+                    _this.threads[ref].stoppedDetails = undefined;
+                    _this.threads[ref].stopped = false;
+                });
                 if (removeThreads) {
                     this.threads = {};
                     ExpressionContainer.allValues = {};
                 }
-                else {
-                    for (var ref in this.threads) {
-                        if (this.threads.hasOwnProperty(ref)) {
-                            this.threads[ref].clearCallStack();
-                            this.threads[ref].stoppedDetails = undefined;
-                        }
-                    }
-                }
             }
-            this.emit(debug.ModelEvents.CALLSTACK_UPDATED);
-        };
-        Model.prototype.continueThreads = function () {
-            for (var ref in this.threads) {
-                if (this.threads.hasOwnProperty(ref)) {
-                    this.threads[ref].stopped = false;
-                }
-            }
-            this.clearThreads(false);
+            this._onDidChangeCallStack.fire();
         };
         Model.prototype.getBreakpoints = function () {
             return this.breakpoints;
@@ -442,9 +463,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         Model.prototype.areBreakpointsActivated = function () {
             return this.breakpointsActivated;
         };
-        Model.prototype.toggleBreakpointsActivated = function () {
-            this.breakpointsActivated = !this.breakpointsActivated;
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+        Model.prototype.setBreakpointsActivated = function (activated) {
+            this.breakpointsActivated = activated;
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.addBreakpoints = function (rawData) {
             var _this = this;
@@ -452,11 +473,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 return new Breakpoint(new debugSource_1.Source(debugSource_1.Source.toRawSource(rawBp.uri, _this)), rawBp.lineNumber, rawBp.enabled, rawBp.condition);
             }));
             this.breakpointsActivated = true;
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.removeBreakpoints = function (toRemove) {
             this.breakpoints = this.breakpoints.filter(function (bp) { return !toRemove.some(function (toRemove) { return toRemove.getId() === bp.getId(); }); });
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.updateBreakpoints = function (data) {
             this.breakpoints.forEach(function (bp) {
@@ -468,32 +489,32 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     bp.message = bpData.message;
                 }
             });
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
-        Model.prototype.toggleEnablement = function (element) {
-            element.enabled = !element.enabled;
+        Model.prototype.setEnablement = function (element, enable) {
+            element.enabled = enable;
             if (element instanceof Breakpoint && !element.enabled) {
                 var breakpoint = element;
                 breakpoint.lineNumber = breakpoint.desiredLineNumber;
                 breakpoint.verified = false;
             }
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
-        Model.prototype.enableOrDisableAllBreakpoints = function (enabled) {
+        Model.prototype.enableOrDisableAllBreakpoints = function (enable) {
             this.breakpoints.forEach(function (bp) {
-                bp.enabled = enabled;
-                if (!enabled) {
+                bp.enabled = enable;
+                if (!enable) {
                     bp.lineNumber = bp.desiredLineNumber;
                     bp.verified = false;
                 }
             });
-            this.exceptionBreakpoints.forEach(function (ebp) { return ebp.enabled = enabled; });
-            this.functionBreakpoints.forEach(function (fbp) { return fbp.enabled = enabled; });
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this.exceptionBreakpoints.forEach(function (ebp) { return ebp.enabled = enable; });
+            this.functionBreakpoints.forEach(function (fbp) { return fbp.enabled = enable; });
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.addFunctionBreakpoint = function (functionName) {
             this.functionBreakpoints.push(new FunctionBreakpoint(functionName, true));
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.updateFunctionBreakpoints = function (data) {
             this.functionBreakpoints.forEach(function (fbp) {
@@ -504,11 +525,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     fbp.idFromAdapter = fbpData.id;
                 }
             });
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.removeFunctionBreakpoints = function (id) {
             this.functionBreakpoints = id ? this.functionBreakpoints.filter(function (fbp) { return fbp.getId() !== id; }) : [];
-            this.emit(debug.ModelEvents.BREAKPOINTS_UPDATED);
+            this._onDidChangeBreakpoints.fire();
         };
         Model.prototype.getReplElements = function () {
             return this.replElements;
@@ -517,9 +538,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             var _this = this;
             var expression = new Expression(name, true);
             this.addReplElements([expression]);
-            return evaluateExpression(session, stackFrame, expression, 'repl').then(function () {
-                return _this.emit(debug.ModelEvents.REPL_ELEMENTS_UPDATED, expression);
-            });
+            return evaluateExpression(session, stackFrame, expression, 'repl')
+                .then(function () { return _this._onDidChangeREPLElements.fire(); });
         };
         Model.prototype.logToRepl = function (value, severity) {
             var elements = [];
@@ -541,8 +561,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             }
             if (elements.length) {
                 this.addReplElements(elements);
-                this.emit(debug.ModelEvents.REPL_ELEMENTS_UPDATED, elements);
             }
+            this._onDidChangeREPLElements.fire();
         };
         Model.prototype.appendReplOutput = function (value, severity) {
             var elements = [];
@@ -562,7 +582,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 elements.push(new ValueOutputElement(line, severity, 'output'));
             });
             this.addReplElements(elements);
-            this.emit(debug.ModelEvents.REPL_ELEMENTS_UPDATED, elements);
+            this._onDidChangeREPLElements.fire();
         };
         Model.prototype.addReplElements = function (newElements) {
             (_a = this.replElements).push.apply(_a, newElements);
@@ -571,10 +591,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             }
             var _a;
         };
-        Model.prototype.clearReplExpressions = function () {
+        Model.prototype.removeReplExpressions = function () {
             if (this.replElements.length > 0) {
                 this.replElements = [];
-                this.emit(debug.ModelEvents.REPL_ELEMENTS_UPDATED);
+                this._onDidChangeREPLElements.fire();
             }
         };
         Model.prototype.getWatchExpressions = function () {
@@ -584,7 +604,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             var we = new Expression(name, false);
             this.watchExpressions.push(we);
             if (!name) {
-                this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, we);
+                this._onDidChangeWatchExpressions.fire(we);
                 return winjs_base_1.TPromise.as(null);
             }
             return this.evaluateWatchExpressions(session, stackFrame, we.getId());
@@ -595,7 +615,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             if (filtered.length === 1) {
                 filtered[0].name = newName;
                 return evaluateExpression(session, stackFrame, filtered[0], 'watch').then(function () {
-                    _this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, filtered[0]);
+                    _this._onDidChangeWatchExpressions.fire(filtered[0]);
                 });
             }
             return winjs_base_1.TPromise.as(null);
@@ -609,11 +629,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     return winjs_base_1.TPromise.as(null);
                 }
                 return evaluateExpression(session, stackFrame, filtered_1[0], 'watch').then(function () {
-                    _this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED, filtered_1[0]);
+                    _this._onDidChangeWatchExpressions.fire(filtered_1[0]);
                 });
             }
             return winjs_base_1.TPromise.join(this.watchExpressions.map(function (we) { return evaluateExpression(session, stackFrame, we, 'watch'); })).then(function () {
-                _this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED);
+                _this._onDidChangeWatchExpressions.fire();
             });
         };
         Model.prototype.clearWatchExpressionValues = function () {
@@ -622,12 +642,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 we.available = false;
                 we.reference = 0;
             });
-            this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED);
+            this._onDidChangeWatchExpressions.fire();
         };
-        Model.prototype.clearWatchExpressions = function (id) {
+        Model.prototype.removeWatchExpressions = function (id) {
             if (id === void 0) { id = null; }
             this.watchExpressions = id ? this.watchExpressions.filter(function (we) { return we.getId() !== id; }) : [];
-            this.emit(debug.ModelEvents.WATCH_EXPRESSIONS_UPDATED);
+            this._onDidChangeWatchExpressions.fire();
         };
         Model.prototype.sourceIsUnavailable = function (source) {
             var _this = this;
@@ -640,34 +660,37 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     });
                 }
             });
-            this.emit(debug.ModelEvents.CALLSTACK_UPDATED);
+            this._onDidChangeCallStack.fire();
         };
         Model.prototype.rawUpdate = function (data) {
-            if (data.thread) {
+            var _this = this;
+            if (data.thread && !this.threads[data.threadId]) {
+                // A new thread came in, initialize it.
                 this.threads[data.threadId] = new Thread(data.thread.name, data.thread.id);
             }
             if (data.stoppedDetails) {
                 // Set the availability of the threads' callstacks depending on
                 // whether the thread is stopped or not
-                for (var ref in this.threads) {
-                    if (this.threads.hasOwnProperty(ref)) {
-                        if (data.allThreadsStopped) {
-                            // Only update the details if all the threads are stopped
-                            // because we don't want to overwrite the details of other
-                            // threads that have stopped for a different reason
-                            this.threads[ref].stoppedDetails = data.stoppedDetails;
-                        }
-                        this.threads[ref].stopped = data.allThreadsStopped;
-                        this.threads[ref].clearCallStack();
-                    }
+                if (data.allThreadsStopped) {
+                    Object.keys(this.threads).forEach(function (ref) {
+                        // Only update the details if all the threads are stopped
+                        // because we don't want to overwrite the details of other
+                        // threads that have stopped for a different reason
+                        _this.threads[ref].stoppedDetails = data.stoppedDetails;
+                        _this.threads[ref].stopped = true;
+                        _this.threads[ref].clearCallStack();
+                    });
                 }
-                this.threads[data.threadId].stoppedDetails = data.stoppedDetails;
-                this.threads[data.threadId].stopped = true;
+                else {
+                    // One thread is stopped, only update that thread.
+                    this.threads[data.threadId].stoppedDetails = data.stoppedDetails;
+                    this.threads[data.threadId].clearCallStack();
+                    this.threads[data.threadId].stopped = true;
+                }
             }
-            this.emit(debug.ModelEvents.CALLSTACK_UPDATED);
+            this._onDidChangeCallStack.fire();
         };
         Model.prototype.dispose = function () {
-            _super.prototype.dispose.call(this);
             this.threads = null;
             this.breakpoints = null;
             this.exceptionBreakpoints = null;
@@ -677,7 +700,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             this.toDispose = lifecycle.dispose(this.toDispose);
         };
         return Model;
-    }(ee.EventEmitter));
+    }());
     exports.Model = Model;
 });
 //# sourceMappingURL=debugModel.js.map

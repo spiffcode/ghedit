@@ -25,11 +25,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'shell', 'vs/base/com
     };
     // TODO: import gracefulFs = require('graceful-fs');
     // TODO: gracefulFs.gracefulify(fs);
-    var timers = window.MonacoEnvironment.timers;
+    var timers = window.GlobalEnvironment.timers;
     var domContentLoaded = winjs.Utilities.ready;
     function startup(environment, globalSettings) {
         // Inherit the user environment
-        // TODO:	assign(process.env, environment.userEnv);
+        /* TODO:
+        // TODO@Joao: this inheritance should **not** happen here!
+        if (process.env['VSCODE_CLI'] !== '1') {
+            assign(process.env, environment.userEnv);
+        }
+        */
         // Shell Configuration
         var shellConfiguration = {
             env: environment

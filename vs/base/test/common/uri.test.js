@@ -289,17 +289,17 @@ define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/base/common/ma
             // console.profileEnd();
         });
         test('URI - http, query & toString', function () {
-            var uri = uri_1.default.parse('http://go.microsoft.com/fwlink/?LinkId=518008');
+            var uri = uri_1.default.parse('https://go.microsoft.com/fwlink/?LinkId=518008');
             assert.equal(uri.query, 'LinkId=518008');
-            assert.equal(uri.toString(true), 'http://go.microsoft.com/fwlink/?LinkId=518008');
-            assert.equal(uri.toString(), 'http://go.microsoft.com/fwlink/?LinkId%3D518008');
+            assert.equal(uri.toString(true), 'https://go.microsoft.com/fwlink/?LinkId=518008');
+            assert.equal(uri.toString(), 'https://go.microsoft.com/fwlink/?LinkId%3D518008');
             var uri2 = uri_1.default.parse(uri.toString());
             assert.equal(uri2.query, 'LinkId=518008');
             assert.equal(uri2.query, uri.query);
-            uri = uri_1.default.parse('http://go.microsoft.com/fwlink/?LinkId=518008&foö&ké¥=üü');
+            uri = uri_1.default.parse('https://go.microsoft.com/fwlink/?LinkId=518008&foö&ké¥=üü');
             assert.equal(uri.query, 'LinkId=518008&foö&ké¥=üü');
-            assert.equal(uri.toString(true), 'http://go.microsoft.com/fwlink/?LinkId=518008&foö&ké¥=üü');
-            assert.equal(uri.toString(), 'http://go.microsoft.com/fwlink/?LinkId%3D518008%26fo%C3%B6%26k%C3%A9%C2%A5%3D%C3%BC%C3%BC');
+            assert.equal(uri.toString(true), 'https://go.microsoft.com/fwlink/?LinkId=518008&foö&ké¥=üü');
+            assert.equal(uri.toString(), 'https://go.microsoft.com/fwlink/?LinkId%3D518008%26fo%C3%B6%26k%C3%A9%C2%A5%3D%C3%BC%C3%BC');
             uri2 = uri_1.default.parse(uri.toString());
             assert.equal(uri2.query, 'LinkId=518008&foö&ké¥=üü');
             assert.equal(uri2.query, uri.query);

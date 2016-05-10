@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/objects', 'vs/base/common/uri', 'vs/base/common/network', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/platform', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/debug/node/debugAdapter', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, path, nls, winjs_base_1, strings, objects, uri_1, network_1, paths, extensionsRegistry, platform, jsonContributionRegistry, configuration_1, files_1, telemetry_1, systemVariables_1, debugAdapter_1, contextService_1, editorService_1, quickOpenService_1) {
+define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/strings', 'vs/base/common/event', 'vs/base/common/objects', 'vs/base/common/uri', 'vs/base/common/network', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/platform', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/configuration/common/configuration', 'vs/platform/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/parts/lib/node/systemVariables', 'vs/workbench/parts/debug/node/debugAdapter', 'vs/workbench/services/workspace/common/contextService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService'], function (require, exports, path, nls, winjs_base_1, strings, event_1, objects, uri_1, network_1, paths, extensionsRegistry, platform, jsonContributionRegistry, configuration_1, files_1, telemetry_1, systemVariables_1, debugAdapter_1, contextService_1, editorService_1, quickOpenService_1) {
     "use strict";
     // debuggers extension point
     exports.debuggersExtPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint('debuggers', {
@@ -124,7 +124,6 @@ define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs
     };
     var jsonRegistry = platform.Registry.as(jsonContributionRegistry.Extensions.JSONContribution);
     jsonRegistry.registerSchema(exports.schemaId, schema);
-    jsonRegistry.addSchemaFileAssociation('/.vscode/launch.json', exports.schemaId);
     var ConfigurationManager = (function () {
         function ConfigurationManager(configName, contextService, fileService, telemetryService, editorService, configurationService, quickOpenService) {
             this.contextService = contextService;
@@ -133,6 +132,7 @@ define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs
             this.editorService = editorService;
             this.configurationService = configurationService;
             this.quickOpenService = quickOpenService;
+            this._onDidConfigurationChange = new event_1.Emitter();
             this.systemVariables = this.contextService.getWorkspace() ? new systemVariables_1.SystemVariables(this.editorService, this.contextService) : null;
             this.setConfiguration(configName);
             this.adapters = [];
@@ -187,16 +187,28 @@ define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs
                 });
             });
         };
-        ConfigurationManager.prototype.getConfiguration = function () {
-            return this.configuration;
-        };
-        ConfigurationManager.prototype.getConfigurationName = function () {
-            return this.configuration ? this.configuration.name : null;
-        };
-        ConfigurationManager.prototype.getAdapter = function () {
-            var _this = this;
-            return this.adapters.filter(function (adapter) { return strings.equalsIgnoreCase(adapter.type, _this.configuration.type); }).pop();
-        };
+        Object.defineProperty(ConfigurationManager.prototype, "onDidConfigurationChange", {
+            get: function () {
+                return this._onDidConfigurationChange.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ConfigurationManager.prototype, "configurationName", {
+            get: function () {
+                return this.configuration ? this.configuration.name : null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ConfigurationManager.prototype, "adapter", {
+            get: function () {
+                var _this = this;
+                return this.adapters.filter(function (adapter) { return strings.equalsIgnoreCase(adapter.type, _this.configuration.type); }).pop();
+            },
+            enumerable: true,
+            configurable: true
+        });
         ConfigurationManager.prototype.setConfiguration = function (name) {
             var _this = this;
             return this.loadLaunchConfig().then(function (config) {
@@ -216,7 +228,7 @@ define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs
                     }
                     _this.configuration.debugServer = config.debugServer;
                 }
-            });
+            }).then(function () { return _this._onDidConfigurationChange.fire(_this.configurationName); });
         };
         ConfigurationManager.prototype.openConfigFile = function (sideBySide) {
             var _this = this;
@@ -251,10 +263,11 @@ define(["require", "exports", 'path', 'vs/nls', 'vs/base/common/winjs.base', 'vs
                     return null;
                 }
                 return _this.massageInitialConfigurations(adapter).then(function () {
+                    var editorConfig = _this.configurationService.getConfiguration();
                     return JSON.stringify({
                         version: '0.2.0',
                         configurations: adapter.initialConfigurations ? adapter.initialConfigurations : []
-                    }, null, '\t');
+                    }, null, editorConfig.editor.insertSpaces ? strings.repeat(' ', editorConfig.editor.tabSize) : '\t');
                 });
             });
         };

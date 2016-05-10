@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/base/common/flags', 'vs/base/common/uri', 'vs/platform/contextview/browser/contextMenuService', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/event/common/eventService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/mainThreadService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/browser/standalone/simpleServices'], function (require, exports, flags, uri_1, contextMenuService_1, contextViewService_1, eventService_1, instantiationService_1, markerService_1, telemetryService_1, telemetry_1, mainThreadService_1, baseWorkspaceContextService_1, editorWorkerServiceImpl_1, modeServiceImpl_1, modelServiceImpl_1, codeEditorServiceImpl_1, simpleServices_1) {
+define(["require", "exports", 'vs/base/common/flags', 'vs/base/common/uri', 'vs/platform/contextview/browser/contextMenuService', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/event/common/eventService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/markers/common/markerService', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/mainThreadService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/browser/standalone/simpleServices'], function (require, exports, flags, uri_1, contextMenuService_1, contextViewService_1, eventService_1, instantiation_1, instantiationService_1, serviceCollection_1, markerService_1, telemetryService_1, telemetry_1, mainThreadService_1, baseWorkspaceContextService_1, editorWorkerServiceImpl_1, modeServiceImpl_1, modelServiceImpl_1, codeEditorServiceImpl_1, simpleServices_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -31,7 +31,7 @@ define(["require", "exports", 'vs/base/common/flags', 'vs/base/common/uri', 'vs/
     function ensureDynamicPlatformServices(domElement, services) {
         var r = [];
         if (typeof services.keybindingService === 'undefined') {
-            var keybindingService = new simpleServices_1.StandaloneKeybindingService(services.configurationService, domElement);
+            var keybindingService = new simpleServices_1.StandaloneKeybindingService(services.configurationService, services.messageService, domElement);
             r.push(keybindingService);
             services.keybindingService = keybindingService;
         }
@@ -104,8 +104,16 @@ define(["require", "exports", 'vs/base/common/flags', 'vs/base/common/uri', 'vs/
             eventService: eventService,
             instantiationService: void 0
         };
-        var instantiationService = instantiationService_1.createInstantiationService(staticServices);
-        staticServices.instantiationService = instantiationService_1.createInstantiationService(staticServices);
+        var serviceCollection = new serviceCollection_1.ServiceCollection();
+        for (var legacyServiceId in staticServices) {
+            if (staticServices.hasOwnProperty(legacyServiceId)) {
+                var id = instantiation_1.createDecorator(legacyServiceId);
+                var element = staticServices[legacyServiceId];
+                serviceCollection.set(id, element);
+            }
+        }
+        var instantiationService = new instantiationService_1.InstantiationService(serviceCollection);
+        staticServices.instantiationService = instantiationService;
         if (threadService instanceof mainThreadService_1.MainThreadService) {
             threadService.setInstantiationService(instantiationService);
         }

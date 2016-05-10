@@ -175,10 +175,16 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                 return winjs_base_1.TPromise.as(null);
             }
             this.enabled = false;
-            return this.extensionsService.uninstall(extension)
-                .then(function () { return _this.onSuccess(extension); }, function (err) { return _this.onError(err, extension); })
-                .then(function () { return _this.enabled = true; })
-                .then(function () { return null; });
+            return this.extensionsService.getInstalled().then(function (localExtensions) {
+                var local = localExtensions.filter(function (local) { return extensionsUtil_1.extensionEquals(local, extension); })[0];
+                if (!local) {
+                    return winjs_base_1.TPromise.wrapError(nls.localize('notFound', "Extension '{0}' not installed.", extension.displayName));
+                }
+                return _this.extensionsService.uninstall(local)
+                    .then(function () { return _this.onSuccess(local); }, function (err) { return _this.onError(err, local); })
+                    .then(function () { return _this.enabled = true; })
+                    .then(function () { return null; });
+            });
         };
         UninstallAction.prototype.onSuccess = function (extension) {
             this.reportTelemetry(extension, true);

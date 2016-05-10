@@ -66,16 +66,10 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/editor/browser/view
             return true;
         };
         LineNumbersOverlay.prototype.onScrollChanged = function (e) {
-            return e.vertical;
+            return e.scrollTopChanged;
         };
         LineNumbersOverlay.prototype.onZonesChanged = function () {
             return true;
-        };
-        LineNumbersOverlay.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        LineNumbersOverlay.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
         };
         // --- end event handlers
         LineNumbersOverlay.prototype.prepareRender = function (ctx) {

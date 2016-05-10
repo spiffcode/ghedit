@@ -2,45 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/base/common/uuid', 'vs/base/common/eventEmitter', 'vs/base/common/winjs.base', 'vs/workbench/parts/debug/common/debug'], function (require, exports, uuid, ee, winjs_base_1, debug) {
+define(["require", "exports", 'vs/base/common/uuid', 'vs/base/common/winjs.base'], function (require, exports, uuid, winjs_base_1) {
     "use strict";
-    var V8Protocol = (function (_super) {
-        __extends(V8Protocol, _super);
+    var V8Protocol = (function () {
         function V8Protocol() {
-            _super.call(this);
-            this.flowEventsCount = 0;
-            this.emittedStopped = false;
-            this.readyForBreakpoints = false;
             this.sequence = 1;
             this.contentLength = -1;
             this.pendingRequests = {};
             this.rawData = new Buffer(0);
             this.id = uuid.generateUuid();
         }
-        V8Protocol.prototype.emit = function (eventType, data) {
-            if (eventType === debug.SessionEvents.STOPPED) {
-                this.emittedStopped = true;
-            }
-            if (eventType === debug.SessionEvents.INITIALIZED) {
-                this.readyForBreakpoints = true;
-            }
-            if (eventType === debug.SessionEvents.CONTINUED || eventType === debug.SessionEvents.STOPPED ||
-                eventType === debug.SessionEvents.DEBUGEE_TERMINATED || eventType === debug.SessionEvents.SERVER_EXIT) {
-                this.flowEventsCount++;
-            }
-            if (data) {
-                data.sessionId = this.getId();
-            }
-            else {
-                data = { sessionId: this.getId() };
-            }
-            _super.prototype.emit.call(this, eventType, data);
-        };
         V8Protocol.prototype.getId = function () {
             return this.id;
         };
@@ -113,8 +84,7 @@ define(["require", "exports", 'vs/base/common/uuid', 'vs/base/common/eventEmitte
             try {
                 var rawData = JSON.parse(body);
                 if (typeof rawData.event !== 'undefined') {
-                    var event_1 = rawData;
-                    this.emit(event_1.event, event_1);
+                    this.onEvent(rawData);
                 }
                 else {
                     var response = rawData;
@@ -131,7 +101,7 @@ define(["require", "exports", 'vs/base/common/uuid', 'vs/base/common/eventEmitte
         };
         V8Protocol.TWO_CRLF = '\r\n\r\n';
         return V8Protocol;
-    }(ee.EventEmitter));
+    }());
     exports.V8Protocol = V8Protocol;
 });
 //# sourceMappingURL=v8Protocol.js.map

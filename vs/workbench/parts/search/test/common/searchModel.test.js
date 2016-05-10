@@ -1,4 +1,4 @@
-define(["require", "exports", 'assert', 'vs/workbench/parts/search/common/searchModel', 'vs/editor/common/model/model', 'vs/base/common/event', 'vs/base/common/uri', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/test/browser/servicesTestUtils'], function (require, exports, assert, searchModel_1, model, event_1, uri_1, instantiationService_1, servicesTestUtils_1) {
+define(["require", "exports", 'assert', 'vs/workbench/parts/search/common/searchModel', 'vs/editor/common/model/model', 'vs/base/common/event', 'vs/base/common/uri', 'vs/platform/request/common/request', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modelService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/workbench/test/browser/servicesTestUtils'], function (require, exports, assert, searchModel_1, model, event_1, uri_1, request_1, workspace_1, modelService_1, serviceCollection_1, instantiationService_1, servicesTestUtils_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -13,16 +13,16 @@ define(["require", "exports", 'assert', 'vs/workbench/parts/search/common/search
         setup(function () {
             var emitter = new event_1.Emitter();
             oneModel = new model.Model('line1\nline2\nline3', model.Model.DEFAULT_CREATION_OPTIONS, null, uri_1.default.parse('file:///folder/file.txt'));
-            instantiation = instantiationService_1.createInstantiationService({
-                modelService: {
-                    getModel: function () { return oneModel; },
-                    onModelAdded: emitter.event
-                },
-                requestService: {
-                    getRequestUrl: function () { return 'file:///folder/file.txt'; }
-                },
-                contextService: new servicesTestUtils_1.TestContextService()
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(workspace_1.IWorkspaceContextService, new servicesTestUtils_1.TestContextService());
+            services.set(request_1.IRequestService, {
+                getRequestUrl: function () { return 'file:///folder/file.txt'; }
             });
+            services.set(modelService_1.IModelService, {
+                getModel: function () { return oneModel; },
+                onModelAdded: emitter.event
+            });
+            instantiation = new instantiationService_1.InstantiationService(services);
         });
         teardown(function () {
             oneModel.dispose();

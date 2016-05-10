@@ -112,9 +112,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/common/
         ExplorerViewlet.prototype.layout = function (dimension) {
             this.splitView.layout(dimension.height);
         };
-        ExplorerViewlet.prototype.getSelection = function () {
-            return this.explorerView ? this.explorerView.getSelection() : this.workingFilesView.getSelection();
-        };
         ExplorerViewlet.prototype.getActionRunner = function () {
             if (!this.actionRunner) {
                 this.actionRunner = new explorerViewer_1.ActionRunner(this.viewletState);

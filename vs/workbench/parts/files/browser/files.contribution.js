@@ -41,7 +41,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
     };
     // Register Action to Open Viewlet
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenExplorerViewletAction, OpenExplorerViewletAction.ID, OpenExplorerViewletAction.LABEL, openViewletKb), nls.localize('view', "View"));
+    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenExplorerViewletAction, OpenExplorerViewletAction.ID, OpenExplorerViewletAction.LABEL, openViewletKb), 'View: Show Explorer', nls.localize('view', "View"));
     // Register file editors
     platform_1.Registry.as(baseEditor_1.Extensions.Editors).registerEditor(new files_1.FileEditorDescriptor(textFileEditor_1.TextFileEditor.ID, // explicit dependency because we don't want these editors lazy loaded
     nls.localize('textFileEditor', "Text File Editor"), 'vs/workbench/parts/files/browser/editors/textFileEditor', 'TextFileEditor', [
@@ -103,7 +103,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
             'files.exclude': {
                 'type': 'object',
                 'description': nls.localize('exclude', "Configure glob patterns for excluding files and folders."),
-                'default': { '**/.git': true, '**/.DS_Store': true },
+                'default': { '**/.git': true, '**/.svn': true, '**/.DS_Store': true },
                 'additionalProperties': {
                     'anyOf': [
                         {
@@ -212,6 +212,6 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/workbench/browser/viewle
     ]));
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenWorkingFileByNameAction, OpenWorkingFileByNameAction.ID, OpenWorkingFileByNameAction.LABEL, {
         primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_P)
-    }), nls.localize('filesCategory', "Files"));
+    }), 'Files: Open Working File by Name', nls.localize('filesCategory', "Files"));
 });
 //# sourceMappingURL=files.contribution.js.map

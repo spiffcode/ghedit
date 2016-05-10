@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/async', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/events', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/base/common/diagnostics', 'vs/base/common/actions', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/lifecycle', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/platform/workspace/common/workspace', 'vs/base/common/keyCodes', 'vs/css!./media/fileactions'], function (require, exports, winjs_base_1, nls, platform_1, async_1, mime_1, paths, uri_1, errors, strings, events_1, labels_1, severity_1, diagnostics, actions_1, inputBox_1, lifecycle_1, events_2, Files, files_1, diffEditorInput_1, editor_1, fileEditorInput_1, explorerViewModel_1, textFileEditorModel_1, untitledEditorService_1, editorService_1, quickOpenService_1, viewletService_1, partService_1, storage_1, editor_2, event_1, instantiation_1, message_1, progress_1, workspace_1, keyCodes_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/platform', 'vs/base/common/async', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/events', 'vs/base/common/labels', 'vs/base/common/severity', 'vs/base/common/diagnostics', 'vs/workbench/browser/parts/editor/textEditor', 'vs/base/common/actions', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/common/lifecycle', 'vs/workbench/common/events', 'vs/workbench/parts/files/common/files', 'vs/platform/files/common/files', 'vs/workbench/common/editor/diffEditorInput', 'vs/workbench/common/editor', 'vs/workbench/parts/files/browser/editors/fileEditorInput', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/part/common/partService', 'vs/platform/storage/common/storage', 'vs/platform/editor/common/editor', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/workspace/common/workspace', 'vs/base/common/keyCodes', 'vs/css!./media/fileactions'], function (require, exports, winjs_base_1, nls, platform_1, async_1, mime_1, paths, uri_1, errors, strings, events_1, labels_1, severity_1, diagnostics, textEditor_1, actions_1, inputBox_1, lifecycle_1, events_2, Files, files_1, diffEditorInput_1, editor_1, fileEditorInput_1, explorerViewModel_1, textFileEditorModel_1, untitledEditorService_1, editorService_1, quickOpenService_1, viewletService_1, partService_1, storage_1, editor_2, event_1, instantiation_1, message_1, workspace_1, keyCodes_1) {
     'use strict';
     var ITextFileService = Files.ITextFileService;
     var BaseFileAction = (function (_super) {
@@ -205,9 +205,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     exports.TriggerRenameFileAction = TriggerRenameFileAction;
     var BaseRenameAction = (function (_super) {
         __extends(BaseRenameAction, _super);
-        function BaseRenameAction(id, label, element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService) {
+        function BaseRenameAction(id, label, element, contextService, editorService, fileService, messageService, textFileService, eventService) {
             _super.call(this, id, label, contextService, editorService, fileService, messageService, textFileService, eventService);
-            this.progressService = progressService;
             this.element = element;
         }
         BaseRenameAction.prototype.run = function (context) {
@@ -234,9 +233,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             }, function (error) {
                 _this.onError(error);
             });
-            if (this.progressService) {
-                this.progressService.showWhile(promise, 800);
-            }
             return promise;
         };
         BaseRenameAction.prototype.validateFileName = function (parent, name) {
@@ -264,16 +260,15 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(5, files_1.IFileService),
             __param(6, message_1.IMessageService),
             __param(7, ITextFileService),
-            __param(8, progress_1.IProgressService),
-            __param(9, event_1.IEventService)
+            __param(8, event_1.IEventService)
         ], BaseRenameAction);
         return BaseRenameAction;
     }(BaseFileAction));
     exports.BaseRenameAction = BaseRenameAction;
     var RenameFileAction = (function (_super) {
         __extends(RenameFileAction, _super);
-        function RenameFileAction(element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService) {
-            _super.call(this, RenameFileAction.ID, nls.localize('rename', "Rename"), element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService);
+        function RenameFileAction(element, contextService, editorService, fileService, messageService, textFileService, eventService) {
+            _super.call(this, RenameFileAction.ID, nls.localize('rename', "Rename"), element, contextService, editorService, fileService, messageService, textFileService, eventService);
             this._updateEnablement();
         }
         RenameFileAction.prototype.runAction = function (newName) {
@@ -300,8 +295,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(3, files_1.IFileService),
             __param(4, message_1.IMessageService),
             __param(5, ITextFileService),
-            __param(6, progress_1.IProgressService),
-            __param(7, event_1.IEventService)
+            __param(6, event_1.IEventService)
         ], RenameFileAction);
         return RenameFileAction;
     }(BaseRenameAction));
@@ -428,10 +422,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     exports.NewFolderAction = NewFolderAction;
     var BaseGlobalNewAction = (function (_super) {
         __extends(BaseGlobalNewAction, _super);
-        function BaseGlobalNewAction(id, label, viewletService, instantiationService) {
+        function BaseGlobalNewAction(id, label, viewletService, instantiationService, messageService) {
             _super.call(this, id, label);
             this.viewletService = viewletService;
             this.instantiationService = instantiationService;
+            this.messageService = messageService;
         }
         BaseGlobalNewAction.prototype.run = function () {
             var _this = this;
@@ -440,6 +435,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     viewlet.focus();
                     var explorer = viewlet;
                     var explorerView = explorer.getExplorerView();
+                    // Not having a folder opened
+                    if (!explorerView) {
+                        return _this.messageService.show(message_1.Severity.Info, nls.localize('openFolderFirst', "Open a folder first to create files or folders within."));
+                    }
                     if (!explorerView.isExpanded()) {
                         explorerView.expand();
                     }
@@ -457,37 +456,52 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         };
         BaseGlobalNewAction = __decorate([
             __param(2, viewletService_1.IViewletService),
-            __param(3, instantiation_1.IInstantiationService)
+            __param(3, instantiation_1.IInstantiationService),
+            __param(4, message_1.IMessageService)
         ], BaseGlobalNewAction);
         return BaseGlobalNewAction;
     }(actions_1.Action));
     exports.BaseGlobalNewAction = BaseGlobalNewAction;
     /* Create new file from anywhere: Open untitled */
-    var GlobalNewFileAction = (function (_super) {
-        __extends(GlobalNewFileAction, _super);
-        function GlobalNewFileAction(id, label, storageService, editorService, textFileService, untitledEditorService) {
+    var GlobalNewUntitledFileAction = (function (_super) {
+        __extends(GlobalNewUntitledFileAction, _super);
+        function GlobalNewUntitledFileAction(id, label, storageService, editorService, textFileService, untitledEditorService) {
             _super.call(this, id, label);
             this.storageService = storageService;
             this.editorService = editorService;
             this.textFileService = textFileService;
             this.untitledEditorService = untitledEditorService;
         }
-        GlobalNewFileAction.prototype.run = function () {
+        GlobalNewUntitledFileAction.prototype.run = function () {
             var input = this.untitledEditorService.createOrGet();
             // Make sure this untitled buffer shows up in working files set
             this.textFileService.getWorkingFilesModel().addEntry(input.getResource());
             return this.editorService.openEditor(input);
         };
-        GlobalNewFileAction.ID = 'workbench.action.files.newUntitledFile';
-        GlobalNewFileAction.LABEL = nls.localize('newFile', "New File");
-        GlobalNewFileAction = __decorate([
+        GlobalNewUntitledFileAction.ID = 'workbench.action.files.newUntitledFile';
+        GlobalNewUntitledFileAction.LABEL = nls.localize('newUntitledFile', "New Untitled File");
+        GlobalNewUntitledFileAction = __decorate([
             __param(2, storage_1.IStorageService),
             __param(3, editorService_1.IWorkbenchEditorService),
             __param(4, ITextFileService),
             __param(5, untitledEditorService_1.IUntitledEditorService)
-        ], GlobalNewFileAction);
-        return GlobalNewFileAction;
+        ], GlobalNewUntitledFileAction);
+        return GlobalNewUntitledFileAction;
     }(actions_1.Action));
+    exports.GlobalNewUntitledFileAction = GlobalNewUntitledFileAction;
+    /* Create new file from anywhere */
+    var GlobalNewFileAction = (function (_super) {
+        __extends(GlobalNewFileAction, _super);
+        function GlobalNewFileAction() {
+            _super.apply(this, arguments);
+        }
+        GlobalNewFileAction.prototype.getAction = function () {
+            return NewFileAction;
+        };
+        GlobalNewFileAction.ID = 'workbench.action.files.newFile';
+        GlobalNewFileAction.LABEL = nls.localize('newFile', "New File");
+        return GlobalNewFileAction;
+    }(BaseGlobalNewAction));
     exports.GlobalNewFileAction = GlobalNewFileAction;
     /* Create new folder from anywhere */
     var GlobalNewFolderAction = (function (_super) {
@@ -521,8 +535,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     /* Create New File (only used internally by explorerViewer) */
     var CreateFileAction = (function (_super) {
         __extends(CreateFileAction, _super);
-        function CreateFileAction(element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService) {
-            _super.call(this, CreateFileAction.ID, CreateFileAction.LABEL, element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService);
+        function CreateFileAction(element, contextService, editorService, fileService, messageService, textFileService, eventService) {
+            _super.call(this, CreateFileAction.ID, CreateFileAction.LABEL, element, contextService, editorService, fileService, messageService, textFileService, eventService);
             this._updateEnablement();
         }
         CreateFileAction.prototype.runAction = function (fileName) {
@@ -542,8 +556,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(3, files_1.IFileService),
             __param(4, message_1.IMessageService),
             __param(5, ITextFileService),
-            __param(6, progress_1.IProgressService),
-            __param(7, event_1.IEventService)
+            __param(6, event_1.IEventService)
         ], CreateFileAction);
         return CreateFileAction;
     }(BaseCreateAction));
@@ -551,8 +564,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     /* Create New Folder (only used internally by explorerViewer) */
     var CreateFolderAction = (function (_super) {
         __extends(CreateFolderAction, _super);
-        function CreateFolderAction(element, contextService, editorService, fileService, messageService, textFileService, progressService, eventService) {
-            _super.call(this, CreateFolderAction.ID, CreateFolderAction.LABEL, null, contextService, editorService, fileService, messageService, textFileService, progressService, eventService);
+        function CreateFolderAction(element, contextService, editorService, fileService, messageService, textFileService, eventService) {
+            _super.call(this, CreateFolderAction.ID, CreateFolderAction.LABEL, null, contextService, editorService, fileService, messageService, textFileService, eventService);
             this._updateEnablement();
         }
         CreateFolderAction.prototype.runAction = function (fileName) {
@@ -569,8 +582,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(3, files_1.IFileService),
             __param(4, message_1.IMessageService),
             __param(5, ITextFileService),
-            __param(6, progress_1.IProgressService),
-            __param(7, event_1.IEventService)
+            __param(6, event_1.IEventService)
         ], CreateFolderAction);
         return CreateFolderAction;
     }(BaseCreateAction));
@@ -684,9 +696,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     /* Import File */
     var ImportFileAction = (function (_super) {
         __extends(ImportFileAction, _super);
-        function ImportFileAction(tree, element, clazz, contextService, editorService, fileService, messageService, textFileService, eventService, progressService) {
+        function ImportFileAction(tree, element, clazz, contextService, editorService, fileService, messageService, textFileService, eventService) {
             _super.call(this, ImportFileAction.ID, nls.localize('importFiles', "Import Files"), contextService, editorService, fileService, messageService, textFileService, eventService);
-            this.progressService = progressService;
             this.tree = tree;
             this.element = element;
             if (clazz) {
@@ -699,7 +710,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         };
         ImportFileAction.prototype.run = function (context) {
             var _this = this;
-            var multiFileProgressTracker;
             var importPromise = winjs_base_1.TPromise.as(null).then(function () {
                 var input = context.input;
                 if (input.files && input.files.length > 0) {
@@ -741,20 +751,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                         if (!overwrite) {
                             return;
                         }
-                        // Progress per file imported
-                        if (filesArray_1.length > 1 && _this.progressService) {
-                            multiFileProgressTracker = _this.progressService.show(filesArray_1.length);
-                        }
                         // Run import in sequence
                         var importPromisesFactory = [];
                         filesArray_1.forEach(function (file) {
                             importPromisesFactory.push(function () {
                                 var sourceFile = uri_1.default.file(file.path);
                                 return _this.fileService.importFile(sourceFile, targetElement_1.resource).then(function (result) {
-                                    // Progress
-                                    if (multiFileProgressTracker) {
-                                        multiFileProgressTracker.worked(1);
-                                    }
                                     if (result.stat) {
                                         // Emit Deleted Event if file gets replaced unless it is the same file
                                         var oldFile = targetNames[platform_1.isLinux ? file.name : file.name.toLowerCase()];
@@ -773,9 +775,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     });
                 }
             });
-            if (this.progressService && !multiFileProgressTracker) {
-                this.progressService.showWhile(importPromise, 800);
-            }
             return importPromise.then(function () {
                 _this.tree.clearHighlight();
             }, function (error) {
@@ -790,8 +789,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(5, files_1.IFileService),
             __param(6, message_1.IMessageService),
             __param(7, ITextFileService),
-            __param(8, event_1.IEventService),
-            __param(9, progress_1.IProgressService)
+            __param(8, event_1.IEventService)
         ], ImportFileAction);
         return ImportFileAction;
     }(BaseFileAction));
@@ -910,9 +908,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     // Duplicate File/Folder
     var DuplicateFileAction = (function (_super) {
         __extends(DuplicateFileAction, _super);
-        function DuplicateFileAction(tree, element, target, contextService, editorService, fileService, messageService, textFileService, eventService, progressService) {
+        function DuplicateFileAction(tree, element, target, contextService, editorService, fileService, messageService, textFileService, eventService) {
             _super.call(this, 'workbench.files.action.duplicateFile', nls.localize('duplicateFile', "Duplicate"), contextService, editorService, fileService, messageService, textFileService, eventService);
-            this.progressService = progressService;
             this.tree = tree;
             this.element = element;
             this.target = (target && target.isDirectory) ? target : element.parent;
@@ -930,9 +927,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             }, function (error) {
                 _this.onError(error);
             });
-            if (this.progressService) {
-                this.progressService.showWhile(result, 800);
-            }
             return result;
         };
         DuplicateFileAction.prototype.onError = function (error) {
@@ -980,8 +974,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             __param(5, files_1.IFileService),
             __param(6, message_1.IMessageService),
             __param(7, ITextFileService),
-            __param(8, event_1.IEventService),
-            __param(9, progress_1.IProgressService)
+            __param(8, event_1.IEventService)
         ], DuplicateFileAction);
         return DuplicateFileAction;
     }(BaseFileAction));
@@ -1236,7 +1229,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     var selectionOfSource_1;
                     if (positionsOfSource_1.length) {
                         var activeEditor = this.editorService.getActiveEditor();
-                        if (activeEditor && positionsOfSource_1.indexOf(activeEditor.position) >= 0) {
+                        if (activeEditor instanceof textEditor_1.BaseTextEditor && positionsOfSource_1.indexOf(activeEditor.position) >= 0) {
                             selectionOfSource_1 = activeEditor.getSelection();
                         }
                     }
@@ -1551,6 +1544,50 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         return OpenResourcesAction;
     }(actions_1.Action));
     exports.OpenResourcesAction = OpenResourcesAction;
+    var ReopenClosedFileAction = (function (_super) {
+        __extends(ReopenClosedFileAction, _super);
+        function ReopenClosedFileAction(id, label, partService, editorService, viewletService, textFileService, fileService) {
+            _super.call(this, id, label);
+            this.partService = partService;
+            this.editorService = editorService;
+            this.viewletService = viewletService;
+            this.textFileService = textFileService;
+            this.fileService = fileService;
+        }
+        ReopenClosedFileAction.prototype.run = function () {
+            var _this = this;
+            var workingFilesModel = this.textFileService.getWorkingFilesModel();
+            var entry = workingFilesModel.popLastClosedEntry();
+            if (entry === null) {
+                return winjs_base_1.TPromise.as(true);
+            }
+            // If the current resource is the recently closed resource, run action again
+            var activeResource = editor_1.getUntitledOrFileResource(this.editorService.getActiveEditorInput());
+            if (activeResource && activeResource.path === entry.resource.path) {
+                return this.run();
+            }
+            return this.fileService.existsFile(entry.resource).then(function (exists) {
+                if (!exists) {
+                    return _this.run(); // repeat in case the last closed file got deleted meanwhile
+                }
+                // Make it a working file again
+                workingFilesModel.addEntry(entry.resource);
+                // Open in editor
+                return _this.editorService.openEditor(entry);
+            });
+        };
+        ReopenClosedFileAction.ID = 'workbench.files.action.reopenClosedFile';
+        ReopenClosedFileAction.LABEL = nls.localize('reopenClosedFile', "Reopen Closed File");
+        ReopenClosedFileAction = __decorate([
+            __param(2, partService_1.IPartService),
+            __param(3, editorService_1.IWorkbenchEditorService),
+            __param(4, viewletService_1.IViewletService),
+            __param(5, ITextFileService),
+            __param(6, files_1.IFileService)
+        ], ReopenClosedFileAction);
+        return ReopenClosedFileAction;
+    }(actions_1.Action));
+    exports.ReopenClosedFileAction = ReopenClosedFileAction;
     var BaseCloseWorkingFileAction = (function (_super) {
         __extends(BaseCloseWorkingFileAction, _super);
         function BaseCloseWorkingFileAction(id, label, clazz, model, elements, untitledEditorService, editorService, textFileService, messageService, quickOpenService) {
@@ -2067,7 +2104,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     exports.ShowActiveFileInExplorer = ShowActiveFileInExplorer;
     function keybindingForAction(id) {
         switch (id) {
-            case GlobalNewFileAction.ID:
+            case GlobalNewUntitledFileAction.ID:
                 return new keyCodes_1.Keybinding(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_N);
             case TriggerRenameFileAction.ID:
                 return new keyCodes_1.Keybinding(platform_1.isMacintosh ? keyCodes_1.KeyCode.Enter : keyCodes_1.KeyCode.F2);
@@ -2075,7 +2112,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 return new keyCodes_1.Keybinding(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_S);
             case DeleteFileAction.ID:
             case MoveFileToTrashAction.ID:
-                return new keyCodes_1.Keybinding(keyCodes_1.KeyCode.Delete);
+                return new keyCodes_1.Keybinding(platform_1.isMacintosh ? keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Backspace : keyCodes_1.KeyCode.Delete);
             case CopyFileAction.ID:
                 return new keyCodes_1.Keybinding(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C);
             case PasteFileAction.ID:

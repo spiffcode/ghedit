@@ -65,7 +65,7 @@ define(["require", "exports"], function (require, exports) {
     });
     MonacoEditorLanguages.push({
         id: 'jade',
-        extensions: ['.jade'],
+        extensions: ['.jade', '.pug'],
         aliases: ['Jade', 'jade'],
         defModule: 'vs/editor/standalone-languages/jade'
     });

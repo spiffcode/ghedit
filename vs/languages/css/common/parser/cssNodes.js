@@ -74,7 +74,7 @@ define(["require", "exports", 'vs/base/common/types'], function (require, export
         NodeType[NodeType["FunctionParameter"] = 57] = "FunctionParameter";
         NodeType[NodeType["FunctionArgument"] = 58] = "FunctionArgument";
         NodeType[NodeType["KeyframeSelector"] = 59] = "KeyframeSelector";
-        NodeType[NodeType["MSViewPort"] = 60] = "MSViewPort";
+        NodeType[NodeType["ViewPort"] = 60] = "ViewPort";
         NodeType[NodeType["Document"] = 61] = "Document";
     })(exports.NodeType || (exports.NodeType = {}));
     var NodeType = exports.NodeType;
@@ -755,21 +755,21 @@ define(["require", "exports", 'vs/base/common/types'], function (require, export
         return FunctionDeclaration;
     }(BodyDeclaration));
     exports.FunctionDeclaration = FunctionDeclaration;
-    var MSViewPort = (function (_super) {
-        __extends(MSViewPort, _super);
-        function MSViewPort(offset, length) {
+    var ViewPort = (function (_super) {
+        __extends(ViewPort, _super);
+        function ViewPort(offset, length) {
             _super.call(this, offset, length);
         }
-        Object.defineProperty(MSViewPort.prototype, "type", {
+        Object.defineProperty(ViewPort.prototype, "type", {
             get: function () {
-                return NodeType.MSViewPort;
+                return NodeType.ViewPort;
             },
             enumerable: true,
             configurable: true
         });
-        return MSViewPort;
+        return ViewPort;
     }(BodyDeclaration));
-    exports.MSViewPort = MSViewPort;
+    exports.ViewPort = ViewPort;
     var FontFace = (function (_super) {
         __extends(FontFace, _super);
         function FontFace(offset, length) {

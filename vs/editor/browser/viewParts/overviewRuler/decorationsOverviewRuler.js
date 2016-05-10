@@ -75,9 +75,9 @@ define(["require", "exports", 'vs/platform/theme/common/themes', 'vs/editor/comm
             this._shouldUpdateDecorations = true;
             return true;
         };
-        DecorationsOverviewRuler.prototype.onScrollHeightChanged = function (scrollHeight) {
-            this._overviewRuler.setScrollHeight(scrollHeight, false);
-            return true;
+        DecorationsOverviewRuler.prototype.onScrollChanged = function (e) {
+            this._overviewRuler.setScrollHeight(e.scrollHeight, false);
+            return _super.prototype.onScrollChanged.call(this, e) || e.scrollHeightChanged;
         };
         // ---- end view event handlers
         DecorationsOverviewRuler.prototype.getDomNode = function () {

@@ -132,7 +132,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base',
             this._register('vscode.previewHtml', function (uri, position) {
                 return _this._commands.executeCommand('_workbench.previewHtml', uri, typeof position === 'number' ? typeConverters.fromViewColumn(position) : void 0);
             }, {
-                description: "\n\t\t\t\t\tRender the html of the resource in an editor view.\n\n\t\t\t\t\tLinks contained in the document will be handled by VS Code whereby it supports file-resources and virtual resources\n\t\t\t\t\tas well as triggering commands using the 'command'-scheme.\n\t\t\t\t",
+                description: "\n\t\t\t\t\tRender the html of the resource in an editor view.\n\n\t\t\t\t\tLinks contained in the document will be handled by VS Code whereby it supports `file`-resources and\n\t\t\t\t\t[virtual](https://github.com/Microsoft/vscode/blob/master/src/vs/vscode.d.ts#L3295)-resources\n\t\t\t\t\tas well as triggering commands using the `command`-scheme. Use the query part of a command-uri to pass along JSON-encoded\n\t\t\t\t\targuments - note that URL-encoding must be applied. The snippet below defines a command-link that calls the _previewHtml_\n\t\t\t\t\tcommand and passes along an uri:\n\t\t\t\t\t```\n\t\t\t\t\tlet href = encodeURI('command:vscode.previewHtml?' + JSON.stringify(someUri));\n\t\t\t\t\tlet html = '<a href=\"' + href + '\">Show Resource...</a>.';\n\t\t\t\t\t```\n\t\t\t\t",
                 args: [
                     { name: 'uri', description: 'Uri of the resource to preview.', constraint: function (value) { return value instanceof uri_1.default || typeof value === 'string'; } },
                     { name: 'column', description: '(optional) Column in which to preview.' },
@@ -207,7 +207,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base',
                 resource: resource,
                 position: position && typeConverters.fromPosition(position)
             };
-            return this._commands.executeCommand('_executeDocumentHighlights', args).then(function (value) {
+            return this._commands.executeCommand('_executeReferenceProvider', args).then(function (value) {
                 if (Array.isArray(value)) {
                     return value.map(typeConverters.location.to);
                 }

@@ -2,15 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/common/editor/resourceEditorInput', 'vs/workbench/test/browser/servicesTestUtils', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, uri_1, stringEditorInput_1, resourceEditorInput_1, servicesTestUtils_1, InstantiationService, servicesTestUtils_2) {
+define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/common/editor/stringEditorInput', 'vs/workbench/common/editor/resourceEditorInput', 'vs/workbench/test/browser/servicesTestUtils', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, uri_1, stringEditorInput_1, resourceEditorInput_1, servicesTestUtils_1, modelService_1, modeService_1, serviceCollection_1, instantiationService_1, servicesTestUtils_2) {
     'use strict';
     suite('Workbench - StringEditorInput', function () {
         test('StringEditorInput', function (done) {
             var editorService = new servicesTestUtils_1.TestEditorService(function () { });
-            var inst = InstantiationService.createInstantiationService({
-                modeService: servicesTestUtils_2.createMockModeService(),
-                modelService: servicesTestUtils_2.createMockModelService()
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(modeService_1.IModeService, servicesTestUtils_2.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_2.createMockModelService());
+            var inst = new instantiationService_1.InstantiationService(services);
             var input = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'value', 'mime', false);
             var otherInput = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'othervalue', 'mime', false);
             var otherInputSame = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'value', 'mime', false);
@@ -47,10 +47,10 @@ define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/comm
             }).done(function () { return done(); });
         });
         test('StringEditorInput - setValue, clearValue, append', function () {
-            var inst = InstantiationService.createInstantiationService({
-                modeService: servicesTestUtils_2.createMockModeService(),
-                modelService: servicesTestUtils_2.createMockModelService()
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(modeService_1.IModeService, servicesTestUtils_2.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_2.createMockModelService());
+            var inst = new instantiationService_1.InstantiationService(services);
             var input = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'value', 'mime', false);
             assert.strictEqual(input.getValue(), 'value');
             input.setValue('foo');
@@ -63,7 +63,7 @@ define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/comm
             assert.strictEqual(input.getValue(), '12');
         });
         test('Input.matches() - StringEditorInput', function () {
-            var inst = InstantiationService.createInstantiationService({});
+            var inst = new instantiationService_1.InstantiationService();
             var stringEditorInput = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'value', 'mime', false);
             var promiseEditorInput = inst.createInstance(resourceEditorInput_1.ResourceEditorInput, 'name', 'description', uri_1.default.create('inMemory', null, 'thePath'));
             var stringEditorInput2 = inst.createInstance(stringEditorInput_1.StringEditorInput, 'name', 'description', 'value', 'mime', false);
@@ -78,10 +78,10 @@ define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/comm
         test('ResourceEditorInput', function (done) {
             var modelService = servicesTestUtils_2.createMockModelService();
             var modeService = servicesTestUtils_2.createMockModeService();
-            var inst = InstantiationService.createInstantiationService({
-                modeService: modeService,
-                modelService: modelService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(modeService_1.IModeService, modeService);
+            services.set(modelService_1.IModelService, modelService);
+            var inst = new instantiationService_1.InstantiationService(services);
             var resource = uri_1.default.create('inMemory', null, 'thePath');
             modelService.createModel('function test() {}', modeService.getOrCreateMode('text'), resource);
             var input = inst.createInstance(resourceEditorInput_1.ResourceEditorInput, 'The Name', 'The Description', resource);

@@ -2,59 +2,43 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/workbench/parts/debug/common/debug', 'vs/base/common/eventEmitter', 'vs/base/common/winjs.base'], function (require, exports, debug, ee, winjs_base_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/workbench/parts/debug/common/debug'], function (require, exports, winjs_base_1, debug) {
     "use strict";
-    var MockDebugService = (function (_super) {
-        __extends(MockDebugService, _super);
+    var MockDebugService = (function () {
         function MockDebugService() {
-            _super.call(this);
             this.serviceId = debug.IDebugService;
             this.session = new MockRawSession();
         }
-        MockDebugService.prototype.getState = function () {
+        Object.defineProperty(MockDebugService.prototype, "state", {
+            get: function () {
+                return null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MockDebugService.prototype, "onDidChangeState", {
+            get: function () {
+                return null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        MockDebugService.prototype.getConfigurationManager = function () {
             return null;
         };
-        MockDebugService.prototype.canSetBreakpointsIn = function (model) {
-            return false;
-        };
-        MockDebugService.prototype.getConfigurationName = function () {
-            return null;
-        };
-        MockDebugService.prototype.setConfiguration = function (name) {
+        MockDebugService.prototype.setFocusedStackFrameAndEvaluate = function (focusedStackFrame) {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.openConfigFile = function (sideBySide) {
-            return winjs_base_1.TPromise.as(false);
-        };
-        MockDebugService.prototype.loadLaunchConfig = function () {
+        MockDebugService.prototype.addBreakpoints = function (rawBreakpoints) {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.setFocusedStackFrameAndEvaluate = function (focusedStackFrame) { };
-        MockDebugService.prototype.setBreakpointsForModel = function (modelUri, rawData) { };
-        MockDebugService.prototype.toggleBreakpoint = function (IRawBreakpoint) {
+        MockDebugService.prototype.enableOrDisableBreakpoints = function (enabled) {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.enableOrDisableAllBreakpoints = function (enabled) {
+        MockDebugService.prototype.setBreakpointsActivated = function () {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.toggleEnablement = function (element) {
-            return winjs_base_1.TPromise.as(null);
-        };
-        MockDebugService.prototype.toggleBreakpointsActivated = function () {
-            return winjs_base_1.TPromise.as(null);
-        };
-        MockDebugService.prototype.removeAllBreakpoints = function () {
-            return winjs_base_1.TPromise.as(null);
-        };
-        MockDebugService.prototype.sendAllBreakpoints = function () {
-            return winjs_base_1.TPromise.as(null);
-        };
-        MockDebugService.prototype.editBreakpoint = function (editor, lineNumber) {
+        MockDebugService.prototype.removeBreakpoints = function () {
             return winjs_base_1.TPromise.as(null);
         };
         MockDebugService.prototype.addFunctionBreakpoint = function () { };
@@ -67,7 +51,7 @@ define(["require", "exports", 'vs/workbench/parts/debug/common/debug', 'vs/base/
         MockDebugService.prototype.addReplExpression = function (name) {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.clearReplExpressions = function () { };
+        MockDebugService.prototype.removeReplExpressions = function () { };
         MockDebugService.prototype.logToRepl = function (value, severity) { };
         MockDebugService.prototype.appendReplOutput = function (value, severity) { };
         MockDebugService.prototype.addWatchExpression = function (name) {
@@ -76,7 +60,7 @@ define(["require", "exports", 'vs/workbench/parts/debug/common/debug', 'vs/base/
         MockDebugService.prototype.renameWatchExpression = function (id, newName) {
             return winjs_base_1.TPromise.as(null);
         };
-        MockDebugService.prototype.clearWatchExpressions = function (id) { };
+        MockDebugService.prototype.removeWatchExpressions = function (id) { };
         MockDebugService.prototype.createSession = function (noDebug) {
             return winjs_base_1.TPromise.as(null);
         };
@@ -92,23 +76,42 @@ define(["require", "exports", 'vs/workbench/parts/debug/common/debug', 'vs/base/
         MockDebugService.prototype.getViewModel = function () {
             return null;
         };
-        MockDebugService.prototype.openOrRevealEditor = function (source, lineNumber, preserveFocus, sideBySide) {
-            return winjs_base_1.TPromise.as(null);
-        };
-        MockDebugService.prototype.revealRepl = function (focus) {
+        MockDebugService.prototype.openOrRevealSource = function (source, lineNumber, preserveFocus, sideBySide) {
             return winjs_base_1.TPromise.as(null);
         };
         return MockDebugService;
-    }(ee.EventEmitter));
+    }());
     exports.MockDebugService = MockDebugService;
-    var MockRawSession = (function (_super) {
-        __extends(MockRawSession, _super);
+    var MockRawSession = (function () {
         function MockRawSession() {
-            _super.apply(this, arguments);
-            this.isAttach = false;
         }
-        MockRawSession.prototype.getType = function () {
-            return null;
+        Object.defineProperty(MockRawSession.prototype, "configuration", {
+            get: function () {
+                return {
+                    type: 'mock',
+                    isAttach: false,
+                    capabilities: {}
+                };
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MockRawSession.prototype, "onDidStop", {
+            get: function () {
+                return null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MockRawSession.prototype, "onDidEvent", {
+            get: function () {
+                return null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        MockRawSession.prototype.custom = function (request, args) {
+            return winjs_base_1.TPromise.as(null);
         };
         MockRawSession.prototype.disconnect = function (restart, force) {
             return winjs_base_1.TPromise.as(null);
@@ -145,6 +148,6 @@ define(["require", "exports", 'vs/workbench/parts/debug/common/debug', 'vs/base/
             return winjs_base_1.TPromise.as(null);
         };
         return MockRawSession;
-    }(ee.EventEmitter));
+    }());
 });
 //# sourceMappingURL=mockDebugService.js.map

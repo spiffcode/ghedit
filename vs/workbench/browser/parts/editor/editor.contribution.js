@@ -41,9 +41,9 @@ define(["require", "exports", 'vs/platform/platform', 'vs/nls', 'vs/base/common/
     statusBar.registerStatusbarItem(new statusbar_1.StatusbarItemDescriptor(editorStatus_1.EditorStatus, statusbar_1.StatusbarAlignment.RIGHT, 100 /* High Priority */));
     // Register Actions
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeModeAction, editorStatus_1.ChangeModeAction.ID, editorStatus_1.ChangeModeAction.LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.KEY_M) }));
-    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeEOLAction, editorStatus_1.ChangeEOLAction.ID, editorStatus_1.ChangeEOLAction.LABEL));
-    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeEncodingAction, editorStatus_1.ChangeEncodingAction.ID, editorStatus_1.ChangeEncodingAction.LABEL));
+    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeModeAction, editorStatus_1.ChangeModeAction.ID, editorStatus_1.ChangeModeAction.LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.KEY_M) }), 'Change Language Mode');
+    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeEOLAction, editorStatus_1.ChangeEOLAction.ID, editorStatus_1.ChangeEOLAction.LABEL), 'Change End of Line Sequence');
+    registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(editorStatus_1.ChangeEncodingAction, editorStatus_1.ChangeEncodingAction.ID, editorStatus_1.ChangeEncodingAction.LABEL), 'Change File Encoding');
     var ViewSourceEditorInputAction = (function (_super) {
         __extends(ViewSourceEditorInputAction, _super);
         function ViewSourceEditorInputAction(editorService, contextService) {

@@ -7,7 +7,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/common/timer', 'vs/base/common/events', 'vs/base/browser/builder', 'vs/nls', 'vs/base/common/strings', 'vs/base/common/assert', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/workbench/common/memento', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/part', 'vs/workbench/common/events', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/browser/parts/editor/sideBySideEditorControl', 'vs/workbench/services/progress/browser/progressService', 'vs/platform/editor/common/editor', 'vs/platform/message/common/message', 'vs/css!./media/editorpart', 'vs/workbench/browser/parts/editor/editor.contribution'], function (require, exports, winjs_base_1, platform_1, timer, events_1, builder_1, nls, strings, assert, arrays, types, errors, memento_1, actionBarRegistry_1, part_1, events_2, baseEditor_1, editor_1, textEditor_1, sideBySideEditorControl_1, progressService_1, editor_2, message_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/common/timer', 'vs/base/common/events', 'vs/base/browser/builder', 'vs/nls', 'vs/base/common/strings', 'vs/base/common/assert', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/errors', 'vs/workbench/common/memento', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/part', 'vs/workbench/common/events', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/browser/parts/editor/textEditor', 'vs/workbench/browser/parts/editor/sideBySideEditorControl', 'vs/workbench/services/progress/browser/progressService', 'vs/workbench/services/part/common/partService', 'vs/platform/editor/common/editor', 'vs/platform/storage/common/storage', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/progress/common/progress', 'vs/css!./media/editorpart', 'vs/workbench/browser/parts/editor/editor.contribution'], function (require, exports, winjs_base_1, platform_1, timer, events_1, builder_1, nls, strings, assert, arrays, types, errors, memento_1, actionBarRegistry_1, part_1, events_2, baseEditor_1, editor_1, textEditor_1, sideBySideEditorControl_1, progressService_1, partService_1, editor_2, storage_1, event_1, instantiation_1, serviceCollection_1, message_1, telemetry_1, progress_1) {
     'use strict';
     var EDITOR_STATE_STORAGE_KEY = 'editorpart.editorState';
     /**
@@ -16,13 +25,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
      */
     var EditorPart = (function (_super) {
         __extends(EditorPart, _super);
-        function EditorPart(messageService, eventService, telemetryService, storageService, partService, id) {
+        function EditorPart(id, messageService, eventService, telemetryService, storageService, partService, instantiationService) {
             _super.call(this, id);
             this.messageService = messageService;
             this.eventService = eventService;
             this.telemetryService = telemetryService;
             this.storageService = storageService;
             this.partService = partService;
+            this.instantiationService = instantiationService;
             this.visibleInputs = [];
             this.visibleInputListeners = [];
             this.visibleEditors = [];
@@ -43,9 +53,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
             this.pendingEditorInputsToClose = [];
             this.pendingEditorInputCloseTimeout = null;
         }
-        EditorPart.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         EditorPart.prototype.createPositionArray = function (multiArray) {
             var array = [];
             for (var i = 0; i < editor_2.POSITIONS.length; i++) {
@@ -546,10 +553,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
             return null;
         };
         EditorPart.prototype.createEditor = function (editorDescriptor, editorDomNode, position) {
-            var services = {
-                progressService: new progressService_1.WorkbenchProgressService(this.eventService, this.sideBySideControl.getProgressBar(position), editorDescriptor.getId(), true)
-            };
-            var editorInstantiationService = this.instantiationService.createChild(services);
+            var progressService = new progressService_1.WorkbenchProgressService(this.eventService, this.sideBySideControl.getProgressBar(position), editorDescriptor.getId(), true);
+            var editorInstantiationService = this.instantiationService.createChild(new serviceCollection_1.ServiceCollection([progress_1.IProgressService, progressService]));
             return editorInstantiationService.createInstance(editorDescriptor);
         };
         EditorPart.prototype.hideEditor = function (editor, position, layoutAndRochade) {
@@ -838,6 +843,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/platform
             // Pass to super
             _super.prototype.dispose.call(this);
         };
+        EditorPart = __decorate([
+            __param(1, message_1.IMessageService),
+            __param(2, event_1.IEventService),
+            __param(3, telemetry_1.ITelemetryService),
+            __param(4, storage_1.IStorageService),
+            __param(5, partService_1.IPartService),
+            __param(6, instantiation_1.IInstantiationService)
+        ], EditorPart);
         return EditorPart;
     }(part_1.Part));
     exports.EditorPart = EditorPart;

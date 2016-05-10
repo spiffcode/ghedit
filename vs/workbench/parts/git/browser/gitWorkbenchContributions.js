@@ -352,7 +352,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/
             win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G },
             linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G },
             mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_G }
-        }), nls.localize('view', "View"));
+        }), 'View: Show Git', nls.localize('view', "View"));
         // Register MergeDecorator
         editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(editorcontrib.MergeDecorator);
         // Register StatusUpdater

@@ -153,7 +153,7 @@ define(["require", "exports"], function (require, exports) {
     function endsWith(haystack, needle) {
         var diff = haystack.length - needle.length;
         if (diff > 0) {
-            return haystack.lastIndexOf(needle) === haystack.length - needle.length;
+            return haystack.lastIndexOf(needle) === diff;
         }
         else if (diff === 0) {
             return haystack === needle;
@@ -544,5 +544,13 @@ define(["require", "exports"], function (require, exports) {
         return btoa(encodeURIComponent(str)); // we use encodeURIComponent because btoa fails for non Latin 1 values
     }
     exports.safeBtoa = safeBtoa;
+    function repeat(s, count) {
+        var result = '';
+        for (var i = 0; i < count; i++) {
+            result += s;
+        }
+        return result;
+    }
+    exports.repeat = repeat;
 });
 //# sourceMappingURL=strings.js.map

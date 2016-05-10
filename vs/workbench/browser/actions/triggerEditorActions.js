@@ -548,29 +548,29 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     // Contribute to Workbench Actions
     var category = nls.localize('view', "View");
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseAllEditorsAction, CLOSE_ALL_EDITORS_ACTION_ID, CLOSE_ALL_EDITORS_ACTION_LABEL), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseOtherEditorsAction, CLOSE_OTHER_EDITORS_ACTION_ID, CLOSE_OTHER_EDITORS_ACTION_LABEL), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(SplitEditorAction, SPLIT_EDITOR_ACTION_ID, SPLIT_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_BACKSLASH }), category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseAllEditorsAction, CLOSE_ALL_EDITORS_ACTION_ID, CLOSE_ALL_EDITORS_ACTION_LABEL), 'View: Close All Editors', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CloseOtherEditorsAction, CLOSE_OTHER_EDITORS_ACTION_ID, CLOSE_OTHER_EDITORS_ACTION_LABEL), 'View: Close Other Editors', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(SplitEditorAction, SPLIT_EDITOR_ACTION_ID, SPLIT_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_BACKSLASH }), 'View: Split Editor', category);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(CycleEditorAction, CYCLE_EDITOR_ACTION_ID, CYCLE_EDITOR_ACTION_LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_BACKTICK,
         // on mac this keybinding is reserved to cycle between windows
         mac: { primary: null }
-    }), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusFirstEditorAction, FOCUS_FIRST_EDITOR_ACTION_ID, FOCUS_FIRST_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_1 }), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusSecondEditorAction, FOCUS_SECOND_EDITOR_ACTION_ID, FOCUS_SECOND_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_2 }), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusThirdEditorAction, FOCUS_THIRD_EDITOR_ACTION_ID, FOCUS_THIRD_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_3 }), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(EvenEditorWidthsAction, EVEN_EDITOR_WIDTHS_ACTION_ID, EVEN_EDITOR_WIDTHS_ACTION_LABEL), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MaximizeEditorAction, MAXIMIZE_EDITOR_ACTION_ID, MAXIMIZE_EDITOR_ACTION_LABEL), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MinimizeOtherEditorsAction, MINIMIZE_EDITORS_ACTION_ID, MINIMIZE_EDITORS_ACTION_LABEL), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MoveEditorLeftAction, MOVE_EDITOR_LEFT_ACTION_ID, MOVE_EDITOR_LEFT_ACTION_LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.LeftArrow) }), category);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MoveEditorRightAction, MOVE_EDITOR_RIGHT_ACTION_ID, MOVE_EDITOR_RIGHT_ACTION_LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.RightArrow) }), category);
+    }), 'View: Cycle Between Opened Editors', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusFirstEditorAction, FOCUS_FIRST_EDITOR_ACTION_ID, FOCUS_FIRST_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_1 }), 'View: Focus into Left Hand Editor', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusSecondEditorAction, FOCUS_SECOND_EDITOR_ACTION_ID, FOCUS_SECOND_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_2 }), 'View: Focus into Side Editor', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(FocusThirdEditorAction, FOCUS_THIRD_EDITOR_ACTION_ID, FOCUS_THIRD_EDITOR_ACTION_LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_3 }), 'View: Focus into Right Hand Editor', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(EvenEditorWidthsAction, EVEN_EDITOR_WIDTHS_ACTION_ID, EVEN_EDITOR_WIDTHS_ACTION_LABEL), 'View: Even Editor Widths', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MaximizeEditorAction, MAXIMIZE_EDITOR_ACTION_ID, MAXIMIZE_EDITOR_ACTION_LABEL), 'View: Maximize Active Editor and Hide Sidebar', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MinimizeOtherEditorsAction, MINIMIZE_EDITORS_ACTION_ID, MINIMIZE_EDITORS_ACTION_LABEL), 'View: Minimize Other Editors', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MoveEditorLeftAction, MOVE_EDITOR_LEFT_ACTION_ID, MOVE_EDITOR_LEFT_ACTION_LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.LeftArrow) }), 'View: Move Active Editor Left', category);
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(MoveEditorRightAction, MOVE_EDITOR_RIGHT_ACTION_ID, MOVE_EDITOR_RIGHT_ACTION_LABEL, { primary: keyCodes_1.KeyMod.chord(keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_K, keyCodes_1.KeyCode.RightArrow) }), 'View: Move Active Editor Right', category);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(NavigateToLeftEditorAction, NAVIGATE_LEFT_EDITOR_ACTION_ID, NAVIGATE_LEFT_EDITOR_ACTION_LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.LeftArrow,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.LeftArrow }
-    }), category);
+    }), 'View: Focus into Next Editor on the Left', category);
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(NavigateToRightEditorAction, NAVIGATE_RIGHT_EDITOR_ACTION_ID, NAVIGATE_RIGHT_EDITOR_ACTION_LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.RightArrow,
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.RightArrow },
-    }), category);
+    }), 'View: Focus into Next Editor on the Right', category);
 });
 //# sourceMappingURL=triggerEditorActions.js.map

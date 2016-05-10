@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/css/common/css', 'vs/platform/test/common/nullThreadService', 'vs/platform/instantiation/common/instantiationService'], function (require, exports, modesUtil, css_1, nullThreadService_1, instantiationService_1) {
+define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/css/common/css', 'vs/platform/test/common/nullThreadService', 'vs/platform/thread/common/thread', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection'], function (require, exports, modesUtil, css_1, nullThreadService_1, thread_1, instantiationService_1, serviceCollection_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11,9 +11,7 @@ define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/c
         var assertOnEnter;
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-            });
+            var inst = new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([thread_1.IThreadService, threadService]));
             threadService.setInstantiationService(inst);
             var mode = new css_1.CSSMode({ id: 'css' }, inst, threadService);
             tokenizationSupport = mode.tokenizationSupport;

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/event', 'vs/editor/common/modes/languageSelector', 'vs/base/common/platform', 'vs/base/common/strings', 'vs/platform/thread/common/thread', 'vs/base/common/errors', 'vs/workbench/api/node/extHostFileSystemEventService', 'vs/workbench/api/node/extHostDocuments', 'vs/workbench/api/node/extHostConfiguration', 'vs/workbench/api/node/extHostDiagnostics', 'vs/workbench/api/node/extHostWorkspace', 'vs/workbench/api/node/extHostQuickOpen', 'vs/workbench/api/node/extHostStatusBar', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostOutputService', 'vs/workbench/api/node/extHostMessageService', 'vs/workbench/api/node/extHostEditors', 'vs/workbench/api/node/extHostLanguages', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostApiCommands', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/modes', 'vs/editor/common/services/modeService', 'vs/base/common/uri', 'vs/base/common/severity', 'vs/editor/common/editorCommon', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/workspace/common/workspace', 'vs/base/common/cancellation', 'vs/workbench/api/node/mainThreadEditors', 'vs/base/common/paths', 'vs/platform/telemetry/common/telemetry'], function (require, exports, event_1, languageSelector_1, Platform, strings_1, thread_1, errors, extHostFileSystemEventService_1, extHostDocuments_1, extHostConfiguration_1, extHostDiagnostics_1, extHostWorkspace_1, extHostQuickOpen_1, extHostStatusBar_1, extHostCommands_1, extHostOutputService_1, extHostMessageService_1, extHostEditors_1, extHostLanguages_1, extHostLanguageFeatures_1, extHostApiCommands_1, extHostTypes, Modes, modeService_1, uri_1, severity_1, EditorCommon, extensions_1, extensionsRegistry_1, workspace_1, cancellation_1, mainThreadEditors_1, paths, telemetry_1) {
+define(["require", "exports", 'vs/base/common/event', 'vs/editor/common/modes/languageSelector', 'vs/base/common/platform', 'vs/base/common/strings', 'vs/platform/thread/common/thread', 'vs/base/common/errors', 'vs/workbench/api/node/extHostFileSystemEventService', 'vs/workbench/api/node/extHostDocuments', 'vs/workbench/api/node/extHostConfiguration', 'vs/workbench/api/node/extHostDiagnostics', 'vs/workbench/api/node/extHostWorkspace', 'vs/workbench/api/node/extHostQuickOpen', 'vs/workbench/api/node/extHostStatusBar', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostOutputService', 'vs/workbench/api/node/extHostMessageService', 'vs/workbench/api/node/extHostEditors', 'vs/workbench/api/node/extHostLanguages', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostTypeConverters', 'vs/workbench/api/node/extHostApiCommands', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/modes', 'vs/editor/common/services/modeService', 'vs/base/common/uri', 'vs/base/common/severity', 'vs/editor/common/editorCommon', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/workspace/common/workspace', 'vs/base/common/cancellation', 'vs/workbench/api/node/mainThreadEditors', 'vs/base/common/paths', 'vs/platform/telemetry/common/telemetry'], function (require, exports, event_1, languageSelector_1, Platform, strings_1, thread_1, errors, extHostFileSystemEventService_1, extHostDocuments_1, extHostConfiguration_1, extHostDiagnostics_1, extHostWorkspace_1, extHostQuickOpen_1, extHostStatusBar_1, extHostCommands_1, extHostOutputService_1, extHostMessageService_1, extHostEditors_1, extHostLanguages_1, extHostLanguageFeatures_1, ExtHostTypeConverters, extHostApiCommands_1, extHostTypes, Modes, modeService_1, uri_1, severity_1, EditorCommon, extensions_1, extensionsRegistry_1, workspace_1, cancellation_1, mainThreadEditors_1, paths, telemetry_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -59,16 +59,20 @@ define(["require", "exports", 'vs/base/common/event', 'vs/editor/common/modes/la
             });
             var extHostCommands = this._threadService.getRemotable(extHostCommands_1.ExtHostCommands);
             var extHostEditors = this._threadService.getRemotable(extHostEditors_1.ExtHostEditors);
-            var extHostMessageService = new extHostMessageService_1.ExtHostMessageService(this._threadService, this.commands);
+            var extHostMessageService = new extHostMessageService_1.ExtHostMessageService(this._threadService);
             var extHostQuickOpen = this._threadService.getRemotable(extHostQuickOpen_1.ExtHostQuickOpen);
             var extHostStatusBar = new extHostStatusBar_1.ExtHostStatusBar(this._threadService);
             var extHostOutputService = new extHostOutputService_1.ExtHostOutputService(this._threadService);
+            // the converter might create delegate commands to avoid sending args
+            // around all the time
+            ExtHostTypeConverters.Command.initialize(extHostCommands);
             // env namespace
             var telemetryInfo;
             this.env = Object.freeze({
                 get machineId() { return telemetryInfo.machineId; },
                 get sessionId() { return telemetryInfo.sessionId; },
-                get language() { return Platform.language; }
+                get language() { return Platform.language; },
+                get appName() { return contextService.getConfiguration().env.appName; }
             });
             telemetryService.getTelemetryInfo().then(function (info) { return telemetryInfo = info; }, errors.onUnexpectedError);
             // commands namespace

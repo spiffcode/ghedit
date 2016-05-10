@@ -2,7 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-// This is a port of vs/editor/workbench/workbench.main.js with Electron
+// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/workbench.main.js
+// This is a port of vs/workbench/workbench.main.js with Electron
 // and Node dependencies removed/replaced.
 require.config({
     ignoreDuplicateModules: [
@@ -59,6 +60,7 @@ define([
     // TODO:	'vs/workbench/parts/gettingStarted/electron-browser/electronGettingStarted.contribution',
     // TODO:	'vs/workbench/parts/update/electron-browser/update.contribution',
     // TODO:	'vs/workbench/electron-browser/darwin/cli.contribution',
+    // TODO:	'vs/workbench/api/node/extHost.contribution',
     // TODO:	'vs/workbench/electron-browser/main.contribution',
     // TODO: How is Electron-browser getting this css?
     'vs/css!vs/editor/browser/standalone/media/standalone-tokens',

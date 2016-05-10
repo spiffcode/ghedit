@@ -8,7 +8,7 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/paths'], fun
         function Source(raw, available) {
             if (available === void 0) { available = true; }
             this.raw = raw;
-            this.uri = raw.path ? uri_1.default.file(raw.path) : uri_1.default.parse(Source.INTERNAL_URI_PREFIX + raw.name);
+            this.uri = raw.path ? uri_1.default.file(paths.normalize(raw.path)) : uri_1.default.parse(Source.INTERNAL_URI_PREFIX + raw.name);
             this.available = available;
         }
         Object.defineProperty(Source.prototype, "name", {

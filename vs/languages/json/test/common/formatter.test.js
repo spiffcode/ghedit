@@ -207,6 +207,17 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/editor/common
             ].join('\n');
             format(content, expected);
         });
+        test('single line comment on same line 2', function () {
+            var content = [
+                '{ //comment',
+                '}'
+            ].join('\n');
+            var expected = [
+                '{ //comment',
+                '}'
+            ].join('\n');
+            format(content, expected);
+        });
         test('block comment on same line', function () {
             var content = [
                 '{      "a": {}, /*comment*/    ',
@@ -251,6 +262,17 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/editor/common
                 '  "a": {} /*comment*/, /*comment*/',
                 '  /*comment*/ "b": {} /*comment*/',
                 '}',
+            ].join('\n');
+            format(content, expected);
+        });
+        test('multiple mixed comments on same line', function () {
+            var content = [
+                '[ /*comment*/  /*comment*/   // comment ',
+                ']'
+            ].join('\n');
+            var expected = [
+                '[ /*comment*/ /*comment*/ // comment ',
+                ']'
             ].join('\n');
             format(content, expected);
         });

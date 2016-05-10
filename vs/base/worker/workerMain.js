@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 (function () {
     'use strict';
-    var MonacoEnvironment = self.MonacoEnvironment;
-    var monacoBaseUrl = MonacoEnvironment && MonacoEnvironment.baseUrl ? MonacoEnvironment.baseUrl : '../../../';
+    var GlobalEnvironment = self.GlobalEnvironment;
+    var monacoBaseUrl = GlobalEnvironment && GlobalEnvironment.baseUrl ? GlobalEnvironment.baseUrl : '../../../';
     importScripts(monacoBaseUrl + 'vs/loader.js');
     require.config({
         baseUrl: monacoBaseUrl,

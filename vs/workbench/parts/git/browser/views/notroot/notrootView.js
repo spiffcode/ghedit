@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/selection/common/selection', 'vs/css!./notrootView'], function (require, exports, nls, winjs, ee, builder, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/css!./notrootView'], function (require, exports, nls, winjs, ee, builder) {
     'use strict';
     var $ = builder.$;
     var NotRootView = (function (_super) {
@@ -42,9 +42,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         };
         NotRootView.prototype.setVisible = function (visible) {
             return winjs.TPromise.as(null);
-        };
-        NotRootView.prototype.getSelection = function () {
-            return selection_1.Selection.EMPTY;
         };
         NotRootView.prototype.getControl = function () {
             return null;

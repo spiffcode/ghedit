@@ -244,14 +244,16 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/editor/common/service
                 line = lineOrPosition;
             }
             if (line < 0 || line >= this._lines.length) {
-                throw new Error('Illegal value ' + line + ' for `line`');
+                throw new Error('Illegal value for `line`');
             }
             var result = this._textLines[line];
             if (!result || result.lineNumber !== line || result.text !== this._lines[line]) {
                 var text = this._lines[line];
                 var firstNonWhitespaceCharacterIndex = /^(\s*)/.exec(text)[1].length;
                 var range = new extHostTypes_1.Range(line, 0, line, text.length);
-                var rangeIncludingLineBreak = new extHostTypes_1.Range(line, 0, line + 1, 0);
+                var rangeIncludingLineBreak = line < this._lines.length - 1
+                    ? new extHostTypes_1.Range(line, 0, line + 1, 0)
+                    : range;
                 result = Object.freeze({
                     lineNumber: line,
                     range: range,
@@ -469,6 +471,9 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/editor/common/service
                 return input.resolve(true).then(function (model) {
                     if (input.getResource().toString() !== uri.toString()) {
                         throw new Error("expected URI " + uri.toString() + " BUT GOT " + input.getResource().toString());
+                    }
+                    if (!_this._modelIsSynced[uri.toString()]) {
+                        throw new Error("expected URI " + uri.toString() + " to have come to LIFE");
                     }
                     return _this._proxy._acceptModelDirty(uri.toString()); // mark as dirty
                 }).then(function () {

@@ -43,8 +43,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/node/extfs',
     }
     exports.mkdirp = mkdirp;
     function rimraf(path) {
-        return stat(path).then(function (stat) {
-            if (stat.isDirectory()) {
+        return lstat(path).then(function (stat) {
+            if (stat.isDirectory() && !stat.isSymbolicLink()) {
                 return readdir(path)
                     .then(function (children) { return winjs_base_1.TPromise.join(children.map(function (child) { return rimraf(path_1.join(path, child)); })); })
                     .then(function () { return rmdir(path); });

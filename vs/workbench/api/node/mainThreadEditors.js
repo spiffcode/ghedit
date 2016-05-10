@@ -67,6 +67,10 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/base/common/e
             this._codeEditorListeners = lifecycle_1.dispose(this._codeEditorListeners);
             this._codeEditor = codeEditor;
             if (this._codeEditor) {
+                // Catch early the case that this code editor gets a different model set and disassociate from this model
+                this._codeEditorListeners.push(this._codeEditor.addListener2(EditorCommon.EventType.ModelChanged, function () {
+                    _this.setCodeEditor(null);
+                }));
                 var forwardSelection = function () {
                     _this._lastSelection = _this._codeEditor.getSelections();
                     _this._onSelectionChanged.fire(_this._lastSelection);
@@ -224,6 +228,9 @@ define(["require", "exports", 'vs/editor/common/editorCommon', 'vs/base/common/e
             return false;
         };
         MainThreadTextEditor.prototype.matches = function (editor) {
+            if (!editor) {
+                return false;
+            }
             return editor.getControl() === this._codeEditor;
         };
         MainThreadTextEditor.prototype.applyEdits = function (versionIdCheck, edits, setEndOfLine) {

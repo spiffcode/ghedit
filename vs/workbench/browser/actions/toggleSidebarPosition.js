@@ -39,6 +39,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
     }(actions_1.Action));
     exports.ToggleSidebarPositionAction = ToggleSidebarPositionAction;
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarPositionAction, ID, LABEL), nls.localize('view', "View"));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarPositionAction, ID, LABEL), 'View: Toggle Side Bar Position', nls.localize('view', "View"));
 });
 //# sourceMappingURL=toggleSidebarPosition.js.map

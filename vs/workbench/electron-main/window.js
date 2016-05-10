@@ -2,7 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', 'vs/base/common/platform', 'vs/base/common/objects', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage'], function (require, exports, path, electron_1, winjs_base_1, platform, objects, env, storage) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', 'vs/base/common/platform', 'vs/base/common/objects', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/storage', './log'], function (require, exports, path, electron_1, winjs_base_1, platform, objects, env_1, storage, log_1) {
     'use strict';
     (function (WindowMode) {
         WindowMode[WindowMode["Maximized"] = 0] = "Maximized";
@@ -38,7 +47,10 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
     })(exports.ReadyState || (exports.ReadyState = {}));
     var ReadyState = exports.ReadyState;
     var VSCodeWindow = (function () {
-        function VSCodeWindow(config) {
+        function VSCodeWindow(config, logService, envService, storageService) {
+            this.logService = logService;
+            this.envService = envService;
+            this.storageService = storageService;
             this._lastFocusTime = -1;
             this._readyState = ReadyState.NONE;
             this._extensionDevelopmentPath = config.extensionDevelopmentPath;
@@ -46,7 +58,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
             // Load window state
             this.restoreWindowState(config.state);
             // For VS theme we can show directly because background is white
-            var usesLightTheme = /vs($| )/.test(storage.getItem(VSCodeWindow.themeStorageKey));
+            var usesLightTheme = /vs($| )/.test(this.storageService.getItem(VSCodeWindow.themeStorageKey));
             var showDirectly = true; // set to false to prevent background color flash (flash should be fixed for Electron >= 0.37.x)
             if (showDirectly && !global.windowShow) {
                 global.windowShow = new Date().getTime();
@@ -56,15 +68,17 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
                 height: this.windowState.height,
                 x: this.windowState.x,
                 y: this.windowState.y,
-                backgroundColor: usesLightTheme ? '#FFFFFF' : platform.isMacintosh ? '#171717' : '#1E1E1E',
+                backgroundColor: usesLightTheme ? '#FFFFFF' : platform.isMacintosh ? '#131313' : '#1E1E1E',
                 minWidth: VSCodeWindow.MIN_WIDTH,
                 minHeight: VSCodeWindow.MIN_HEIGHT,
                 show: showDirectly && this.currentWindowMode !== WindowMode.Maximized,
-                title: env.product.nameLong
+                title: this.envService.product.nameLong,
+                webPreferences: {
+                    'backgroundThrottling': false // by default if Code is in the background, intervals and timeouts get throttled
+                }
             };
             if (platform.isLinux) {
-                // Windows and Mac are better off using the embedded icon(s)
-                options.icon = path.join(env.appRoot, 'resources/linux/code.png');
+                options.icon = path.join(this.envService.appRoot, 'resources/linux/code.png'); // Windows and Mac are better off using the embedded icon(s)
             }
             // Create the browser window.
             this._win = new electron_1.BrowserWindow(options);
@@ -78,7 +92,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
             if (showDirectly) {
                 this._lastFocusTime = new Date().getTime(); // since we show directly, we need to set the last focus time too
             }
-            if (storage.getItem(VSCodeWindow.menuBarHiddenKey, false)) {
+            if (this.storageService.getItem(VSCodeWindow.menuBarHiddenKey, false)) {
                 this.setMenuBarVisibility(false); // respect configured menu bar visibility
             }
             this.registerListeners();
@@ -223,7 +237,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
             });
             // Prevent any kind of navigation triggered by the user!
             // But do not touch this in dev version because it will prevent "Reload" from dev tools
-            if (env.isBuilt) {
+            if (this.envService.isBuilt) {
                 this._win.webContents.on('will-navigate', function (event) {
                     if (event) {
                         event.preventDefault();
@@ -267,6 +281,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
             if (this.isPluginDevelopmentHost && cli) {
                 configuration.verboseLogging = cli.verboseLogging;
                 configuration.logExtensionHostCommunication = cli.logExtensionHostCommunication;
+                configuration.debugBrkFileWatcherPort = cli.debugBrkFileWatcherPort;
                 configuration.debugExtensionHostPort = cli.debugExtensionHostPort;
                 configuration.debugBrkExtensionHost = cli.debugBrkExtensionHost;
                 configuration.extensionsHomePath = cli.extensionsHomePath;
@@ -320,7 +335,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
                     state = this.validateWindowState(state);
                 }
                 catch (err) {
-                    env.log("Unexpected error validating window state: " + err + "\n" + err.stack); // somehow display API can be picky about the state to validate
+                    this.logService.log("Unexpected error validating window state: " + err + "\n" + err.stack); // somehow display API can be picky about the state to validate
                 }
             }
             if (!state) {
@@ -397,7 +412,7 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
                     this.setMenuBarVisibility(false);
                 }
                 else {
-                    this.setMenuBarVisibility(!storage.getItem(VSCodeWindow.menuBarHiddenKey, false)); // restore as configured
+                    this.setMenuBarVisibility(!this.storageService.getItem(VSCodeWindow.menuBarHiddenKey, false)); // restore as configured
                 }
             }
         };
@@ -433,6 +448,11 @@ define(["require", "exports", 'path', 'electron', 'vs/base/common/winjs.base', '
         VSCodeWindow.themeStorageKey = 'theme';
         VSCodeWindow.MIN_WIDTH = 200;
         VSCodeWindow.MIN_HEIGHT = 120;
+        VSCodeWindow = __decorate([
+            __param(1, log_1.ILogService),
+            __param(2, env_1.IEnvironmentService),
+            __param(3, storage.IStorageService)
+        ], VSCodeWindow);
         return VSCodeWindow;
     }());
     exports.VSCodeWindow = VSCodeWindow;

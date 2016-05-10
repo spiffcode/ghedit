@@ -60,12 +60,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platfor
         win: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.RightArrow },
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_MINUS },
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_MINUS }
-    }));
+    }), 'Go Forward');
     registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(NavigateBackwardsAction, NAVIGATE_BACKWARDS_ID, NAVIGATE_BACKWARDS_LABEL, {
         primary: null,
         win: { primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.LeftArrow },
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.US_MINUS },
         linux: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.US_MINUS }
-    }));
+    }), 'Go Back');
 });
 //# sourceMappingURL=triggerNavigation.js.map

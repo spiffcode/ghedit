@@ -1,4 +1,4 @@
-define(["require", "exports", 'assert', 'vs/languages/json/common/jsonWorker', 'vs/editor/common/services/resourceServiceImpl', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/common/model/mirrorModel', 'vs/base/common/uri', 'vs/base/common/winjs.base'], function (require, exports, assert, jsonworker, resourceService, instantiationService, mirrorModel, uri_1, WinJS) {
+define(["require", "exports", 'assert', 'vs/languages/json/common/jsonWorker', 'vs/editor/common/services/resourceServiceImpl', 'vs/editor/common/services/resourceService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/common/model/mirrorModel', 'vs/base/common/uri', 'vs/base/common/winjs.base'], function (require, exports, assert, jsonworker, resourceService, resourceService_1, serviceCollection_1, instantiationService_1, mirrorModel, uri_1, WinJS) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -19,9 +19,7 @@ define(["require", "exports", 'assert', 'vs/languages/json/common/jsonWorker', '
             var mm = mirrorModel.createTestMirrorModelFromString(content, null, url);
             var resourceModelMock = new resourceService.ResourceService();
             resourceModelMock.insert(url, mm);
-            var _instantiationService = instantiationService.createInstantiationService({
-                resourceService: resourceModelMock
-            });
+            var _instantiationService = new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([resourceService_1.IResourceService, resourceModelMock]));
             var worker = _instantiationService.createInstance(jsonworker.JSONWorker, mm.getMode().getId());
             return { worker: worker, model: mm };
         }

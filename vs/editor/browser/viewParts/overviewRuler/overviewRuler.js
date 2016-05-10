@@ -37,9 +37,9 @@ define(["require", "exports", 'vs/editor/common/viewModel/viewEventHandler', 'vs
         OverviewRuler.prototype.onModelFlushed = function () {
             return true;
         };
-        OverviewRuler.prototype.onScrollHeightChanged = function (scrollHeight) {
-            this._overviewRuler.setScrollHeight(scrollHeight, true);
-            return true;
+        OverviewRuler.prototype.onScrollChanged = function (e) {
+            this._overviewRuler.setScrollHeight(e.scrollHeight, true);
+            return _super.prototype.onScrollChanged.call(this, e) || e.scrollHeightChanged;
         };
         OverviewRuler.prototype.getDomNode = function () {
             return this._overviewRuler.getDomNode();

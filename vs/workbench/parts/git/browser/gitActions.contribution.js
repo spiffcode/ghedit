@@ -396,15 +396,15 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/platform
     var workbenchActionRegistry = platform.Registry.as(wbar.Extensions.WorkbenchActions);
     // Register Actions
     var category = nls.localize('git', "Git");
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenChangeAction, GlobalOpenChangeAction.ID, GlobalOpenChangeAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenInEditorAction, GlobalOpenInEditorAction.ID, GlobalOpenInEditorAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PullAction, gitActions_1.PullAction.ID, gitActions_1.PullAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PushAction, gitActions_1.PushAction.ID, gitActions_1.PushAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.SyncAction, gitActions_1.SyncAction.ID, gitActions_1.SyncAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PublishAction, gitActions_1.PublishAction.ID, gitActions_1.PublishAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.StartGitBranchAction, gitActions_1.StartGitBranchAction.ID, gitActions_1.StartGitBranchAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.StartGitCheckoutAction, gitActions_1.StartGitCheckoutAction.ID, gitActions_1.StartGitCheckoutAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.InputCommitAction, gitActions_1.InputCommitAction.ID, gitActions_1.InputCommitAction.LABEL), category);
-    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.UndoLastCommitAction, gitActions_1.UndoLastCommitAction.ID, gitActions_1.UndoLastCommitAction.LABEL), category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenChangeAction, GlobalOpenChangeAction.ID, GlobalOpenChangeAction.LABEL), 'Git: Open Change', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(GlobalOpenInEditorAction, GlobalOpenInEditorAction.ID, GlobalOpenInEditorAction.LABEL), 'Git: Open File', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PullAction, gitActions_1.PullAction.ID, gitActions_1.PullAction.LABEL), 'Git: Pull', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PushAction, gitActions_1.PushAction.ID, gitActions_1.PushAction.LABEL), 'Git: Push', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.SyncAction, gitActions_1.SyncAction.ID, gitActions_1.SyncAction.LABEL), 'Git: Sync', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.PublishAction, gitActions_1.PublishAction.ID, gitActions_1.PublishAction.LABEL), 'Git: Publish', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.StartGitBranchAction, gitActions_1.StartGitBranchAction.ID, gitActions_1.StartGitBranchAction.LABEL), 'Git: Branch', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.StartGitCheckoutAction, gitActions_1.StartGitCheckoutAction.ID, gitActions_1.StartGitCheckoutAction.LABEL), 'Git: Checkout', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.InputCommitAction, gitActions_1.InputCommitAction.ID, gitActions_1.InputCommitAction.LABEL), 'Git: Commit', category);
+    workbenchActionRegistry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gitActions_1.UndoLastCommitAction, gitActions_1.UndoLastCommitAction.ID, gitActions_1.UndoLastCommitAction.LABEL), 'Git: Undo Last Commit', category);
 });
 //# sourceMappingURL=gitActions.contribution.js.map

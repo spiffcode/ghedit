@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'assert', 'vs/editor/common/modes', 'vs/editor/test/common/modesUtil', 'vs/editor/common/model/model', 'vs/languages/html/common/htmlTokenTypes', 'vs/editor/common/modes/supports/onEnter', 'vs/editor/common/model/textModelWithTokens', 'vs/editor/common/model/textModel', 'vs/editor/common/core/range', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/test/common/nullThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/languages/html/common/html', 'vs/editor/test/common/mocks/mockMode', 'vs/editor/common/modes/supports/richEditSupport'], function (require, exports, assert, Modes, modesUtil, model_1, htmlTokenTypes_1, onEnter_1, textModelWithTokens_1, textModel_1, range_1, mockModeService_1, nullThreadService_1, instantiationService_1, html_1, mockMode_1, richEditSupport_1) {
+define(["require", "exports", 'assert', 'vs/editor/common/modes', 'vs/editor/test/common/modesUtil', 'vs/editor/common/model/model', 'vs/languages/html/common/htmlTokenTypes', 'vs/editor/common/modes/supports/onEnter', 'vs/editor/common/model/textModelWithTokens', 'vs/editor/common/model/textModel', 'vs/editor/common/core/range', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/test/common/nullThreadService', 'vs/platform/thread/common/thread', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/languages/html/common/html', 'vs/editor/test/common/mocks/mockMode', 'vs/editor/common/modes/supports/richEditSupport'], function (require, exports, assert, Modes, modesUtil, model_1, htmlTokenTypes_1, onEnter_1, textModelWithTokens_1, textModel_1, range_1, mockModeService_1, nullThreadService_1, thread_1, modeService_1, serviceCollection_1, instantiationService_1, html_1, mockMode_1, richEditSupport_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -77,10 +77,10 @@ define(["require", "exports", 'assert', 'vs/editor/common/modes', 'vs/editor/tes
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
             var modeService = new HTMLMockModeService();
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-                modeService: modeService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modeService_1.IModeService, modeService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             _mode = new html_1.HTMLMode({ id: 'html' }, inst, modeService, threadService);
             tokenizationSupport = _mode.tokenizationSupport;
@@ -431,7 +431,7 @@ define(["require", "exports", 'assert', 'vs/editor/common/modes', 'vs/editor/tes
         });
         test('Tag with Attributes', function () {
             modesUtil.assertTokenization(tokenizationSupport, [{
-                    line: '<abc foo="bar" bar="foo">',
+                    line: '<abc foo="bar" bar=\'foo\'>',
                     tokens: [
                         { startIndex: 0, type: htmlTokenTypes_1.DELIM_START },
                         { startIndex: 1, type: htmlTokenTypes_1.getTag('abc') },
@@ -443,6 +443,24 @@ define(["require", "exports", 'assert', 'vs/editor/common/modes', 'vs/editor/tes
                         { startIndex: 15, type: htmlTokenTypes_1.ATTRIB_NAME },
                         { startIndex: 18, type: htmlTokenTypes_1.DELIM_ASSIGN },
                         { startIndex: 19, type: htmlTokenTypes_1.ATTRIB_VALUE },
+                        { startIndex: 24, type: htmlTokenTypes_1.DELIM_START }
+                    ] }
+            ]);
+        });
+        test('Tag with Attributes, no quotes', function () {
+            modesUtil.assertTokenization(tokenizationSupport, [{
+                    line: '<abc foo=bar bar=help-me>',
+                    tokens: [
+                        { startIndex: 0, type: htmlTokenTypes_1.DELIM_START },
+                        { startIndex: 1, type: htmlTokenTypes_1.getTag('abc') },
+                        { startIndex: 4, type: '' },
+                        { startIndex: 5, type: htmlTokenTypes_1.ATTRIB_NAME },
+                        { startIndex: 8, type: htmlTokenTypes_1.DELIM_ASSIGN },
+                        { startIndex: 9, type: htmlTokenTypes_1.ATTRIB_VALUE },
+                        { startIndex: 12, type: '' },
+                        { startIndex: 13, type: htmlTokenTypes_1.ATTRIB_NAME },
+                        { startIndex: 16, type: htmlTokenTypes_1.DELIM_ASSIGN },
+                        { startIndex: 17, type: htmlTokenTypes_1.ATTRIB_VALUE },
                         { startIndex: 24, type: htmlTokenTypes_1.DELIM_START }
                     ] }
             ]);

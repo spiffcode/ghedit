@@ -77,7 +77,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/br
                 // When the explorer viewer is loaded, listen to changes to the editor input
                 _this.toDispose.push(_this.eventService.addListener2(events_1.EventType.EDITOR_INPUT_CHANGING, function (e) { return _this.onEditorInputChanging(e); }));
                 // Also handle configuration updates
-                _this.toDispose.push(_this.configurationService.addListener2(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationUpdated(e.config, true); }));
+                _this.toDispose.push(_this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationUpdated(e.config, true); }));
             });
         };
         ExplorerView.prototype.onEditorInputChanging = function (e) {

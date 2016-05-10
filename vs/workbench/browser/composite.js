@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/workbench/common/component', 'vs/workbench/common/events', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/descriptors', 'vs/platform/selection/common/selection'], function (require, exports, winjs_base_1, actions_1, component_1, events_1, telemetry_1, descriptors_1, selection_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actions', 'vs/workbench/common/component', 'vs/workbench/common/events', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/descriptors'], function (require, exports, winjs_base_1, actions_1, component_1, events_1, telemetry_1, descriptors_1) {
     "use strict";
     /**
      * Internal composite events to communicate with composite container.
@@ -158,12 +158,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/actio
          */
         Composite.prototype.updateTitleArea = function () {
             this.emit(exports.EventType.INTERNAL_COMPOSITE_TITLE_AREA_UPDATE, new events_1.CompositeEvent(this.getId()));
-        };
-        /**
-         * Returns an array of elements that are selected in the composite.
-         */
-        Composite.prototype.getSelection = function () {
-            return selection_1.Selection.EMPTY;
         };
         /**
          * Returns true if this composite is currently visible and false otherwise.

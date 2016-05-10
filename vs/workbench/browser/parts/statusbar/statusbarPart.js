@@ -20,14 +20,12 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
     'use strict';
     var StatusbarPart = (function (_super) {
         __extends(StatusbarPart, _super);
-        function StatusbarPart(id) {
+        function StatusbarPart(id, instantiationService) {
             _super.call(this, id);
+            this.instantiationService = instantiationService;
             this.serviceId = statusbarService_1.IStatusbarService;
             this.toDispose = [];
         }
-        StatusbarPart.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         StatusbarPart.prototype.addEntry = function (entry, alignment, priority) {
             if (priority === void 0) { priority = 0; }
             // Render entry in status bar
@@ -110,6 +108,9 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
         };
         StatusbarPart.PRIORITY_PROP = 'priority';
         StatusbarPart.ALIGNMENT_PROP = 'alignment';
+        StatusbarPart = __decorate([
+            __param(1, instantiation_1.IInstantiationService)
+        ], StatusbarPart);
         return StatusbarPart;
     }(part_1.Part));
     exports.StatusbarPart = StatusbarPart;

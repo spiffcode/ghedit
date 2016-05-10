@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/common/debug', 'vs/editor/common/services/modelService'], function (require, exports, nls, objects, lifecycle, editorcommon, debug_1, modelService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/objects', 'vs/base/common/lifecycle', 'vs/editor/common/editorCommon', 'vs/workbench/parts/debug/common/debug', 'vs/editor/common/services/modelService'], function (require, exports, nls, winjs_base_1, objects, lifecycle, editorcommon, debug_1, modelService_1) {
     "use strict";
     function toMap(arr) {
         var result = {};
@@ -56,10 +56,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
             this.toDispose.push(this.modelService.onModelAdded(this.onModelAdded, this));
             this.modelService.getModels().forEach(function (model) { return _this.onModelAdded(model); });
             this.toDispose.push(this.modelService.onModelRemoved(this.onModelRemoved, this));
-            this.toDispose.push(this.debugService.getModel().addListener2(debug_1.ModelEvents.BREAKPOINTS_UPDATED, function () { return _this.onBreakpointsChanged(); }));
-            this.toDispose.push(this.debugService.getViewModel().addListener2(debug_1.ViewModelEvents.FOCUSED_STACK_FRAME_UPDATED, function () { return _this.onFocusedStackFrameUpdated(); }));
-            this.toDispose.push(this.debugService.addListener2(debug_1.ServiceEvents.STATE_CHANGED, function () {
-                if (_this.debugService.getState() === debug_1.State.Inactive) {
+            this.toDispose.push(this.debugService.getModel().onDidChangeBreakpoints(function () { return _this.onBreakpointsChange(); }));
+            this.toDispose.push(this.debugService.getViewModel().onDidFocusStackFrame(function () { return _this.onFocusStackFrame(); }));
+            this.toDispose.push(this.debugService.onDidChangeState(function (state) {
+                if (state === debug_1.State.Inactive) {
                     Object.keys(_this.modelData).forEach(function (key) { return _this.modelData[key].dirty = false; });
                 }
             }));
@@ -93,7 +93,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
             }
         };
         // call stack management. Represent data coming from the debug service.
-        DebugEditorModelManager.prototype.onFocusedStackFrameUpdated = function () {
+        DebugEditorModelManager.prototype.onFocusStackFrame = function () {
             var _this = this;
             Object.keys(this.modelData).forEach(function (modelUrlStr) {
                 var modelData = _this.modelData[modelUrlStr];
@@ -157,6 +157,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
         };
         // breakpoints management. Represent data coming from the debug service and also send data back.
         DebugEditorModelManager.prototype.onModelDecorationsChanged = function (modelUrlStr, e) {
+            var _this = this;
             var modelData = this.modelData[modelUrlStr];
             if (!e.addedOrChangedDecorations.some(function (d) { return modelData.breakpointDecorationsAsMap.hasOwnProperty(d.id); })) {
                 // nothing to do, my decorations did not change.
@@ -185,9 +186,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
                 }
             }
             modelData.dirty = !!this.debugService.getActiveSession();
-            this.debugService.setBreakpointsForModel(modelUrl, data);
+            var toRemove = this.debugService.getModel().getBreakpoints()
+                .filter(function (bp) { return bp.source.uri.toString() === modelUrl.toString(); });
+            winjs_base_1.TPromise.join(toRemove.map(function (bp) { return _this.debugService.removeBreakpoints(bp.getId()); })).then(function () {
+                _this.debugService.addBreakpoints(data);
+            });
         };
-        DebugEditorModelManager.prototype.onBreakpointsChanged = function () {
+        DebugEditorModelManager.prototype.onBreakpointsChange = function () {
             var _this = this;
             var breakpointsMap = {};
             this.debugService.getModel().getBreakpoints().forEach(function (bp) {
@@ -226,7 +231,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
         };
         DebugEditorModelManager.prototype.getBreakpointDecorationOptions = function (breakpoint) {
             var activated = this.debugService.getModel().areBreakpointsActivated();
-            var state = this.debugService.getState();
+            var state = this.debugService.state;
             var debugActive = state === debug_1.State.Running || state === debug_1.State.Stopped || state === debug_1.State.Initializing;
             var modelData = this.modelData[breakpoint.source.uri.toString()];
             var session = this.debugService.getActiveSession();
@@ -239,7 +244,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/objects', 'vs/base/commo
                 result.hoverMessage = breakpoint.message;
             }
             return result ? result :
-                !session || session.capabilities.supportsConditionalBreakpoints ? {
+                !session || session.configuration.capabilities.supportsConditionalBreakpoints ? {
                     glyphMarginClassName: 'debug-breakpoint-conditional-glyph',
                     hoverMessage: breakpoint.condition,
                     stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges

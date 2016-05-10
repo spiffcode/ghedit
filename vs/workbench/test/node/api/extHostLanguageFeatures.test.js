@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common/uri', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', './testThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/markers/common/markers', 'vs/platform/thread/common/thread', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostDocuments', 'vs/editor/contrib/quickOpen/common/quickOpen', 'vs/editor/common/modes', 'vs/editor/contrib/codelens/common/codelens', 'vs/editor/contrib/goToDeclaration/common/goToDeclaration', 'vs/editor/contrib/hover/common/hover', 'vs/editor/contrib/wordHighlighter/common/wordHighlighter', 'vs/editor/contrib/referenceSearch/common/referenceSearch', 'vs/editor/contrib/quickFix/common/quickFix', 'vs/workbench/parts/search/common/search', 'vs/editor/contrib/rename/common/rename', 'vs/editor/contrib/parameterHints/common/parameterHints', 'vs/editor/contrib/suggest/common/suggest', 'vs/editor/contrib/format/common/format'], function (require, exports, assert, errors_1, uri_1, types, EditorCommon, model_1, testThreadService_1, instantiationService_1, markerService_1, markers_1, thread_1, extHostLanguageFeatures_1, extHostCommands_1, extHostDocuments_1, quickOpen_1, modes_1, codelens_1, goToDeclaration_1, hover_1, wordHighlighter_1, referenceSearch_1, quickFix_1, search_1, rename_1, parameterHints_1, suggest_1, format_1) {
+define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common/uri', 'vs/workbench/api/node/extHostTypes', 'vs/editor/common/editorCommon', 'vs/editor/common/model/model', './testThreadService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/markers/common/markers', 'vs/platform/thread/common/thread', 'vs/workbench/api/node/extHostLanguageFeatures', 'vs/workbench/api/node/extHostCommands', 'vs/workbench/api/node/extHostDocuments', 'vs/editor/contrib/quickOpen/common/quickOpen', 'vs/editor/common/modes', 'vs/editor/contrib/codelens/common/codelens', 'vs/editor/contrib/goToDeclaration/common/goToDeclaration', 'vs/editor/contrib/hover/common/hover', 'vs/editor/contrib/wordHighlighter/common/wordHighlighter', 'vs/editor/contrib/referenceSearch/common/referenceSearch', 'vs/editor/contrib/quickFix/common/quickFix', 'vs/workbench/parts/search/common/search', 'vs/editor/contrib/rename/common/rename', 'vs/editor/contrib/parameterHints/common/parameterHints', 'vs/editor/contrib/suggest/common/suggest', 'vs/editor/contrib/format/common/format'], function (require, exports, assert, errors_1, uri_1, types, EditorCommon, model_1, testThreadService_1, serviceCollection_1, instantiationService_1, markerService_1, markers_1, thread_1, extHostLanguageFeatures_1, extHostCommands_1, extHostDocuments_1, quickOpen_1, modes_1, codelens_1, goToDeclaration_1, hover_1, wordHighlighter_1, referenceSearch_1, quickFix_1, search_1, rename_1, parameterHints_1, suggest_1, format_1) {
     'use strict';
     var defaultSelector = { scheme: 'far' };
     var model = new model_1.Model([
@@ -17,10 +17,11 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
     var originalErrorHandler;
     suite('ExtHostLanguageFeatures', function () {
         suiteSetup(function () {
-            var instantiationService = instantiationService_1.createInstantiationService();
+            var services = new serviceCollection_1.ServiceCollection();
+            var instantiationService = new instantiationService_1.InstantiationService(services);
             threadService = new testThreadService_1.TestThreadService(instantiationService);
-            instantiationService.addSingleton(markers_1.IMarkerService, new markerService_1.MainProcessMarkerService(threadService));
-            instantiationService.addSingleton(thread_1.IThreadService, threadService);
+            services.set(markers_1.IMarkerService, new markerService_1.MainProcessMarkerService(threadService));
+            services.set(thread_1.IThreadService, threadService);
             originalErrorHandler = errors_1.errorHandler.getUnexpectedErrorHandler();
             errors_1.setUnexpectedErrorHandler(function () { });
             threadService.getRemotable(extHostDocuments_1.ExtHostModelService)._acceptModelAdd({
@@ -481,7 +482,7 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                 });
             });
         });
-        test('Quick Fix, invoke command+args', function (done) {
+        test('Quick Fix, invoke command+args', function () {
             var actualArgs;
             var commands = threadService.getRemotable(extHostCommands_1.ExtHostCommands);
             disposables.push(commands.registerCommand('test1', function () {
@@ -496,8 +497,8 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                     return [{ command: 'test1', title: 'Testing', arguments: [true, 1, { bar: 'boo', foo: 'far' }, null] }];
                 }
             }));
-            threadService.sync().then(function () {
-                quickFix_1.getQuickFixes(model, model.getFullModelRange()).then(function (value) {
+            return threadService.sync().then(function () {
+                return quickFix_1.getQuickFixes(model, model.getFullModelRange()).then(function (value) {
                     assert.equal(value.length, 1);
                     var entry = value[0];
                     entry.support.runQuickFixAction(model.getAssociatedResource(), model.getFullModelRange(), entry).then(function (value) {
@@ -507,7 +508,6 @@ define(["require", "exports", 'assert', 'vs/base/common/errors', 'vs/base/common
                         assert.equal(actualArgs[1], 1);
                         assert.deepEqual(actualArgs[2], { bar: 'boo', foo: 'far' });
                         assert.equal(actualArgs[3], null);
-                        done();
                     });
                 });
             });

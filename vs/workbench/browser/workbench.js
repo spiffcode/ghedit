@@ -2,14 +2,33 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/async', 'vs/base/common/assert', 'vs/base/common/timer', 'vs/base/common/errors', 'vs/platform/platform', 'vs/workbench/common/constants', 'vs/workbench/common/events', 'vs/workbench/common/contributions', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/services/history/browser/history', 'vs/workbench/browser/parts/activitybar/activitybarPart', 'vs/workbench/browser/parts/editor/editorPart', 'vs/workbench/browser/parts/sidebar/sidebarPart', 'vs/workbench/browser/parts/panel/panelPart', 'vs/workbench/browser/parts/statusbar/statusbarPart', 'vs/workbench/browser/layout', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/panel', 'vs/workbench/browser/parts/quickopen/quickOpenController', 'vs/workbench/common/editor/diffEditorInput', 'vs/platform/instantiation/common/extensions', 'vs/platform/keybinding/browser/keybindingServiceImpl', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/browser/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/contextview/browser/contextView', 'vs/workbench/services/activity/common/activityService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/history/common/history', 'vs/platform/event/common/event', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/thread', 'vs/platform/extensions/common/extensions', 'vs/workbench/services/statusbar/common/statusbarService', 'vs/css!./media/workbench'], function (require, exports, winjs_base_1, types, lifecycle_1, strings, DOM, builder_1, async_1, assert, timer, errors, platform_1, constants_1, events_1, contributions_1, baseEditor_1, editor_1, history_1, activitybarPart_1, editorPart_1, sidebarPart_1, panelPart_1, statusbarPart_1, layout_1, actionBarRegistry_1, viewlet_1, panel_1, quickOpenController_1, diffEditorInput_1, extensions_1, keybindingServiceImpl_1, untitledEditorService_1, editorService_1, partService_1, contextService_1, storage_1, keybindingService_1, contextView_1, activityService_1, viewletService_1, panelService_1, editorService_2, quickOpenService_1, history_2, event_1, lifecycle_2, message_1, telemetry_1, thread_1, extensions_2, statusbarService_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/lifecycle', 'vs/base/common/strings', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/common/async', 'vs/base/common/assert', 'vs/base/common/timer', 'vs/base/common/errors', 'vs/platform/platform', 'vs/workbench/common/constants', 'vs/workbench/common/events', 'vs/workbench/common/contributions', 'vs/workbench/browser/parts/editor/baseEditor', 'vs/workbench/common/editor', 'vs/workbench/services/history/browser/history', 'vs/workbench/browser/parts/activitybar/activitybarPart', 'vs/workbench/browser/parts/editor/editorPart', 'vs/workbench/browser/parts/sidebar/sidebarPart', 'vs/workbench/browser/parts/panel/panelPart', 'vs/workbench/browser/parts/statusbar/statusbarPart', 'vs/workbench/browser/layout', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/viewlet', 'vs/workbench/browser/panel', 'vs/workbench/browser/parts/quickopen/quickOpenController', 'vs/workbench/common/editor/diffEditorInput', 'vs/platform/instantiation/common/extensions', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/editor/browser/editorService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/activity/common/activityService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/workbench/services/panel/common/panelService', 'vs/workbench/services/message/browser/messageService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/history/common/history', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/thread', 'vs/platform/thread/common/mainThreadService', 'vs/workbench/services/statusbar/common/statusbarService', 'vs/css!./media/workbench'], function (require, exports, winjs_base_1, types, lifecycle_1, strings, DOM, builder_1, async_1, assert, timer, errors, platform_1, constants_1, events_1, contributions_1, baseEditor_1, editor_1, history_1, activitybarPart_1, editorPart_1, sidebarPart_1, panelPart_1, statusbarPart_1, layout_1, actionBarRegistry_1, viewlet_1, panel_1, quickOpenController_1, diffEditorInput_1, extensions_1, untitledEditorService_1, editorService_1, partService_1, contextService_1, storage_1, keybindingService_1, activityService_1, viewletService_1, panelService_1, messageService_1, editorService_2, quickOpenService_1, history_2, event_1, instantiation_1, lifecycle_2, message_1, telemetry_1, thread_1, mainThreadService_1, statusbarService_1) {
     'use strict';
     /**
      * The workbench creates and lays out all parts that make up the Monaco Workbench.
      */
     var Workbench = (function () {
-        function Workbench(container, workspace, configuration, options, instantiationService) {
+        function Workbench(container, workspace, configuration, options, serviceCollection, instantiationService, untitledEditorService, eventService, contextService, storageService, telemetryService, keybindingService, lifecycleService, messageService, threadService) {
             var _this = this;
+            this.instantiationService = instantiationService;
+            this.untitledEditorService = untitledEditorService;
+            this.eventService = eventService;
+            this.contextService = contextService;
+            this.storageService = storageService;
+            this.telemetryService = telemetryService;
+            this.keybindingService = keybindingService;
+            this.lifecycleService = lifecycleService;
+            this.messageService = messageService;
+            this.threadService = threadService;
             this.serviceId = partService_1.IPartService;
             // Validate params
             this.validateParams(container, configuration, options);
@@ -25,7 +44,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
                 workspace: workspace,
                 configuration: configuration,
                 options: options || {},
-                instantiationService: instantiationService
+                serviceCollection: serviceCollection
             };
             this.toDispose = [];
             this.toShutdown = [];
@@ -129,7 +148,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
                 // Flag workbench as created once done
                 var workbenchDone_1 = function (error) {
                     _this.workbenchCreated = true;
-                    _this.eventService.emit(events_1.EventType.WORKBENCH_CREATED);
                     _this.creationPromiseComplete(true);
                     if (_this.callbacks && _this.callbacks.onWorkbenchStarted) {
                         _this.callbacks.onWorkbenchStarted();
@@ -138,6 +156,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
                         errors.onUnexpectedError(error);
                     }
                 };
+                // Join viewlet, panel and editor promises
                 winjs_base_1.TPromise.join(compositeAndEditorPromises).then(function () { return workbenchDone_1(); }, function (error) { return workbenchDone_1(error); });
             }
             catch (error) {
@@ -148,81 +167,67 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
             }
         };
         Workbench.prototype.initServices = function () {
-            this.instantiationService = this.workbenchParams.instantiationService;
-            // Services we expect
-            this.eventService = this.instantiationService.getInstance(event_1.IEventService);
-            this.storageService = this.instantiationService.getInstance(storage_1.IStorageService);
-            this.keybindingService = this.instantiationService.getInstance(keybindingService_1.IKeybindingService);
-            this.contextService = this.instantiationService.getInstance(contextService_1.IWorkspaceContextService);
-            this.telemetryService = this.instantiationService.getInstance(telemetry_1.ITelemetryService);
-            var messageService = this.instantiationService.getInstance(message_1.IMessageService);
-            if (this.keybindingService instanceof keybindingServiceImpl_1.AbstractKeybindingService) {
-                this.keybindingService.setMessageService(messageService);
-            }
-            var threadService = this.instantiationService.getInstance(thread_1.IThreadService);
-            this.instantiationService.getInstance(extensions_2.IExtensionService);
-            this.lifecycleService = this.instantiationService.getInstance(lifecycle_2.ILifecycleService);
+            var _this = this;
+            var serviceCollection = this.workbenchParams.serviceCollection;
             this.toDispose.push(this.lifecycleService.onShutdown(this.shutdownComponents, this));
-            var contextMenuService = this.instantiationService.getInstance(contextView_1.IContextMenuService);
-            this.untitledEditorService = this.instantiationService.getInstance(untitledEditorService_1.IUntitledEditorService);
             // Services we contribute
-            this.instantiationService.addSingleton(partService_1.IPartService, this);
+            serviceCollection.set(partService_1.IPartService, this);
             // Viewlet service (sidebar part)
-            this.sidebarPart = new sidebarPart_1.SidebarPart(messageService, this.storageService, this.eventService, this.telemetryService, contextMenuService, this, this.keybindingService, constants_1.Identifiers.SIDEBAR_PART);
+            this.sidebarPart = this.instantiationService.createInstance(sidebarPart_1.SidebarPart, constants_1.Identifiers.SIDEBAR_PART);
             this.toDispose.push(this.sidebarPart);
             this.toShutdown.push(this.sidebarPart);
-            this.instantiationService.addSingleton(viewletService_1.IViewletService, this.sidebarPart);
+            serviceCollection.set(viewletService_1.IViewletService, this.sidebarPart);
             // Panel service (panel part)
-            this.panelPart = new panelPart_1.PanelPart(messageService, this.storageService, this.eventService, this.telemetryService, contextMenuService, this, this.keybindingService, constants_1.Identifiers.PANEL_PART);
+            this.panelPart = this.instantiationService.createInstance(panelPart_1.PanelPart, constants_1.Identifiers.PANEL_PART);
             this.toDispose.push(this.panelPart);
             this.toShutdown.push(this.panelPart);
-            this.instantiationService.addSingleton(panelService_1.IPanelService, this.panelPart);
+            serviceCollection.set(panelService_1.IPanelService, this.panelPart);
             // Activity service (activitybar part)
-            this.activitybarPart = new activitybarPart_1.ActivitybarPart(this.sidebarPart, messageService, this.telemetryService, this.eventService, contextMenuService, this.keybindingService, constants_1.Identifiers.ACTIVITYBAR_PART);
+            this.activitybarPart = this.instantiationService.createInstance(activitybarPart_1.ActivitybarPart, constants_1.Identifiers.ACTIVITYBAR_PART);
             this.toDispose.push(this.activitybarPart);
             this.toShutdown.push(this.activitybarPart);
-            this.instantiationService.addSingleton(activityService_1.IActivityService, this.activitybarPart);
+            serviceCollection.set(activityService_1.IActivityService, this.activitybarPart);
             // Editor service (editor part)
-            this.editorPart = new editorPart_1.EditorPart(messageService, this.eventService, this.telemetryService, this.storageService, this, constants_1.Identifiers.EDITOR_PART);
+            this.editorPart = this.instantiationService.createInstance(editorPart_1.EditorPart, constants_1.Identifiers.EDITOR_PART);
             this.toDispose.push(this.editorPart);
             this.toShutdown.push(this.editorPart);
-            this.editorService = new editorService_1.WorkbenchEditorService(this.editorPart, this.untitledEditorService);
-            this.instantiationService.addSingleton(editorService_2.IWorkbenchEditorService, this.editorService);
+            this.editorService = new editorService_1.WorkbenchEditorService(this.editorPart, this.untitledEditorService, this.instantiationService);
+            serviceCollection.set(editorService_2.IWorkbenchEditorService, this.editorService);
             // Quick open service (quick open controller)
-            this.quickOpen = new quickOpenController_1.QuickOpenController(this.eventService, this.storageService, this.editorService, this.sidebarPart, messageService, this.telemetryService, this.contextService, this.keybindingService);
+            this.quickOpen = this.instantiationService.createInstance(quickOpenController_1.QuickOpenController);
             this.toDispose.push(this.quickOpen);
             this.toShutdown.push(this.quickOpen);
-            this.instantiationService.addSingleton(quickOpenService_1.IQuickOpenService, this.quickOpen);
+            if (this.messageService instanceof messageService_1.WorkbenchMessageService) {
+                this.toDispose.push(this.quickOpen.onShow(function () { return _this.messageService.suspend(); })); // when quick open is open, don't show messages behind
+                this.toDispose.push(this.quickOpen.onHide(function () { return _this.messageService.resume(); })); // resume messages once quick open is closed again
+            }
+            serviceCollection.set(quickOpenService_1.IQuickOpenService, this.quickOpen);
             // Status bar
-            this.statusbarPart = new statusbarPart_1.StatusbarPart(constants_1.Identifiers.STATUSBAR_PART);
+            this.statusbarPart = this.instantiationService.createInstance(statusbarPart_1.StatusbarPart, constants_1.Identifiers.STATUSBAR_PART);
             this.toDispose.push(this.statusbarPart);
             this.toShutdown.push(this.statusbarPart);
-            this.instantiationService.addSingleton(statusbarService_1.IStatusbarService, this.statusbarPart);
+            serviceCollection.set(statusbarService_1.IStatusbarService, this.statusbarPart);
             // History
-            this.instantiationService.addSingleton(history_2.IHistoryService, new history_1.HistoryService(this.eventService, this.editorService, this.contextService, this.quickOpen));
-            // a new way to contribute services...
+            serviceCollection.set(history_2.IHistoryService, new history_1.HistoryService(this.eventService, this.editorService, this.contextService, this.quickOpen));
+            // Contributed services
             var contributedServices = extensions_1.getServices();
             for (var _i = 0, contributedServices_1 = contributedServices; _i < contributedServices_1.length; _i++) {
                 var contributedService = contributedServices_1[_i];
-                this.instantiationService.addSingleton(contributedService.id, contributedService.descriptor);
+                serviceCollection.set(contributedService.id, contributedService.descriptor);
             }
             // Some services need to be set explicitly after all services are created
-            threadService.setInstantiationService(this.instantiationService);
-            messageService.setWorkbenchServices(this.quickOpen, this.statusbarPart);
-            this.quickOpen.setInstantiationService(this.instantiationService);
-            this.statusbarPart.setInstantiationService(this.instantiationService);
-            this.activitybarPart.setInstantiationService(this.instantiationService);
-            this.sidebarPart.setInstantiationService(this.instantiationService);
-            this.panelPart.setInstantiationService(this.instantiationService);
-            this.editorPart.setInstantiationService(this.instantiationService);
-            this.untitledEditorService.setInstantiationService(this.instantiationService);
-            this.editorService.setInstantiationService(this.instantiationService);
-            // Set the some services to registries that have been created eagerly
+            if (this.threadService instanceof mainThreadService_1.MainThreadService) {
+                this.threadService.setInstantiationService(this.instantiationService);
+            }
+            if (this.messageService instanceof messageService_1.WorkbenchMessageService) {
+                this.messageService.setWorkbenchServices(this.statusbarPart);
+            }
             this.keybindingService.setInstantiationService(this.instantiationService);
+            // Set the some services to registries that have been created eagerly
             platform_1.Registry.as(actionBarRegistry_1.Extensions.Actionbar).setInstantiationService(this.instantiationService);
             platform_1.Registry.as(contributions_1.Extensions.Workbench).setInstantiationService(this.instantiationService);
             platform_1.Registry.as(baseEditor_1.Extensions.Editors).setInstantiationService(this.instantiationService);
-            platform_1.Registry.as(telemetry_1.Extenstions.TelemetryAppenders).activate(this.instantiationService);
+            this.instantiationService.invokeFunction(telemetry_1.Extenstions.TelemetryAppenders.activate);
         };
         Workbench.prototype.initSettings = function () {
             // Sidebar visibility
@@ -380,29 +385,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
             // Remember in settings
             this.storageService.store(Workbench.sidebarPositionSettingKey, position === partService_1.Position.LEFT ? 'left' : 'right', storage_1.StorageScope.GLOBAL);
         };
-        /**
-         * Frees up resources of the workbench. Can only be called once and only on a workbench that was started. With the
-         * optional parameter "force", the workbench can be shutdown ignoring any workbench components that might prevent
-         * shutdown for user interaction (e.g. a dirty editor waiting for save to occur).
-         */
-        Workbench.prototype.shutdown = function (force) {
-            if (this.isStarted()) {
-                if (!force) {
-                    this.shutdownComponents();
-                }
-                // Event
-                this.eventService.emit(events_1.EventType.WORKBENCH_DISPOSING);
-                this.workbenchShutdown = true;
-                // Dispose
-                this.dispose();
-            }
-            return null;
-        };
         Workbench.prototype.dispose = function () {
-            // Dispose all
+            if (this.isStarted()) {
+                this.shutdownComponents();
+                this.workbenchShutdown = true;
+            }
             this.toDispose = lifecycle_1.dispose(this.toDispose);
-            // Event
-            this.eventService.emit(events_1.EventType.WORKBENCH_DISPOSED);
         };
         /**
          * Asks the workbench and all its UI components inside to lay out according to
@@ -575,6 +563,18 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/types
         Workbench.sidebarPositionSettingKey = 'workbench.sidebar.position';
         Workbench.sidebarHiddenSettingKey = 'workbench.sidebar.hidden';
         Workbench.panelHiddenSettingKey = 'workbench.panel.hidden';
+        Workbench = __decorate([
+            __param(5, instantiation_1.IInstantiationService),
+            __param(6, untitledEditorService_1.IUntitledEditorService),
+            __param(7, event_1.IEventService),
+            __param(8, contextService_1.IWorkspaceContextService),
+            __param(9, storage_1.IStorageService),
+            __param(10, telemetry_1.ITelemetryService),
+            __param(11, keybindingService_1.IKeybindingService),
+            __param(12, lifecycle_2.ILifecycleService),
+            __param(13, message_1.IMessageService),
+            __param(14, thread_1.IThreadService)
+        ], Workbench);
         return Workbench;
     }());
     exports.Workbench = Workbench;

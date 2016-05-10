@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/uri', 'vs/platform/contextview/browser/contextView', 'vs/platform/editor/common/editor', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/keybinding/browser/keybindingServiceImpl', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/platform', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/modes/modesRegistry', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerService', 'vs/editor/browser/standalone/colorizer', 'vs/editor/browser/standalone/simpleServices', 'vs/editor/browser/standalone/standaloneServices', 'vs/editor/browser/widget/codeEditorWidget', 'vs/editor/browser/widget/diffEditorWidget'], function (require, exports, lifecycle_1, uri_1, contextView_1, editor_1, extensionsRegistry_1, instantiation_1, instantiationService_1, jsonContributionRegistry_1, keybindingServiceImpl_1, keybindingService_1, markers_1, platform_1, remoteTelemetryService_1, telemetry_1, defaultConfig_1, modesRegistry_1, codeEditorService_1, editorWorkerService_1, colorizer_1, simpleServices_1, standaloneServices_1, codeEditorWidget_1, diffEditorWidget_1) {
+define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/uri', 'vs/platform/contextview/browser/contextView', 'vs/platform/editor/common/editor', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/keybinding/browser/keybindingServiceImpl', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/markers/common/markers', 'vs/platform/platform', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/config/defaultConfig', 'vs/editor/common/editorCommon', 'vs/editor/common/modes/modesRegistry', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerService', 'vs/editor/browser/standalone/colorizer', 'vs/editor/browser/standalone/simpleServices', 'vs/editor/browser/standalone/standaloneServices', 'vs/editor/browser/widget/codeEditorWidget', 'vs/editor/browser/widget/diffEditorWidget'], function (require, exports, lifecycle_1, uri_1, contextView_1, editor_1, extensionsRegistry_1, instantiation_1, serviceCollection_1, instantiationService_1, jsonContributionRegistry_1, keybindingServiceImpl_1, keybindingService_1, markers_1, platform_1, remoteTelemetryService_1, telemetry_1, defaultConfig_1, editorCommon_1, modesRegistry_1, codeEditorService_1, editorWorkerService_1, colorizer_1, simpleServices_1, standaloneServices_1, codeEditorWidget_1, diffEditorWidget_1) {
     'use strict';
     // Set defaults for standalone editor
     defaultConfig_1.DefaultConfig.editor.wrappingIndent = 'none';
@@ -47,6 +47,13 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/uri', 
                 this._ownsModel = false;
             }
             this._attachModel(model);
+            if (model) {
+                var e = {
+                    oldModelUrl: null,
+                    newModelUrl: model.getAssociatedResource().toString()
+                };
+                this.emit(editorCommon_1.EventType.ModelChanged, e);
+            }
         }
         StandaloneEditor.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
@@ -262,7 +269,15 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/uri', 
     function prepareServices(domElement, services) {
         services = standaloneServices_1.ensureStaticPlatformServices(services);
         var toDispose = standaloneServices_1.ensureDynamicPlatformServices(domElement, services);
-        services.instantiationService = instantiationService_1.createInstantiationService(services);
+        var collection = new serviceCollection_1.ServiceCollection();
+        for (var legacyServiceId in services) {
+            if (services.hasOwnProperty(legacyServiceId)) {
+                var id = instantiation_1.createDecorator(legacyServiceId);
+                var service = services[legacyServiceId];
+                collection.set(id, service);
+            }
+        }
+        services.instantiationService = new instantiationService_1.InstantiationService(collection);
         return {
             ctx: services,
             toDispose: toDispose

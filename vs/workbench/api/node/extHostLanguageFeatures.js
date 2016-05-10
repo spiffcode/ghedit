@@ -60,7 +60,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifec
                     data.symbols.push({
                         id: String(i),
                         range: TypeConverters.fromRange(lens.range),
-                        command: TypeConverters.Command.from(lens.command, { commands: _this._commands, disposables: data.disposables })
+                        command: TypeConverters.Command.from(lens.command, data.disposables)
                     });
                 });
                 return data;
@@ -107,7 +107,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifec
                             command: 'missing',
                         };
                     }
-                    symbol.command = TypeConverters.Command.from(command, { commands: _this._commands, disposables: cachedData.disposables });
+                    symbol.command = TypeConverters.Command.from(command, cachedData.disposables);
                     return symbol;
                 });
             });
@@ -243,14 +243,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifec
                 }
             });
             this._cachedCommands = lifecycle_1.dispose(this._cachedCommands);
-            var ctx = { commands: this._commands, disposables: this._cachedCommands };
             return async_1.asWinJsPromise(function (token) { return _this._provider.provideCodeActions(doc, ran, { diagnostics: allDiagnostics }, token); }).then(function (commands) {
                 if (!Array.isArray(commands)) {
                     return;
                 }
                 return commands.map(function (command, i) {
                     return {
-                        command: TypeConverters.Command.from(command, ctx),
+                        command: TypeConverters.Command.from(command, _this._cachedCommands),
                         score: i
                     };
                 });
@@ -398,7 +397,13 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifec
                     list = value;
                     defaultSuggestions.incomplete = list.isIncomplete;
                 }
+                else if (!value) {
+                    // undefined and null are valid results
+                    return;
+                }
                 else {
+                    // warn about everything else
+                    console.warn('INVALID result from completion provider. expected CompletionItem-array or CompletionList but got:', value);
                     return;
                 }
                 for (var i = 0; i < list.items.length; i++) {

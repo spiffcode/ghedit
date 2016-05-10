@@ -63,12 +63,6 @@ define(["require", "exports", 'vs/editor/common/editorCommon'], function (requir
         ViewEventHandler.prototype.onZonesChanged = function () {
             return false;
         };
-        ViewEventHandler.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        ViewEventHandler.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
-        };
         ViewEventHandler.prototype.onViewFocusChanged = function (isFocused) {
             return false;
         };
@@ -151,16 +145,6 @@ define(["require", "exports", 'vs/editor/common/editorCommon'], function (requir
                         break;
                     case editorCommon.EventType.ViewZonesChanged:
                         if (this.onZonesChanged()) {
-                            shouldRender = true;
-                        }
-                        break;
-                    case editorCommon.EventType.ViewScrollWidthChanged:
-                        if (this.onScrollWidthChanged(data)) {
-                            shouldRender = true;
-                        }
-                        break;
-                    case editorCommon.EventType.ViewScrollHeightChanged:
-                        if (this.onScrollHeightChanged(data)) {
                             shouldRender = true;
                         }
                         break;

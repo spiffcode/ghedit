@@ -10,7 +10,8 @@ define(["require", "exports", 'vs/base/common/scrollable', 'vs/base/common/event
             getElementHash: function (i) { return (itemRanges[i].item.id + ":" + itemRanges[i].range.start + ":" + itemRanges[i].range.end); }
         };
     }
-    var MouseEventTypes = ['click',
+    var MouseEventTypes = [
+        'click',
         'dblclick',
         'mouseup',
         'mousedown',
@@ -30,6 +31,7 @@ define(["require", "exports", 'vs/base/common/scrollable', 'vs/base/common/event
             this.cache = new rowCache_1.RowCache(this.renderers);
             this.renderTop = 0;
             this._renderHeight = 0;
+            this._lastScrollEvent = new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
             this._domNode = document.createElement('div');
             this._domNode.className = 'monaco-list';
             this._domNode.tabIndex = 0;
@@ -85,7 +87,7 @@ define(["require", "exports", 'vs/base/common/scrollable', 'vs/base/common/event
             }
             this.rowsContainer.style.height = this.rangeMap.size + "px";
             this.setScrollTop(this.renderTop);
-            this._emitScrollEvent(false, false);
+            this._emitScrollEvent();
             return deleted.map(function (i) { return i.element; });
             var _a, _b;
         };
@@ -122,7 +124,7 @@ define(["require", "exports", 'vs/base/common/scrollable', 'vs/base/common/event
             this.setRenderHeight(height || DOM.getContentHeight(this._domNode));
             this.setScrollTop(this.renderTop);
             this.scrollableElement.onElementDimensions();
-            this._emitScrollEvent(false, false);
+            this._emitScrollEvent();
         };
         // Render
         ListView.prototype.setRenderHeight = function (viewHeight) {
@@ -207,10 +209,11 @@ define(["require", "exports", 'vs/base/common/scrollable', 'vs/base/common/event
             scrollTop = Math.max(scrollTop, 0);
             this.render(scrollTop, this._renderHeight);
             this.renderTop = scrollTop;
-            this._emitScrollEvent(true, false);
+            this._emitScrollEvent();
         };
-        ListView.prototype._emitScrollEvent = function (vertical, horizontal) {
-            this._onScroll.fire(new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight(), vertical, horizontal));
+        ListView.prototype._emitScrollEvent = function () {
+            this._lastScrollEvent = this._lastScrollEvent.create(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
+            this._onScroll.fire(this._lastScrollEvent);
         };
         ListView.prototype.addScrollListener = function (callback) {
             return this._onScroll.event(callback);

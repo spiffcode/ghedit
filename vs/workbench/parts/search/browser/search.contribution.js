@@ -95,7 +95,7 @@ define(["require", "exports", 'vs/platform/platform', 'vs/workbench/browser/view
     var openSearchViewletKb = {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_F
     };
-    platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions).registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenSearchViewletAction, OpenSearchViewletAction.ID, OpenSearchViewletAction.LABEL, openSearchViewletKb), nls.localize('view', "View"));
+    platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions).registerWorkbenchAction(new actions_1.SyncActionDescriptor(OpenSearchViewletAction, OpenSearchViewletAction.ID, OpenSearchViewletAction.LABEL, openSearchViewletKb), 'View: Show Search', nls.localize('view', "View"));
     // Contribute to Explorer Viewer
     var actionBarRegistry = platform_1.Registry.as(actionBarRegistry_1.Extensions.Actionbar);
     actionBarRegistry.registerActionBarContributor(actionBarRegistry_1.Scope.VIEWER, ExplorerViewerActionContributor);
@@ -112,7 +112,7 @@ define(["require", "exports", 'vs/platform/platform', 'vs/workbench/browser/view
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(ShowAllSymbolsAction, ACTION_ID, ACTION_LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_T
-    }));
+    }), 'Show All Symbols');
     // Configuration
     var configurationRegistry = platform_1.Registry.as(configurationRegistry_1.Extensions.Configuration);
     configurationRegistry.registerConfiguration({

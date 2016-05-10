@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/descriptors', 'vs/editor/common/modes/nullMode', 'vs/editor/common/modes/supports/suggestSupport', 'vs/editor/common/services/editorWorkerService'], function (require, exports, eventEmitter_1, winjs_base_1, descriptors_1, nullMode_1, suggestSupport_1, editorWorkerService_1) {
+define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/winjs.base', 'vs/platform/instantiation/common/descriptors', 'vs/platform/instantiation/common/instantiation', 'vs/editor/common/modes/nullMode', 'vs/editor/common/modes/supports/suggestSupport', 'vs/editor/common/services/editorWorkerService'], function (require, exports, eventEmitter_1, winjs_base_1, descriptors_1, instantiation_1, nullMode_1, suggestSupport_1, editorWorkerService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -197,7 +197,7 @@ define(["require", "exports", 'vs/base/common/eventEmitter', 'vs/base/common/win
             }
         }
         FrankensteinMode = __decorate([
-            __param(1, editorWorkerService_1.IEditorWorkerService)
+            __param(1, instantiation_1.optional(editorWorkerService_1.IEditorWorkerService))
         ], FrankensteinMode);
         return FrankensteinMode;
     }(AbstractMode));

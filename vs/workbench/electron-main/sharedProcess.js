@@ -2,27 +2,27 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'child_process', 'vs/base/common/uri', 'vs/base/common/objects', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager'], function (require, exports, cp, uri_1, objects_1, env, settings_1, update_manager_1) {
+define(["require", "exports", 'child_process', 'vs/base/common/uri', 'vs/base/common/objects', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager'], function (require, exports, cp, uri_1, objects_1, env_1, settings_1, update_manager_1) {
     "use strict";
     var boostrapPath = uri_1.default.parse(require.toUrl('bootstrap')).fsPath;
-    function getEnvironment() {
-        var configuration = objects_1.assign({}, env.cliArgs);
+    function getEnvironment(envService, updateManager) {
+        var configuration = objects_1.assign({}, envService.cliArgs);
         configuration.execPath = process.execPath;
-        configuration.appName = env.product.nameLong;
-        configuration.appRoot = env.appRoot;
-        configuration.version = env.version;
-        configuration.commitHash = env.product.commit;
-        configuration.appSettingsHome = env.appSettingsHome;
-        configuration.appSettingsPath = env.appSettingsPath;
-        configuration.appKeybindingsPath = env.appKeybindingsPath;
-        configuration.userExtensionsHome = env.userExtensionsHome;
-        configuration.isBuilt = env.isBuilt;
-        configuration.updateFeedUrl = update_manager_1.Instance.feedUrl;
-        configuration.updateChannel = update_manager_1.Instance.channel;
-        configuration.extensionsGallery = env.product.extensionsGallery;
+        configuration.appName = envService.product.nameLong;
+        configuration.appRoot = envService.appRoot;
+        configuration.version = envService.version;
+        configuration.commitHash = envService.product.commit;
+        configuration.appSettingsHome = envService.appSettingsHome;
+        configuration.appSettingsPath = envService.appSettingsPath;
+        configuration.appKeybindingsPath = envService.appKeybindingsPath;
+        configuration.userExtensionsHome = envService.userExtensionsHome;
+        configuration.isBuilt = envService.isBuilt;
+        configuration.updateFeedUrl = updateManager.feedUrl;
+        configuration.updateChannel = updateManager.channel;
+        configuration.extensionsGallery = envService.product.extensionsGallery;
         return configuration;
     }
-    function _spawnSharedProcess() {
+    function _spawnSharedProcess(envService, updateManager, settingsManager) {
         // Make sure the nls configuration travels to the shared process.
         var opts = {
             env: objects_1.assign(objects_1.assign({}, process.env), {
@@ -34,23 +34,26 @@ define(["require", "exports", 'child_process', 'vs/base/common/uri', 'vs/base/co
         result.once('message', function () {
             result.send({
                 configuration: {
-                    env: getEnvironment()
+                    env: getEnvironment(envService, updateManager)
                 },
                 contextServiceOptions: {
-                    globalSettings: settings_1.manager.globalSettings
+                    globalSettings: settingsManager.globalSettings
                 }
             });
         });
         return result;
     }
     var spawnCount = 0;
-    function spawnSharedProcess() {
+    function spawnSharedProcess(accessor) {
+        var envService = accessor.get(env_1.IEnvironmentService);
+        var updateManager = accessor.get(update_manager_1.IUpdateService);
+        var settingsManager = accessor.get(settings_1.ISettingsService);
         var child;
         var spawn = function () {
             if (++spawnCount > 10) {
                 return;
             }
-            child = _spawnSharedProcess();
+            child = _spawnSharedProcess(envService, updateManager, settingsManager);
             child.on('exit', spawn);
         };
         spawn();

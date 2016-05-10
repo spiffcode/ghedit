@@ -57,6 +57,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/browser/browser', 'vs/base/brow
             }
             if (this.placeholder) {
                 this.input.setAttribute('placeholder', this.placeholder);
+                this.input.title = this.placeholder;
             }
             this.oninput(this.input, function () { return _this.onValueChange(); });
             this.onblur(this.input, function () { return _this.onBlur(); });

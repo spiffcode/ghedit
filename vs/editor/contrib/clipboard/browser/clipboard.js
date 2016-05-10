@@ -97,7 +97,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         };
         return ExecCommandPasteAction;
     }(editorAction_1.EditorAction));
-    function registerClipboardAction(desc) {
+    function registerClipboardAction(desc, alias) {
         if (!browser.supportsExecCommand(desc.execCommand)) {
             return;
         }
@@ -109,7 +109,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             win: desc.win,
             linux: desc.linux,
             mac: desc.mac
-        }));
+        }, alias));
     }
     registerClipboardAction({
         ctor: ExecCommandCutAction,
@@ -118,7 +118,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         execCommand: 'cut',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_X,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_X, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Delete] }
-    });
+    }, 'Cut');
     registerClipboardAction({
         ctor: ExecCommandCopyAction,
         id: 'editor.action.clipboardCopyAction',
@@ -126,7 +126,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         execCommand: 'copy',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_C, secondary: [keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.Insert] }
-    });
+    }, 'Copy');
     registerClipboardAction({
         ctor: ExecCommandPasteAction,
         id: 'editor.action.clipboardPasteAction',
@@ -134,7 +134,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         execCommand: 'paste',
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_V,
         win: { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_V, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Insert] }
-    });
+    }, 'Paste');
     function execCommandToHandler(actionId, browserCommand, accessor, args) {
         // If editor text focus
         if (args.context[editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS]) {

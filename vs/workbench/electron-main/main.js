@@ -2,71 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/lifecycle', 'vs/workbench/electron-main/menus', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager', 'vs/base/node/service.net', 'vs/base/node/env', 'vs/base/common/winjs.base', 'vs/workbench/parts/git/electron-main/askpassService', 'vs/workbench/electron-main/sharedProcess'], function (require, exports, electron_1, fs, nls, objects_1, platform, env, windows, lifecycle, menu, settings, update_manager_1, service_net_1, env_1, winjs_base_1, askpassService_1, sharedProcess_1) {
+define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/objects', 'vs/base/common/platform', 'vs/workbench/electron-main/env', 'vs/workbench/electron-main/windows', 'vs/workbench/electron-main/lifecycle', 'vs/workbench/electron-main/menus', 'vs/workbench/electron-main/settings', 'vs/workbench/electron-main/update-manager', 'vs/base/parts/ipc/node/ipc.net', 'vs/base/node/env', 'vs/base/common/winjs.base', 'vs/workbench/parts/git/common/gitIpc', 'vs/workbench/parts/git/electron-main/askpassService', 'vs/workbench/electron-main/sharedProcess', './launch', 'vs/platform/instantiation/common/instantiation', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/descriptors', './log', './storage'], function (require, exports, electron_1, fs, nls, objects_1, platform, env_1, windows, lifecycle_1, menus_1, settings_1, update_manager_1, ipc_net_1, env_2, winjs_base_1, gitIpc_1, askpassService_1, sharedProcess_1, launch_1, instantiation_1, instantiationService_1, serviceCollection_1, descriptors_1, log_1, storage_1) {
     'use strict';
-    var LaunchService = (function () {
-        function LaunchService() {
-        }
-        LaunchService.prototype.start = function (args, userEnv) {
-            env.log('Received data from other instance', args);
-            // Otherwise handle in windows manager
-            var usedWindows;
-            if (!!args.extensionDevelopmentPath) {
-                windows.manager.openPluginDevelopmentHostWindow({ cli: args, userEnv: userEnv });
-            }
-            else if (args.pathArguments.length === 0 && args.openNewWindow) {
-                usedWindows = windows.manager.open({ cli: args, userEnv: userEnv, forceNewWindow: true, forceEmpty: true });
-            }
-            else if (args.pathArguments.length === 0) {
-                usedWindows = [windows.manager.focusLastActive(args)];
-            }
-            else {
-                usedWindows = windows.manager.open({
-                    cli: args,
-                    userEnv: userEnv,
-                    forceNewWindow: args.waitForWindowClose || args.openNewWindow,
-                    preferNewWindow: !args.openInSameWindow,
-                    diffMode: args.diffMode
-                });
-            }
-            // If the other instance is waiting to be killed, we hook up a window listener if one window
-            // is being used and only then resolve the startup promise which will kill this second instance
-            if (args.waitForWindowClose && usedWindows && usedWindows.length === 1 && usedWindows[0]) {
-                var windowId_1 = usedWindows[0].id;
-                return new winjs_base_1.TPromise(function (c, e) {
-                    var unbind = windows.onClose(function (id) {
-                        if (id === windowId_1) {
-                            unbind();
-                            c(null);
-                        }
-                    });
-                });
-            }
-            return winjs_base_1.TPromise.as(null);
-        };
-        return LaunchService;
-    }());
-    exports.LaunchService = LaunchService;
-    // We handle uncaught exceptions here to prevent electron from opening a dialog to the user
-    process.on('uncaughtException', function (err) {
-        if (err) {
-            // take only the message and stack property
-            var friendlyError = {
-                message: err.message,
-                stack: err.stack
-            };
-            // handle on client side
-            windows.manager.sendToFocused('vscode:reportError', JSON.stringify(friendlyError));
-        }
-        console.error('[uncaught exception in main]: ' + err);
-        if (err.stack) {
-            console.error(err.stack);
-        }
-    });
-    function quit(arg) {
+    function quit(accessor, arg) {
+        var logService = accessor.get(log_1.ILogService);
         var exitCode = 0;
         if (typeof arg === 'string') {
-            env.log(arg);
+            logService.log(arg);
         }
         else {
             exitCode = 1; // signal error to the outside
@@ -77,40 +19,65 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
                 console.error('Startup error: ' + arg.toString());
             }
         }
-        process.exit(exitCode);
+        process.exit(exitCode); // in main, process.exit === app.exit
     }
-    function main(ipcServer, userEnv) {
-        env.log('### VSCode main.js ###');
-        env.log(env.appRoot, env.cliArgs);
+    function main(accessor, ipcServer, userEnv) {
+        var instantiationService = accessor.get(instantiation_1.IInstantiationService);
+        var logService = accessor.get(log_1.ILogService);
+        var envService = accessor.get(env_1.IEnvironmentService);
+        var windowManager = accessor.get(windows.IWindowsService);
+        var lifecycleService = accessor.get(lifecycle_1.ILifecycleService);
+        var updateManager = accessor.get(update_manager_1.IUpdateService);
+        var settingsManager = accessor.get(settings_1.ISettingsService);
+        // We handle uncaught exceptions here to prevent electron from opening a dialog to the user
+        process.on('uncaughtException', function (err) {
+            if (err) {
+                // take only the message and stack property
+                var friendlyError = {
+                    message: err.message,
+                    stack: err.stack
+                };
+                // handle on client side
+                windowManager.sendToFocused('vscode:reportError', JSON.stringify(friendlyError));
+            }
+            console.error('[uncaught exception in main]: ' + err);
+            if (err.stack) {
+                console.error(err.stack);
+            }
+        });
+        logService.log('### VSCode main.js ###');
+        logService.log(envService.appRoot, envService.cliArgs);
         // Setup Windows mutex
         var windowsMutex = null;
         try {
             var Mutex_1 = require.__$__nodeRequire('windows-mutex').Mutex;
-            windowsMutex = new Mutex_1(env.product.win32MutexName);
+            windowsMutex = new Mutex_1(envService.product.win32MutexName);
         }
         catch (e) {
         }
         // Register IPC services
-        ipcServer.registerService('LaunchService', new LaunchService());
-        ipcServer.registerService('GitAskpassService', new askpassService_1.GitAskpassService());
+        var launchService = instantiationService.createInstance(launch_1.LaunchService);
+        var launchChannel = new launch_1.LaunchChannel(launchService);
+        ipcServer.registerChannel('launch', launchChannel);
+        var askpassService = new askpassService_1.GitAskpassService();
+        var askpassChannel = new gitIpc_1.AskpassChannel(askpassService);
+        ipcServer.registerChannel('askpass', askpassChannel);
         // Used by sub processes to communicate back to the main instance
         process.env['VSCODE_PID'] = '' + process.pid;
-        process.env['VSCODE_IPC_HOOK'] = env.mainIPCHandle;
-        process.env['VSCODE_SHARED_IPC_HOOK'] = env.sharedIPCHandle;
+        process.env['VSCODE_IPC_HOOK'] = envService.mainIPCHandle;
+        process.env['VSCODE_SHARED_IPC_HOOK'] = envService.sharedIPCHandle;
         // Spawn shared process
-        var sharedProcess = sharedProcess_1.spawnSharedProcess();
+        var sharedProcess = instantiationService.invokeFunction(sharedProcess_1.spawnSharedProcess);
         // Make sure we associate the program with the app user model id
         // This will help Windows to associate the running program with
         // any shortcut that is pinned to the taskbar and prevent showing
         // two icons in the taskbar for the same app.
-        if (platform.isWindows && env.product.win32AppUserModelId) {
-            electron_1.app.setAppUserModelId(env.product.win32AppUserModelId);
+        if (platform.isWindows && envService.product.win32AppUserModelId) {
+            electron_1.app.setAppUserModelId(envService.product.win32AppUserModelId);
         }
         // Set programStart in the global scope
-        global.programStart = env.cliArgs.programStart;
-        // Dispose on app quit
-        electron_1.app.on('will-quit', function () {
-            env.log('App#dispose: deleting running instance handle');
+        global.programStart = envService.cliArgs.programStart;
+        function dispose() {
             if (ipcServer) {
                 ipcServer.dispose();
                 ipcServer = null;
@@ -119,17 +86,29 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
             if (windowsMutex) {
                 windowsMutex.release();
             }
+        }
+        // Dispose on app quit
+        electron_1.app.on('will-quit', function () {
+            logService.log('App#will-quit: disposing resources');
+            dispose();
+        });
+        // Dispose on vscode:exit
+        electron_1.ipcMain.on('vscode:exit', function (event, code) {
+            logService.log('IPC#vscode:exit', code);
+            dispose();
+            process.exit(code); // in main, process.exit === app.exit
         });
         // Lifecycle
-        lifecycle.manager.ready();
+        lifecycleService.ready();
         // Load settings
-        settings.manager.loadSync();
+        settingsManager.loadSync();
         // Propagate to clients
-        windows.manager.ready(userEnv);
+        windowManager.ready(userEnv);
         // Install Menu
-        menu.manager.ready();
+        var menuManager = instantiationService.createInstance(menus_1.VSCodeMenu);
+        menuManager.ready();
         // Install Tasks
-        if (platform.isWindows && env.isBuilt) {
+        if (platform.isWindows && envService.isBuilt) {
             electron_1.app.setUserTasks([
                 {
                     title: nls.localize('newWindow', "New Window"),
@@ -141,21 +120,23 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
             ]);
         }
         // Setup auto update
-        update_manager_1.Instance.initialize();
+        updateManager.initialize();
         // Open our first window
-        if (env.cliArgs.openNewWindow && env.cliArgs.pathArguments.length === 0) {
-            windows.manager.open({ cli: env.cliArgs, forceNewWindow: true, forceEmpty: true }); // new window if "-n" was used without paths
+        if (envService.cliArgs.openNewWindow && envService.cliArgs.pathArguments.length === 0) {
+            windowManager.open({ cli: envService.cliArgs, forceNewWindow: true, forceEmpty: true }); // new window if "-n" was used without paths
         }
-        else if (global.macOpenFiles && global.macOpenFiles.length && (!env.cliArgs.pathArguments || !env.cliArgs.pathArguments.length)) {
-            windows.manager.open({ cli: env.cliArgs, pathsToOpen: global.macOpenFiles }); // mac: open-file event received on startup
+        else if (global.macOpenFiles && global.macOpenFiles.length && (!envService.cliArgs.pathArguments || !envService.cliArgs.pathArguments.length)) {
+            windowManager.open({ cli: envService.cliArgs, pathsToOpen: global.macOpenFiles }); // mac: open-file event received on startup
         }
         else {
-            windows.manager.open({ cli: env.cliArgs, forceNewWindow: env.cliArgs.openNewWindow, diffMode: env.cliArgs.diffMode }); // default: read paths from cli
+            windowManager.open({ cli: envService.cliArgs, forceNewWindow: envService.cliArgs.openNewWindow, diffMode: envService.cliArgs.diffMode }); // default: read paths from cli
         }
     }
-    function setupIPC() {
+    function setupIPC(accessor) {
+        var logService = accessor.get(log_1.ILogService);
+        var envService = accessor.get(env_1.IEnvironmentService);
         function setup(retry) {
-            return service_net_1.serve(env.mainIPCHandle).then(function (server) {
+            return ipc_net_1.serve(envService.mainIPCHandle).then(function (server) {
                 if (platform.isMacintosh) {
                     electron_1.app.dock.show(); // dock might be hidden at this case due to a retry
                 }
@@ -169,17 +150,18 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
                     electron_1.app.dock.hide();
                 }
                 // there's a running instance, let's connect to it
-                return service_net_1.connect(env.mainIPCHandle).then(function (client) {
+                return ipc_net_1.connect(envService.mainIPCHandle).then(function (client) {
                     // Tests from CLI require to be the only instance currently (TODO@Ben support multiple instances and output)
-                    if (env.isTestingFromCli) {
+                    if (envService.isTestingFromCli) {
                         var msg = 'Running extension tests from the command line is currently only supported if no other instance of Code is running.';
                         console.error(msg);
                         client.dispose();
                         return winjs_base_1.TPromise.wrapError(msg);
                     }
-                    env.log('Sending env to running instance...');
-                    var service = client.getService('LaunchService', LaunchService);
-                    return service.start(env.cliArgs, process.env)
+                    logService.log('Sending env to running instance...');
+                    var channel = client.getChannel('launch');
+                    var service = new launch_1.LaunchChannelClient(channel);
+                    return service.start(envService.cliArgs, process.env)
                         .then(function () { return client.dispose(); })
                         .then(function () { return winjs_base_1.TPromise.wrapError('Sent env to running instance. Terminating...'); });
                 }, function (err) {
@@ -190,10 +172,10 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
                     // let's delete it, since we can't connect to it
                     // and the retry the whole thing
                     try {
-                        fs.unlinkSync(env.mainIPCHandle);
+                        fs.unlinkSync(envService.mainIPCHandle);
                     }
                     catch (e) {
-                        env.log('Fatal error deleting obsolete instance handle', e);
+                        logService.log('Fatal error deleting obsolete instance handle', e);
                         return winjs_base_1.TPromise.wrapError(e);
                     }
                     return setup(false);
@@ -202,17 +184,32 @@ define(["require", "exports", 'electron', 'fs', 'vs/nls', 'vs/base/common/object
         }
         return setup(true);
     }
+    // TODO: isolate
+    var services = new serviceCollection_1.ServiceCollection();
+    services.set(env_1.IEnvironmentService, new descriptors_1.SyncDescriptor(env_1.EnvService));
+    services.set(log_1.ILogService, new descriptors_1.SyncDescriptor(log_1.MainLogService));
+    services.set(windows.IWindowsService, new descriptors_1.SyncDescriptor(windows.WindowsManager));
+    services.set(lifecycle_1.ILifecycleService, new descriptors_1.SyncDescriptor(lifecycle_1.LifecycleService));
+    services.set(storage_1.IStorageService, new descriptors_1.SyncDescriptor(storage_1.StorageService));
+    services.set(update_manager_1.IUpdateService, new descriptors_1.SyncDescriptor(update_manager_1.UpdateManager));
+    services.set(settings_1.ISettingsService, new descriptors_1.SyncDescriptor(settings_1.SettingsManager));
+    var instantiationService = new instantiationService_1.InstantiationService(services);
+    function getUserEnvironment() {
+        return platform.isWindows ? winjs_base_1.TPromise.as({}) : env_2.getUnixUserEnvironment();
+    }
     // On some platforms we need to manually read from the global environment variables
     // and assign them to the process environment (e.g. when doubleclick app on Mac)
-    env_1.getUserEnvironment()
+    getUserEnvironment()
         .then(function (userEnv) {
-        objects_1.assign(process.env, userEnv);
+        if (process.env['VSCODE_CLI'] !== '1') {
+            objects_1.assign(process.env, userEnv);
+        }
         // Make sure the NLS Config travels to the rendered process
         // See also https://github.com/Microsoft/vscode/issues/4558
         userEnv['VSCODE_NLS_CONFIG'] = process.env['VSCODE_NLS_CONFIG'];
-        return setupIPC()
-            .then(function (ipcServer) { return main(ipcServer, userEnv); });
+        return instantiationService.invokeFunction(setupIPC)
+            .then(function (ipcServer) { return instantiationService.invokeFunction(main, ipcServer, userEnv); });
     })
-        .done(null, quit);
+        .done(null, function (err) { return instantiationService.invokeFunction(quit, err); });
 });
 //# sourceMappingURL=main.js.map

@@ -7,11 +7,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/uuid', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/browser/builder', 'vs/base/common/events', 'vs/base/common/strings', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/browser/ui/toolbar/toolbar', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/progressbar/progressbar', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/part', 'vs/workbench/common/events', 'vs/workbench/browser/composite', 'vs/workbench/services/progress/browser/progressService', 'vs/platform/storage/common/storage', 'vs/platform/message/common/message', 'vs/css!./media/compositePart'], function (require, exports, nls, timer, uuid, winjs_base_1, platform_1, builder_1, events, strings, types, errors, toolbar_1, actionbar_1, progressbar_1, actionBarRegistry_1, part_1, events_1, composite_1, progressService_1, storage_1, message_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/uuid', 'vs/base/common/winjs.base', 'vs/platform/platform', 'vs/base/browser/builder', 'vs/base/common/events', 'vs/base/common/strings', 'vs/base/common/types', 'vs/base/common/errors', 'vs/base/browser/ui/toolbar/toolbar', 'vs/base/browser/ui/actionbar/actionbar', 'vs/base/browser/ui/progressbar/progressbar', 'vs/workbench/browser/actionBarRegistry', 'vs/workbench/browser/part', 'vs/workbench/common/events', 'vs/workbench/browser/composite', 'vs/workbench/services/progress/browser/progressService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/message/common/message', 'vs/platform/progress/common/progress', 'vs/css!./media/compositePart'], function (require, exports, nls, timer, uuid, winjs_base_1, platform_1, builder_1, events, strings, types, errors, toolbar_1, actionbar_1, progressbar_1, actionBarRegistry_1, part_1, events_1, composite_1, progressService_1, storage_1, serviceCollection_1, message_1, progress_1) {
     "use strict";
     var CompositePart = (function (_super) {
         __extends(CompositePart, _super);
-        function CompositePart(messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, registry, activeCompositeSettingsKey, nameForTelemetry, compositeCssClass, actionContributionScope, id) {
+        function CompositePart(messageService, storageService, eventService, telemetryService, contextMenuService, partService, keybindingService, instantiationService, registry, activeCompositeSettingsKey, nameForTelemetry, compositeCssClass, actionContributionScope, id) {
             _super.call(this, id);
             this.messageService = messageService;
             this.storageService = storageService;
@@ -20,6 +20,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/
             this.contextMenuService = contextMenuService;
             this.partService = partService;
             this.keybindingService = keybindingService;
+            this.instantiationService = instantiationService;
             this.registry = registry;
             this.activeCompositeSettingsKey = activeCompositeSettingsKey;
             this.nameForTelemetry = nameForTelemetry;
@@ -34,9 +35,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/
             this.instantiatedComposits = [];
             this.compositeLoaderPromises = {};
         }
-        CompositePart.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         CompositePart.prototype.openComposite = function (id, focus) {
             // Check if composite already visible and just focus in that case
             if (this.activeComposite && this.activeComposite.getId() === id) {
@@ -110,10 +108,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/timer', 'vs/base/common/
                 var loaderPromise = this.compositeLoaderPromises[id];
                 if (!loaderPromise) {
                     var progressService_2 = new progressService_1.WorkbenchProgressService(this.eventService, this.progressBar, compositeDescriptor.id, isActive);
-                    var services = {
-                        progressService: progressService_2
-                    };
-                    var compositeInstantiationService = this.instantiationService.createChild(services);
+                    var compositeInstantiationService = this.instantiationService.createChild(new serviceCollection_1.ServiceCollection([progress_1.IProgressService, progressService_2]));
                     loaderPromise = compositeInstantiationService.createInstance(compositeDescriptor).then(function (composite) {
                         _this.mapProgressServiceToComposite[composite.getId()] = progressService_2;
                         // Remember as Instantiated

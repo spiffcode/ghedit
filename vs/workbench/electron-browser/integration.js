@@ -91,7 +91,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             });
             // Configuration changes
             var previousConfiguredZoomLevel;
-            this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) {
+            this.configurationService.onDidUpdateConfiguration(function (e) {
                 var windowConfig = e.config;
                 var newZoomLevel = 0;
                 if (windowConfig.window && typeof windowConfig.window.zoomLevel === 'number') {

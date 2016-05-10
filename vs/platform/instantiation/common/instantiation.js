@@ -4,42 +4,51 @@ define(["require", "exports"], function (require, exports) {
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    // ----------------------- internal util -----------------------
+    // ------ internal util
     var _util;
     (function (_util) {
         _util.DI_TARGET = '$di$target';
         _util.DI_DEPENDENCIES = '$di$dependencies';
-        _util.DI_PROVIDES = '$di$provides_service';
-        function getServiceId(id) {
-            return id[_util.DI_PROVIDES];
-        }
-        _util.getServiceId = getServiceId;
         function getServiceDependencies(ctor) {
-            return ctor[_util.DI_DEPENDENCIES];
+            return ctor[_util.DI_DEPENDENCIES] || [];
         }
         _util.getServiceDependencies = getServiceDependencies;
     })(_util = exports._util || (exports._util = {}));
     exports.IInstantiationService = createDecorator('instantiationService');
+    function storeServiceDependency(id, target, index, optional) {
+        if (target[_util.DI_TARGET] === target) {
+            target[_util.DI_DEPENDENCIES].push({ id: id, index: index, optional: optional });
+        }
+        else {
+            target[_util.DI_DEPENDENCIES] = [{ id: id, index: index, optional: optional }];
+            target[_util.DI_TARGET] = target;
+        }
+    }
     /**
      * A *only* valid way to create a {{ServiceIdentifier}}.
      */
     function createDecorator(serviceId) {
-        var ret = function (target, key, index) {
+        var id = function (target, key, index) {
             if (arguments.length !== 3) {
                 throw new Error('@IServiceName-decorator can only be used to decorate a parameter');
             }
-            if (target[_util.DI_TARGET] === target) {
-                target[_util.DI_DEPENDENCIES].push({ serviceId: serviceId, index: index });
-            }
-            else {
-                target[_util.DI_DEPENDENCIES] = [{ serviceId: serviceId, index: index }];
-                target[_util.DI_TARGET] = target;
-            }
+            storeServiceDependency(id, target, index, false);
         };
-        ret[_util.DI_PROVIDES] = serviceId;
-        // ret['type'] = undefined;
-        return ret;
+        id.toString = function () { return serviceId; };
+        return id;
     }
     exports.createDecorator = createDecorator;
+    /**
+     * Mark a service dependency as optional.
+     */
+    function optional(serviceIdentifier) {
+        return function (target, key, index) {
+            if (arguments.length !== 3) {
+                throw new Error('@optional-decorator can only be used to decorate a parameter');
+            }
+            storeServiceDependency(serviceIdentifier, target, index, true);
+        };
+    }
+    exports.optional = optional;
 });
 //# sourceMappingURL=instantiation.js.map

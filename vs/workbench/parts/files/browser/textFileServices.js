@@ -57,10 +57,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/error
         TextFileService.prototype.registerListeners = function () {
             var _this = this;
             // Lifecycle
-            this.lifecycleService.addBeforeShutdownParticipant(this);
+            this.lifecycleService.onWillShutdown(function (event) { return event.veto(_this.beforeShutdown()); });
             this.lifecycleService.onShutdown(this.dispose, this);
             // Configuration changes
-            this.listenerToUnbind.push(this.configurationService.addListener(configuration_1.ConfigurationServiceEventTypes.UPDATED, function (e) { return _this.onConfigurationChange(e.config); }));
+            this.listenerToUnbind.push(this.configurationService.onDidUpdateConfiguration(function (e) { return _this.onConfigurationChange(e.config); }).dispose);
             // Editor focus change
             window.addEventListener('blur', function () { return _this.onEditorFocusChange(); }, true);
             this.listenerToUnbind.push(this.eventService.addListener(events_1.EventType.EDITOR_INPUT_CHANGED, function () { return _this.onEditorFocusChange(); }));

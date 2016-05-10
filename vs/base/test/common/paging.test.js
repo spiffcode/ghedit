@@ -13,7 +13,7 @@ define(["require", "exports", 'assert', 'vs/base/common/paging', 'vs/base/common
                 total: 100,
                 getPage: function (pageIndex) { return winjs_base_1.TPromise.as([0, 1, 2, 3, 4].map(function (i) { return i + (pageIndex * 5); })); }
             };
-            model = new paging_1.PagedModel(pager);
+            model = new paging_1.PagedModel(pager, 0);
         });
         test('isResolved', function () {
             assert(model.isResolved(0));

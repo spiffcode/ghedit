@@ -314,8 +314,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         QuickOpenEntryGroup.prototype.isHidden = function () {
             return this.entry ? this.entry.isHidden() : _super.prototype.isHidden.call(this);
         };
-        QuickOpenEntryGroup.prototype.setHighlights = function (labelHighlights, descriptionHighlights) {
-            this.entry ? this.entry.setHighlights(labelHighlights, descriptionHighlights) : _super.prototype.setHighlights.call(this, labelHighlights, descriptionHighlights);
+        QuickOpenEntryGroup.prototype.setHighlights = function (labelHighlights, descriptionHighlights, detailHighlights) {
+            this.entry ? this.entry.setHighlights(labelHighlights, descriptionHighlights, detailHighlights) : _super.prototype.setHighlights.call(this, labelHighlights, descriptionHighlights, detailHighlights);
         };
         QuickOpenEntryGroup.prototype.setHidden = function (hidden) {
             this.entry ? this.entry.setHidden(hidden) : _super.prototype.setHidden.call(this, hidden);

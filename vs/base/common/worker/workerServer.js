@@ -146,9 +146,9 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/marshalli
                         loaderConfig.catchError = true;
                         self.require.config(loaderConfig);
                     }
-                    var MonacoEnvironment = msg.payload.MonacoEnvironment;
-                    if (MonacoEnvironment) {
-                        self.MonacoEnvironment = MonacoEnvironment;
+                    var GlobalEnvironment = msg.payload.GlobalEnvironment;
+                    if (GlobalEnvironment) {
+                        self.GlobalEnvironment = GlobalEnvironment;
                     }
                     this.loadModule(msg.payload.moduleId, function (handlerModule) {
                         _this._requestHandler = handlerModule.value;

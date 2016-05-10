@@ -38,9 +38,6 @@ define(["require", "exports", 'vs/editor/common/modes/monarch/monarch', 'vs/edit
         tokenizer: {
             root: [
                 { include: '@selector' },
-                ['[@](charset|namespace)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@declarationbody' }],
-                ['[@](function)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@functiondeclaration' }],
-                ['[@](mixin)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@mixindeclaration' }],
             ],
             selector: [
                 { include: '@comments' },
@@ -50,6 +47,9 @@ define(["require", "exports", 'vs/editor/common/modes/monarch/monarch', 'vs/edit
                 ['[@](include)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@includedeclaration' }],
                 ['[@](keyframes|-webkit-keyframes|-moz-keyframes|-o-keyframes)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@keyframedeclaration' }],
                 ['[@](page|content|font-face|-moz-document)', { token: sassTokenTypes.TOKEN_AT_KEYWORD }],
+                ['[@](charset|namespace)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@declarationbody' }],
+                ['[@](function)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@functiondeclaration' }],
+                ['[@](mixin)', { token: sassTokenTypes.TOKEN_AT_KEYWORD, next: '@mixindeclaration' }],
                 ['url(\\-prefix)?\\(', { token: 'support.function.name', bracket: '@open', next: '@urldeclaration' }],
                 { include: '@controlstatement' },
                 { include: '@selectorname' },
@@ -167,7 +167,7 @@ define(["require", "exports", 'vs/editor/common/modes/monarch/monarch', 'vs/edit
                 ['{', { token: 'punctuation.curly', bracket: '@open', switchTo: '@selectorbody' }],
             ],
             parameterdeclaration: [
-                ['\\$@identifier@ws:', sassTokenTypes.TOKEN_PROPERTY],
+                ['\\$@identifier@ws:', 'variable'],
                 ['\\.\\.\\.', 'keyword.operator'],
                 [',', 'punctuation'],
                 { include: '@term' },

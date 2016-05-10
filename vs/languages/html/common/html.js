@@ -216,6 +216,11 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/editor/common/mod
                         }
                     }
                     else {
+                        var attributeValue = stream.advanceIfRegExp(/^[^\s"'`=<>]+/);
+                        if (attributeValue.length > 0) {
+                            this.kind = States.WithinTag;
+                            return { type: htmlTokenTypes.ATTRIB_VALUE };
+                        }
                         var ch = stream.peek();
                         if (ch === '\'' || ch === '"') {
                             this.attributeValueQuote = ch;

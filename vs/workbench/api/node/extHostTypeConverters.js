@@ -440,9 +440,22 @@ define(["require", "exports", 'vs/base/common/severity', 'vs/base/common/arrays'
     })(SignatureHelp = exports.SignatureHelp || (exports.SignatureHelp = {}));
     var Command;
     (function (Command) {
+        var _delegateId = '_internal_delegate_command';
         var _cache = Object.create(null);
         var _idPool = 1;
-        function from(command, context) {
+        function initialize(commands) {
+            return commands.registerCommand(_delegateId, function (args) {
+                var id = args[0];
+                var command = _cache[id];
+                if (!command) {
+                    // handle already disposed delegations graceful
+                    return;
+                }
+                return commands.executeCommand.apply(commands, [command.command].concat(command.arguments));
+            });
+        }
+        Command.initialize = initialize;
+        function from(command, disposables) {
             if (!command) {
                 return;
             }
@@ -451,19 +464,26 @@ define(["require", "exports", 'vs/base/common/severity', 'vs/base/common/arrays'
                 title: command.title
             };
             if (!arrays_1.isFalsyOrEmpty(command.arguments)) {
-                // keep command around
-                var id_1 = command.command + "-no-args-wrapper-" + _idPool++;
-                result.id = id_1;
+                // redirect to delegate command and store actual command
+                var id_1 = "delegate/" + _idPool++ + "/for/" + command.command;
+                result.id = _delegateId;
+                result.arguments = [id_1];
                 _cache[id_1] = command;
-                var disposable1 = context.commands.registerCommand(id_1, function () { return (_a = context.commands).executeCommand.apply(_a, [command.command].concat(_cache[id_1].arguments)); var _a; });
-                var disposable2 = { dispose: function () { delete _cache[id_1]; } };
-                context.disposables.push(disposable1, disposable2);
+                disposables.push({
+                    dispose: function () {
+                        delete _cache[id_1];
+                    }
+                });
             }
             return result;
         }
         Command.from = from;
         function to(command) {
-            var result = _cache[command.id];
+            var result;
+            if (command.id === _delegateId) {
+                var key = command.arguments[0];
+                result = _cache[key];
+            }
             if (!result) {
                 result = {
                     command: command.id,

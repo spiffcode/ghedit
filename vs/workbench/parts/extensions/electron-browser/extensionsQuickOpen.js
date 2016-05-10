@@ -154,7 +154,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             var secondRow = dom.append(root, $('.row'));
             var published = dom.append(firstRow, $('.published'));
             var displayName = new highlightedLabel_1.HighlightedLabel(dom.append(firstRow, $('span.name')));
-            var installCount = dom.append(firstRow, $('span.installCount'));
+            var installCount = dom.append(firstRow, $('span.install'));
+            dom.append(installCount, $('span.octicon.octicon-cloud-download'));
+            var installCountLabel = dom.append(installCount, $('span.installCount'));
             var version = dom.append(published, $('span.version'));
             var author = dom.append(published, $('span.author'));
             return {
@@ -163,6 +165,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 displayName: displayName,
                 version: version,
                 installCount: installCount,
+                installCountLabel: installCountLabel,
                 actionbar: new actionbar_1.ActionBar(dom.append(secondRow, $('.actions'))),
                 description: new highlightedLabel_1.HighlightedLabel(dom.append(secondRow, $('span.description'))),
                 disposables: []
@@ -173,9 +176,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             data.author.textContent = nls.localize('author', 'Author');
             data.displayName.set(nls.localize('name', 'Name'));
             data.version.textContent = '0.0.1';
-            data.installCount.textContent = '';
-            dom.removeClass(data.installCount, 'octicon');
-            dom.removeClass(data.installCount, 'octicon-cloud-download');
+            data.installCount.style.display = 'none';
+            data.installCountLabel.textContent = '';
             data.actionbar.clear();
             data.description.set(nls.localize('description', 'Description'));
             data.disposables = lifecycle_1.dispose(data.disposables);
@@ -190,7 +192,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             var updateActions = function () {
                 data.actionbar.clear();
                 if (entry.extension.galleryInformation) {
-                    data.actionbar.push(_this.instantiationService.createInstance(OpenInGalleryAction, entry.state !== ExtensionState.Installed), { label: true, icon: false });
+                    data.actionbar.push(_this.instantiationService.createInstance(OpenInGalleryAction, entry.state === ExtensionState.Uninstalled), { label: true, icon: false });
                     data.actionbar.push(_this.instantiationService.createInstance(OpenLicenseAction), { label: true, icon: false });
                 }
                 switch (entry.state) {
@@ -223,9 +225,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
             data.displayName.element.title = extension.name;
             data.version.textContent = extension.version;
             if (types_1.isNumber(installCount)) {
-                data.installCount.textContent = String(installCount);
-                dom.addClass(data.installCount, 'octicon');
-                dom.addClass(data.installCount, 'octicon-cloud-download');
+                data.installCount.style.display = 'inline';
+                data.installCountLabel.textContent = String(installCount);
                 if (!installCount) {
                     data.installCount.title = nls.localize('installCountZero', "{0} wasn't downloaded yet.", extension.displayName);
                 }
@@ -237,9 +238,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/lifecycle', 'vs/base/com
                 }
             }
             else {
-                data.installCount.textContent = '';
-                dom.removeClass(data.installCount, 'octicon');
-                dom.removeClass(data.installCount, 'octicon-cloud-download');
+                data.installCount.style.display = 'none';
+                data.installCountLabel.textContent = '';
             }
             data.author.textContent = publisher;
             data.description.set(extension.description, entry.highlights.description);

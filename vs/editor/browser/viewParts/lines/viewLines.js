@@ -83,10 +83,6 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/browser/browser',
             this._maxLineWidth = 0;
             return shouldRender;
         };
-        ViewLines.prototype.onScrollWidthChanged = function (scrollWidth) {
-            this.domNode.setWidth(scrollWidth);
-            return false;
-        };
         ViewLines.prototype.onModelDecorationsChanged = function (e) {
             var shouldRender = _super.prototype.onModelDecorationsChanged.call(this, e);
             for (var i = 0; i < this._lines.length; i++) {
@@ -109,6 +105,7 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/browser/browser',
             return true;
         };
         ViewLines.prototype.onScrollChanged = function (e) {
+            this.domNode.setWidth(e.scrollWidth);
             return _super.prototype.onScrollChanged.call(this, e) || true;
         };
         // ---- end view event handlers

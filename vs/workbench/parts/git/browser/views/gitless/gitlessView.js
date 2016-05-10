@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/workspace/common/workspace', 'vs/platform/selection/common/selection', 'vs/css!./gitlessView'], function (require, exports, nls, platform, winjs, ee, builder, workspace_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/browser/builder', 'vs/platform/workspace/common/workspace', 'vs/css!./gitlessView'], function (require, exports, nls, platform, winjs, ee, builder, workspace_1) {
     'use strict';
     var $ = builder.$;
     var GitlessView = (function (_super) {
@@ -66,9 +66,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
         };
         GitlessView.prototype.setVisible = function (visible) {
             return winjs.TPromise.as(null);
-        };
-        GitlessView.prototype.getSelection = function () {
-            return selection_1.Selection.EMPTY;
         };
         GitlessView.prototype.getControl = function () {
             return null;

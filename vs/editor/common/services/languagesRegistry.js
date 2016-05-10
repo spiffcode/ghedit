@@ -15,7 +15,7 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
             this.mime2LanguageId = {};
             this.name2LanguageId = {};
             this.id2Name = {};
-            this.name2Extensions = {};
+            this.id2Extensions = {};
             this.compatModes = {};
             this.lowerName2Id = {};
             this.id2ConfigurationFiles = {};
@@ -54,6 +54,17 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
             }
             this._onDidAddModes.fire(addedModes);
         };
+        LanguagesRegistry.prototype._setLanguageName = function (languageId, languageName, force) {
+            var prevName = this.id2Name[languageId];
+            if (prevName) {
+                if (!force) {
+                    return;
+                }
+                delete this.name2LanguageId[prevName];
+            }
+            this.name2LanguageId[languageName] = languageId;
+            this.id2Name[languageId] = languageName;
+        };
         LanguagesRegistry.prototype._registerLanguage = function (lang) {
             this.knownModeIds[lang.id] = true;
             var primaryMime = null;
@@ -70,9 +81,11 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
                 this.mime2LanguageId[primaryMime] = lang.id;
             }
             if (Array.isArray(lang.extensions)) {
+                this.id2Extensions[lang.id] = this.id2Extensions[lang.id] || [];
                 for (var _i = 0, _a = lang.extensions; _i < _a.length; _i++) {
                     var extension = _a[_i];
                     mime.registerTextMime({ mime: primaryMime, extension: extension });
+                    this.id2Extensions[lang.id].push(extension);
                 }
             }
             if (Array.isArray(lang.filenames)) {
@@ -112,19 +125,12 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
                     this.lowerName2Id[lang.aliases[i].toLowerCase()] = lang.id;
                 }
             }
-            if (!this.id2Name[lang.id]) {
-                var bestName = null;
-                if (typeof lang.aliases !== 'undefined' && Array.isArray(lang.aliases) && lang.aliases.length > 0) {
-                    bestName = lang.aliases[0];
-                }
-                else {
-                    bestName = lang.id;
-                }
-                if (bestName) {
-                    this.name2LanguageId[bestName] = lang.id;
-                    this.name2Extensions[bestName] = lang.extensions;
-                    this.id2Name[lang.id] = bestName || '';
-                }
+            var containsAliases = (typeof lang.aliases !== 'undefined' && Array.isArray(lang.aliases) && lang.aliases.length > 0);
+            if (containsAliases && lang.aliases[0] === null) {
+            }
+            else {
+                var bestName = (containsAliases ? lang.aliases[0] : null) || lang.id;
+                this._setLanguageName(lang.id, bestName, containsAliases);
             }
             if (typeof lang.configuration === 'string') {
                 this.id2ConfigurationFiles[lang.id] = this.id2ConfigurationFiles[lang.id] || [];
@@ -200,7 +206,11 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/common/event', '
             return this.compatModes[modeId] || null;
         };
         LanguagesRegistry.prototype.getExtensions = function (languageName) {
-            return this.name2Extensions[languageName];
+            var languageId = this.name2LanguageId[languageName];
+            if (!languageId) {
+                return [];
+            }
+            return this.id2Extensions[languageId];
         };
         return LanguagesRegistry;
     }());

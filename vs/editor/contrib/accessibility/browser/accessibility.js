@@ -116,10 +116,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             var NLS_TAB_FOCUS_MODE_OFF = nls.localize('tabFocusModeOffMsg', "Pressing Tab in this editor will insert the tab character. Toggle this behaviour by pressing {0}.");
             var NLS_TAB_FOCUS_MODE_OFF_NO_KB = nls.localize('tabFocusModeOffMsgNoKb', "Pressing Tab in this editor will move focus to the next focusable element. The command {0} is currently not triggerable by a keybinding.");
             if (opts.tabFocusMode) {
-                text += '\n\n -' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_ON, NLS_TAB_FOCUS_MODE_ON_NO_KB);
+                text += '\n\n - ' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_ON, NLS_TAB_FOCUS_MODE_ON_NO_KB);
             }
             else {
-                text += '\n\n -' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_OFF, NLS_TAB_FOCUS_MODE_OFF_NO_KB);
+                text += '\n\n - ' + this._descriptionForCommand(toggleTabFocusMode_1.ToggleTabFocusModeAction.ID, NLS_TAB_FOCUS_MODE_OFF, NLS_TAB_FOCUS_MODE_OFF_NO_KB);
             }
             var NLS_EXPERIMENTAL_SCREENREADER_OPTS_ON = nls.localize('experimentalScreenReaderOptsOn', "Experimental screen reader support is turned on due to editor.experimentalScreenReader settings key.");
             var NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON = nls.localize('experimentalScreenReaderSessionOn', "Experimental screen reader support is turned on for this session. Toggle this behaviour by pressing {0}.");
@@ -131,10 +131,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
             }
             else {
                 if (commonEditorConfig_1.GlobalScreenReaderNVDA.getValue()) {
-                    text += '\n\n -' + this._descriptionForCommand(TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID, NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON, NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON_NO_KB);
+                    text += '\n\n - ' + this._descriptionForCommand(TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID, NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON, NLS_EXPERIMENTAL_SCREENREADER_SESSION_ON_NO_KB);
                 }
                 else {
-                    text += '\n\n -' + this._descriptionForCommand(TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF_NO_KB);
+                    text += '\n\n - ' + this._descriptionForCommand(TOGGLE_EXPERIMENTAL_SCREEN_READER_SUPPORT_COMMAND_ID, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF, NLS_EXPERIMENTAL_SCREENREADER_SESSION_OFF_NO_KB);
                 }
             }
             text += '\n\n' + nls.localize('outroMsg', "You can dismiss this tooltip and return to the editor by pressing Escape.");
@@ -182,7 +182,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(ShowAccessibilityHelpAction, editorCommon_1.SHOW_ACCESSIBILITY_HELP_ACTION_ID, NLS_SHOW_ACCESSIBILITY_HELP_ACTION_LABEL, {
         context: editorCommonExtensions_1.ContextKey.EditorFocus,
         primary: keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.F1
-    }));
+    }, 'Show Accessibility Help'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand('closeAccessibilityHelp', editorCommonExtensions_1.CommonEditorRegistry.commandWeight(100), { primary: keyCodes_1.KeyCode.Escape, secondary: [keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.Escape] }, false, CONTEXT_ACCESSIBILITY_WIDGET_VISIBLE, function (ctx, editor, args) {
         AccessibilityHelpController.get(editor).hide();
     });

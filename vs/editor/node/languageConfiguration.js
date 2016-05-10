@@ -55,14 +55,27 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/json', 'vs/base/node/pfs
             }
             if (configuration.brackets) {
                 richEditConfig.brackets = configuration.brackets;
+            }
+            if (configuration.autoClosingPairs) {
                 richEditConfig.__characterPairSupport = {
-                    autoClosingPairs: configuration.brackets.map(function (pair) {
-                        var open = pair[0], close = pair[1];
-                        return { open: open, close: close };
-                    })
+                    autoClosingPairs: this._mapCharacterPairs(configuration.autoClosingPairs)
                 };
             }
+            else if (configuration.brackets) {
+                richEditConfig.__characterPairSupport = {
+                    autoClosingPairs: this._mapCharacterPairs(configuration.brackets)
+                };
+            }
+            if (richEditConfig.__characterPairSupport && configuration.surroundingPairs) {
+                richEditConfig.__characterPairSupport.surroundingPairs = this._mapCharacterPairs(configuration.surroundingPairs);
+            }
             this._modeService.registerRichEditSupport(modeId, richEditConfig);
+        };
+        LanguageConfigurationFileHandler.prototype._mapCharacterPairs = function (pairs) {
+            return pairs.map(function (pair) {
+                var open = pair[0], close = pair[1];
+                return { open: open, close: close };
+            });
         };
         LanguageConfigurationFileHandler = __decorate([
             __param(0, modeService_1.IModeService)

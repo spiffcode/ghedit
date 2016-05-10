@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/node/pfs', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/api/node/extHost.api.impl', 'vs/workbench/api/node/extHostDocuments', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/extensions/common/nativeExtensionService', 'vs/platform/thread/common/extHostThreadService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/modeServiceImpl', 'vs/workbench/node/extensionPoints', 'vs/platform/workspace/common/workspace', 'vs/workbench/parts/extensions/common/extensions', 'vs/workbench/parts/extensions/node/extensionsService'], function (require, exports, nls, pfs, uri_1, winjs_base_1, paths, extensions_1, extensionsRegistry_1, extHost_api_impl_1, extHostDocuments_1, InstantiationService, nativeExtensionService_1, extHostThreadService_1, remoteTelemetryService_1, baseWorkspaceContextService_1, modeServiceImpl_1, extensionPoints_1, workspace_1, extensions_2, extensionsService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/node/pfs', 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/platform/extensions/common/extensions', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/api/node/extHost.api.impl', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/extensions/common/nativeExtensionService', 'vs/platform/thread/common/thread', 'vs/platform/thread/common/extHostThreadService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/workbench/node/extensionPoints', 'vs/platform/workspace/common/workspace', 'vs/workbench/parts/extensions/common/extensionsIpc', 'vs/workbench/parts/extensions/common/extensions'], function (require, exports, nls, pfs, uri_1, winjs_base_1, paths, extensions_1, extensionsRegistry_1, extHost_api_impl_1, telemetry_1, instantiationService_1, serviceCollection_1, nativeExtensionService_1, thread_1, extHostThreadService_1, remoteTelemetryService_1, baseWorkspaceContextService_1, extensionPoints_1, workspace_1, extensionsIpc_1, extensions_2) {
     'use strict';
     var DIRNAME = uri_1.default.parse(require.toUrl('./')).fsPath;
     var BASE_PATH = paths.normalize(paths.join(DIRNAME, '../../../..'));
@@ -28,25 +28,21 @@ define(["require", "exports", 'vs/nls', 'vs/base/node/pfs', 'vs/base/common/uri'
     function createServices(remoteCom, initData, sharedProcessClient) {
         var contextService = new baseWorkspaceContextService_1.BaseWorkspaceContextService(initData.contextService.workspace, initData.contextService.configuration, initData.contextService.options);
         var threadService = new extHostThreadService_1.ExtHostThreadService(remoteCom);
-        threadService.setInstantiationService(InstantiationService.createInstantiationService({ threadService: threadService }));
+        threadService.setInstantiationService(new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([thread_1.IThreadService, threadService])));
         var telemetryService = new remoteTelemetryService_1.RemoteTelemetryService('pluginHostTelemetry', threadService);
-        var modelService = threadService.getRemotable(extHostDocuments_1.ExtHostModelService);
-        var extensionService = new nativeExtensionService_1.ExtHostExtensionService(threadService, telemetryService);
-        var modeService = new modeServiceImpl_1.ModeServiceImpl(threadService, extensionService);
-        var _services = {
-            contextService: contextService,
-            modelService: modelService,
-            threadService: threadService,
-            modeService: modeService,
-            extensionService: extensionService,
-            telemetryService: telemetryService
-        };
-        var instantiationService = InstantiationService.createInstantiationService(_services);
+        var services = new serviceCollection_1.ServiceCollection();
+        services.set(workspace_1.IWorkspaceContextService, contextService);
+        services.set(telemetry_1.ITelemetryService, telemetryService);
+        services.set(thread_1.IThreadService, threadService);
+        services.set(extensions_1.IExtensionService, new nativeExtensionService_1.ExtHostExtensionService(threadService, telemetryService));
+        // Connect to shared process services
+        var channel = sharedProcessClient.getChannel('extensions');
+        var extensionsService = new extensionsIpc_1.ExtensionsChannelClient(channel);
+        services.set(extensions_2.IExtensionsService, extensionsService);
+        var instantiationService = new instantiationService_1.InstantiationService(services, true);
         threadService.setInstantiationService(instantiationService);
         // Create the monaco API
         instantiationService.createInstance(extHost_api_impl_1.ExtHostAPIImplementation);
-        // Connect to shared process services
-        instantiationService.addSingleton(extensions_2.IExtensionsService, sharedProcessClient.getService('ExtensionService', extensionsService_1.ExtensionsService));
         return instantiationService;
     }
     exports.createServices = createServices;
@@ -112,14 +108,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/node/pfs', 'vs/base/common/uri'
                 });
                 userExtensions.forEach(function (userExtension) {
                     if (result.hasOwnProperty(userExtension.id)) {
-                        collector.warn(userExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extesion {0} with {1}.", result[userExtension.id].extensionFolderPath, userExtension.extensionFolderPath));
+                        collector.warn(userExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", result[userExtension.id].extensionFolderPath, userExtension.extensionFolderPath));
                     }
                     result[userExtension.id] = userExtension;
                 });
                 developedExtensions.forEach(function (developedExtension) {
                     collector.info('', nls.localize('extensionUnderDevelopment', "Loading development extension at {0}", developedExtension.extensionFolderPath));
                     if (result.hasOwnProperty(developedExtension.id)) {
-                        collector.warn(developedExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extesion {0} with {1}.", result[developedExtension.id].extensionFolderPath, developedExtension.extensionFolderPath));
+                        collector.warn(developedExtension.extensionFolderPath, nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", result[developedExtension.id].extensionFolderPath, developedExtension.extensionFolderPath));
                     }
                     result[developedExtension.id] = developedExtension;
                 });

@@ -63,6 +63,21 @@ define(["require", "exports", 'assert', 'vs/base/common/uri', 'vs/workbench/api/
             assert.equal(line.text, '\t This is line one');
             assert.equal(line.firstNonWhitespaceCharacterIndex, 2);
         });
+        test('line, issue #5704', function () {
+            var line = data.document.lineAt(0);
+            var range = line.range, rangeIncludingLineBreak = line.rangeIncludingLineBreak;
+            assert.equal(range.end.line, 0);
+            assert.equal(range.end.character, 16);
+            assert.equal(rangeIncludingLineBreak.end.line, 1);
+            assert.equal(rangeIncludingLineBreak.end.character, 0);
+            line = data.document.lineAt(data.document.lineCount - 1);
+            range = line.range;
+            rangeIncludingLineBreak = line.rangeIncludingLineBreak;
+            assert.equal(range.end.line, 3);
+            assert.equal(range.end.character, 29);
+            assert.equal(rangeIncludingLineBreak.end.line, 3);
+            assert.equal(rangeIncludingLineBreak.end.character, 29);
+        });
         test('offsetAt', function () {
             assertOffsetAt(0, 0, 0);
             assertOffsetAt(0, 1, 1);

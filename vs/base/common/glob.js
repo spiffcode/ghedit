@@ -5,6 +5,7 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/base/common/paths'],
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     var CACHE = Object.create(null);
+    var MAX_CACHED = 10000;
     var PATH_REGEX = '[/\\\\]'; // any slash or backslash
     var NO_PATH_REGEX = '[^/\\\\]'; // any non-slash and non-backslash
     function starsToRegExp(starCount) {
@@ -172,8 +173,10 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/base/common/paths'],
         regEx = '^' + regEx + '$';
         // Convert to regexp and be ready for errors
         var result = toRegExp(regEx);
-        // Make sure to cache
-        CACHE[pattern] = result;
+        // Make sure to cache (bounded)
+        if (Object.getOwnPropertyNames(CACHE).length < MAX_CACHED) {
+            CACHE[pattern] = result;
+        }
         return result;
     }
     function toRegExp(regEx) {
@@ -184,12 +187,43 @@ define(["require", "exports", 'vs/base/common/strings', 'vs/base/common/paths'],
             return /.^/; // create a regex that matches nothing if we cannot parse the pattern
         }
     }
+    function testWithCache(glob, pattern, cache) {
+        var res = cache[glob];
+        if (typeof res !== 'boolean') {
+            res = pattern.test(glob);
+            // Make sure to cache (bounded)
+            if (Object.getOwnPropertyNames(cache).length < MAX_CACHED) {
+                cache[glob] = res;
+            }
+        }
+        return res;
+    }
+    // regexes to check for trival glob patterns that just check for String#endsWith
+    var trivia1 = /^\*\*\/\*\.[\w\.-]+$/; // **/*.something
+    var trivia2 = /^\*\*\/[\w\.-]+$/; // **/something
+    var trivia3 = /^{\*\*\/\*\.[\w\.-]+(,\*\*\/\*\.[\w\.-]+)*}$/; // {**/*.something,**/*.else}
+    var T1_CACHE = Object.create(null);
+    var T2_CACHE = Object.create(null);
+    var T3_CACHE = Object.create(null);
     function match(arg1, path, siblings) {
         if (!arg1 || !path) {
             return false;
         }
         // Glob with String
         if (typeof arg1 === 'string') {
+            // common pattern: **/*.txt just need endsWith check
+            if (testWithCache(arg1, trivia1, T1_CACHE)) {
+                return strings.endsWith(path, arg1.substr(4)); // '**/*'.length === 4
+            }
+            // common pattern: **/some.txt just need basename check
+            if (testWithCache(arg1, trivia2, T2_CACHE)) {
+                var base = arg1.substr(3); // '**/'.length === 3
+                return path === base || strings.endsWith(path, "/" + base) || strings.endsWith(path, "\\" + base);
+            }
+            // repetition of common patterns (see above) {**/*.txt,**/*.png}
+            if (testWithCache(arg1, trivia3, T3_CACHE)) {
+                return arg1.slice(1, -1).split(',').some(function (pattern) { return match(pattern, path); });
+            }
             var regExp = globToRegExp(arg1);
             return regExp && regExp.test(path);
         }

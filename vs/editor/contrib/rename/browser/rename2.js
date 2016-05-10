@@ -129,7 +129,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(RenameAction, RenameAction.ID, nls.localize('rename.label', "Rename Symbol"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyCode.F2
-    }));
+    }, 'Rename Symbol'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand('acceptRenameInput', weight, { primary: keyCodes_1.KeyCode.Enter }, false, CONTEXT_RENAME_INPUT_VISIBLE, function (ctx, editor, args) {
         var action = editor.getAction(RenameAction.ID);
         action.acceptRenameInput();

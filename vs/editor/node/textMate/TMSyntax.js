@@ -22,7 +22,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
             defaultSnippets: [{ body: { language: '{{id}}', scopeName: 'source.{{id}}', path: './syntaxes/{{id}}.tmLanguage.' } }],
             properties: {
                 language: {
-                    description: nls.localize('vscode.extension.contributes.grammars.language', 'Language id for which this syntax is contributed to.'),
+                    description: nls.localize('vscode.extension.contributes.grammars.language', 'Language identifier for which this syntax is contributed to.'),
                     type: 'string'
                 },
                 scopeName: {

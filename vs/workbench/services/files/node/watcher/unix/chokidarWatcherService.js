@@ -2,18 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'chokidar', 'fs', 'graceful-fs', 'vs/base/common/winjs.base', 'vs/platform/files/common/files', 'vs/base/common/async', 'vs/base/common/strings', 'vs/workbench/services/files/node/watcher/unix/watcherService', 'vs/workbench/services/files/node/watcher/common'], function (require, exports, chokidar, fs, gracefulFs, winjs_base_1, files_1, async_1, strings, watcherService_1, watcher) {
+define(["require", "exports", 'chokidar', 'fs', 'graceful-fs', 'vs/base/common/winjs.base', 'vs/platform/files/common/files', 'vs/base/common/async', 'vs/base/common/strings', 'vs/workbench/services/files/node/watcher/common'], function (require, exports, chokidar, fs, gracefulFs, winjs_base_1, files_1, async_1, strings, watcher) {
     'use strict';
     gracefulFs.gracefulify(fs);
-    var ChokidarWatcherService = (function (_super) {
-        __extends(ChokidarWatcherService, _super);
+    var ChokidarWatcherService = (function () {
         function ChokidarWatcherService() {
-            _super.apply(this, arguments);
         }
         ChokidarWatcherService.prototype.watch = function (request) {
             var _this = this;
@@ -104,7 +97,7 @@ define(["require", "exports", 'chokidar', 'fs', 'graceful-fs', 'vs/base/common/w
         ChokidarWatcherService.FS_EVENT_DELAY = 50; // aggregate and only emit events when changes have stopped for this duration (in ms)
         ChokidarWatcherService.EVENT_SPAM_WARNING_THRESHOLD = 60 * 1000; // warn after certain time span of event spam
         return ChokidarWatcherService;
-    }(watcherService_1.WatcherService));
+    }());
     exports.ChokidarWatcherService = ChokidarWatcherService;
 });
 //# sourceMappingURL=chokidarWatcherService.js.map

@@ -96,7 +96,7 @@ define(["require", "exports", 'vs/base/common/lifecycle', 'vs/base/common/winjs.
             var _this = this;
             var session = this.debugService.getActiveSession();
             var focusedStackFrame = this.debugService.getViewModel().getFocusedStackFrame();
-            if (session.capabilities.supportsEvaluateForHovers) {
+            if (session.configuration.capabilities.supportsEvaluateForHovers) {
                 return debugModel_1.evaluateExpression(session, focusedStackFrame, new debugModel_1.Expression(namesToFind.join('.'), true), 'hover');
             }
             var variables = [];

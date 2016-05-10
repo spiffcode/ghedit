@@ -10,15 +10,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/colle
     var WorkbenchActionRegistry = (function () {
         function WorkbenchActionRegistry() {
             this.workbenchActions = Object.create(null);
-            this.mapActionIdToCategory = Object.create(null);
+            this.mapActionIdToMeta = Object.create(null);
         }
-        WorkbenchActionRegistry.prototype.registerWorkbenchAction = function (descriptor, category) {
+        WorkbenchActionRegistry.prototype.registerWorkbenchAction = function (descriptor, alias, category) {
             if (!this.workbenchActions[descriptor.id]) {
                 this.workbenchActions[descriptor.id] = descriptor;
                 registerWorkbenchCommandFromAction(descriptor);
-                if (category) {
-                    this.mapActionIdToCategory[descriptor.id] = category;
+                var meta = { alias: alias };
+                if (typeof category === 'string') {
+                    meta.category = category;
                 }
+                this.mapActionIdToMeta[descriptor.id] = meta;
             }
         };
         WorkbenchActionRegistry.prototype.unregisterWorkbenchAction = function (id) {
@@ -26,14 +28,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/colle
                 return false;
             }
             delete this.workbenchActions[id];
-            delete this.mapActionIdToCategory[id];
+            delete this.mapActionIdToMeta[id];
             return true;
         };
         WorkbenchActionRegistry.prototype.getWorkbenchAction = function (id) {
             return this.workbenchActions[id] || null;
         };
         WorkbenchActionRegistry.prototype.getCategory = function (id) {
-            return this.mapActionIdToCategory[id] || null;
+            return (this.mapActionIdToMeta[id] && this.mapActionIdToMeta[id].category) || null;
+        };
+        WorkbenchActionRegistry.prototype.getAlias = function (id) {
+            return (this.mapActionIdToMeta[id] && this.mapActionIdToMeta[id].alias) || null;
         };
         WorkbenchActionRegistry.prototype.getWorkbenchActions = function () {
             return collections.values(this.workbenchActions);
@@ -41,8 +46,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/colle
         WorkbenchActionRegistry.prototype.setWorkbenchActions = function (actions) {
             var _this = this;
             this.workbenchActions = Object.create(null);
-            this.mapActionIdToCategory = Object.create(null);
-            actions.forEach(function (action) { return _this.registerWorkbenchAction(action); }, this);
+            this.mapActionIdToMeta = Object.create(null);
+            actions.forEach(function (action) { return _this.registerWorkbenchAction(action, ''); }, this);
         };
         return WorkbenchActionRegistry;
     }());

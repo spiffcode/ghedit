@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitWorkbenchContributions', 'vs/workbench/parts/git/browser/views/changes/changesView', 'vs/workbench/parts/git/browser/views/empty/emptyView', 'vs/workbench/parts/git/browser/views/gitless/gitlessView', 'vs/workbench/parts/git/browser/views/notroot/notrootView', 'vs/workbench/parts/git/browser/views/noworkspace/noworkspaceView', './views/disabled/disabledView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/selection/common/selection', 'vs/platform/telemetry/common/telemetry', 'vs/css!./media/gitViewlet'], function (require, exports, winjs, lifecycle, viewlet, git, contrib, changes, empty, gitless, notroot, noworkspace, disabledView_1, instantiation_1, progress_1, selection_1, telemetry_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/workbench/browser/viewlet', 'vs/workbench/parts/git/common/git', 'vs/workbench/parts/git/browser/gitWorkbenchContributions', 'vs/workbench/parts/git/browser/views/changes/changesView', 'vs/workbench/parts/git/browser/views/empty/emptyView', 'vs/workbench/parts/git/browser/views/gitless/gitlessView', 'vs/workbench/parts/git/browser/views/notroot/notrootView', 'vs/workbench/parts/git/browser/views/noworkspace/noworkspaceView', './views/disabled/disabledView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/progress/common/progress', 'vs/platform/telemetry/common/telemetry', 'vs/css!./media/gitViewlet'], function (require, exports, winjs, lifecycle, viewlet, git, contrib, changes, empty, gitless, notroot, noworkspace, disabledView_1, instantiation_1, progress_1, telemetry_1) {
     'use strict';
     var IGitService = git.IGitService;
     var GitViewlet = (function (_super) {
@@ -112,12 +112,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/lifec
         };
         GitViewlet.prototype.getSecondaryActions = function () {
             return this.currentView ? this.currentView.getSecondaryActions() : [];
-        };
-        GitViewlet.prototype.getSelection = function () {
-            if (!this.currentView) {
-                return selection_1.Selection.EMPTY;
-            }
-            return this.currentView.getSelection();
         };
         GitViewlet.prototype.getControl = function () {
             if (!this.currentView) {

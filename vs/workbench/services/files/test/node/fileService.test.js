@@ -206,6 +206,15 @@ define(["require", "exports", 'fs', 'path', 'os', 'assert', 'vs/workbench/servic
                 done();
             });
         });
+        test('existsFile', function (done) {
+            service.existsFile(uri_1.default.file(testDir)).then(function (exists) {
+                assert.equal(exists, true);
+                service.existsFile(uri_1.default.file(testDir + 'something')).then(function (exists) {
+                    assert.equal(exists, false);
+                    done();
+                });
+            });
+        });
         test('updateContent', function (done) {
             var resource = uri_1.default.file(path.join(testDir, 'small.txt'));
             service.resolveContent(resource).done(function (c) {

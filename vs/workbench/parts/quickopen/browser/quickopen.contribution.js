@@ -8,18 +8,18 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/nls', 'vs/workbench
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(markersHandler_1.GotoMarkerAction, markersHandler_1.GotoMarkerAction.Id, markersHandler_1.GotoMarkerAction.Label, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_M
-    }));
+    }), 'Show Errors and Warnings');
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(commandsHandler_1.ShowAllCommandsAction, commandsHandler_1.ShowAllCommandsAction.ID, commandsHandler_1.ShowAllCommandsAction.LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_P,
         secondary: [keyCodes_1.KeyCode.F1]
-    }));
+    }), 'Show All Commands');
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gotoLineHandler_1.GotoLineAction, gotoLineHandler_1.GotoLineAction.ID, gotoLineHandler_1.GotoLineAction.LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_G,
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.KEY_G }
-    }));
+    }), 'Go to Line...');
     registry.registerWorkbenchAction(new actions_1.SyncActionDescriptor(gotoSymbolHandler_1.GotoSymbolAction, gotoSymbolHandler_1.GotoSymbolAction.ID, gotoSymbolHandler_1.GotoSymbolAction.LABEL, {
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_O
-    }));
+    }), 'Go to Symbol...');
     // Register Quick Open Handler
     platform_1.Registry.as(quickopen_1.Extensions.Quickopen).registerQuickOpenHandler(new quickopen_1.QuickOpenHandlerDescriptor('vs/workbench/parts/quickopen/browser/markersHandler', 'MarkersHandler', markersHandler_1.GotoMarkerAction.Prefix, [
         {

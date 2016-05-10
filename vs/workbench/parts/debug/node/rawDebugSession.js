@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/v8Protocol', 'vs/base/node/stdFork', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, cp, fs, net, platform, actions_1, errors, winjs_base_1, severity_1, debug, v8, stdfork, message_1, electron_1) {
+define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/common/event', 'vs/base/common/platform', 'vs/base/common/actions', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/node/v8Protocol', 'vs/base/node/stdFork', 'vs/platform/message/common/message', 'electron'], function (require, exports, nls, cp, fs, net, event_1, platform, actions_1, errors, winjs_base_1, severity_1, debug, v8, stdfork, message_1, electron_1) {
     "use strict";
     var RawDebugSession = (function (_super) {
         __extends(RawDebugSession, _super);
@@ -19,9 +19,83 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
             this.adapter = adapter;
             this.telemtryAdapter = telemtryAdapter;
             this.socket = null;
-            this.capabilities = {};
+            this.flowEventsCount = 0;
+            this.emittedStopped = false;
+            this.readyForBreakpoints = false;
             this.sentPromises = [];
+            this._onDidInitialize = new event_1.Emitter();
+            this._onDidStop = new event_1.Emitter();
+            this._onDidTerminateDebugee = new event_1.Emitter();
+            this._onDidExitAdapter = new event_1.Emitter();
+            this._onDidContinue = new event_1.Emitter();
+            this._onDidThread = new event_1.Emitter();
+            this._onDidOutput = new event_1.Emitter();
+            this._onDidBreakpoint = new event_1.Emitter();
+            this._onDidEvent = new event_1.Emitter();
         }
+        Object.defineProperty(RawDebugSession.prototype, "onDidInitialize", {
+            get: function () {
+                return this._onDidInitialize.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidStop", {
+            get: function () {
+                return this._onDidStop.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidTerminateDebugee", {
+            get: function () {
+                return this._onDidTerminateDebugee.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidExitAdapter", {
+            get: function () {
+                return this._onDidExitAdapter.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidContinue", {
+            get: function () {
+                return this._onDidContinue.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidThread", {
+            get: function () {
+                return this._onDidThread.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidOutput", {
+            get: function () {
+                return this._onDidOutput.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidBreakpoint", {
+            get: function () {
+                return this._onDidBreakpoint.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RawDebugSession.prototype, "onDidEvent", {
+            get: function () {
+                return this._onDidEvent.event;
+            },
+            enumerable: true,
+            configurable: true
+        });
         RawDebugSession.prototype.initServer = function () {
             var _this = this;
             if (this.cachedInitServer) {
@@ -35,6 +109,9 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
                 return winjs_base_1.TPromise.wrapError(err);
             });
             return this.cachedInitServer;
+        };
+        RawDebugSession.prototype.custom = function (request, args) {
+            return this.send(request, args);
         };
         RawDebugSession.prototype.send = function (command, args) {
             var _this = this;
@@ -59,44 +136,95 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
                 return promise;
             });
         };
+        RawDebugSession.prototype.onEvent = function (event) {
+            if (event.body) {
+                event.body.sessionId = this.getId();
+            }
+            else {
+                event.body = { sessionId: this.getId() };
+            }
+            if (event.event === 'initialized') {
+                this.readyForBreakpoints = true;
+                this._onDidInitialize.fire(event);
+            }
+            else if (event.event === 'stopped') {
+                this.emittedStopped = true;
+                this.flowEventsCount++;
+                this._onDidStop.fire(event);
+            }
+            else if (event.event === 'thread') {
+                this._onDidThread.fire(event);
+            }
+            else if (event.event === 'output') {
+                this._onDidOutput.fire(event);
+            }
+            else if (event.event === 'breakpoint') {
+                this._onDidBreakpoint.fire(event);
+            }
+            else if (event.event === 'terminated') {
+                this.flowEventsCount++;
+                this._onDidTerminateDebugee.fire(event);
+            }
+            else if (event.event === 'exit') {
+                this.flowEventsCount++;
+                this._onDidExitAdapter.fire(event);
+            }
+            else if (event.event === 'continued') {
+                // TODO@Isidor continued event needs to come from the adapter
+                this.flowEventsCount++;
+                this._onDidContinue.fire(this.lastThreadId);
+            }
+            this._onDidEvent.fire(event);
+        };
+        Object.defineProperty(RawDebugSession.prototype, "configuration", {
+            get: function () {
+                return {
+                    type: this.adapter.type,
+                    isAttach: this.isAttach,
+                    capabilities: this.capabilities || {}
+                };
+            },
+            enumerable: true,
+            configurable: true
+        });
         RawDebugSession.prototype.initialize = function (args) {
             var _this = this;
             return this.send('initialize', args).then(function (response) {
-                _this.capabilities = response.body || _this.capabilities;
+                _this.capabilities = response.body;
                 return response;
             });
         };
         RawDebugSession.prototype.launch = function (args) {
             this.isAttach = false;
-            return this.sendAndLazyEmit('launch', args);
+            return this.sendAndLazyContinue('launch', args);
         };
         RawDebugSession.prototype.attach = function (args) {
             this.isAttach = true;
-            return this.sendAndLazyEmit('attach', args);
+            return this.sendAndLazyContinue('attach', args);
         };
         RawDebugSession.prototype.next = function (args) {
-            return this.sendAndLazyEmit('next', args);
+            return this.sendAndLazyContinue('next', args);
         };
         RawDebugSession.prototype.stepIn = function (args) {
-            return this.sendAndLazyEmit('stepIn', args);
+            return this.sendAndLazyContinue('stepIn', args);
         };
         RawDebugSession.prototype.stepOut = function (args) {
-            return this.sendAndLazyEmit('stepOut', args);
+            return this.sendAndLazyContinue('stepOut', args);
         };
         RawDebugSession.prototype.continue = function (args) {
-            return this.sendAndLazyEmit('continue', args);
+            return this.sendAndLazyContinue('continue', args);
         };
         // node sometimes sends "stopped" events earlier than the response for the "step" request.
         // due to this we only emit "continued" if we did not miss a stopped event.
         // we do not emit straight away to reduce viewlet flickering.
-        RawDebugSession.prototype.sendAndLazyEmit = function (command, args, eventType) {
+        RawDebugSession.prototype.sendAndLazyContinue = function (command, args) {
             var _this = this;
-            if (eventType === void 0) { eventType = debug.SessionEvents.CONTINUED; }
             var count = this.flowEventsCount;
+            this.lastThreadId = args.threadId;
             return this.send(command, args).then(function (response) {
                 setTimeout(function () {
                     if (_this.flowEventsCount === count) {
-                        _this.emit(eventType);
+                        _this.onEvent({ event: 'continued', type: 'event', seq: 0 });
                     }
                 }, 500);
                 return response;
@@ -159,9 +287,6 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
         RawDebugSession.prototype.getLengthInSeconds = function () {
             return (new Date().getTime() - this.startTime) / 1000;
         };
-        RawDebugSession.prototype.getType = function () {
-            return this.adapter.type;
-        };
         RawDebugSession.prototype.connectServer = function (port) {
             var _this = this;
             return new winjs_base_1.TPromise(function (c, e) {
@@ -222,7 +347,7 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
             if (this.socket !== null) {
                 this.socket.end();
                 this.cachedInitServer = null;
-                this.emit(debug.SessionEvents.SERVER_EXIT);
+                this.onEvent({ event: 'exit', type: 'event', seq: 0 });
             }
             if (!this.serverProcess) {
                 return winjs_base_1.TPromise.as(null);
@@ -283,7 +408,7 @@ define(["require", "exports", 'vs/nls', 'child_process', 'fs', 'net', 'vs/base/c
             if (!this.stopServerPending) {
                 this.messageService.show(severity_1.default.Error, nls.localize('debugAdapterCrash', "Debug adapter process has terminated unexpectedly"));
             }
-            this.emit(debug.SessionEvents.SERVER_EXIT);
+            this.onEvent({ event: 'exit', type: 'event', seq: 0 });
         };
         RawDebugSession.prototype.dispose = function () {
             this.disconnect().done(null, errors.onUnexpectedError);

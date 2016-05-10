@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/less/common/lessTokenTypes', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/test/common/nullThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/languages/less/common/less', 'vs/editor/test/common/mocks/mockMode'], function (require, exports, modesUtil, lessTokenTypes, mockModeService_1, nullThreadService_1, instantiationService_1, less_1, mockMode_1) {
+define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/less/common/lessTokenTypes', 'vs/editor/test/common/mocks/mockModeService', 'vs/platform/test/common/nullThreadService', 'vs/platform/thread/common/thread', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/languages/less/common/less', 'vs/editor/test/common/mocks/mockMode'], function (require, exports, modesUtil, lessTokenTypes, mockModeService_1, nullThreadService_1, thread_1, modeService_1, serviceCollection_1, instantiationService_1, less_1, mockMode_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40,10 +40,10 @@ define(["require", "exports", 'vs/editor/test/common/modesUtil', 'vs/languages/l
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
             var modeService = new LESSMockModeService();
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-                modeService: modeService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modeService_1.IModeService, modeService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             var mode = new less_1.LESSMode({ id: 'less' }, inst, threadService, modeService, null, null);
             tokenizationSupport = mode.tokenizationSupport;

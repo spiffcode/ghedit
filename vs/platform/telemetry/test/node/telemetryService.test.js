@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'assert', 'vs/base/browser/idleMonitor', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiationService', 'vs/base/common/errors', 'vs/base/common/timer', 'sinon'], function (require, exports, assert, IdleMonitor, telemetryService_1, Telemetry, InstantiationService, Errors, Timer, sinon) {
+define(["require", "exports", 'assert', 'vs/base/browser/idleMonitor', 'vs/platform/telemetry/browser/telemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection', 'vs/base/common/errors', 'vs/base/common/timer', 'sinon'], function (require, exports, assert, IdleMonitor, telemetryService_1, Telemetry, instantiationService_1, serviceCollection_1, Errors, Timer, sinon) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -131,8 +131,7 @@ define(["require", "exports", 'assert', 'vs/base/browser/idleMonitor', 'vs/platf
             service.dispose();
         }));
         test('TelemetryAppendersRegistry, activate', function () {
-            var registry = new Telemetry.TelemetryAppendersRegistry();
-            registry.registerTelemetryAppenderDescriptor(TestTelemetryAppender);
+            Telemetry.Extenstions.TelemetryAppenders.registerTelemetryAppenderDescriptor(TestTelemetryAppender);
             var callCount = 0;
             var telemetryService = {
                 addTelemetryAppender: function (appender) {
@@ -140,13 +139,12 @@ define(["require", "exports", 'assert', 'vs/base/browser/idleMonitor', 'vs/platf
                     callCount += 1;
                 }
             };
-            var instantiationService = InstantiationService.createInstantiationService();
-            instantiationService.addSingleton(Telemetry.ITelemetryService, telemetryService);
-            registry.activate(instantiationService);
+            var instantiationService = new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([Telemetry.ITelemetryService, telemetryService]));
+            instantiationService.invokeFunction(Telemetry.Extenstions.TelemetryAppenders.activate);
             assert.equal(callCount, 1);
             // registry is now active/read-only
-            assert.throws(function () { return registry.registerTelemetryAppenderDescriptor(TestTelemetryAppender); });
-            assert.throws(function () { return registry.activate(instantiationService); });
+            assert.throws(function () { return Telemetry.Extenstions.TelemetryAppenders.registerTelemetryAppenderDescriptor(TestTelemetryAppender); });
+            assert.throws(function () { return instantiationService.invokeFunction(Telemetry.Extenstions.TelemetryAppenders.activate); });
         });
         test('Disposing', sinon.test(function () {
             var service = new telemetryService_1.TelemetryService();
@@ -319,7 +317,7 @@ define(["require", "exports", 'assert', 'vs/base/browser/idleMonitor', 'vs/platf
             this.clock.tick(telemetryService_1.TelemetryService.ERROR_FLUSH_TIMEOUT);
             assert.equal(errorStub.callCount, 2);
             assert.equal(testAppender.events[0].data.filename.indexOf(settings.dangerousPathWithImportantInfo), -1);
-            assert.equal(testAppender.events[0].data.filename, '<APP_ROOT>' + settings.importantInfo + '/test.js');
+            assert.equal(testAppender.events[0].data.filename, settings.importantInfo + '/test.js');
             service.dispose();
         }));
         test('Unexpected Error Telemetry removes PII', sinon.test(function () {

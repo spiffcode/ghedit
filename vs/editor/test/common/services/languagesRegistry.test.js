@@ -64,6 +64,27 @@ define(["require", "exports", 'assert', 'vs/editor/common/services/languagesRegi
             assert.deepEqual(registry.getRegisteredLanguageNames(), ['ModeName']);
             assert.deepEqual(registry.getLanguageName('modeId'), 'ModeName');
         });
+        test('issue #5278: Extension cannot override language name anymore', function () {
+            var registry = new languagesRegistry_1.LanguagesRegistry(false);
+            registry._registerCompatModes([{
+                    id: 'modeId',
+                    extensions: ['.ext1'],
+                    aliases: ['ModeName'],
+                    mimetypes: ['bla'],
+                    moduleId: 'bla',
+                    ctorName: 'bla'
+                }]);
+            registry._registerCompatModes([{
+                    id: 'modeId',
+                    extensions: ['.ext2'],
+                    aliases: ['BetterModeName'],
+                    mimetypes: ['bla'],
+                    moduleId: 'bla',
+                    ctorName: 'bla'
+                }]);
+            assert.deepEqual(registry.getRegisteredLanguageNames(), ['BetterModeName']);
+            assert.deepEqual(registry.getLanguageName('modeId'), 'BetterModeName');
+        });
     });
 });
 //# sourceMappingURL=languagesRegistry.test.js.map

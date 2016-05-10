@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/severity', 'vs/platform/event/common/eventService', 'vs/platform/extensions/common/abstractExtensionService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/request/common/baseRequestService', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/thread/common/workerThreadService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/common/services/resourceServiceImpl', 'vs/editor/common/languages.common', 'vs/editor/common/worker/validationHelper'], function (require, exports, severity_1, eventService_1, abstractExtensionService_1, instantiationService_1, markerService_1, baseRequestService_1, remoteTelemetryService_1, workerThreadService_1, baseWorkspaceContextService_1, modeServiceImpl_1, modelServiceImpl_1, resourceServiceImpl_1) {
+define(["require", "exports", 'vs/base/common/severity', 'vs/platform/event/common/eventService', 'vs/platform/event/common/event', 'vs/platform/extensions/common/abstractExtensionService', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/markers/common/markerService', 'vs/platform/markers/common/markers', 'vs/platform/request/common/baseRequestService', 'vs/platform/request/common/request', 'vs/platform/telemetry/common/remoteTelemetryService', 'vs/platform/telemetry/common/telemetry', 'vs/platform/thread/common/workerThreadService', 'vs/platform/thread/common/thread', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/common/services/resourceServiceImpl', 'vs/editor/common/services/resourceService', 'vs/editor/common/languages.common', 'vs/editor/common/worker/validationHelper'], function (require, exports, severity_1, eventService_1, event_1, abstractExtensionService_1, extensions_1, serviceCollection_1, instantiationService_1, markerService_1, markers_1, baseRequestService_1, request_1, remoteTelemetryService_1, telemetry_1, workerThreadService_1, thread_1, baseWorkspaceContextService_1, workspace_1, modeServiceImpl_1, modeService_1, modelServiceImpl_1, resourceServiceImpl_1, resourceService_1) {
     'use strict';
     var WorkerExtensionService = (function (_super) {
         __extends(WorkerExtensionService, _super);
@@ -41,27 +41,26 @@ define(["require", "exports", 'vs/base/common/severity', 'vs/platform/event/comm
         function EditorWorkerServer() {
         }
         EditorWorkerServer.prototype.initialize = function (mainThread, complete, error, progress, initData) {
+            var services = new serviceCollection_1.ServiceCollection();
             var extensionService = new WorkerExtensionService();
             var contextService = new baseWorkspaceContextService_1.BaseWorkspaceContextService(initData.contextService.workspace, initData.contextService.configuration, initData.contextService.options);
             this.threadService = new workerThreadService_1.WorkerThreadService(mainThread.getRemoteCom());
-            this.threadService.setInstantiationService(instantiationService_1.createInstantiationService({ threadService: this.threadService }));
+            this.threadService.setInstantiationService(new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([thread_1.IThreadService, this.threadService])));
             var telemetryServiceInstance = new remoteTelemetryService_1.RemoteTelemetryService('workerTelemetry', this.threadService);
             var resourceService = new resourceServiceImpl_1.ResourceService();
             var markerService = new markerService_1.SecondaryMarkerService(this.threadService);
             var modeService = new modeServiceImpl_1.ModeServiceImpl(this.threadService, extensionService);
             var requestService = new baseRequestService_1.BaseRequestService(contextService, telemetryServiceInstance);
-            var _services = {
-                threadService: this.threadService,
-                extensionService: extensionService,
-                modeService: modeService,
-                contextService: contextService,
-                eventService: new eventService_1.EventService(),
-                resourceService: resourceService,
-                markerService: markerService,
-                telemetryService: telemetryServiceInstance,
-                requestService: requestService
-            };
-            var instantiationService = instantiationService_1.createInstantiationService(_services);
+            services.set(extensions_1.IExtensionService, extensionService);
+            services.set(thread_1.IThreadService, this.threadService);
+            services.set(modeService_1.IModeService, modeService);
+            services.set(workspace_1.IWorkspaceContextService, contextService);
+            services.set(event_1.IEventService, new eventService_1.EventService());
+            services.set(resourceService_1.IResourceService, resourceService);
+            services.set(markers_1.IMarkerService, markerService);
+            services.set(telemetry_1.ITelemetryService, telemetryServiceInstance);
+            services.set(request_1.IRequestService, requestService);
+            var instantiationService = new instantiationService_1.InstantiationService(services);
             this.threadService.setInstantiationService(instantiationService);
             // Instantiate thread actors
             this.threadService.getRemotable(modeServiceImpl_1.ModeServiceWorkerHelper);

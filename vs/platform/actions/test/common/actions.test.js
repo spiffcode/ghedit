@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/platform/actions/common/actions', 'vs/base/common/actions', 'vs/base/common/eventEmitter', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/descriptors', 'vs/platform/event/common/event'], function (require, exports, assert, WinJS, actions_1, Actions, EventEmitter, InstantiationService, descriptors_1, event_1) {
+define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/platform/actions/common/actions', 'vs/base/common/actions', 'vs/base/common/eventEmitter', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/descriptors', 'vs/platform/event/common/event'], function (require, exports, assert, WinJS, actions_1, Actions, EventEmitter, serviceCollection_1, instantiationService_1, descriptors_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -44,10 +44,8 @@ define(["require", "exports", 'assert', 'vs/base/common/winjs.base', 'vs/platfor
     }(EventEmitter.EventEmitter));
     suite('Platform actions', function () {
         test('DeferredAction', function (done) {
-            var services = {
-                eventService: {}
-            };
-            var instantiationService = InstantiationService.createInstantiationService(services);
+            var services = new serviceCollection_1.ServiceCollection([event_1.IEventService, {}]);
+            var instantiationService = new instantiationService_1.InstantiationService(services);
             var action = new actions_1.DeferredAction(instantiationService, new descriptors_1.AsyncDescriptor('vs/platform/actions/test/common/actions.test', 'TestAction', 'my.id', 'Second'), 'my.test.action', 'Hello World', 'css');
             assert.strictEqual(action.id, 'my.test.action');
             action.run().then(function (result) {

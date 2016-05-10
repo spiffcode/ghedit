@@ -17,8 +17,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/touch', 'v
             this._onScroll = this._register(new event_1.Emitter());
             this._domNode = domNode;
             this._gestureHandler = this._register(new touch_1.Gesture(this._domNode));
-            this._lastScrollTop = this.getScrollTop();
-            this._lastScrollLeft = this.getScrollLeft();
+            this._lastScrollEvent = new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
             this._register(DomUtils.addDisposableListener(this._domNode, 'scroll', function (e) {
                 _this._emitScrollEvent();
             }));
@@ -27,11 +26,8 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/touch', 'v
             this._emitScrollEvent();
         };
         DomNodeScrollable.prototype._emitScrollEvent = function () {
-            var vertical = (this._lastScrollTop !== this.getScrollTop());
-            this._lastScrollTop = this.getScrollTop();
-            var horizontal = (this._lastScrollLeft !== this.getScrollLeft());
-            this._lastScrollLeft = this.getScrollLeft();
-            this._onScroll.fire(new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight(), vertical, horizontal));
+            this._lastScrollEvent = this._lastScrollEvent.create(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
+            this._onScroll.fire(this._lastScrollEvent);
         };
         DomNodeScrollable.prototype.dispose = function () {
             this._domNode = null;

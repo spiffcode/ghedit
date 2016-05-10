@@ -184,7 +184,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
                 }
             },
             extensionDependencies: {
-                description: nls.localize('vscode.extension.extensionDependencies', 'Dependencies to other extensions. The id of an extension is always ${publisher}.${name}. For example: vscode.csharp.'),
+                description: nls.localize('vscode.extension.extensionDependencies', 'Dependencies to other extensions. The identifier of an extension is always ${publisher}.${name}. For example: vscode.csharp.'),
                 type: 'array',
                 items: {
                     type: 'string'
@@ -336,6 +336,5 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     platform_1.Registry.add(PRExtensions.ExtensionsRegistry, new ExtensionsRegistryImpl());
     exports.ExtensionsRegistry = platform_1.Registry.as(PRExtensions.ExtensionsRegistry);
     schemaRegistry.registerSchema(schemaId, schema);
-    schemaRegistry.addSchemaFileAssociation('/package.json', schemaId);
 });
 //# sourceMappingURL=extensionsRegistry.js.map

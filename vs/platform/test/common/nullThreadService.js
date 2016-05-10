@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/thread/common/abstractThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/thread/common/thread'], function (require, exports, winjs, abstractThreadService, instantiationService, thread_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/thread/common/abstractThreadService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/thread/common/thread'], function (require, exports, winjs, abstractThreadService, instantiationService_1, serviceCollection_1, thread_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -14,9 +14,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/platform/thread/c
         function NullThreadService() {
             _super.call(this, true);
             this.serviceId = thread_1.IThreadService;
-            this.setInstantiationService(instantiationService.createInstantiationService({
-                threadService: this
-            }));
+            this.setInstantiationService(new instantiationService_1.InstantiationService(new serviceCollection_1.ServiceCollection([thread_1.IThreadService, this])));
         }
         NullThreadService.prototype._doCreateInstance = function (params) {
             return _super.prototype._doCreateInstance.call(this, params);

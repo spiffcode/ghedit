@@ -6,6 +6,7 @@ define(["require", "exports", 'vs/base/common/keyCodes', 'vs/base/common/platfor
     'use strict';
     var KEY_CODE_MAP = {};
     (function () {
+        KEY_CODE_MAP[3] = keyCodes_1.KeyCode.PauseBreak; // VK_CANCEL 0x03 Control-break processing
         KEY_CODE_MAP[8] = keyCodes_1.KeyCode.Backspace;
         KEY_CODE_MAP[9] = keyCodes_1.KeyCode.Tab;
         KEY_CODE_MAP[13] = keyCodes_1.KeyCode.Enter;

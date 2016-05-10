@@ -24,6 +24,7 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
             this.textFileService = textFileService;
             this.pathLabelProvider = new labels.PathLabelProvider(this.contextService);
             this.entries = [];
+            this.recentlyClosedEntries = [];
             this.toDispose = [];
             this.mapEntryToResource = Object.create(null);
             this._onModelChange = new event_1.Emitter();
@@ -219,6 +220,9 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
             var resource = arg1 instanceof WorkingFileEntry ? arg1.resource : arg1;
             var index = this.indexOf(resource);
             if (index >= 0) {
+                if (resource.scheme === 'file') {
+                    this.recordRecentlyClosedEntries([this.mapEntryToResource[resource.toString()]]);
+                }
                 // Remove entry
                 var removed = this.entries.splice(index, 1)[0];
                 delete this.mapEntryToResource[resource.toString()];
@@ -236,6 +240,12 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
             }
             return null;
         };
+        WorkingFilesModel.prototype.popLastClosedEntry = function () {
+            if (this.recentlyClosedEntries.length > 0) {
+                return this.recentlyClosedEntries.pop();
+            }
+            return null;
+        };
         WorkingFilesModel.prototype.reorder = function (source, target) {
             var sortedEntries = this.entries.slice(0).sort(WorkingFilesModel.compare);
             var indexOfSource = sortedEntries.indexOf(source);
@@ -250,6 +260,7 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
             this.fireModelChange({});
         };
         WorkingFilesModel.prototype.clear = function () {
+            this.recordRecentlyClosedEntries(this.entries);
             var deleted = this.entries;
             this.entries = [];
             this.mapEntryToResource = Object.create(null);
@@ -260,6 +271,24 @@ define(["require", "exports", 'vs/base/common/arrays', 'vs/base/common/uri', 'vs
         };
         WorkingFilesModel.prototype.findEntry = function (resource) {
             return this.mapEntryToResource[resource.toString()];
+        };
+        WorkingFilesModel.prototype.recordRecentlyClosedEntries = function (resources) {
+            if (resources.length === 0) {
+                return;
+            }
+            // Put the active entry on the top of the stack
+            var input = this.editorService.getActiveEditorInput();
+            var resource = editor_1.getUntitledOrFileResource(input);
+            var activeEntry;
+            if (resource) {
+                activeEntry = this.findEntry(resource);
+            }
+            this.recentlyClosedEntries = this.recentlyClosedEntries.concat(resources.filter(function (e) {
+                return !activeEntry || e.resource.path !== activeEntry.resource.path;
+            }));
+            if (activeEntry) {
+                this.recentlyClosedEntries.push(activeEntry);
+            }
         };
         WorkingFilesModel.prototype.indexOf = function (resource) {
             var entry = this.findEntry(resource);

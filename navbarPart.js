@@ -17,17 +17,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs/nls', 'vs/base/common/errors', 'vs/base/common/winjs.base', 'vs/base/common/lifecycle', 'vs/base/browser/builder', 'vs/base/browser/ui/octiconLabel/octiconLabel', 'vs/platform/platform', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/browser/part', 'vs/workbench/common/actionRegistry', 'navbar', 'vs/platform/instantiation/common/instantiation', 'vs/platform/telemetry/common/telemetry', 'vs/platform/message/common/message', 'navbarService', 'vs/css!./navbarPart'], function (require, exports, dom, types, nls, errors_1, winjs_base_1, lifecycle_1, builder_1, octiconLabel_1, platform_1, keybindingService_1, editorService_1, part_1, actionRegistry_1, navbar_1, instantiation_1, telemetry_1, message_1, navbarService_1) {
+    // Sort of forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/browser/parts/statusbar/statusbarPart.ts
     'use strict';
     var NavbarPart = (function (_super) {
         __extends(NavbarPart, _super);
-        function NavbarPart(id) {
+        function NavbarPart(id, instantiationService) {
             _super.call(this, id);
+            this.instantiationService = instantiationService;
             this.serviceId = navbarService_1.INavbarService;
             this.toDispose = [];
         }
-        NavbarPart.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         NavbarPart.prototype.addEntry = function (entry, alignment, priority) {
             if (priority === void 0) { priority = 0; }
             var item = this.instantiationService.createInstance(NavBarEntryItem, entry);
@@ -114,6 +113,9 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
         };
         NavbarPart.PRIORITY_PROP = 'priority';
         NavbarPart.ALIGNMENT_PROP = 'alignment';
+        NavbarPart = __decorate([
+            __param(1, instantiation_1.IInstantiationService)
+        ], NavbarPart);
         return NavbarPart;
     }(part_1.Part));
     exports.NavbarPart = NavbarPart;

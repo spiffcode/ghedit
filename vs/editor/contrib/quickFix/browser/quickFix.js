@@ -139,7 +139,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(QuickFixAction, QuickFixAction.ID, nls.localize('quickfix.trigger.label', "Quick Fix"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.US_DOT
-    }));
+    }, 'Quick Fix'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorCommand('acceptQuickFixSuggestion', weight, { primary: keyCodes_1.KeyCode.Enter, secondary: [keyCodes_1.KeyCode.Tab] }, false, CONTEXT_QUICK_FIX_WIDGET_VISIBLE, function (ctx, editor, args) {
         var controller = QuickFixController.getQuickFixController(editor);
         controller.acceptSelectedSuggestion();

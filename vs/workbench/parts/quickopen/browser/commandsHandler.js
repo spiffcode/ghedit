@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/common/filters', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/css!./media/commandsHandler'], function (require, exports, winjs_base_1, nls, arrays, types, strings, errors_1, quickOpen_1, quickOpenModel_1, actions_1, actionRegistry_1, platform_1, quickopen_1, quickOpenAction_1, filters_1, editorAction_1, editorActionEnablement_1, editorService_1, instantiation_1, message_1, telemetry_1, keybindingService_1, quickOpenService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/arrays', 'vs/base/common/types', 'vs/base/common/platform', 'vs/base/common/strings', 'vs/base/common/errors', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/platform/platform', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/actions/quickOpenAction', 'vs/base/common/filters', 'vs/editor/common/editorAction', 'vs/editor/common/editorActionEnablement', 'vs/workbench/services/editor/common/editorService', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/platform/keybinding/common/keybindingService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/css!./media/commandsHandler'], function (require, exports, winjs_base_1, nls, arrays, types, platform_1, strings, errors_1, quickOpen_1, quickOpenModel_1, actions_1, actionRegistry_1, platform_2, quickopen_1, quickOpenAction_1, filters_1, editorAction_1, editorActionEnablement_1, editorService_1, instantiation_1, message_1, telemetry_1, keybindingService_1, quickOpenService_1) {
     'use strict';
     exports.ALL_COMMANDS_PREFIX = '>';
     exports.EDITOR_COMMANDS_PREFIX = '$';
@@ -36,17 +36,21 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
     exports.ShowAllCommandsAction = ShowAllCommandsAction;
     var BaseCommandEntry = (function (_super) {
         __extends(BaseCommandEntry, _super);
-        function BaseCommandEntry(keyLabel, keyAriaLabel, description, highlights, messageService, telemetryService) {
+        function BaseCommandEntry(keyLabel, keyAriaLabel, label, alias, labelHighlights, aliasHighlights, messageService, telemetryService) {
             _super.call(this);
             this.messageService = messageService;
             this.telemetryService = telemetryService;
             this.keyLabel = keyLabel;
             this.keyAriaLabel = keyAriaLabel;
-            this.description = description;
-            this.setHighlights(highlights);
+            this.label = label;
+            this.alias = alias;
+            this.setHighlights(labelHighlights, null, aliasHighlights);
         }
         BaseCommandEntry.prototype.getLabel = function () {
-            return this.description;
+            return this.label;
+        };
+        BaseCommandEntry.prototype.getDetail = function () {
+            return this.alias;
         };
         BaseCommandEntry.prototype.getAriaLabel = function () {
             if (this.keyAriaLabel) {
@@ -57,8 +61,15 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         BaseCommandEntry.prototype.getGroupLabel = function () {
             return this.keyLabel;
         };
-        BaseCommandEntry.prototype.onError = function (error) {
-            var message = !error ? nls.localize('canNotRun', "Command '{0}' can not be run from here.", this.description) : errors_1.toErrorMessage(error);
+        BaseCommandEntry.prototype.onError = function (arg1) {
+            var message;
+            var messagesWithAction = arg1;
+            if (messagesWithAction && typeof messagesWithAction.message === 'string' && Array.isArray(messagesWithAction.actions)) {
+                message = messagesWithAction;
+            }
+            else {
+                message = !arg1 ? nls.localize('canNotRun', "Command '{0}' can not be run from here.", this.label) : errors_1.toErrorMessage(arg1);
+            }
             this.messageService.show(message_1.Severity.Error, message);
         };
         BaseCommandEntry.prototype.runAction = function (action) {
@@ -82,15 +93,15 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             }, function (err) { return _this.onError(err); });
         };
         BaseCommandEntry = __decorate([
-            __param(4, message_1.IMessageService),
-            __param(5, telemetry_1.ITelemetryService)
+            __param(6, message_1.IMessageService),
+            __param(7, telemetry_1.ITelemetryService)
         ], BaseCommandEntry);
         return BaseCommandEntry;
     }(quickOpenModel_1.QuickOpenEntryGroup));
     var CommandEntry = (function (_super) {
         __extends(CommandEntry, _super);
-        function CommandEntry(keyLabel, keyAriaLabel, description, highlights, actionDescriptor, editorService, instantiationService, messageService, telemetryService) {
-            _super.call(this, keyLabel, keyAriaLabel, description, highlights, messageService, telemetryService);
+        function CommandEntry(keyLabel, keyAriaLabel, label, meta, labelHighlights, aliasHighlights, actionDescriptor, editorService, instantiationService, messageService, telemetryService) {
+            _super.call(this, keyLabel, keyAriaLabel, label, meta, labelHighlights, aliasHighlights, messageService, telemetryService);
             this.editorService = editorService;
             this.instantiationService = instantiationService;
             this.actionDescriptor = actionDescriptor;
@@ -104,17 +115,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             return false;
         };
         CommandEntry = __decorate([
-            __param(5, editorService_1.IWorkbenchEditorService),
-            __param(6, instantiation_1.IInstantiationService),
-            __param(7, message_1.IMessageService),
-            __param(8, telemetry_1.ITelemetryService)
+            __param(7, editorService_1.IWorkbenchEditorService),
+            __param(8, instantiation_1.IInstantiationService),
+            __param(9, message_1.IMessageService),
+            __param(10, telemetry_1.ITelemetryService)
         ], CommandEntry);
         return CommandEntry;
     }(BaseCommandEntry));
     var EditorActionCommandEntry = (function (_super) {
         __extends(EditorActionCommandEntry, _super);
-        function EditorActionCommandEntry(keyLabel, keyAriaLabel, description, highlights, action, editorService, messageService, telemetryService) {
-            _super.call(this, keyLabel, keyAriaLabel, description, highlights, messageService, telemetryService);
+        function EditorActionCommandEntry(keyLabel, keyAriaLabel, label, meta, labelHighlights, aliasHighlights, action, editorService, messageService, telemetryService) {
+            _super.call(this, keyLabel, keyAriaLabel, label, meta, labelHighlights, aliasHighlights, messageService, telemetryService);
             this.editorService = editorService;
             this.action = action;
         }
@@ -126,16 +137,16 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             return false;
         };
         EditorActionCommandEntry = __decorate([
-            __param(5, editorService_1.IWorkbenchEditorService),
-            __param(6, message_1.IMessageService),
-            __param(7, telemetry_1.ITelemetryService)
+            __param(7, editorService_1.IWorkbenchEditorService),
+            __param(8, message_1.IMessageService),
+            __param(9, telemetry_1.ITelemetryService)
         ], EditorActionCommandEntry);
         return EditorActionCommandEntry;
     }(BaseCommandEntry));
     var ActionCommandEntry = (function (_super) {
         __extends(ActionCommandEntry, _super);
-        function ActionCommandEntry(keyLabel, keyAriaLabel, description, highlights, action, messageService, telemetryService) {
-            _super.call(this, keyLabel, keyAriaLabel, description, highlights, messageService, telemetryService);
+        function ActionCommandEntry(keyLabel, keyAriaLabel, label, alias, labelHighlights, aliasHighlights, action, messageService, telemetryService) {
+            _super.call(this, keyLabel, keyAriaLabel, label, alias, labelHighlights, aliasHighlights, messageService, telemetryService);
             this.action = action;
         }
         ActionCommandEntry.prototype.run = function (mode, context) {
@@ -146,8 +157,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             return false;
         };
         ActionCommandEntry = __decorate([
-            __param(5, message_1.IMessageService),
-            __param(6, telemetry_1.ITelemetryService)
+            __param(7, message_1.IMessageService),
+            __param(8, telemetry_1.ITelemetryService)
         ], ActionCommandEntry);
         return ActionCommandEntry;
     }(BaseCommandEntry));
@@ -169,7 +180,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             // Workbench Actions (if prefix asks for all commands)
             var workbenchEntries = [];
             if (this.includeWorkbenchCommands()) {
-                var workbenchActions = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions).getWorkbenchActions();
+                var workbenchActions = platform_2.Registry.as(actionRegistry_1.Extensions.WorkbenchActions).getWorkbenchActions();
                 workbenchEntries = this.actionDescriptorsToEntries(workbenchActions, searchValue);
             }
             // Editor Actions
@@ -194,21 +205,25 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         CommandsHandler.prototype.actionDescriptorsToEntries = function (actionDescriptors, searchValue) {
             var _this = this;
             var entries = [];
-            var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
+            var registry = platform_2.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
             for (var i = 0; i < actionDescriptors.length; i++) {
                 var actionDescriptor = actionDescriptors[i];
                 var keys = this.keybindingService.lookupKeybindings(actionDescriptor.id);
                 var keyLabel = keys.map(function (k) { return _this.keybindingService.getLabelFor(k); });
                 var keyAriaLabel = keys.map(function (k) { return _this.keybindingService.getAriaLabelFor(k); });
                 if (actionDescriptor.label) {
+                    // Label (with optional category)
                     var label = actionDescriptor.label;
                     var category = registry.getCategory(actionDescriptor.id);
                     if (category) {
                         label = nls.localize('commandLabel', "{0}: {1}", category, label);
                     }
-                    var highlights = wordFilter(searchValue, label);
-                    if (highlights) {
-                        entries.push(this.instantiationService.createInstance(CommandEntry, keyLabel.length > 0 ? keyLabel.join(', ') : '', keyAriaLabel.length > 0 ? keyAriaLabel.join(', ') : '', label, highlights, actionDescriptor));
+                    // Alias for non default languages
+                    var alias = (platform_1.language !== platform_1.LANGUAGE_DEFAULT) ? registry.getAlias(actionDescriptor.id) : null;
+                    var labelHighlights = wordFilter(searchValue, label);
+                    var aliasHighlights = alias ? wordFilter(searchValue, alias) : null;
+                    if (labelHighlights || aliasHighlights) {
+                        entries.push(this.instantiationService.createInstance(CommandEntry, keyLabel.length > 0 ? keyLabel.join(', ') : '', keyAriaLabel.length > 0 ? keyAriaLabel.join(', ') : '', label, alias, labelHighlights, aliasHighlights, actionDescriptor));
                     }
                 }
             }
@@ -226,10 +241,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 var keys = this.keybindingService.lookupKeybindings(editorAction.id);
                 var keyLabel = keys.map(function (k) { return _this.keybindingService.getLabelFor(k); });
                 var keyAriaLabel = keys.map(function (k) { return _this.keybindingService.getAriaLabelFor(k); });
-                if (action.label) {
-                    var highlights = wordFilter(searchValue, action.label);
-                    if (highlights) {
-                        entries.push(this.instantiationService.createInstance(EditorActionCommandEntry, keyLabel.length > 0 ? keyLabel.join(', ') : '', keyAriaLabel.length > 0 ? keyAriaLabel.join(', ') : '', action.label, highlights, action));
+                var label = action.label;
+                if (label) {
+                    // Alias for non default languages
+                    var alias = (platform_1.language !== platform_1.LANGUAGE_DEFAULT) ? action.getAlias() : null;
+                    var labelHighlights = wordFilter(searchValue, label);
+                    var aliasHighlights = alias ? wordFilter(searchValue, alias) : null;
+                    if (labelHighlights || aliasHighlights) {
+                        entries.push(this.instantiationService.createInstance(EditorActionCommandEntry, keyLabel.length > 0 ? keyLabel.join(', ') : '', keyAriaLabel.length > 0 ? keyAriaLabel.join(', ') : '', label, alias, labelHighlights, aliasHighlights, action));
                     }
                 }
             }
@@ -245,7 +264,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                 var keyAriaLabel = keys.map(function (k) { return _this.keybindingService.getAriaLabelFor(k); });
                 var highlights = wordFilter(searchValue, action.label);
                 if (highlights) {
-                    entries.push(this.instantiationService.createInstance(ActionCommandEntry, keyLabel.join(', '), keyAriaLabel.join(', '), action.label, highlights, action));
+                    entries.push(this.instantiationService.createInstance(ActionCommandEntry, keyLabel.join(', '), keyAriaLabel.join(', '), action.label, null, highlights, null, action));
                 }
             }
             return entries;

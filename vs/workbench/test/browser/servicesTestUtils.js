@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/common/storage', 'vs/platform/lifecycle/common/baseLifecycleService', 'vs/base/common/types', 'vs/platform/configuration/common/configuration', 'vs/platform/storage/common/storage', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/event/common/event', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/message/common/message', 'vs/platform/request/common/baseRequestService', 'vs/workbench/browser/parts/editor/editor.contribution'], function (require, exports, winjs_base_1, EventEmitter, Paths, uri_1, telemetry_1, Storage, LifecycleService, Types, configuration_1, storage_1, WorkbenchEditorService, QuickOpenService, PartService, WorkspaceContextService, event_1, untitledEditorService_1, message_1, baseRequestService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/eventEmitter', 'vs/base/common/paths', 'vs/base/common/uri', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/common/storage', 'vs/base/common/types', 'vs/platform/configuration/common/configuration', 'vs/platform/storage/common/storage', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/part/common/partService', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/event/common/event', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/message/common/message', 'vs/platform/request/common/baseRequestService', 'vs/workbench/browser/parts/editor/editor.contribution'], function (require, exports, winjs_base_1, EventEmitter, Paths, uri_1, telemetry_1, Storage, Types, configuration_1, storage_1, WorkbenchEditorService, QuickOpenService, PartService, WorkspaceContextService, event_1, untitledEditorService_1, message_1, baseRequestService_1) {
     'use strict';
     exports.TestWorkspace = {
         resource: uri_1.default.file('C:\\testWorkspace'),
@@ -129,14 +129,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/event
         return TestEventService;
     }(EventEmitter.EventEmitter));
     exports.TestEventService = TestEventService;
-    var TestLifecycleService = (function (_super) {
-        __extends(TestLifecycleService, _super);
-        function TestLifecycleService() {
-            _super.apply(this, arguments);
-        }
-        return TestLifecycleService;
-    }(LifecycleService.BaseLifecycleService));
-    exports.TestLifecycleService = TestLifecycleService;
     var TestStorageService = (function (_super) {
         __extends(TestStorageService, _super);
         function TestStorageService() {
@@ -364,6 +356,9 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/event
             _super.apply(this, arguments);
             this.serviceId = configuration_1.IConfigurationService;
         }
+        TestConfigurationService.prototype.loadConfiguration = function (section) {
+            return winjs_base_1.TPromise.as(this.getConfiguration());
+        };
         TestConfigurationService.prototype.getConfiguration = function () {
             return {};
         };

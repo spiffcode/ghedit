@@ -95,18 +95,6 @@ define(["require", "exports", 'vs/base/common/events'], function (require, expor
          */
         EventType.COMPOSITE_CLOSED = 'compositeClosed';
         /**
-         * Event type for when the workbench has been fully created.
-         */
-        EventType.WORKBENCH_CREATED = 'workbenchCreated';
-        /**
-         * Event type for when the workbench is about to being disposed.
-         */
-        EventType.WORKBENCH_DISPOSING = 'workbenchDisposing';
-        /**
-         * Event type for when the workbench is fully disposed.
-         */
-        EventType.WORKBENCH_DISPOSED = 'workbenchDisposed';
-        /**
          * Event type for when an untitled file is becoming dirty.
          */
         EventType.UNTITLED_FILE_DIRTY = 'untitledFileDirty';

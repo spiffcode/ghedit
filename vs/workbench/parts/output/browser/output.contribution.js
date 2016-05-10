@@ -24,8 +24,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/editor/co
         linux: {
             primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_H // On Ubuntu Ctrl+Shift+U is taken by some global OS command
         }
-    }), nls.localize('viewCategory', "View"));
+    }), 'View: Toggle Output', nls.localize('viewCategory', "View"));
     // Contribute to Context Menu of Output Window
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(outputActions_1.ClearOutputEditorAction, outputActions_1.ClearOutputEditorAction.ID, nls.localize('clearOutput.label', "Clear Output")));
+    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(outputActions_1.ClearOutputEditorAction, outputActions_1.ClearOutputEditorAction.ID, nls.localize('clearOutput.label', "Clear Output"), void 0, 'Clear Output'));
 });
 //# sourceMappingURL=output.contribution.js.map

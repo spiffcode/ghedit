@@ -420,6 +420,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
             this._viewHeight = 0;
             this.renderTop = 0;
             this.renderHeight = 0;
+            this._lastScrollEvent = new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
             this.didJustPressContextMenuKey = false;
             this.currentDropTarget = null;
             this.currentDropTargets = [];
@@ -450,7 +451,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
             this.scrollTop = this.onHiddenScrollTop;
             this.onHiddenScrollTop = null;
             this.scrollableElement.onElementDimensions();
-            this._emitScrollEvent(false, false);
+            this._emitScrollEvent();
             this.setupMSGesture();
         };
         TreeView.prototype.setupMSGesture = function () {
@@ -473,7 +474,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
             this.viewHeight = height || DOM.getContentHeight(this.wrapper); // render
             this.scrollTop = this.scrollTop; // render
             this.scrollableElement.onElementDimensions();
-            this._emitScrollEvent(false, false);
+            this._emitScrollEvent();
         };
         TreeView.prototype.render = function (scrollTop, viewHeight) {
             var scrollBottom = scrollTop + viewHeight;
@@ -580,7 +581,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
                 return;
             }
             this.scrollTop = scrollTop;
-            this._emitScrollEvent(false, false);
+            this._emitScrollEvent();
         };
         TreeView.prototype.focusNextPage = function (eventPayload) {
             var _this = this;
@@ -669,10 +670,11 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/browse
             scrollTop = Math.max(scrollTop, 0);
             this.render(scrollTop, this.viewHeight);
             this._scrollTop = scrollTop;
-            this._emitScrollEvent(true, false);
+            this._emitScrollEvent();
         };
-        TreeView.prototype._emitScrollEvent = function (vertical, horizontal) {
-            this.emit('scroll', new scrollable_1.ScrollEvent(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight(), vertical, horizontal));
+        TreeView.prototype._emitScrollEvent = function () {
+            this._lastScrollEvent = this._lastScrollEvent.create(this.getScrollTop(), this.getScrollLeft(), this.getScrollWidth(), this.getScrollHeight());
+            this.emit('scroll', this._lastScrollEvent);
         };
         TreeView.prototype.addScrollListener = function (callback) {
             return this.addListener2('scroll', callback);

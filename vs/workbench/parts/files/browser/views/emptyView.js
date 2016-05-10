@@ -12,7 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/winjs.base', 'vs/base/browser/ui/button/button', 'vs/base/browser/builder', 'vs/base/browser/ui/splitview/splitview', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation', 'vs/platform/selection/common/selection'], function (require, exports, nls, env, DOM, winjs_base_1, button_1, builder_1, splitview_1, platform_1, actionRegistry_1, instantiation_1, selection_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/browser/dom', 'vs/base/common/winjs.base', 'vs/base/browser/ui/button/button', 'vs/base/browser/builder', 'vs/base/browser/ui/splitview/splitview', 'vs/platform/platform', 'vs/workbench/common/actionRegistry', 'vs/platform/instantiation/common/instantiation'], function (require, exports, nls, env, DOM, winjs_base_1, button_1, builder_1, splitview_1, platform_1, actionRegistry_1, instantiation_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -60,9 +60,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/brow
         };
         EmptyView.prototype.focusBody = function () {
             // Ignore
-        };
-        EmptyView.prototype.getSelection = function () {
-            return new selection_1.StructuredSelection([]);
         };
         EmptyView.prototype.reveal = function (element, relativeTop) {
             return winjs_base_1.TPromise.as(null);

@@ -135,6 +135,12 @@ define(["require", "exports", 'assert', 'vs/base/common/strings'], function (req
             assert.strictEqual(strings.appendWithLimit('ab', 'cdefgh', 4), '...efgh');
             assert.strictEqual(strings.appendWithLimit('abcdef', 'ghijk', 7), '...efghijk');
         });
+        test('repeat', function () {
+            assert.strictEqual(strings.repeat(' ', 4), '    ');
+            assert.strictEqual(strings.repeat(' ', 1), ' ');
+            assert.strictEqual(strings.repeat(' ', 0), '');
+            assert.strictEqual(strings.repeat('abc', 2), 'abcabc');
+        });
     });
 });
 //# sourceMappingURL=strings.test.js.map

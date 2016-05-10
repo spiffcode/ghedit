@@ -36,6 +36,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/
             BreakpointWidget.INSTANCE = this;
             this.toDispose.push(editor.addListener2(editorcommon.EventType.ModelChanged, function () { return _this.dispose(); }));
         }
+        BreakpointWidget.createInstance = function (editor, lineNumber, instantiationService) {
+            if (BreakpointWidget.INSTANCE) {
+                BreakpointWidget.INSTANCE.dispose();
+            }
+            instantiationService.createInstance(BreakpointWidget, editor, lineNumber);
+            BreakpointWidget.INSTANCE.show({ lineNumber: lineNumber, column: 1 }, 2);
+        };
         BreakpointWidget.prototype.fillContainer = function (container) {
             var _this = this;
             dom.addClass(container, 'breakpoint-widget');
@@ -63,10 +70,12 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/async', 'vs/base/common/
                             condition: _this.inputBox.value
                         };
                         // if there is already a breakpoint on this location - remove it.
-                        if (_this.debugService.getModel().getBreakpoints().some(function (bp) { return bp.lineNumber === _this.lineNumber && bp.source.uri.toString() === uri.toString(); })) {
-                            _this.debugService.toggleBreakpoint(raw).done(null, errors.onUnexpectedError);
+                        var oldBreakpoint = _this.debugService.getModel().getBreakpoints()
+                            .filter(function (bp) { return bp.lineNumber === _this.lineNumber && bp.source.uri.toString() === uri.toString(); }).pop();
+                        if (oldBreakpoint) {
+                            _this.debugService.removeBreakpoints(oldBreakpoint.getId()).done(null, errors.onUnexpectedError);
                         }
-                        _this.debugService.toggleBreakpoint(raw).done(null, errors.onUnexpectedError);
+                        _this.debugService.addBreakpoints([raw]).done(null, errors.onUnexpectedError);
                     }
                     _this.dispose();
                 }

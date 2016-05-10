@@ -840,5 +840,9 @@ define(["require", "exports", 'vs/base/common/async', 'vs/base/common/errors', '
         node.removeAttribute('tabindex');
     }
     exports.removeTabIndexAndUpdateFocus = removeTabIndexAndUpdateFocus;
+    function getElementsByTagName(tag) {
+        return Array.prototype.slice.call(document.getElementsByTagName(tag), 0);
+    }
+    exports.getElementsByTagName = getElementsByTagName;
 });
 //# sourceMappingURL=dom.js.map

@@ -81,12 +81,6 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/browser/styleMutat
         ViewContentWidgets.prototype.onZonesChanged = function () {
             return true;
         };
-        ViewContentWidgets.prototype.onScrollWidthChanged = function (scrollWidth) {
-            return false;
-        };
-        ViewContentWidgets.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return false;
-        };
         // ---- end view event handlers
         ViewContentWidgets.prototype.addWidget = function (widget) {
             var widgetData = {

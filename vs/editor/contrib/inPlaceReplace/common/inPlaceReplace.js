@@ -116,10 +116,10 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceUp, InPlaceReplaceUp.ID, nls.localize('InPlaceReplaceAction.previous.label', "Replace with Previous Value"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_COMMA
-    }));
+    }, 'Replace with Previous Value'));
     editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(InPlaceReplaceDown, InPlaceReplaceDown.ID, nls.localize('InPlaceReplaceAction.next.label', "Replace with Next Value"), {
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.US_DOT
-    }));
+    }, 'Replace with Next Value'));
 });
 //# sourceMappingURL=inPlaceReplace.js.map

@@ -245,11 +245,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
         ReplExpressionsRenderer.prototype.handleLinks = function (text) {
             var _this = this;
             var linkContainer;
-            for (var _i = 0, _a = ReplExpressionsRenderer.FILE_LOCATION_PATTERNS; _i < _a.length; _i++) {
-                var pattern = _a[_i];
+            var _loop_1 = function(pattern) {
                 pattern.lastIndex = 0; // the holy grail of software development
                 var match = pattern.exec(text);
-                var resource = match && uri_1.default.file(match[1]);
+                var resource = null;
+                try {
+                    resource = match && uri_1.default.file(match[1]);
+                }
+                catch (e) { }
                 if (resource) {
                     linkContainer = document.createElement('span');
                     var textBeforeLink = text.substr(0, match.index);
@@ -269,8 +272,13 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                         span.textContent = textAfterLink;
                         linkContainer.appendChild(span);
                     }
-                    break; // support one link per line for now
+                    return "break"; // support one link per line for now
                 }
+            };
+            for (var _i = 0, _a = ReplExpressionsRenderer.FILE_LOCATION_PATTERNS; _i < _a.length; _i++) {
+                var pattern = _a[_i];
+                var state_1 = _loop_1(pattern);
+                if (state_1 === "break") break;
             }
             return linkContainer || text;
         };

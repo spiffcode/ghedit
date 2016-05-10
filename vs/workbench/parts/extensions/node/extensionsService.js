@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'os', 'path', 'vs/base/common/types', 'vs/base/common/service', 'vs/base/node/pfs', 'vs/base/common/objects', 'vs/base/common/arrays', 'vs/base/node/zip', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/node/request', 'vs/base/node/proxy', 'vs/workbench/services/workspace/common/contextService', 'vs/base/common/async', 'vs/base/common/event', 'vs/workbench/node/userSettings', 'semver', 'vs/base/common/collections', 'vs/platform/extensions/node/extensionValidator'], function (require, exports, nls, os_1, path, types, service_1, pfs, objects_1, arrays_1, zip_1, winjs_base_1, extensions_1, request_1, proxy_1, contextService_1, async_1, event_1, userSettings_1, semver, collections_1, extensionValidator_1) {
+define(["require", "exports", 'vs/nls', 'os', 'path', 'vs/base/common/types', 'vs/base/node/pfs', 'vs/base/common/objects', 'vs/base/common/arrays', 'vs/base/node/zip', 'vs/base/common/winjs.base', 'vs/workbench/parts/extensions/common/extensions', 'vs/base/node/request', 'vs/base/node/proxy', 'vs/workbench/services/workspace/common/contextService', 'vs/base/common/async', 'vs/base/common/event', 'vs/workbench/node/userSettings', 'semver', 'vs/base/common/collections', 'vs/platform/extensions/node/extensionValidator'], function (require, exports, nls, os_1, path, types, pfs, objects_1, arrays_1, zip_1, winjs_base_1, extensions_1, request_1, proxy_1, contextService_1, async_1, event_1, userSettings_1, semver, collections_1, extensionValidator_1) {
     'use strict';
     function parseManifest(raw) {
         return new winjs_base_1.Promise(function (c, e) {
@@ -260,18 +260,6 @@ define(["require", "exports", 'vs/nls', 'os', 'path', 'vs/base/common/types', 'v
                 return { url: url, agent: agent, strictSSL: strictSSL };
             });
         };
-        __decorate([
-            service_1.ServiceEvent
-        ], ExtensionsService.prototype, "onInstallExtension", void 0);
-        __decorate([
-            service_1.ServiceEvent
-        ], ExtensionsService.prototype, "onDidInstallExtension", void 0);
-        __decorate([
-            service_1.ServiceEvent
-        ], ExtensionsService.prototype, "onUninstallExtension", void 0);
-        __decorate([
-            service_1.ServiceEvent
-        ], ExtensionsService.prototype, "onDidUninstallExtension", void 0);
         ExtensionsService = __decorate([
             __param(0, contextService_1.IWorkspaceContextService)
         ], ExtensionsService);

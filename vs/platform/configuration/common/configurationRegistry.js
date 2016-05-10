@@ -15,9 +15,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/event', 'vs/platform/pla
             this.configurationSchema = { allOf: [] };
             this._onDidRegisterConfiguration = new event_1.Emitter();
             contributionRegistry.registerSchema(schemaId, this.configurationSchema);
-            contributionRegistry.addSchemaFileAssociation('vscode://defaultsettings/settings.json', schemaId);
-            contributionRegistry.addSchemaFileAssociation('%APP_SETTINGS_HOME%/settings.json', schemaId);
-            contributionRegistry.addSchemaFileAssociation('/.vscode/settings.json', schemaId);
         }
         Object.defineProperty(ConfigurationRegistry.prototype, "onDidRegisterConfiguration", {
             get: function () {

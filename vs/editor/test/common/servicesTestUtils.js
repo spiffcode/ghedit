@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/configuration/common/configurationService', 'vs/platform/event/common/eventService', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/test/common/nullThreadService', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/test/common/mocks/mockExtensionService'], function (require, exports, uri_1, winjs_base_1, configurationService_1, eventService_1, instantiationService_1, nullThreadService_1, baseWorkspaceContextService_1, modeServiceImpl_1, modelServiceImpl_1, mockExtensionService_1) {
+define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base', 'vs/platform/configuration/common/configuration', 'vs/platform/configuration/common/configurationService', 'vs/platform/event/common/event', 'vs/platform/event/common/eventService', 'vs/platform/extensions/common/extensions', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/test/common/nullThreadService', 'vs/platform/thread/common/thread', 'vs/platform/workspace/common/baseWorkspaceContextService', 'vs/platform/workspace/common/workspace', 'vs/editor/common/services/modeService', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/test/common/mocks/mockExtensionService'], function (require, exports, uri_1, winjs_base_1, configuration_1, configurationService_1, event_1, eventService_1, extensions_1, serviceCollection_1, instantiationService_1, nullThreadService_1, thread_1, baseWorkspaceContextService_1, workspace_1, modeService_1, modeServiceImpl_1, modelServiceImpl_1, mockExtensionService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -58,11 +58,11 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base',
         var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
         var extensionService = new mockExtensionService_1.MockExtensionService();
         var modeService = new MockModeService(threadService, extensionService);
-        var inst = instantiationService_1.createInstantiationService({
-            threadService: threadService,
-            extensionService: extensionService,
-            modeService: modeService
-        });
+        var services = new serviceCollection_1.ServiceCollection();
+        services.set(thread_1.IThreadService, threadService);
+        services.set(extensions_1.IExtensionService, extensionService);
+        services.set(modeService_1.IModeService, modeService);
+        var inst = new instantiationService_1.InstantiationService(services);
         threadService.setInstantiationService(inst);
         return modeService;
     }
@@ -81,14 +81,14 @@ define(["require", "exports", 'vs/base/common/uri', 'vs/base/common/winjs.base',
         var extensionService = new mockExtensionService_1.MockExtensionService();
         var modeService = new MockModeService(threadService, extensionService);
         var modelService = new MockModelService(threadService, null, modeService, configurationService, null);
-        var inst = instantiationService_1.createInstantiationService({
-            threadService: threadService,
-            extensionService: extensionService,
-            modeService: modeService,
-            contextService: contextService,
-            eventService: eventService,
-            configurationService: configurationService
-        });
+        var services = new serviceCollection_1.ServiceCollection();
+        services.set(thread_1.IThreadService, threadService);
+        services.set(extensions_1.IExtensionService, extensionService);
+        services.set(modeService_1.IModeService, modeService);
+        services.set(workspace_1.IWorkspaceContextService, contextService);
+        services.set(event_1.IEventService, eventService);
+        services.set(configuration_1.IConfigurationService, configurationService);
+        var inst = new instantiationService_1.InstantiationService(services);
         threadService.setInstantiationService(inst);
         return modelService;
     }

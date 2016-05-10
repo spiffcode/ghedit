@@ -56,14 +56,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/sever
                     x *= zoom;
                     y *= zoom;
                     menu.popup(electron_1.remote.getCurrentWindow(), Math.floor(x), Math.floor(y));
+                    if (delegate.onHide) {
+                        delegate.onHide(undefined);
+                    }
                 });
             });
         };
         ContextMenuService.prototype.runAction = function (actionToRun, delegate) {
             var _this = this;
-            if (delegate.onHide) {
-                delegate.onHide(false);
-            }
             this.telemetryService.publicLog('workbenchActionExecuted', { id: actionToRun.id, from: 'contextMenu' });
             var context = delegate.getActionsContext ? delegate.getActionsContext() : null;
             var res = actionToRun.run(context) || winjs_base_1.TPromise.as(null);

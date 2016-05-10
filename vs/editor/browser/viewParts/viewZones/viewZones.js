@@ -56,10 +56,7 @@ define(["require", "exports", 'vs/base/common/errors', 'vs/base/browser/styleMut
             return true;
         };
         ViewZones.prototype.onScrollChanged = function (e) {
-            return e.vertical;
-        };
-        ViewZones.prototype.onScrollWidthChanged = function (newScrollWidth) {
-            return true;
+            return e.scrollTopChanged || e.scrollWidthChanged;
         };
         ViewZones.prototype.onZonesChanged = function () {
             return true;

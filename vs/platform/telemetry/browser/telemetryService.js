@@ -24,7 +24,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/common/uuid', 
             // #1 `file:///DANGEROUS/PATH/resources/app/Useful/Information`
             // #2 // Any other file path that doesn't match the approved form above should be cleaned.
             // #3 "Error: ENOENT; no such file or directory" is often followed with PII, clean it
-            this._configuration.cleanupPatterns.push([/file:\/\/\/.*?\/resources\/app\//gi, '<APP_ROOT>'], [/file:\/\/\/.*/gi, '<SOME_FILE_URI>'], [/ENOENT: no such file or directory.*?\'([^\']+)\'/gi, 'ENOENT: no such file or directory']);
+            this._configuration.cleanupPatterns.push([/file:\/\/\/.*?\/resources\/app\//gi, ''], [/file:\/\/\/.*/gi, ''], [/ENOENT: no such file or directory.*?\'([^\']+)\'/gi, 'ENOENT: no such file or directory']);
             this._telemetryInfo = {
                 sessionId: this._configuration.sessionID,
                 instanceId: undefined,

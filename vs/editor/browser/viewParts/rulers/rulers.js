@@ -33,8 +33,8 @@ define(["require", "exports", 'vs/base/browser/styleMutator', 'vs/editor/browser
             }
             return false;
         };
-        Rulers.prototype.onScrollHeightChanged = function (scrollHeight) {
-            return true;
+        Rulers.prototype.onScrollChanged = function (e) {
+            return _super.prototype.onScrollChanged.call(this, e) || e.scrollHeightChanged;
         };
         // --- end event handlers
         Rulers.prototype.prepareRender = function (ctx) {

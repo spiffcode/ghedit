@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/common/platform', 'vs/base/parts/tree/browser/treeImpl', 'vs/workbench/parts/debug/browser/replViewer', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/replHistory', 'vs/workbench/browser/panel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/base/common/keyCodes', 'vs/css!./media/repl'], function (require, exports, nls, errors, lifecycle, dom, platform, treeimpl, viewer, debug, debugactions, replhistory, panel_1, telemetry_1, contextView_1, instantiation_1, contextService_1, storage_1, keyCodes_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common/lifecycle', 'vs/base/browser/dom', 'vs/base/common/platform', 'vs/base/parts/tree/browser/treeImpl', 'vs/platform/event/common/event', 'vs/workbench/common/events', 'vs/workbench/parts/debug/browser/replViewer', 'vs/workbench/parts/debug/common/debug', 'vs/workbench/parts/debug/electron-browser/debugActions', 'vs/workbench/parts/debug/common/replHistory', 'vs/workbench/browser/panel', 'vs/platform/telemetry/common/telemetry', 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/storage/common/storage', 'vs/base/common/keyCodes', 'vs/css!./media/repl'], function (require, exports, nls, errors, lifecycle, dom, platform, treeimpl, event_1, events_1, viewer, debug, debugactions, replhistory, panel_1, telemetry_1, contextView_1, instantiation_1, contextService_1, storage_1, keyCodes_1) {
     "use strict";
     var $ = dom.emmet;
     var replTreeOptions = {
@@ -28,7 +28,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
     var HISTORY_STORAGE_KEY = 'debug.repl.history';
     var Repl = (function (_super) {
         __extends(Repl, _super);
-        function Repl(debugService, contextMenuService, contextService, telemetryService, instantiationService, contextViewService, storageService) {
+        function Repl(debugService, contextMenuService, contextService, telemetryService, instantiationService, contextViewService, storageService, eventService) {
             _super.call(this, debug.REPL_ID, telemetryService);
             this.debugService = debugService;
             this.contextMenuService = contextMenuService;
@@ -36,16 +36,25 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
             this.instantiationService = instantiationService;
             this.contextViewService = contextViewService;
             this.storageService = storageService;
+            this.eventService = eventService;
             this.toDispose = [];
             this.registerListeners();
         }
         Repl.prototype.registerListeners = function () {
             var _this = this;
-            this.toDispose.push(this.debugService.getModel().addListener2(debug.ModelEvents.REPL_ELEMENTS_UPDATED, function (re) {
-                _this.onReplElementsUpdated(re);
+            this.toDispose.push(this.debugService.getModel().onDidChangeReplElements(function () {
+                _this.onReplElementsUpdated();
+            }));
+            this.toDispose.push(this.eventService.addListener2(events_1.EventType.COMPOSITE_OPENED, function (e) {
+                if (e.compositeId === debug.REPL_ID) {
+                    var elements = _this.debugService.getModel().getReplElements();
+                    if (elements.length > 0) {
+                        return _this.reveal(elements[elements.length - 1]);
+                    }
+                }
             }));
         };
-        Repl.prototype.onReplElementsUpdated = function (re) {
+        Repl.prototype.onReplElementsUpdated = function () {
             var _this = this;
             if (this.tree) {
                 if (this.refreshTimeoutHandle) {
@@ -151,7 +160,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
             __param(3, telemetry_1.ITelemetryService),
             __param(4, instantiation_1.IInstantiationService),
             __param(5, contextView_1.IContextViewService),
-            __param(6, storage_1.IStorageService)
+            __param(6, storage_1.IStorageService),
+            __param(7, event_1.IEventService)
         ], Repl);
         return Repl;
     }(panel_1.Panel));

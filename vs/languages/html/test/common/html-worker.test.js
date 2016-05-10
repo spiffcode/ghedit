@@ -1,4 +1,4 @@
-define(["require", "exports", 'assert', 'vs/editor/common/model/mirrorModel', 'vs/languages/html/common/htmlWorker', 'vs/base/common/uri', 'vs/editor/common/services/resourceServiceImpl', 'vs/platform/markers/common/markerService', 'vs/base/common/winjs.base', 'vs/editor/test/common/servicesTestUtils', 'vs/platform/test/common/nullThreadService', 'vs/languages/html/common/html', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/mocks/mockModeService'], function (require, exports, assert, mm, htmlWorker, uri_1, ResourceService, MarkerService, WinJS, servicesUtil2, nullThreadService_1, html_1, instantiationService_1, mockModeService_1) {
+define(["require", "exports", 'assert', 'vs/editor/common/model/mirrorModel', 'vs/languages/html/common/htmlWorker', 'vs/base/common/uri', 'vs/editor/common/services/resourceServiceImpl', 'vs/platform/markers/common/markerService', 'vs/base/common/winjs.base', 'vs/editor/test/common/servicesTestUtils', 'vs/platform/test/common/nullThreadService', 'vs/languages/html/common/html', 'vs/platform/thread/common/thread', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/mocks/mockModeService'], function (require, exports, assert, mm, htmlWorker, uri_1, ResourceService, MarkerService, WinJS, servicesUtil2, nullThreadService_1, html_1, thread_1, modeService_1, serviceCollection_1, instantiationService_1, mockModeService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,10 +9,10 @@ define(["require", "exports", 'assert', 'vs/editor/common/model/mirrorModel', 'v
         (function () {
             var threadService = nullThreadService_1.NULL_THREAD_SERVICE;
             var modeService = new mockModeService_1.MockModeService();
-            var inst = instantiationService_1.createInstantiationService({
-                threadService: threadService,
-                modeService: modeService
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(thread_1.IThreadService, threadService);
+            services.set(modeService_1.IModeService, modeService);
+            var inst = new instantiationService_1.InstantiationService(services);
             threadService.setInstantiationService(inst);
             mode = new html_1.HTMLMode({ id: 'html' }, inst, modeService, threadService);
         })();
@@ -117,6 +117,10 @@ define(["require", "exports", 'assert', 'vs/editor/common/model/mirrorModel', 'v
                     assertSuggestion(completion, 'checkbox', null, '"checkbox"');
                 }),
                 testSuggestionsFor('<input src="c" type="color|" ').then(function (completion) {
+                    assert.equal(completion.currentWord, 'color');
+                    assertSuggestion(completion, 'color', null, 'color');
+                }),
+                testSuggestionsFor('<input src="c" type=color| ').then(function (completion) {
                     assert.equal(completion.currentWord, 'color');
                     assertSuggestion(completion, 'color', null, 'color');
                 }),

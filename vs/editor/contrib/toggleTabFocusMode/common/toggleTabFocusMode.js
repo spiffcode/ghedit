@@ -32,6 +32,6 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/comm
         context: editorCommonExtensions_1.ContextKey.EditorTextFocus,
         primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_M,
         mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyMod.Shift | keyCodes_1.KeyCode.KEY_M }
-    }));
+    }, 'Toggle Use of Tab Key for Setting Focus'));
 });
 //# sourceMappingURL=toggleTabFocusMode.js.map

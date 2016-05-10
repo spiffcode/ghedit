@@ -145,11 +145,11 @@ define(["require", "exports", 'vs/nls', 'vs/workbench/common/actionRegistry', 'v
     }
     // Contribute Quick Open
     var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(GlobalQuickOpenAction, GlobalQuickOpenAction.ID, GlobalQuickOpenAction.LABEL, quickOpenKb));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(GlobalQuickOpenAction, GlobalQuickOpenAction.ID, GlobalQuickOpenAction.LABEL, quickOpenKb), 'Go to File...');
     // Contribute Quick Navigate
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenPreviousEditorAction, OpenPreviousEditorAction.ID, OpenPreviousEditorAction.LABEL, prevEditorKb));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(OpenPreviousEditorAction, OpenPreviousEditorAction.ID, OpenPreviousEditorAction.LABEL, prevEditorKb), 'Navigate History');
     // Contribute Quick Navigate in Quick Open
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(QuickOpenNavigateNextAction, QuickOpenNavigateNextAction.ID, QuickOpenNavigateNextAction.LABEL, navigateKeybinding(false), keybindingService_1.KbExpr.has('inQuickOpen')));
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(QuickOpenNavigatePreviousAction, QuickOpenNavigatePreviousAction.ID, QuickOpenNavigatePreviousAction.LABEL, navigateKeybinding(true), keybindingService_1.KbExpr.has('inQuickOpen'), keybindingsRegistry_1.KeybindingsRegistry.WEIGHT.workbenchContrib(50)));
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(QuickOpenNavigateNextAction, QuickOpenNavigateNextAction.ID, QuickOpenNavigateNextAction.LABEL, navigateKeybinding(false), keybindingService_1.KbExpr.has('inQuickOpen')), 'Navigate Next in Quick Open');
+    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(QuickOpenNavigatePreviousAction, QuickOpenNavigatePreviousAction.ID, QuickOpenNavigatePreviousAction.LABEL, navigateKeybinding(true), keybindingService_1.KbExpr.has('inQuickOpen'), keybindingsRegistry_1.KeybindingsRegistry.WEIGHT.workbenchContrib(50)), 'Navigate Previous in Quick Open');
 });
 //# sourceMappingURL=triggerQuickOpen.js.map

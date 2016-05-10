@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'assert', 'vs/workbench/common/editor/stringEditorModel', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, stringEditorModel_1, InstantiationService, servicesTestUtils_1) {
+define(["require", "exports", 'assert', 'vs/workbench/common/editor/stringEditorModel', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modeService', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/editor/test/common/servicesTestUtils'], function (require, exports, assert, stringEditorModel_1, modelService_1, modeService_1, serviceCollection_1, instantiationService_1, servicesTestUtils_1) {
     'use strict';
     suite('Workbench - StringEditorModel', function () {
         test('StringEditorModel', function (done) {
-            var inst = InstantiationService.createInstantiationService({
-                modeService: servicesTestUtils_1.createMockModeService(),
-                modelService: servicesTestUtils_1.createMockModelService(),
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(modeService_1.IModeService, servicesTestUtils_1.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_1.createMockModelService());
+            var inst = new instantiationService_1.InstantiationService(services);
             var m = inst.createInstance(stringEditorModel_1.StringEditorModel, 'value', 'mime', null);
             m.load().then(function (model) {
                 assert(model === m);
@@ -27,10 +27,10 @@ define(["require", "exports", 'assert', 'vs/workbench/common/editor/stringEditor
             });
         });
         test('StringEditorModel - setValue, clearValue, append, trim', function (done) {
-            var inst = InstantiationService.createInstantiationService({
-                modeService: servicesTestUtils_1.createMockModeService(),
-                modelService: servicesTestUtils_1.createMockModelService(),
-            });
+            var services = new serviceCollection_1.ServiceCollection();
+            services.set(modeService_1.IModeService, servicesTestUtils_1.createMockModeService());
+            services.set(modelService_1.IModelService, servicesTestUtils_1.createMockModelService());
+            var inst = new instantiationService_1.InstantiationService(services);
             var m = inst.createInstance(stringEditorModel_1.StringEditorModel, 'value', 'mime', null);
             m.load().then(function (model) {
                 assert(model === m);

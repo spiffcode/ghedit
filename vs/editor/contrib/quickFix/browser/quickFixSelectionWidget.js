@@ -221,7 +221,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/errors', 'vs/base/common
                 }
                 if (focus) {
                     elementsToRefresh.push(focus);
-                    _this._ariaAlert(getAriaAlertLabel(focus));
+                    if (isQuickFix(focus)) {
+                        _this._ariaAlert(getAriaAlertLabel(focus));
+                    }
                 }
                 oldFocus = focus;
                 _this.tree.refreshAll(elementsToRefresh).done(function () {

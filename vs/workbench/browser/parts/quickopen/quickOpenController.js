@@ -7,7 +7,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/browser/builder', 'vs/base/common/strings', 'vs/base/common/filters', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/browser/quickOpenWidget', 'vs/workbench/browser/actionBarRegistry', 'vs/platform/platform', 'vs/workbench/common/component', 'vs/workbench/common/events', 'vs/base/common/event', 'vs/workbench/common/constants', 'vs/workbench/common/memento', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/quickopen/editorHistoryModel', 'vs/base/common/errors', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/platform/message/common/message', 'vs/css!./media/quickopen'], function (require, exports, winjs_base_1, nls, builder_1, strings, filters, uuid, types, quickOpen_1, quickOpenModel_1, quickOpenWidget_1, actionBarRegistry_1, platform_1, component_1, events_1, event_1, constants_1, memento_1, quickopen_1, editorHistoryModel_1, errors, quickOpenService_1, message_1) {
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/browser/builder', 'vs/base/common/strings', 'vs/base/common/filters', 'vs/base/common/uuid', 'vs/base/common/types', 'vs/base/parts/quickopen/common/quickOpen', 'vs/base/parts/quickopen/browser/quickOpenModel', 'vs/base/parts/quickopen/browser/quickOpenWidget', 'vs/workbench/browser/actionBarRegistry', 'vs/platform/platform', 'vs/workbench/common/component', 'vs/workbench/common/events', 'vs/base/common/event', 'vs/workbench/common/constants', 'vs/workbench/common/memento', 'vs/workbench/browser/quickopen', 'vs/workbench/browser/parts/quickopen/editorHistoryModel', 'vs/base/common/errors', 'vs/workbench/services/editor/common/editorService', 'vs/workbench/services/quickopen/common/quickOpenService', 'vs/workbench/services/viewlet/common/viewletService', 'vs/platform/storage/common/storage', 'vs/platform/event/common/event', 'vs/platform/instantiation/common/instantiation', 'vs/platform/message/common/message', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/keybinding/common/keybindingService', 'vs/css!./media/quickopen'], function (require, exports, winjs_base_1, nls, builder_1, strings, filters, uuid, types, quickOpen_1, quickOpenModel_1, quickOpenWidget_1, actionBarRegistry_1, platform_1, component_1, events_1, event_1, constants_1, memento_1, quickopen_1, editorHistoryModel_1, errors, editorService_1, quickOpenService_1, viewletService_1, storage_1, event_2, instantiation_1, message_1, telemetry_1, contextService_1, keybindingService_1) {
     'use strict';
     var ID = 'workbench.component.quickopen';
     var EDITOR_HISTORY_STORAGE_KEY = 'quickopen.editorhistory';
@@ -16,7 +25,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
     var QUICK_OPEN_MODE = 'inQuickOpen';
     var QuickOpenController = (function (_super) {
         __extends(QuickOpenController, _super);
-        function QuickOpenController(eventService, storageService, editorService, viewletService, messageService, telemetryService, contextService, keybindingService) {
+        function QuickOpenController(eventService, storageService, editorService, viewletService, messageService, telemetryService, contextService, keybindingService, instantiationService) {
             _super.call(this, ID);
             this.eventService = eventService;
             this.storageService = storageService;
@@ -25,6 +34,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
             this.messageService = messageService;
             this.telemetryService = telemetryService;
             this.contextService = contextService;
+            this.instantiationService = instantiationService;
             this.serviceId = quickOpenService_1.IQuickOpenService;
             this.actionProvider = new actionBarRegistry_1.ContributableActionProvider();
             this.previousValue = '';
@@ -49,9 +59,6 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
             enumerable: true,
             configurable: true
         });
-        QuickOpenController.prototype.setInstantiationService = function (service) {
-            this.instantiationService = service;
-        };
         QuickOpenController.prototype.getEditorHistoryModel = function () {
             return this.editorHistoryModel;
         };
@@ -685,6 +692,17 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/br
             }
             _super.prototype.dispose.call(this);
         };
+        QuickOpenController = __decorate([
+            __param(0, event_2.IEventService),
+            __param(1, storage_1.IStorageService),
+            __param(2, editorService_1.IWorkbenchEditorService),
+            __param(3, viewletService_1.IViewletService),
+            __param(4, message_1.IMessageService),
+            __param(5, telemetry_1.ITelemetryService),
+            __param(6, contextService_1.IWorkspaceContextService),
+            __param(7, keybindingService_1.IKeybindingService),
+            __param(8, instantiation_1.IInstantiationService)
+        ], QuickOpenController);
         return QuickOpenController;
     }(component_1.WorkbenchComponent));
     exports.QuickOpenController = QuickOpenController;
