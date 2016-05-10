@@ -49,14 +49,13 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* user auth UI
+* DM: user auth UI
 * session preservation (e.g. across refresh, browser/tab close/open)
-* user settings
+* SL: user settings
 * project aka workspace settings
-* DM: all the other language smarts
 * themes
 * search
-* repo/branch/tag selection
+* DM: repo/branch/tag selection
 * DM: clean up stuff
 * 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
 * Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
