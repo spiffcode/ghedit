@@ -5,6 +5,7 @@
 
 'use strict';
 
+// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/services/files/node/fileService.ts
 // This is a port of vs/workbench/services/files/node/fileService.ts with Node dependencies
 // removed/replaced.
 
@@ -60,6 +61,7 @@ export interface IFileServiceOptions {
 	disableWatcher?: boolean;
 	verboseLogging?: boolean;
 	commitMessage?: string;
+	debugBrkFileWatcherPort?: number;
 }
 
 /* TODO:
@@ -155,12 +157,16 @@ export class FileService implements files.IFileService {
 
 	private setupUnixWorkspaceWatching(): void {
 		/* TODO:
-		this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging).startWatching();
+		this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging, this.options.debugBrkFileWatcherPort).startWatching();
 		*/
 	}
 
 	public resolveFile(resource: uri, options?: files.IResolveFileOptions): TPromise<files.IFileStat> {
 		return this.resolve(resource, options);
+	}
+
+	public existsFile(resource: uri): TPromise<boolean> {
+		return this.resolveFile(resource).then(() => true, () => false);
 	}
 
 	public resolveContent(resource: uri, options?: files.IResolveContentOptions): TPromise<files.IContent> {

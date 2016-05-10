@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// This is a port of vs/editor/workbench/services/files/electron-browser/fileService.ts with
+// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/services/files/electron-browser/fileService.ts
+// This is a port of vs/workbench/services/files/electron-browser/fileService.ts with
 // Electron and Node dependencies removed/replaced.
 
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
+import {IDisposable} from 'vs/base/common/lifecycle';
 import paths = require('vs/base/common/paths');
 // TODO: import encoding = require('vs/base/node/encoding');
 import errors = require('vs/base/common/errors');
@@ -17,17 +19,22 @@ import uri from 'vs/base/common/uri';
 import timer = require('vs/base/common/timer');
 import {IFileService, IFilesConfiguration, IResolveFileOptions, IFileStat, IContent, IImportResult, IResolveContentOptions, IUpdateContentOptions} from 'vs/platform/files/common/files';
 import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride} from 'githubFileService';
-import {IConfigurationService, IConfigurationServiceEvent, ConfigurationServiceEventTypes} from 'vs/platform/configuration/common/configuration';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {Github} from 'github';
 
 // TODO: import {shell} from 'electron';
+import {Action} from 'vs/base/common/actions';
+import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
 
 // TODO: Use vs/base/node/encoding replacement.
 const encoding = {
 	 UTF8: 'utf8'
 };
+
+// If we run with .NET framework < 4.5, we need to detect this error to inform the user
+const NET_VERSION_ERROR = 'System.MissingMethodException';
 
 export class FileService implements IFileService {
 
@@ -35,19 +42,21 @@ export class FileService implements IFileService {
 
 	private raw: IFileService;
 
-	private configurationChangeListenerUnbind: () => void;
+	private configurationChangeListenerUnbind: IDisposable;
 
 	constructor(
 		private configurationService: IConfigurationService,
 		private eventService: IEventService,
 		private contextService: IWorkspaceContextService,
-		private githubService: Github
+		private githubService: Github,
+		private messageService: IMessageService
 	) {
 		const configuration = this.configurationService.getConfiguration<IFilesConfiguration>();
+		const env = this.contextService.getConfiguration().env;
 
 		// adjust encodings (TODO@Ben knowledge on settings location ('.vscode') is hardcoded)
 		let encodingOverride: IEncodingOverride[] = [];
-		encodingOverride.push({ resource: uri.file(this.contextService.getConfiguration().env.appSettingsHome), encoding: encoding.UTF8 });
+		encodingOverride.push({ resource: uri.file(env.appSettingsHome), encoding: encoding.UTF8 });
 		if (this.contextService.getWorkspace()) {
 			encodingOverride.push({ resource: uri.file(paths.join(this.contextService.getWorkspace().resource.fsPath, '.vscode')), encoding: encoding.UTF8 });
 		}
@@ -59,12 +68,17 @@ export class FileService implements IFileService {
 
 		// build config
 		let fileServiceConfig: IFileServiceOptions = {
-			errorLogger: (msg: string) => errors.onUnexpectedError(msg),
+			errorLogger: (msg: string) => this.onFileServiceError(msg),
 			encoding: configuration.files && configuration.files.encoding,
 			encodingOverride: encodingOverride,
 			watcherIgnoredPatterns: watcherIgnoredPatterns,
-			verboseLogging: this.contextService.getConfiguration().env.verboseLogging
+			verboseLogging: env.verboseLogging,
+			debugBrkFileWatcherPort: env.debugBrkFileWatcherPort
 		};
+
+		if (typeof env.debugBrkFileWatcherPort === 'number') {
+			console.warn(`File Watcher STOPPED on first line for debugging on port ${env.debugBrkFileWatcherPort}`);
+		}
 
 		// create service
 		let workspace = this.contextService.getWorkspace();
@@ -74,10 +88,30 @@ export class FileService implements IFileService {
 		this.registerListeners();
 	}
 
+	private onFileServiceError(msg: string): void {
+		errors.onUnexpectedError(msg);
+
+		/* GHC: Don't need this to run in the browser.
+		// Detect if we run < .NET Framework 4.5
+		if (msg && msg.indexOf(NET_VERSION_ERROR) >= 0) {
+			this.messageService.show(Severity.Warning, <IMessageWithAction>{
+				message: nls.localize('netVersionError', "The Microsoft .NET Framework 4.5 is required. Please follow the link to install it."),
+				actions: [
+					new Action('install.net', nls.localize('installNet', "Download .NET Framework 4.5"), null, true, () => {
+						shell.openExternal('https://go.microsoft.com/fwlink/?LinkId=786533');
+
+						return TPromise.as(true);
+					})
+				]
+			});
+		}
+		*/
+	}
+
 	private registerListeners(): void {
 
 		// Config Changes
-		this.configurationChangeListenerUnbind = this.configurationService.addListener(ConfigurationServiceEventTypes.UPDATED, (e: IConfigurationServiceEvent) => this.onConfigurationChange(e.config));
+		this.configurationChangeListenerUnbind = this.configurationService.onDidUpdateConfiguration(e => this.onConfigurationChange(e.config));
 	}
 
 	private onConfigurationChange(configuration: IFilesConfiguration): void {
@@ -90,6 +124,10 @@ export class FileService implements IFileService {
 
 	public resolveFile(resource: uri, options?: IResolveFileOptions): TPromise<IFileStat> {
 		return this.raw.resolveFile(resource, options);
+	}
+
+	public existsFile(resource: uri): TPromise<boolean> {
+		return this.raw.existsFile(resource);
 	}
 
 	public resolveContent(resource: uri, options?: IResolveContentOptions): TPromise<IContent> {
@@ -203,7 +241,7 @@ export class FileService implements IFileService {
 
 		// Listeners
 		if (this.configurationChangeListenerUnbind) {
-			this.configurationChangeListenerUnbind();
+			this.configurationChangeListenerUnbind.dispose();
 			this.configurationChangeListenerUnbind = null;
 		}
 

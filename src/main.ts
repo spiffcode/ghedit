@@ -5,6 +5,7 @@
 
 'use strict';
 
+// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/electron-browser/main.ts
 // This is a port of vs/workbench/electron-browser/main.ts with Electron and Node dependencies
 // removed/replaced.
 
@@ -54,7 +55,7 @@ var fs = {
 // TODO: import gracefulFs = require('graceful-fs');
 // TODO: gracefulFs.gracefulify(fs);
 
-const timers = (<any>window).MonacoEnvironment.timers;
+const timers = (<any>window).GlobalEnvironment.timers;
 const domContentLoaded: Function = (<any>winjs).Utilities.ready;
 
 export interface IPath {
@@ -78,7 +79,12 @@ export interface IMainEnvironment extends IEnvironment {
 export function startup(environment: IMainEnvironment, globalSettings: IGlobalSettings): winjs.TPromise<void> {
 
 	// Inherit the user environment
-// TODO:	assign(process.env, environment.userEnv);
+    /* TODO:
+	// TODO@Joao: this inheritance should **not** happen here!
+	if (process.env['VSCODE_CLI'] !== '1') {
+		assign(process.env, environment.userEnv);
+	}
+    */
 
 	// Shell Configuration
 	let shellConfiguration: IConfiguration = {

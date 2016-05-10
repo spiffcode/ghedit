@@ -224,12 +224,12 @@
 
 				var hasWorkspaceContext = configuration.workspacePath;
 
-				window.MonacoEnvironment = {
+				window.GlobalEnvironment = {
 					'enableTasks': hasWorkspaceContext,
 					'enableSendASmile' : !!configuration.sendASmile
 				};
 
-				var timers = window.MonacoEnvironment.timers = {
+				var timers = window.GlobalEnvironment.timers = {
 					start: new Date()
 				};
 

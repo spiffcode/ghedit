@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/services/themes/electron-browser/themeService.ts
 // This is a port of vs/workbench/services/themes/electron-browser/themeService.ts
 // with Electron and Node dependencies removed/replaced.
 

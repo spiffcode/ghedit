@@ -6,9 +6,9 @@ gulp.task('clean', shell.task([
 ]));
 
 gulp.task('build', shell.task([
-    'cd src && tsc',
     'cp index.html out-build',
-    'cp src/navbarPart.css out-build'
+    'cp src/navbarPart.css out-build',
+    'cd src && tsc'
 ]));
 
 gulp.task('push', shell.task([

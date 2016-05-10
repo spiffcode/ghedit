@@ -5,11 +5,15 @@
 
 'use strict';
 
-//import {ElectronWindow} from 'vs/workbench/electron-browser/window';
+// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/services/window/electron-browser/windowService.ts
+// This is a port of vs/workbench/services/window/electron-browser/windowService.ts
+// with Electron dependencies removed/replaced.
+
+// TODO: import {ElectronWindow} from 'vs/workbench/electron-browser/window';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import Event, {Emitter} from 'vs/base/common/event';
 
-//import {ipcRenderer as ipc, remote} from 'electron';
+// TODO: import {ipcRenderer as ipc, remote} from 'electron';
 
 // TODO: const windowId = remote.getCurrentWindow().id;
 const windowId = 666;

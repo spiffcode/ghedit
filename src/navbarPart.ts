@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// Sort of forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/browser/parts/statusbar/statusbarPart.ts
+
 'use strict';
 
 import 'vs/css!./navbarPart';
@@ -36,20 +38,15 @@ export class NavbarPart extends Part implements INavbarService {
 	private toDispose: IDisposable[];
 	private navItemsContainer: Builder;
 
-	private instantiationService: IInstantiationService;
-
 	constructor(
-		id: string
+		id: string,
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(id);
 
 		this.toDispose = [];
 	}
 
-	public setInstantiationService(service: IInstantiationService): void {
-		this.instantiationService = service;
-	}
-    
 	public addEntry(entry: INavbarEntry, alignment: NavbarAlignment, priority: number = 0): IDisposable {
 		let item = this.instantiationService.createInstance(NavBarEntryItem, entry);
         return this.addItem(item, alignment, priority);

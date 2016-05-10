@@ -5,7 +5,8 @@
 
 'use strict';
 
-// This is a port of vs/workbench/services/configuration/node/configurationServices with
+// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/services/configuration/node/configurationService.ts
+// This is a port of vs/workbench/services/configuration/node/configurationService.ts with
 // Node dependencies removed/replaced.
 
 import {TPromise} from 'vs/base/common/winjs.base';

@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* Sort of forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/browser/parts/statusbar/media/statusbarPart.css */
+
 .monaco-shell-content > .part.navbar {
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;

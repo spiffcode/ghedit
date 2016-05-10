@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// This is a port of vs/editor/workbench/workbench.main.js with Electron
+// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/workbench.main.js
+// This is a port of vs/workbench/workbench.main.js with Electron
 // and Node dependencies removed/replaced.
 
 require.config({
@@ -89,10 +90,14 @@ define([
 
 // TODO:	'vs/workbench/electron-browser/darwin/cli.contribution',
 
+// TODO:	'vs/workbench/api/node/extHost.contribution',
+
 // TODO:	'vs/workbench/electron-browser/main.contribution',
 	// TODO: How is Electron-browser getting this css?
 	'vs/css!vs/editor/browser/standalone/media/standalone-tokens',
 	'main' // Replaces 'vs/workbench/electron-browser/main'
+
+// TODO:	'vs/workbench/parts/themes/test/electron-browser/themes.test.contribution'
 
 ], function() {
 	'use strict';

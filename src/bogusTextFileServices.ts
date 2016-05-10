@@ -5,14 +5,15 @@
 
 'use strict';
 
-// This is a port of vs/workench/parts/files/electron-browser/textFileServices.js with Electron
+// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/parts/files/electron-browser/textFileServices.ts
+// This is a port of vs/workbench/parts/files/electron-browser/textFileServices.ts with Electron
 // and Node dependencies removed/replaced.
 
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
 import paths = require('vs/base/common/paths');
 import strings = require('vs/base/common/strings');
-import {isWindows} from 'vs/base/common/platform';
+import {isWindows, isLinux} from 'vs/base/common/platform';
 import URI from 'vs/base/common/uri';
 import {UntitledEditorModel} from 'vs/workbench/common/editor/untitledEditorModel';
 import {IEventService} from 'vs/platform/event/common/event';
@@ -50,6 +51,8 @@ export class TextFileService extends AbstractTextFileService {
 	) {
 		super(contextService, instantiationService, configurationService, telemetryService, lifecycleService, eventService);
 		this.instService = instantiationService;
+
+		this.modeService = modeService;
 
 		this.init();
 	}
@@ -171,17 +174,20 @@ export class TextFileService extends AbstractTextFileService {
 
 		// Button order
 		// Windows: Save | Don't Save | Cancel
-		// Mac/Linux: Save | Cancel | Don't
+		// Mac: Save | Cancel | Don't Save
+		// Linux: Don't Save | Cancel | Save
 
 		const save = { label: resourcesToConfirm.length > 1 ? this.mnemonicLabel(nls.localize({ key: 'saveAll', comment: ['&& denotes a mnemonic'] }, "&&Save All")) : this.mnemonicLabel(nls.localize({ key: 'save', comment: ['&& denotes a mnemonic'] }, "&&Save")), result: ConfirmResult.SAVE };
 		const dontSave = { label: this.mnemonicLabel(nls.localize({ key: 'dontSave', comment: ['&& denotes a mnemonic'] }, "Do&&n't Save")), result: ConfirmResult.DONT_SAVE };
 		const cancel = { label: nls.localize('cancel', "Cancel"), result: ConfirmResult.CANCEL };
 
-		const buttons = [save];
+		const buttons = [];
 		if (isWindows) {
-			buttons.push(dontSave, cancel);
+			buttons.push(save, dontSave, cancel);
+		} else if (isLinux) {
+			buttons.push(dontSave, cancel, save);
 		} else {
-			buttons.push(cancel, dontSave);
+			buttons.push(save, cancel, dontSave);
 		}
 
 		let opts: Electron.Dialog.ShowMessageBoxOptions = {
@@ -266,8 +272,12 @@ export class TextFileService extends AbstractTextFileService {
 		}
 
 		// Prompt for a commit message.
+        // We get the QuickOpenService here instead of via service injection because it hasn't
+        // yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+        // PLACE TO DO THIS.
 		// TODO: validateInput fn to put appropriate constraints on the commit message.
-		let quickOpenService = this.instService.getInstance(IQuickOpenService);
+		// TODO: let quickOpenService = this.instService.createInstance<IQuickOpenService>(IQuickOpenService);
+        var quickOpenService: IQuickOpenService = null;
 		return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
 			// If user canceled the input box.
 			if (!result)
@@ -422,7 +432,7 @@ export class TextFileService extends AbstractTextFileService {
 
 		// Filters are working flaky in Electron and there are bugs. On Windows they are working
 		// somewhat but we see issues:
-		// - https://github.com/atom/electron/issues/3556
+		// - https://github.com/electron/electron/issues/3556
 		// - https://github.com/Microsoft/vscode/issues/451
 		// - Bug on Windows: When "All Files" is picked, the path gets an extra ".*"
 		// Until these issues are resolved, we disable the dialog file extension filtering.
