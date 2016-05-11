@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// Forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/services/files/electron-browser/fileService.ts
+// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/services/files/electron-browser/fileService.ts
 // This is a port of vs/workbench/services/files/electron-browser/fileService.ts with
 // Electron and Node dependencies removed/replaced.
 

@@ -5,7 +5,7 @@
 
 'use strict';
 
-// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/services/window/electron-browser/windowService.ts
+// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/services/window/electron-browser/windowService.ts
 // This is a port of vs/workbench/services/window/electron-browser/windowService.ts
 // with Electron dependencies removed/replaced.
 

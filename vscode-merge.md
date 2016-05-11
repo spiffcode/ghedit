@@ -30,13 +30,14 @@ diff3 -m fileService.ts fileService.root.ts ../vs/workbench/services/files/elect
 
 # Review the merge and fix conflicts.
 
-# Remember a new common ancestor hash?
-
 # Accept the merged file and clean up.
 cp fileService.merged.ts fileService.ts
 rm fileService.root.ts fileService.merged.ts 
 
 # Merge the rest of the files (everything in the src/forked directory).
+
+# Update file headers with the hash of the merged version.
+perl -i -pe 's/(Forked from ).*:/\1c212f0908f3d29933317bbc3233568fbca7944b1:/ig' *
 
 # Make a clean build of ghcode.
 cd ghcode
@@ -51,7 +52,7 @@ git push
 
 # Commit and push updated ghcode.
 cd ../ghcode
-git commit -am 'Merge with vscode release/1.1'
+git commit -am 'Merge with vscode release/1.1 (SHA c212f0908f3d29933317bbc3233568fbca7944b1)'
 git push
 
 # Publish the new version.

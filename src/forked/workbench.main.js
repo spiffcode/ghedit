@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Forked from 9a88999b599723d1ad1df42701f0ce4731a231e4:./vs/workbench/workbench.main.js
+// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/workbench.main.js
 // This is a port of vs/workbench/workbench.main.js with Electron
 // and Node dependencies removed/replaced.
 

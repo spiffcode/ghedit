@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Sort of forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/browser/parts/statusbar/statusbarPart.ts
+// Sort of forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/browser/parts/statusbar/statusbarPart.ts
 
 'use strict';
 
