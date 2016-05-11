@@ -249,14 +249,14 @@
 				timers.beforeLoad = new Date();
 
 				require([
-					'workbench.main',
+					'forked/workbench.main',
 					'lib/github',
 					'vs/nls!vs/workbench/workbench.main',
 					'vs/css!vs/workbench/workbench.main'
 				], function() {
 					timers.afterLoad = new Date();
 
-					var main = require('main');
+					var main = require('forked/main');
 					main.startup(configuration, globalSettings).then(function() {
 						mainStarted = true;
 					}, function(error) { onError(error, enableDeveloperTools) });

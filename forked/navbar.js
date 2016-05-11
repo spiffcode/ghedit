@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/platform', 'navbarService', 'vs/platform/instantiation/common/descriptors'], function (require, exports, platform_1, navbarService, descriptors_1) {
+define(["require", "exports", 'vs/platform/platform', 'forked/navbarService', 'vs/platform/instantiation/common/descriptors'], function (require, exports, platform_1, navbarService, descriptors_1) {
     // Sort of forked from 31ce12f023580d67a66d14843e7f9983caadbe56:./vs/workbench/browser/parts/statusbar/statusbar.ts
     'use strict';
     exports.NavbarAlignment = navbarService.NavbarAlignment;

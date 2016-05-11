@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event'], function (require, exports, winjs_base_1, nls, Paths, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'forked/windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event'], function (require, exports, winjs_base_1, nls, Paths, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.

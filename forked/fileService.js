@@ -1,4 +1,4 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/timer', 'vs/platform/files/common/files', 'githubFileService'], function (require, exports, nls, winjs_base_1, paths, errors, strings, uri_1, timer, files_1, githubFileService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/errors', 'vs/base/common/strings', 'vs/base/common/uri', 'vs/base/common/timer', 'vs/platform/files/common/files', 'forked/githubFileService'], function (require, exports, nls, winjs_base_1, paths, errors, strings, uri_1, timer, files_1, githubFileService_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
