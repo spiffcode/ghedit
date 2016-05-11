@@ -18,7 +18,7 @@ import strings = require('vs/base/common/strings');
 import uri from 'vs/base/common/uri';
 import timer = require('vs/base/common/timer');
 import {IFileService, IFilesConfiguration, IResolveFileOptions, IFileStat, IContent, IImportResult, IResolveContentOptions, IUpdateContentOptions} from 'vs/platform/files/common/files';
-import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride} from 'githubFileService';
+import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride} from 'forked/githubFileService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';

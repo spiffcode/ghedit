@@ -30,12 +30,12 @@ import {ITelemetryService, NullTelemetryService} from 'vs/platform/telemetry/com
 // TODO: import {ElectronIntegration} from 'vs/workbench/electron-browser/integration';
 // TODO: import {Update} from 'vs/workbench/electron-browser/update';
 import {WorkspaceStats} from 'vs/platform/telemetry/common/workspaceStats';
-import {IWindowService, WindowService} from 'windowService';
+import {IWindowService, WindowService} from 'forked/windowService';
 // TODO: import {MessageService} from 'vs/workbench/services/message/electron-browser/messageService';
 import {WorkbenchMessageService as MessageService} from 'vs/workbench/services/message/browser/messageService';
 // TODO: import {RequestService} from 'vs/workbench/services/request/node/requestService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
-import {FileService} from 'fileService';
+import {FileService} from 'forked/fileService';
 // TODO: import {SearchService} from 'vs/workbench/services/search/node/searchService';
 // TODO: import {LifecycleService} from 'vs/workbench/services/lifecycle/electron-browser/lifecycleService';
 // TODO: import {WorkbenchKeybindingService} from 'vs/workbench/services/keybinding/electron-browser/keybindingService';
@@ -75,7 +75,7 @@ import {IUntitledEditorService, UntitledEditorService} from 'vs/workbench/servic
 // TODO: import {CrashReporter} from 'vs/workbench/electron-browser/crashReporter';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
 // TODO: import {ThemeService} from 'vs/workbench/services/themes/electron-browser/themeService';
-import {ThemeService} from 'themeService';
+import {ThemeService} from 'forked/themeService';
 import {getDelayedChannel} from 'vs/base/parts/ipc/common/ipc';
 // TODO: import {connect} from 'vs/base/parts/ipc/node/ipc.net';
 import {IExtensionsChannel, ExtensionsChannelClient} from 'vs/workbench/parts/extensions/common/extensionsIpc';
@@ -84,7 +84,7 @@ import {IExtensionsService} from 'vs/workbench/parts/extensions/common/extension
 
 // Import everything we need to add all the standalone language and json schema support.
 import {ITextFileService} from 'vs/workbench/parts/files/common/files';
-import {TextFileService} from 'bogusTextFileServices';
+import {TextFileService} from 'forked/bogusTextFileServices';
 import {ILanguageExtensionPoint} from 'vs/editor/common/services/modeService';
 import {ModesRegistry} from 'vs/editor/common/modes/modesRegistry';
 import {ExtensionsRegistry} from 'vs/platform/extensions/common/extensionsRegistry';
@@ -97,8 +97,8 @@ import 'vs/languages/json/common/json.contribution';
 import 'vs/editor/standalone-languages/all';
 import 'vs/editor/browser/standalone/standaloneSchemas';
 import {Github, Repository, Error as GithubError} from 'github';
-import {NavbarPart} from 'navbarPart';
-import {INavbarService, NavbarAlignment, INavbarEntry} from 'navbarService';
+import {NavbarPart} from 'forked/navbarPart';
+import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar'

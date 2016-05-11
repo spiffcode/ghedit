@@ -10,7 +10,7 @@
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {IDisposable} from 'vs/base/common/lifecycle';
 
-export var INavbarService = createDecorator<INavbarService>('navbarService');
+export var INavbarService = createDecorator<INavbarService>('forked/navbarService');
 
 export enum NavbarAlignment {
 	LEFT, RIGHT

@@ -30,7 +30,7 @@ import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IModeService} from 'vs/editor/common/services/modeService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
-import {IWindowService} from 'windowService';
+import {IWindowService} from 'forked/windowService';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 
 export class TextFileService extends AbstractTextFileService {

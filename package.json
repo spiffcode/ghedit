@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp build",
+    "watch": "gulp watch",
     "push": "gulp push"
   }
 }

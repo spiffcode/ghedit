@@ -7,8 +7,14 @@ gulp.task('clean', shell.task([
 
 gulp.task('build', shell.task([
     'cp index.html out-build',
-    'cp src/navbarPart.css out-build',
+    'mkdir -p out-build/forked && cp src/forked/navbarPart.css out-build/forked',
     'cd src && tsc'
+]));
+
+gulp.task('watch', shell.task([
+    'cp index.html out-build',
+    'mkdir -p out-build/forked && cp src/forked/navbarPart.css out-build/forked',
+    'cd src && tsc -w'
 ]));
 
 gulp.task('push', shell.task([

@@ -11,7 +11,7 @@
 
 import winjs = require('vs/base/common/winjs.base');
 // TODO: import {WorkbenchShell} from 'vs/workbench/electron-browser/shell';
-import {WorkbenchShell} from 'shell';
+import {WorkbenchShell} from 'forked/shell';
 import {IOptions, IGlobalSettings} from 'vs/workbench/common/options';
 import errors = require('vs/base/common/errors');
 import platform = require('vs/base/common/platform');
@@ -28,7 +28,7 @@ export interface IEnv {
 import {EventService} from 'vs/platform/event/common/eventService';
 import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
-import {ConfigurationService} from 'configurationService';
+import {ConfigurationService} from 'forked/configurationService';
 import {Github, Repository, Error as GithubError} from 'github';
 var github = require('lib/github');
 

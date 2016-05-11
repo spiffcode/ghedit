@@ -95,7 +95,7 @@ define([
 // TODO:	'vs/workbench/electron-browser/main.contribution',
 	// TODO: How is Electron-browser getting this css?
 	'vs/css!vs/editor/browser/standalone/media/standalone-tokens',
-	'main' // Replaces 'vs/workbench/electron-browser/main'
+	'forked/main' // Replaces 'vs/workbench/electron-browser/main'
 
 // TODO:	'vs/workbench/parts/themes/test/electron-browser/themes.test.contribution'
 

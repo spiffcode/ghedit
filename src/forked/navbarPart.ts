@@ -22,11 +22,11 @@ import {IAction} from 'vs/base/common/actions';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {Part} from 'vs/workbench/browser/part';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
-import {NavbarAlignment, INavbarRegistry, Extensions, INavbarItem} from 'navbar';
+import {NavbarAlignment, INavbarRegistry, Extensions, INavbarItem} from 'forked/navbar';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
-import {INavbarService, INavbarEntry} from 'navbarService';
+import {INavbarService, INavbarEntry} from 'forked/navbarService';
 
 export class NavbarPart extends Part implements INavbarService {
 

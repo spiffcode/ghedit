@@ -18,7 +18,7 @@ import {ExtensionsRegistry, IExtensionMessageCollector} from 'vs/platform/extens
 import {IThemeService, IThemeData} from 'vs/workbench/services/themes/common/themeService';
 import {getBaseThemeId, getSyntaxThemeId} from 'vs/platform/theme/common/themes';
 // TODO: import {IWindowService} from 'vs/workbench/services/window/electron-browser/windowService';
-import {IWindowService} from 'windowService';
+import {IWindowService} from 'forked/windowService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
 import {Preferences} from 'vs/workbench/common/constants';
 import {$} from 'vs/base/browser/builder';
