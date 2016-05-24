@@ -159,10 +159,16 @@
 				configuration.workspacePath = '/';
 			}
 			configuration.githubRef = args.ref || 'master';
+
+			configuration.userEnv.githubToken = window.localStorage.getItem('githubToken');
 			if (args.u)
 				configuration.userEnv.githubUsername = args.u;
 			if (args.p)
 				configuration.userEnv.githubPassword = args.p;
+			if (args.t)
+				configuration.userEnv.githubToken = args.t;
+			if (configuration.userEnv.githubToken !== null)
+				window.localStorage.setItem('githubToken', configuration.userEnv.githubToken);
 			var enableDeveloperTools = !configuration.isBuilt || !!configuration.extensionDevelopmentPath;
 
 // TODO:			process.env['VSCODE_SHARED_IPC_HOOK'] = configuration.sharedIPCHandle;

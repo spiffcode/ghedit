@@ -1,0 +1,46 @@
+<!-- Copyright (C) Spiffcode, Inc. All rights reserved. -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>GH Code auth</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+			function parseURLQueryArgs() {
+				var result = {};
+				var search = window.location.search;
+				if (search) {
+					var params = search.split(/[?&]/);
+					for (var i = 0; i < params.length; i++) {
+						var param = params[i];
+						if (param) {
+							var keyValue = param.split('=');
+							if (keyValue.length === 2) {
+								result[keyValue[0]] = decodeURIComponent(keyValue[1]);
+							}
+						}
+					}
+				}
+
+				return result;
+			}
+
+			var args = parseURLQueryArgs();
+			if (args.code) {
+				console.log(window.location);
+				// Ask our auth server to ask for an access token and redirect with it back to here.
+				var selfURL = location.protocol + '//' + location.host + location.pathname;
+				window.location = 'https://jasper-rider.hyperdev.space/ghauth?code=' + args.code + '&redirect=' + encodeURIComponent(selfURL);
+
+			} else if (args.access_token) {
+				// Retain the access token in local storage for future use.
+				window.localStorage.setItem('githubToken', args.access_token);
+				window.location = '/';
+
+			} else if (args.error) {
+				console.log(args.error + ': ' + decodeURIComponent(args.error_description.replace(/\+/g, '%20')));
+			}
+		</script>
+	</body>
+</html>
