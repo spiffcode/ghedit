@@ -1,4 +1,5 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -34,7 +35,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
         };
         NavbarPart.prototype.addItem = function (item, alignment, priority) {
             if (priority === void 0) { priority = 0; }
-            var el = this.doCreateNavItem(alignment, priority);
+            var el = NavbarPart.createNavItem(alignment, priority);
             // Render entry in nav bar
             var toDispose = item.render(el);
             // Insert according to priority
@@ -85,7 +86,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
             var descriptors = rightDescriptors.concat(leftDescriptors); // right first because they float
             (_a = this.toDispose).push.apply(_a, descriptors.map(function (descriptor) {
                 var item = _this.instantiationService.createInstance(descriptor.syncDescriptor);
-                var el = _this.doCreateNavItem(descriptor.alignment, descriptor.priority);
+                var el = NavbarPart.createNavItem(descriptor.alignment, descriptor.priority);
                 var dispose = item.render(el);
                 _this.navItemsContainer.append(el);
                 return dispose;
@@ -93,7 +94,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/base/common/types', 'vs
             return this.navItemsContainer;
             var _a;
         };
-        NavbarPart.prototype.doCreateNavItem = function (alignment, priority) {
+        NavbarPart.createNavItem = function (alignment, priority) {
             if (priority === void 0) { priority = 0; }
             var el = document.createElement('div');
             dom.addClass(el, 'navbar-item');
