@@ -151,7 +151,7 @@
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
 //			args.config = '{ "userEnv": { "githubUsername": "darrinm", "githubPassword": "<secret>" }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
-			args.config = '{ "userEnv": {}, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
+			args.config = '{ "userEnv": {}, "appSettingsPath": "/$gist/GHCode Settings/settings.json", "appKeybindingsPath": "/$gist/GHCode Settings/keybindings.json", "appSettingsHome": "/$gist/GHCode Settings" }';
 			var configuration = JSON.parse(args['config']);
 			configuration.workspacePath = args.workspacePath;
 			if (args.repo) {

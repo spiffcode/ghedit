@@ -38,8 +38,20 @@ declare module "github" {
         write(branch: string, path: string, content: string, message: string, options: any, cb: (err: Error, response?: any, xhr?: any) => void);
     }
     
+	class Gist {
+        description: string;
+        files: any[];
+        updated_at: string;
+
+        read(cb: (err: Error, content?: any, xhr?: any) => void);
+        create(options: any, cb: (err: Error, gist?: Gist, xhr?: any) => void);
+        delete(cb: (err: Error) => void);
+        update(options: any, cb: (err:Error, gist?: Gist, xhr?: any) => void);   
+    }
+
     class User {
         repos(cb: (err: Error, repos?: any, xhr?: any) => void);
         repos(options: any, cb: (err: Error, repos?: any, xhr?: any) => void);
+        gists(cb: (err: Error, gists?: Gist[], xhr?: any) => void);        
     }
 }

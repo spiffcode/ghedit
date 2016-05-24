@@ -100,6 +100,7 @@ import 'vs/editor/browser/standalone/standaloneSchemas';
 import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'forked/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
+import {ISettingsService, UserSettings} from 'forked/userSettings';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar'
@@ -224,6 +225,11 @@ export class WorkbenchShell {
 		this.workbench.startup({
 			onWorkbenchStarted: () => {
 				this.onWorkbenchStarted();
+
+				// Asynchronously load settings
+				let settingsService = instantiationService.createInstance(UserSettings);			
+				serviceCollection.set(settingsService, UserSettings);
+				settingsService.loadSettings();				
 			},
 
 			onServicesCreated: () => {
@@ -268,10 +274,11 @@ export class WorkbenchShell {
 		this.navbarPart.create(navbarContainer);
 	}
     
-    private fillNavbar(): void {
+    private fillNavbar(): void { 
         this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
-        this.navbarPart.addEntry({ text: '<user name>', tooltip: 'user menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 300);
-        this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'settings menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 200);
+        this.navbarPart.addEntry({ text: '<user name>', tooltip: 'user menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 400);
+        this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
+        this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
         this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
     }
 
@@ -408,13 +415,21 @@ export class WorkbenchShell {
 		// TODO: this.messageService = new MessageService(this.contextService, this.windowService, this.telemetryService);
 		this.messageService = new MessageService(this.telemetryService);
 
+		let requestService = new RequestService(
+			this.contextService,
+			this.telemetryService
+		);
+		// TODO: this.toUnbind.push(lifecycleService.onShutdown(() => requestService.dispose()));
+
 		let fileService = new FileService(
 			this.configurationService,
 			this.eventService,
 			this.contextService,
-			this.githubService,
-			this.messageService
+			this.messageService,
+			requestService,
+			this.githubService			
 		);
+		
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
 
 		let lifecycleService = NullLifecycleService;
@@ -432,12 +447,6 @@ export class WorkbenchShell {
 		this.toUnbind.push(this.messageService.onMessagesCleared(() => this.messagesShowingContextKey.reset()));
 
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
-
-		let requestService = new RequestService(
-			this.contextService,
-			this.telemetryService
-		);
-		// TODO: this.toUnbind.push(lifecycleService.onShutdown(() => requestService.dispose()));
 
 		let markerService = new MainProcessMarkerService(this.threadService);
 

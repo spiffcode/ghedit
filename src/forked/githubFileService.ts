@@ -28,6 +28,8 @@ import objects = require('vs/base/common/objects');
 import {nfcall, Limiter, ThrottledDelayer} from 'vs/base/common/async';
 import uri from 'vs/base/common/uri';
 import nls = require('vs/nls');
+import http = require('vs/base/common/http');
+import {IRequestService} from 'vs/platform/request/common/request';
 
 // TODO: import pfs = require('vs/base/node/pfs');
 // TODO: import encoding = require('vs/base/node/encoding');
@@ -37,7 +39,7 @@ import nls = require('vs/nls');
 // TODO: import {FileWatcher as WindowsWatcherService} from 'vs/workbench/services/files/node/watcher/win32/watcherService';
 // TODO: import {toFileChangesEvent, normalize, IRawFileChange} from 'vs/workbench/services/files/node/watcher/common';
 import {IEventService} from 'vs/platform/event/common/event';
-import {Github, Repository, Error as GithubError} from 'github';
+import {Github, Repository, User, Gist, Error as GithubError} from 'github';
 
 // TODO: Use vs/base/node/encoding replacement.
 const encoding = {
@@ -117,7 +119,7 @@ export class FileService implements files.IFileService {
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	// TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
 
-	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private githubService: Github) {
+	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: Github) {
 		this.basePath = basePath ? paths.normalize(basePath) : void 0;
 
 		this.options = options || Object.create(null);
@@ -177,13 +179,10 @@ export class FileService implements files.IFileService {
 		} else if (this.options.encoding === encoding.UTF8_with_bom) {
 			preferredEncoding = encoding.UTF8; // if we did not detect UTF 8 BOM before, this can only be UTF 8 then
 		}
-		return this.resolveFileContent(resource, options && options.etag, preferredEncoding).then((content) => {
+		return this.resolveFileContent(resource, options && options.etag, preferredEncoding);
 
 			// set our knowledge about the mime on the content obj
 // TODO:			content.mime = detected.mimes.join(', ');
-
-			return content;
-		});
 
 		/* TODO:
 		let absolutePath = this.toAbsolutePath(resource);
@@ -485,9 +484,90 @@ export class FileService implements files.IFileService {
 
 		return paths.normalize(resource.fsPath);
 	}
+
+	private isGistPath(path: string) : boolean
+	{
+		// /$gist/<gist description property>/<filename>
+		var parts = path.split('/');
+		return (parts && parts.length == 4 && parts[1] == '$gist');		
+	}
 	
-	// TODO: options
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
+		if (this.isGistPath(resource.path)) {
+			return this.resolveGistFile(resource, options);
+		} else {
+			return this.resolveRepoFile(resource, options);
+		}
+	}
+ 
+	private resolveGistFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {		
+		return new TPromise<files.IFileStat>((c, e) => {
+			let user: User = this.githubService.getUser();
+			user.gists((err: GithubError, gists?: Gist[]) => {
+				// Github api error
+				if (err) {
+					console.log('Error user.gists api ' + resource.path + ": " + err);					
+					e(files.FileOperationResult.FILE_NOT_FOUND);
+					return;
+				}
+					
+				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
+				let parts = resource.path.split('/');				
+								
+				// Find the raw url referenced by the path
+				let gist: Gist;				
+				for (let i = 0; i < gists.length; i++) {
+					let gistT = gists[i];
+					if (gistT.description !== parts[2]) {
+						continue;
+					}
+					for (let filename in gistT.files) {
+						if (filename === parts[3]) {
+							gist = gistT;
+							break;
+						}
+					}
+					if (gist) {
+						break;
+					}
+				}
+
+				// Github api worked but could not find the file
+				if (!gist) {
+					console.log('Error file not found in user gists: ' + resource.path);
+					e(files.FileOperationResult.FILE_NOT_FOUND);
+					return;									
+				}					
+					
+				// Use the raw url even though direct gist query can return 1MB of contents.
+				// Either case is an extra request and the raw url has fewer restrictions.
+				let url: string = gist.files[parts[3]]['raw_url'];				
+				this.requestService.makeRequest({ url }).then((res: http.IXHRResponse) => {
+					if (res.status == 200) {
+						let stat: files.IFileStat = {							
+							resource: uri.file(resource.path), // uri.parse(url),
+							isDirectory: false,
+							hasChildren: false,
+							name: parts[2],
+							mtime: Date.parse(gist.updated_at),
+							etag: uri.parse(url).path.split('/')[3],
+							size: res.responseText.length,
+							mime: baseMime.guessMimeTypes(parts[3]).join(', ')
+						};
+						
+						// Hack: the caller currently expects content this way.
+						(<any>stat).content = btoa(res.responseText);
+						c(stat);
+					} else {
+						console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);					
+						e(files.FileOperationResult.FILE_NOT_FOUND);
+					}					
+				});				
+			});
+		});
+	}
+
+	private resolveRepoFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {
 		return new TPromise<files.IFileStat>((c, e) => {
 			// TODO: This API has an upper limit of 1,000 files per directory.
 			// TODO: This API only supports files up to 1 MB in size. So use,
@@ -540,7 +620,10 @@ export class FileService implements files.IFileService {
 				mime: undefined
 			}
 		}, (error: GithubError) => {
-			console.log('unable to repo.contents ' + resource.toString(true));
+			console.log('Unable to repo.contents ' + resource.toString(true));
+			return TPromise.wrapError(<files.IFileOperationResult>{
+				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+			});			
 		});
 	}
 	
@@ -577,6 +660,11 @@ export class FileService implements files.IFileService {
 				}
 				c(content);
 			});
+		}, (error) => {
+			console.log('Error resolving: ' + resource.path + ' error: ' + error);
+			return TPromise.wrapError(<files.IFileOperationResult>{
+				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+			});			
 		});
 	}
 
