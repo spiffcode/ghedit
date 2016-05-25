@@ -300,12 +300,7 @@ export class UserSettings implements ISettingsService {
 		let appKeybindingsPath: string = this.contextService.getConfiguration().env.appKeybindingsPath;
 		if (appKeybindingsPath != null) { 
 			this.fileService.resolveContent(URI.file(appKeybindingsPath), { acceptTextOnly: true }).then((keyBindingsContent: IContent) => {
-				let result: ISettings = {
-					settings: {},
-					keybindings: []
-				};
-					
-				let keybindings;		
+				let keybindings: any[] = [];		
 				try {
 					keybindings = json.parse(keyBindingsContent.value);			
 				} catch (error) {
