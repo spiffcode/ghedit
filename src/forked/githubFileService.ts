@@ -275,6 +275,13 @@ export class FileService implements files.IFileService {
 	public updateContent(resource: uri, value: string, options: files.IUpdateContentOptions = Object.create(null)): TPromise<files.IFileStat> {
 		let absolutePath = this.toAbsolutePath(resource);
 
+		if (this.isGistPath(absolutePath)) {
+			return TPromise.wrapError(<files.IFileOperationResult>{
+				message: 'Error updating gist paths not supported yet: ' + absolutePath,
+				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+			});			
+		}
+
 		// 1.) check file
 		return this.checkFile(absolutePath, options).then((exists) => {
 			let encodingToWrite = this.getEncoding(resource, options.encoding);
