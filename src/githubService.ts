@@ -52,7 +52,7 @@ export class GithubService implements IGithubService {
 
 	public authenticateUser(): TPromise<UserInfo> {
 		if (!this.hasCredentials()) {
-			throw new Error('authenticateUser requires user credentials');
+			return TPromise.wrapError<UserInfo>('authenticateUser requires user credentials');
 		}
 		return new TPromise<UserInfo>((complete, error) => {
 			this.github.getUser().show(null, (err: GithubError, info?: UserInfo) => {
