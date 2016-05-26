@@ -279,7 +279,7 @@ export class WorkbenchShell {
 	private fillNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
 		let userItem = instantiationService.createInstance(UserNavbarItem);
-		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 300);
+		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
 		this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
 		this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
 		this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
