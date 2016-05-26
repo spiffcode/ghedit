@@ -55,6 +55,7 @@ Start a web server in the ghcode directory.
 * DM: clean up stuff
 * 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
 * Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
+* JSON Schema intellisense
 
 #### BUGS
 
