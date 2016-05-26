@@ -21,7 +21,7 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
         GithubService.prototype.authenticateUser = function () {
             var _this = this;
             if (!this.hasCredentials()) {
-                throw new Error('authenticateUser requires user credentials');
+                return winjs_base_1.TPromise.wrapError('authenticateUser requires user credentials');
             }
             return new winjs_base_1.TPromise(function (complete, error) {
                 _this.github.getUser().show(null, function (err, info) {
