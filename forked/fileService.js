@@ -12,13 +12,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
     // If we run with .NET framework < 4.5, we need to detect this error to inform the user
     var NET_VERSION_ERROR = 'System.MissingMethodException';
     var FileService = (function () {
-        function FileService(configurationService, eventService, contextService, githubService, messageService) {
+        function FileService(configurationService, eventService, contextService, messageService, requestService, githubService) {
             var _this = this;
             this.configurationService = configurationService;
             this.eventService = eventService;
             this.contextService = contextService;
-            this.githubService = githubService;
             this.messageService = messageService;
+            this.requestService = requestService;
+            this.githubService = githubService;
             this.serviceId = files_1.IFileService;
             var configuration = this.configurationService.getConfiguration();
             var env = this.contextService.getConfiguration().env;
@@ -46,7 +47,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             }
             // create service
             var workspace = this.contextService.getWorkspace();
-            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.githubService);
+            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService);
             // Listeners
             this.registerListeners();
         }
@@ -91,6 +92,9 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             return this.raw.resolveContent(resource, options).then(function (result) {
                 timerEvent.stop();
                 return result;
+            }, function (error) {
+                timerEvent.stop();
+                return winjs_base_1.TPromise.wrapError(error);
             });
         };
         FileService.prototype.resolveContents = function (resources) {

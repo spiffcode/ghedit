@@ -3,9 +3,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/base/common/errors', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'forked/configurationService'], function (require, exports, winjs, shell_1, errors, timer, uri_1, eventService_1, contextService_1, configurationService_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/base/common/errors', 'vs/base/common/timer', 'vs/base/common/uri', 'vs/platform/event/common/eventService', 'vs/workbench/services/workspace/common/contextService', 'forked/configurationService', 'githubService'], function (require, exports, winjs, shell_1, errors, timer, uri_1, eventService_1, contextService_1, configurationService_1, githubService_1) {
     'use strict';
-    var github = require('lib/github');
     // TODO: import path = require('path');
     var path = {
         normalize: function (_path) {
@@ -63,12 +62,25 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/b
             options['username'] = environment.userEnv['githubUsername'];
             options['password'] = environment.userEnv['githubPassword'];
         }
-        environment.githubService = new github(options);
-        environment.githubService.repo = environment.githubRepo;
-        environment.githubService.ref = environment.githubRef;
-        // Open workbench
-        return getWorkspace(environment).then(function (workspace) {
-            return openWorkbench(workspace, shellConfiguration, shellOptions, environment.githubService);
+        var githubService = new githubService_1.GithubService(options);
+        // TODO: indeterminate progress indicator
+        return githubService.authenticateUser().then(function (userInfo) {
+            if (!environment.githubRepo)
+                // Open workbench without a workspace.
+                return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+            return githubService.openRepository(environment.githubRepo, environment.githubRef).then(function (repoInfo) {
+                var workspace = getWorkspace(environment, repoInfo);
+                return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
+            }, function (err) {
+                // TODO: Welcome experience and/or error message (invalid repo, permissions, ...)
+                // Open workbench without a workspace.
+                return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+            });
+        }, function (err) {
+            // No user credentials or otherwise unable to authenticate them.
+            // TODO: Welcome experience and/or error message (bad credentials, ...)
+            // Open workbench without a workspace.
+            return openWorkbench(null, shellConfiguration, shellOptions, githubService);
         });
     }
     exports.startup = startup;
@@ -88,29 +100,19 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/b
             return input;
         });
     }
-    function getWorkspace(environment) {
+    function getWorkspace(environment, repoInfo) {
         if (!environment.workspacePath) {
-            return winjs.TPromise.as(null);
+            return null;
         }
         var workspaceResource = uri_1.default.file(environment.workspacePath);
-        // Call Github to get repository information used to populate the workspace.
-        var repo = environment.githubService.getRepo(environment.githubRepo);
-        return new winjs.TPromise(function (c, e) {
-            repo.show(function (err, info) {
-                err ? e(err) : c(info);
-            });
-        }).then(function (info) {
-            var workspace = {
-                'resource': workspaceResource,
-                'id': environment.githubRepo,
-                'name': environment.githubRepo.split('/')[1],
-                'uid': Date.parse(info.created_at),
-                'mtime': Date.parse(info.updated_at),
-            };
-            return workspace;
-        }, function (error) {
-            console.log('unable to repo.show ' + environment.githubRepo);
-        });
+        var workspace = {
+            'resource': workspaceResource,
+            'id': environment.githubRepo,
+            'name': environment.githubRepo.split('/')[1],
+            'uid': Date.parse(repoInfo.created_at),
+            'mtime': Date.parse(repoInfo.updated_at),
+        };
+        return workspace;
     }
     function openWorkbench(workspace, configuration, options, githubService) {
         var eventService = new eventService_1.EventService();
@@ -128,7 +130,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/b
                     configurationService: configurationService,
                     eventService: eventService,
                     contextService: contextService,
-                    githubService: githubService
+                    githubService: githubService,
                 }, configuration, options);
                 shell.open();
                 shell.joinCreation().then(function () {

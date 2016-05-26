@@ -3,7 +3,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri'], function (require, exports, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1) {
+define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/base/common/http'], function (require, exports, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, http) {
     'use strict';
     // TODO: Use vs/base/node/encoding replacement.
     var encoding = {
@@ -27,8 +27,9 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
     }
     var FileService = (function () {
         // TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
-        function FileService(basePath, options, eventEmitter, githubService) {
+        function FileService(basePath, options, eventEmitter, requestService, githubService) {
             this.eventEmitter = eventEmitter;
+            this.requestService = requestService;
             this.githubService = githubService;
             this.serviceId = files.IFileService;
             this.basePath = basePath ? paths.normalize(basePath) : void 0;
@@ -52,7 +53,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
             this.undeliveredRawFileChangesEvents = [];
             */
-            this.repo = this.githubService.getRepo(this.githubService.repo);
+            this.repo = this.githubService.github.getRepo(this.githubService.repo);
             this.ref = this.githubService.ref;
         }
         FileService.prototype.updateOptions = function (options) {
@@ -84,11 +85,9 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             else if (this.options.encoding === encoding.UTF8_with_bom) {
                 preferredEncoding = encoding.UTF8; // if we did not detect UTF 8 BOM before, this can only be UTF 8 then
             }
-            return this.resolveFileContent(resource, options && options.etag, preferredEncoding).then(function (content) {
-                // set our knowledge about the mime on the content obj
-                // TODO:			content.mime = detected.mimes.join(', ');
-                return content;
-            });
+            return this.resolveFileContent(resource, options && options.etag, preferredEncoding);
+            // set our knowledge about the mime on the content obj
+            // TODO:			content.mime = detected.mimes.join(', ');
             /* TODO:
             let absolutePath = this.toAbsolutePath(resource);
             
@@ -178,6 +177,12 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             var _this = this;
             if (options === void 0) { options = Object.create(null); }
             var absolutePath = this.toAbsolutePath(resource);
+            if (this.isGistPath(absolutePath)) {
+                return winjs_base_1.TPromise.wrapError({
+                    message: 'Error updating gist paths not supported yet: ' + absolutePath,
+                    fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+                });
+            }
             // 1.) check file
             return this.checkFile(absolutePath, options).then(function (exists) {
                 var encodingToWrite = _this.getEncoding(resource, options.encoding);
@@ -361,10 +366,90 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             }
             return paths.normalize(resource.fsPath);
         };
-        // TODO: options
+        FileService.prototype.isGistPath = function (path) {
+            // /$gist/<gist description property>/<filename>
+            var parts = path.split('/');
+            return (parts && parts.length == 4 && parts[1] == '$gist');
+        };
         FileService.prototype.resolve = function (resource, options) {
-            var _this = this;
             if (options === void 0) { options = Object.create(null); }
+            if (this.isGistPath(resource.path)) {
+                return this.resolveGistFile(resource, options);
+            }
+            else {
+                return this.resolveRepoFile(resource, options);
+            }
+        };
+        FileService.prototype.resolveGistFile = function (resource, options) {
+            var _this = this;
+            return new winjs_base_1.TPromise(function (c, e) {
+                if (!_this.githubService.isAuthenticated()) {
+                    // We don't have access to the current user's Gists.
+                    e(files.FileOperationResult.FILE_NOT_FOUND);
+                    return;
+                }
+                var user = _this.githubService.github.getUser();
+                user.gists(function (err, gists) {
+                    // Github api error
+                    if (err) {
+                        console.log('Error user.gists api ' + resource.path + ": " + err);
+                        e(files.FileOperationResult.FILE_NOT_FOUND);
+                        return;
+                    }
+                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename
+                    var parts = resource.path.split('/');
+                    // Find the raw url referenced by the path
+                    var gist;
+                    for (var i = 0; i < gists.length; i++) {
+                        var gistT = gists[i];
+                        if (gistT.description !== parts[2]) {
+                            continue;
+                        }
+                        for (var filename in gistT.files) {
+                            if (filename === parts[3]) {
+                                gist = gistT;
+                                break;
+                            }
+                        }
+                        if (gist) {
+                            break;
+                        }
+                    }
+                    // Github api worked but could not find the file
+                    if (!gist) {
+                        console.log('Error file not found in user gists: ' + resource.path);
+                        e(files.FileOperationResult.FILE_NOT_FOUND);
+                        return;
+                    }
+                    // Use the raw url even though direct gist query can return 1MB of contents.
+                    // Either case is an extra request and the raw url has fewer restrictions.
+                    var url = gist.files[parts[3]]['raw_url'];
+                    _this.requestService.makeRequest({ url: url }).then(function (res) {
+                        if (res.status == 200) {
+                            var stat = {
+                                resource: uri_1.default.file(resource.path),
+                                isDirectory: false,
+                                hasChildren: false,
+                                name: parts[2],
+                                mtime: Date.parse(gist.updated_at),
+                                etag: uri_1.default.parse(url).path.split('/')[3],
+                                size: res.responseText.length,
+                                mime: baseMime.guessMimeTypes(parts[3]).join(', ')
+                            };
+                            // Hack: the caller currently expects content this way.
+                            stat.content = btoa(res.responseText);
+                            c(stat);
+                        }
+                        else {
+                            console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
+                            e(files.FileOperationResult.FILE_NOT_FOUND);
+                        }
+                    });
+                });
+            });
+        };
+        FileService.prototype.resolveRepoFile = function (resource, options) {
+            var _this = this;
             return new winjs_base_1.TPromise(function (c, e) {
                 // TODO: This API has an upper limit of 1,000 files per directory.
                 // TODO: This API only supports files up to 1 MB in size. So use,
@@ -416,7 +501,10 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     mime: undefined
                 };
             }, function (error) {
-                console.log('unable to repo.contents ' + resource.toString(true));
+                console.log('Unable to repo.contents ' + resource.toString(true));
+                return winjs_base_1.TPromise.wrapError({
+                    fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+                });
             });
         };
         FileService.prototype.resolveFileContent = function (resource, etag, enc) {
@@ -447,6 +535,11 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                         encoding: encoding.UTF8 // TODO:
                     };
                     c(content);
+                });
+            }, function (error) {
+                console.log('Error resolving: ' + resource.path + ' error: ' + error);
+                return winjs_base_1.TPromise.wrapError({
+                    fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
                 });
             });
         };
@@ -766,5 +859,5 @@ export class StatResolver {
         });
     }
 }
-*/ 
+*/
 //# sourceMappingURL=githubFileService.js.map

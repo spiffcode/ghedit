@@ -11,26 +11,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/browser/ui/octiconLabel/octiconLabel', 'vs/base/common/lifecycle'], function (require, exports, contextView_1, instantiation_1, workspace_1, dom, builder_1, octiconLabel_1, lifecycle_1) {
+define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/workspace', 'vs/base/browser/dom', 'vs/base/browser/builder', 'vs/base/browser/ui/octiconLabel/octiconLabel', 'vs/base/common/lifecycle', 'githubService'], function (require, exports, contextView_1, instantiation_1, workspace_1, dom, builder_1, octiconLabel_1, lifecycle_1, githubService_1) {
     'use strict';
     var UserNavbarItem = (function () {
-        function UserNavbarItem(instantiationService, contextViewService, contextService) {
+        function UserNavbarItem(instantiationService, contextViewService, contextService, githubService) {
             this.instantiationService = instantiationService;
             this.contextViewService = contextViewService;
             this.contextService = contextService;
+            this.githubService = githubService;
         }
         UserNavbarItem.prototype.render = function (el) {
+            var _this = this;
             var toDispose = [];
             dom.addClass(el, 'navbar-entry');
+            var user = this.githubService.getAuthenticatedUserInfo();
             // Text Container
-            var textContainer;
-            textContainer = document.createElement('a');
-            builder_1.$(textContainer).on('click', function () { return window.location.href = 'https://github.com/login/oauth/authorize?client_id=bbc4f9370abd2b860a36&scope=user repo gist'; }, toDispose);
+            this.textContainer = document.createElement('a');
+            builder_1.$(this.textContainer).on('click', function (e) {
+                if (!_this.githubService.isAuthenticated()) {
+                    _this.githubService.authenticate();
+                }
+                else {
+                    // TODO: dropdown user menu w/ "sign out"
+                    console.log('user menu not implemented');
+                }
+            }, toDispose);
             // Label
-            new octiconLabel_1.OcticonLabel(textContainer).text = 'Sign in';
+            // TODO: string localization
+            new octiconLabel_1.OcticonLabel(this.textContainer).text = user ? user.login : 'Sign In';
             // Tooltip
-            builder_1.$(textContainer).title('Grant access your GitHub account');
-            el.appendChild(textContainer);
+            // TODO: string localization
+            builder_1.$(this.textContainer).title(user ? 'Hi!' : 'Grant access to your GitHub repos, gists, and user info');
+            el.appendChild(this.textContainer);
             return {
                 dispose: function () {
                     toDispose = lifecycle_1.dispose(toDispose);
@@ -40,7 +52,8 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
         UserNavbarItem = __decorate([
             __param(0, instantiation_1.IInstantiationService),
             __param(1, contextView_1.IContextViewService),
-            __param(2, workspace_1.IWorkspaceContextService)
+            __param(2, workspace_1.IWorkspaceContextService),
+            __param(3, githubService_1.IGithubService)
         ], UserNavbarItem);
         return UserNavbarItem;
     }());
