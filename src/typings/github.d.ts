@@ -53,5 +53,14 @@ declare module "github" {
         repos(cb: (err: Error, repos?: any, xhr?: any) => void);
         repos(options: any, cb: (err: Error, repos?: any, xhr?: any) => void);
         gists(cb: (err: Error, gists?: Gist[], xhr?: any) => void);        
+        show(username: string, cb: (err: Error, info?: UserInfo, xhr?: any) => void);
     }
+
+		interface UserInfo {
+			login: string;
+			id: Number;
+			avatar_url?: string;
+			name?: string;
+			email?: string;
+		}
 }

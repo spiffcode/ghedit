@@ -101,6 +101,8 @@ import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'forked/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
 import {ISettingsService, UserSettings} from 'forked/userSettings';
+import {UserNavbarItem} from 'userNavbarItem';
+import {IGithubService} from 'githubService';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar'
@@ -117,7 +119,7 @@ export interface ICoreServices {
 	contextService: IWorkspaceContextService;
 	eventService: IEventService;
 	configurationService: IConfigurationService;
-	githubService: Github;
+	githubService: IGithubService;
 }
 
 let MonacoEditorLanguages: ILanguageDef[] = this.MonacoEditorLanguages || [];
@@ -139,7 +141,7 @@ export class WorkbenchShell {
 	private contextService: IWorkspaceContextService;
 	private telemetryService: ITelemetryService;
 	private keybindingService: WorkbenchKeybindingService;
-	private githubService: Github;
+	private githubService: IGithubService;
 	private modeService: IModeService;
 	private modelService: IModelService;
 
@@ -242,7 +244,7 @@ export class WorkbenchShell {
 // TODO:		this.toShutdown.push(this.navbarPart);
 				serviceCollection.set(INavbarService, this.navbarPart);
 				this.createNavbarPart();
-				this.fillNavbar();
+				this.fillNavbar(instantiationService);
 			}
 		});
 
@@ -274,13 +276,14 @@ export class WorkbenchShell {
 		this.navbarPart.create(navbarContainer);
 	}
     
-    private fillNavbar(): void { 
-        this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
-        this.navbarPart.addEntry({ text: '<user name>', tooltip: 'user menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 400);
-        this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
-        this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
-        this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
-    }
+	private fillNavbar(instantiationService: InstantiationService): void {
+		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
+		let userItem = instantiationService.createInstance(UserNavbarItem);
+		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 300);
+		this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
+		this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
+		this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
+	}
 
 	private onWorkbenchStarted(): void {
 
@@ -483,6 +486,8 @@ export class WorkbenchShell {
 		serviceCollection.set(IThemeService, this.themeService);
 		serviceCollection.set(IActionsService, new ActionsService(extensionService, this.keybindingService));
 
+		serviceCollection.set(IGithubService, this.githubService);
+
 		this.textFileService = new TextFileService(this.contextService, instantiationService, fileService, untitledEditorService,
 				lifecycleService, this.telemetryService, this.configurationService, this.eventService, modeService,
 				null /* TODO: IWorkbenchEditorService */, this.windowService);
@@ -503,6 +508,11 @@ export class WorkbenchShell {
 
 		// Controls
 		this.content = $('.monaco-shell-content').appendTo(this.container).getHTMLElement();
+
+		// Apply no-workspace state as CSS class
+		if (!this.workspace) {
+			$(this.content).addClass('no-workspace');
+		}
 
 		// Handle Load Performance Timers
 		this.writeTimers();

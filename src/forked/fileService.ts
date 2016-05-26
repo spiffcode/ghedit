@@ -25,6 +25,7 @@ import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IRequestService} from 'vs/platform/request/common/request';
 import {Github} from 'github';
+import {IGithubService} from 'githubService';
 
 // TODO: import {shell} from 'electron';
 import {Action} from 'vs/base/common/actions';
@@ -52,7 +53,7 @@ export class FileService implements IFileService {
 		private contextService: IWorkspaceContextService,
 		private messageService: IMessageService,
 		private requestService: IRequestService,
-		private githubService: Github
+		private githubService: IGithubService
 	) {
 		const configuration = this.configurationService.getConfiguration<IFilesConfiguration>();
 		const env = this.contextService.getConfiguration().env;

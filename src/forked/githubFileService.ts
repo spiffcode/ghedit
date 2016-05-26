@@ -40,6 +40,7 @@ import {IRequestService} from 'vs/platform/request/common/request';
 // TODO: import {toFileChangesEvent, normalize, IRawFileChange} from 'vs/workbench/services/files/node/watcher/common';
 import {IEventService} from 'vs/platform/event/common/event';
 import {Github, Repository, User, Gist, Error as GithubError} from 'github';
+import {IGithubService} from 'githubService';
 
 // TODO: Use vs/base/node/encoding replacement.
 const encoding = {
@@ -119,7 +120,7 @@ export class FileService implements files.IFileService {
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	// TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
 
-	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: Github) {
+	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: IGithubService) {
 		this.basePath = basePath ? paths.normalize(basePath) : void 0;
 
 		this.options = options || Object.create(null);
@@ -142,7 +143,7 @@ export class FileService implements files.IFileService {
 		this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
 		this.undeliveredRawFileChangesEvents = [];
 		*/
-		this.repo = this.githubService.getRepo(this.githubService.repo);
+		this.repo = this.githubService.github.getRepo(this.githubService.repo);
 		this.ref = this.githubService.ref;
 	}
 
@@ -509,7 +510,7 @@ export class FileService implements files.IFileService {
  
 	private resolveGistFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {		
 		return new TPromise<files.IFileStat>((c, e) => {
-			let user: User = this.githubService.getUser();
+			let user: User = this.githubService.github.getUser();
 			user.gists((err: GithubError, gists?: Gist[]) => {
 				// Github api error
 				if (err) {

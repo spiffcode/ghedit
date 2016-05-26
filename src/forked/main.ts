@@ -30,8 +30,8 @@ import {EventService} from 'vs/platform/event/common/eventService';
 import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
 import {ConfigurationService} from 'forked/configurationService';
-import {Github, Repository, Error as GithubError} from 'github';
-var github = require('lib/github');
+import {Github, Repository, Error as GithubError, UserInfo} from 'github';
+import {GithubService, IGithubService} from 'githubService';
 
 // TODO: import path = require('path');
 var path = {
@@ -71,7 +71,7 @@ export interface IMainEnvironment extends IEnvironment {
 	filesToCreate?: IPath[];
 	filesToDiff?: IPath[];
 	extensionsToInstall?: string[];
-	githubService?: Github;
+	github?: Github;
 	userEnv: IEnv;
 	githubRef?: string;
 	githubRepo?: string;
@@ -117,13 +117,27 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 		options['username'] = environment.userEnv['githubUsername'];
 		options['password'] = environment.userEnv['githubPassword'];
 	}
-	environment.githubService = new github(options);
-	environment.githubService.repo = environment.githubRepo;
-	environment.githubService.ref = environment.githubRef;
+	let githubService = new GithubService(options);
 
-	// Open workbench
-	return getWorkspace(environment).then((workspace: IWorkspace) => {
-		return openWorkbench(workspace, shellConfiguration, shellOptions, environment.githubService);
+	// TODO: indeterminate progress indicator
+	return githubService.authenticateUser().then((userInfo: UserInfo) => {
+		if (!environment.githubRepo)
+			// Open workbench without a workspace.
+			return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+
+		return githubService.openRepository(environment.githubRepo, environment.githubRef).then((repoInfo: any) => {
+			let workspace = getWorkspace(environment, repoInfo);
+			return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
+		}, (err: Error) => {
+			// TODO: Welcome experience and/or error message (invalid repo, permissions, ...)
+			// Open workbench without a workspace.
+			return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+		});
+	}, (err: Error) => {
+		// No user credentials or otherwise unable to authenticate them.
+		// TODO: Welcome experience and/or error message (bad credentials, ...)
+		// Open workbench without a workspace.
+		return openWorkbench(null, shellConfiguration, shellOptions, githubService);
 	});
 }
 
@@ -146,34 +160,24 @@ function toInputs(paths: IPath[]): IResourceInput[] {
 	});
 }
 
-function getWorkspace(environment: IMainEnvironment): winjs.TPromise<IWorkspace> {
+function getWorkspace(environment: IMainEnvironment, repoInfo: any): IWorkspace {
 	if (!environment.workspacePath) {
-		return winjs.TPromise.as(null);
+		return null;
 	}
 
 	let workspaceResource = uri.file(environment.workspacePath);
 	
-	// Call Github to get repository information used to populate the workspace.
-	let repo = environment.githubService.getRepo(environment.githubRepo);
-	return new winjs.TPromise<IWorkspace>((c, e) => {
-		repo.show((err: GithubError, info?: any) => {
-			err ? e(err) : c(info);
-		});
-	}).then((info: any) => {
-		let workspace: IWorkspace = {
-			'resource': workspaceResource,
-			'id': environment.githubRepo,
-			'name': environment.githubRepo.split('/')[1], // Repository name minus the user name.
-			'uid': Date.parse(info.created_at),
-			'mtime': Date.parse(info.updated_at),
-		};
-		return workspace;
-	}, (error: GithubError) => {
-		console.log('unable to repo.show ' + environment.githubRepo);
-	});
+	let workspace: IWorkspace = {
+		'resource': workspaceResource,
+		'id': environment.githubRepo,
+		'name': environment.githubRepo.split('/')[1], // Repository name minus the user name.
+		'uid': Date.parse(repoInfo.created_at),
+		'mtime': Date.parse(repoInfo.updated_at),
+	};
+	return workspace;
 }
 
-function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: Github): winjs.TPromise<void> {
+function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: IGithubService): winjs.TPromise<void> {
 	let eventService = new EventService();
 	let contextService = new WorkspaceContextService(eventService, workspace, configuration, options);
 	let configurationService = new ConfigurationService(contextService, eventService);
@@ -192,7 +196,7 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 				configurationService,
 				eventService,
 				contextService,
-				githubService
+				githubService,
 			}, configuration, options);
 			shell.open();
 

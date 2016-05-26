@@ -50,11 +50,11 @@ export class NavbarPart extends Part implements INavbarService {
 
 	public addEntry(entry: INavbarEntry, alignment: NavbarAlignment, priority: number = 0): IDisposable {
 		let item = this.instantiationService.createInstance(NavBarEntryItem, entry);
-        return this.addItem(item, alignment, priority);
-    }
+		return this.addItem(item, alignment, priority);
+	}
 
 	public addItem(item: INavbarItem, alignment: NavbarAlignment, priority: number = 0): IDisposable {
-		let el = this.doCreateNavItem(alignment, priority);
+		let el = NavbarPart.createNavItem(alignment, priority);
 
 		// Render entry in nav bar
 		let toDispose = item.render(el);
@@ -119,7 +119,7 @@ export class NavbarPart extends Part implements INavbarService {
 
 		this.toDispose.push(...descriptors.map(descriptor => {
 			let item = this.instantiationService.createInstance(descriptor.syncDescriptor);
-			let el = this.doCreateNavItem(descriptor.alignment, descriptor.priority);
+			let el = NavbarPart.createNavItem(descriptor.alignment, descriptor.priority);
 
 			let dispose = item.render(el);
 			this.navItemsContainer.append(el);
@@ -130,7 +130,7 @@ export class NavbarPart extends Part implements INavbarService {
 		return this.navItemsContainer;
 	}
 
-	private doCreateNavItem(alignment: NavbarAlignment, priority: number = 0): HTMLElement {
+	public static createNavItem(alignment: NavbarAlignment, priority: number = 0): HTMLElement {
 		let el = document.createElement('div');
 		dom.addClass(el, 'navbar-item');
 
