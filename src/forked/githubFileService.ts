@@ -510,6 +510,12 @@ export class FileService implements files.IFileService {
  
 	private resolveGistFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {		
 		return new TPromise<files.IFileStat>((c, e) => {
+			if (!this.githubService.isAuthenticated()) {
+				// We don't have access to the current user's Gists.
+				e(files.FileOperationResult.FILE_NOT_FOUND);
+				return;
+			}
+
 			let user: User = this.githubService.github.getUser();
 			user.gists((err: GithubError, gists?: Gist[]) => {
 				// Github api error
