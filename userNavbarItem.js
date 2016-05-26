@@ -34,6 +34,9 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
                 else {
                     // TODO: dropdown user menu w/ "sign out"
                     console.log('user menu not implemented');
+                    window.localStorage.removeItem('githubToken');
+                    window.localStorage.removeItem('githubRepo');
+                    window.localStorage.removeItem('githubRef');
                 }
             }, toDispose);
             // Label

@@ -150,8 +150,35 @@
 
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
+
+			// Stash the repo and ref so we can pick them up after auth completes.
+			// TODO: Pass them as part of the ghauth redirect to avoid persistent state. As of now
+			// ghauth redirects with entirely new query args.
+			if (args.repo)
+				window.localStorage.setItem('githubRepo', args.repo);
+			if (args.ref)
+				window.localStorage.setItem('githubRef', args.ref);
+
+			if (args.code) {
+				// Ask our auth server to ask for a GitHub access token and redirect with it back to here.
+				var selfURL = location.origin + location.pathname;
+				window.location = 'https://jasper-rider.hyperdev.space/ghauth?code=' + args.code + '&redirect=' + encodeURIComponent(selfURL);
+
+			} else if (args.access_token) {
+				// Retain the access token in local storage for future use.
+				window.localStorage.setItem('githubToken', args.access_token);
+
+				// Reclaim the stashed repo and ref.
+				// TODO: Use window.history.pushState to rewrite the URL to remove access_code and add repo and ref.
+				args.repo = window.localStorage.getItem('githubRepo');
+				args.ref = window.localStorage.getItem('githubRef');
+
+			} else if (args.error) {
+				console.log(args.error + ': ' + decodeURIComponent(args.error_description.replace(/\+/g, '%20')));
+			}
+
 //			args.config = '{ "userEnv": { "githubUsername": "darrinm", "githubPassword": "<secret>" }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
-			args.config = '{ "userEnv": {}, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
+			args.config = '{ "userEnv": {}, "appSettingsPath": "/$gist/GHCode Settings/settings.json", "appKeybindingsPath": "/$gist/GHCode Settings/keybindings.json", "appSettingsHome": "/$gist/GHCode Settings" }';
 			var configuration = JSON.parse(args['config']);
 			configuration.workspacePath = args.workspacePath;
 			if (args.repo) {
