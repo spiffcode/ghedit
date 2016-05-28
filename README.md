@@ -7,6 +7,7 @@ git clone https://github.com/spiffcode/vscode.git
 
 # Build VS Code on OSX
 # https://github.com/Microsoft/vscode/wiki/How-to-Contribute#build-and-run-from-source
+cd vscode
 ./scripts/npm.sh install
 ./node_modules/.bin/gulp compile
 
