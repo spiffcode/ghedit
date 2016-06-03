@@ -33,6 +33,7 @@ import {IModeService} from 'vs/editor/common/services/modeService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IWindowService} from 'forked/windowService';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
+import {QuickOpenController} from 'vs/workbench/browser/parts/quickopen/quickOpenController';
 
 export class TextFileService extends AbstractTextFileService {
 	private instService: IInstantiationService;
@@ -273,12 +274,11 @@ export class TextFileService extends AbstractTextFileService {
 		}
 
 		// Prompt for a commit message.
-        // We get the QuickOpenService here instead of via service injection because it hasn't
-        // yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
-        // PLACE TO DO THIS.
+		// We get the QuickOpenService here instead of via service injection because it hasn't
+		// yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+		// PLACE TO DO THIS.
 		// TODO: validateInput fn to put appropriate constraints on the commit message.
-		// TODO: let quickOpenService = this.instService.createInstance<IQuickOpenService>(IQuickOpenService);
-        var quickOpenService: IQuickOpenService = null;
+		let quickOpenService = this.instService.createInstance<IQuickOpenService>(QuickOpenController);
 		return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
 			// If user canceled the input box.
 			if (!result)
