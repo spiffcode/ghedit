@@ -30,6 +30,7 @@ import uri from 'vs/base/common/uri';
 import nls = require('vs/nls');
 import http = require('vs/base/common/http');
 import {IRequestService} from 'vs/platform/request/common/request';
+var github = require('lib/github');
 
 // TODO: import pfs = require('vs/base/node/pfs');
 // TODO: import encoding = require('vs/base/node/encoding');
@@ -41,6 +42,11 @@ import {IRequestService} from 'vs/platform/request/common/request';
 import {IEventService} from 'vs/platform/event/common/event';
 import {Github, Repository, User, Gist, Error as GithubError} from 'github';
 import {IGithubService} from 'githubService';
+
+interface GistInfo {
+	gist: Gist;
+	fileExists: boolean;
+}
 
 // TODO: Use vs/base/node/encoding replacement.
 const encoding = {
@@ -66,6 +72,7 @@ export interface IFileServiceOptions {
 	verboseLogging?: boolean;
 	commitMessage?: string;
 	debugBrkFileWatcherPort?: number;
+	settingsNotificationPaths?: string[];
 }
 
 /* TODO:
@@ -274,14 +281,134 @@ export class FileService implements files.IFileService {
 	}
 
 	public updateContent(resource: uri, value: string, options: files.IUpdateContentOptions = Object.create(null)): TPromise<files.IFileStat> {
-		let absolutePath = this.toAbsolutePath(resource);
-
-		if (this.isGistPath(absolutePath)) {
-			return TPromise.wrapError(<files.IFileOperationResult>{
-				message: 'Error updating gist paths not supported yet: ' + absolutePath,
-				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-			});			
+		if (this.isGistPath(resource)) {			
+			return this.updateGistContent(resource, value, options);			
+		} else {			
+			return this.updateRepoContent(resource, value, options);
 		}
+	}
+
+	private updateGist(info: GistInfo, description:string, filename:string, value:string) : TPromise<boolean> {
+		// Cases are:
+		// 1. gist with description exists, file in gist exists.
+		// 2. gist with description exists, file doesn't exist.
+		// 3. gist with description doesn't exist.
+		return new TPromise<boolean>((c, e) => {
+			let data: any = {
+				description: description,
+				public: false,
+				files: {}				
+			};
+			data.files[filename] = {content: value};
+			
+			// Gist exists?
+			if (info.gist) {
+				// Gists exists. Update it.							
+				let gist:Gist = new github.Gist({id: info.gist.id});
+				gist.update(data, (err: GithubError) => {
+					if (err) {
+						e(err);
+					} else {
+						c(true);
+					}
+				});
+			} else {								
+				// Create
+				let gist:Gist = new github.Gist({});				
+				gist.create(data, (err: GithubError) => {
+					if (err) {
+						e(err);
+					} else {
+						c(true);
+					}
+				});				
+			}			
+		});
+	}
+
+	private updateGistContent(resource: uri, value: string, options: files.IUpdateContentOptions): TPromise<files.IFileStat> {
+		// 0 = '', 1 = '$gist', 2 = description, 3 = filename
+		let absolutePath = this.toAbsolutePath(resource);				
+		let parts = absolutePath.split('/');
+
+		return new TPromise<files.IFileStat>((c, e) => {		
+			this.findGist(resource).then((info) => {
+				// 1.) check file
+				return this.checkFile(absolutePath, options).then((exists) => {
+					let encodingToWrite = this.getEncoding(resource, options.encoding);
+					let addBomPromise: TPromise<boolean> = TPromise.as(false);
+
+					// UTF_16 BE and LE as well as UTF_8 with BOM always have a BOM
+					if (encodingToWrite === encoding.UTF16be || encodingToWrite === encoding.UTF16le || encodingToWrite === encoding.UTF8_with_bom) {
+						addBomPromise = TPromise.as(true);
+					}
+
+					// Existing UTF-8 file: check for options regarding BOM
+					else if (exists && encodingToWrite === encoding.UTF8) {
+						// TODO: Node-independent detectEncodingByBOM
+						// if (options.overwriteEncoding) {
+						// 	addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
+						// } else {
+						// 	addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then((enc) => enc === encoding.UTF8); // otherwise preserve it if found
+						// }
+
+						addBomPromise = TPromise.as(false);
+					}
+
+					// 3.) check to add UTF BOM
+					return addBomPromise.then((addBom) => {
+						let writeFilePromise: TPromise<boolean> = TPromise.as(false);
+
+						// Write fast if we do UTF 8 without BOM
+						if (!addBom && encodingToWrite === encoding.UTF8) {
+							writeFilePromise = this.updateGist(info, parts[2], parts[3], value).then(() => {
+								// Is this one of the settings files that requires change notification?
+								if (this.options.settingsNotificationPaths) {
+									let notify:boolean = false;
+									for (let i = 0; i < this.options.settingsNotificationPaths.length; i++) {
+										if (absolutePath === this.options.settingsNotificationPaths[i]) {
+											notify = true;
+											break;
+										}
+									}
+									if (notify) {
+										setTimeout(() => { this.eventEmitter.emit("settingsFileChanged"); }, 0);										
+									}
+								}
+								return true;
+							}, (error: GithubError) => {
+								console.log('failed to gist.update ' + resource.toString(true));								
+							});
+						}
+
+						// Otherwise use encoding lib
+						else {
+							throw new Error('githubFileService.updateContent with non-UTF8 encoding not implemented yet');
+							// TODO:
+							// let encoded = encoding.encode(value, encodingToWrite, { addBOM: addBom });
+							// writeFilePromise = pfs.writeFile(absolutePath, encoded);
+						}
+
+						// 4.) set contents
+						return writeFilePromise.then(() => {
+							this.resolve(resource).then((result: files.IFileStat) => {
+								c(result);
+							}, (error) => {
+								e(error);
+							});						
+						});
+					});
+				});
+			}, (error: GithubError) => {
+				return TPromise.wrapError(<files.IFileOperationResult>{
+					fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+				});
+			});
+		});		
+	}
+
+	private updateRepoContent(resource: uri, value: string, options: files.IUpdateContentOptions): TPromise<files.IFileStat> {
+		let absolutePath = this.toAbsolutePath(resource);
 
 		// 1.) check file
 		return this.checkFile(absolutePath, options).then((exists) => {
@@ -493,80 +620,93 @@ export class FileService implements files.IFileService {
 		return paths.normalize(resource.fsPath);
 	}
 
-	private isGistPath(path: string) : boolean
+	private isGistPath(resource: uri) : boolean
 	{
 		// /$gist/<gist description property>/<filename>
-		var parts = path.split('/');
+		var parts = this.toAbsolutePath(resource).split('/');
 		return (parts && parts.length == 4 && parts[1] == '$gist');		
 	}
 	
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
-		if (this.isGistPath(resource.path)) {
+		if (this.isGistPath(resource)) {
 			return this.resolveGistFile(resource, options);
 		} else {
 			return this.resolveRepoFile(resource, options);
 		}
 	}
- 
-	private resolveGistFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {		
-		return new TPromise<files.IFileStat>((c, e) => {
+
+	private findGist(resource: uri) : TPromise<GistInfo> {
+		return new TPromise<GistInfo>((c, e) => {
 			if (!this.githubService.isAuthenticated()) {
 				// We don't have access to the current user's Gists.
-				e(files.FileOperationResult.FILE_NOT_FOUND);
+                e({ path: resource.path, error: "not authenticated" });
 				return;
 			}
-
+			
 			let user: User = this.githubService.github.getUser();
 			user.gists((err: GithubError, gists?: Gist[]) => {
 				// Github api error
 				if (err) {
 					console.log('Error user.gists api ' + resource.path + ": " + err);					
-					e(files.FileOperationResult.FILE_NOT_FOUND);
+					e(err);
 					return;
 				}
-					
-				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
-				let parts = resource.path.split('/');				
-								
-				// Find the raw url referenced by the path
-				let gist: Gist;				
+
+				// 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+				let parts = this.toAbsolutePath(resource).split('/');
+							
+				// Find the raw url referenced by the path				
 				for (let i = 0; i < gists.length; i++) {
-					let gistT = gists[i];
-					if (gistT.description !== parts[2]) {
+					let gist = gists[i];
+					if (gist.description !== parts[2]) {
 						continue;
 					}
-					for (let filename in gistT.files) {
+					for (let filename in gist.files) {
 						if (filename === parts[3]) {
-							gist = gistT;
-							break;
+							c({gist: gist, fileExists: true});
+							return;
 						}
 					}
-					if (gist) {
-						break;
-					}
+					c({gist: gist, fileExists: false});
+					return;
 				}
+				c({gist: null, fileExists: false}); 
+			});
+		});
+    }
 
-				// Github api worked but could not find the file
-				if (!gist) {
-					console.log('Error file not found in user gists: ' + resource.path);
+	private resolveGistFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {
+		return new TPromise<files.IFileStat>((c, e) => {
+			this.findGist(resource).then((info) => {
+				// Gist found but if file doesn't exist, error.
+				if (!info.gist || !info.fileExists) {					 					
 					e(files.FileOperationResult.FILE_NOT_FOUND);
-					return;									
-				}					
-					
+					return;					
+				}
+				
+				// 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+				let parts = this.toAbsolutePath(resource).split('/');
+				
 				// Use the raw url even though direct gist query can return 1MB of contents.
-				// Either case is an extra request and the raw url has fewer restrictions.
-				let url: string = gist.files[parts[3]]['raw_url'];				
+				// Either case is an extra request and the raw url has fewer restrictions.				
+				let url: string = info.gist.files[parts[3]].raw_url;
+
+				// Request the contents
 				this.requestService.makeRequest({ url }).then((res: http.IXHRResponse) => {
 					if (res.status == 200) {
+						// Github is not returning Access-Control-Expose-Headers: ETag, so we
+						// don't have access to that header in the response. Make
+						// up an ETag. ETags don't have format dependencies.
+						let etag: string = info.gist.updated_at + res.responseText.length;						
 						let stat: files.IFileStat = {							
-							resource: uri.file(resource.path), // uri.parse(url),
+							resource: uri.file(resource.path),
 							isDirectory: false,
 							hasChildren: false,
 							name: parts[2],
-							mtime: Date.parse(gist.updated_at),
-							etag: uri.parse(url).path.split('/')[3],
+							mtime: Date.parse(info.gist.updated_at),
+							etag: etag,
 							size: res.responseText.length,
-							mime: baseMime.guessMimeTypes(parts[3]).join(', ')
+							mime: info.gist.files[parts[3]].type
 						};
 						
 						// Hack: the caller currently expects content this way.
@@ -575,12 +715,16 @@ export class FileService implements files.IFileService {
 					} else {
 						console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);					
 						e(files.FileOperationResult.FILE_NOT_FOUND);
-					}					
+					}									
+				});
+			}, (error: GithubError) => {
+				return TPromise.wrapError(<files.IFileOperationResult>{
+					fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
 				});				
 			});
 		});
 	}
-
+		
 	private resolveRepoFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {
 		return new TPromise<files.IFileStat>((c, e) => {
 			// TODO: This API has an upper limit of 1,000 files per directory.
@@ -675,7 +819,7 @@ export class FileService implements files.IFileService {
 				c(content);
 			});
 		}, (error) => {
-			console.log('Error resolving: ' + resource.path + ' error: ' + error);
+			// console.log('Error resolving: ' + resource.path + ' error: ' + error);
 			return TPromise.wrapError(<files.IFileOperationResult>{
 				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
 			});			
@@ -1008,3 +1152,4 @@ export class StatResolver {
 	}
 }
 */
+	

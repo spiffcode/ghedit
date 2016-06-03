@@ -292,7 +292,7 @@ export class UserSettings implements ISettingsService {
 					}
 				}, 0);
 			}, (error) => {
-				console.log('UserSettings error loading: ' + appSettingsPath)
+				// console.log('UserSettings error loading: ' + appSettingsPath)
 			});
 		}
 
@@ -312,7 +312,7 @@ export class UserSettings implements ISettingsService {
 					setTimeout(() => this.updateSettingsKey('keybindings', keybindings), 0);
 				}
 			}, (error) => {
-				console.log('UserSettings error loading: ' + appKeybindingsPath)
+				// console.log('UserSettings error loading: ' + appKeybindingsPath)
 			});
 		}
 	}

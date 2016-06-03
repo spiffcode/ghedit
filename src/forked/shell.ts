@@ -432,6 +432,11 @@ export class WorkbenchShell {
 			requestService,
 			this.githubService			
 		);
+				
+		fileService.updateOptions({ settingsNotificationPaths: [
+			this.contextService.getConfiguration().env.appSettingsPath,
+			this.contextService.getConfiguration().env.appKeybindingsPath
+		]});
 		
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
 
