@@ -7,7 +7,10 @@ gulp.task('clean', shell.task([
 
 gulp.task('pre-build', shell.task([
     'cp index.html out-build',
-    'mkdir -p out-build/forked && cp src/forked/navbarPart.css out-build/forked',
+    'mkdir -p out-build/forked',
+		'cp src/forked/navbarPart.css out-build/forked',
+    'cp src/forked/editorpart.css out-build/forked',
+    'cp src/forked/*.png out-build/forked',
 ]));
 
 gulp.task('build', ['pre-build'], shell.task([

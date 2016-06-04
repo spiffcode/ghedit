@@ -11,6 +11,7 @@
 // removed/replaced.
 
 import 'vs/css!vs/workbench/electron-browser/media/shell';
+import 'vs/css!./editorpart';
 
 import * as nls from 'vs/nls';
 import {TPromise} from 'vs/base/common/winjs.base';
@@ -163,7 +164,7 @@ export class WorkbenchShell {
 	private workspace: IWorkspace;
 	private options: IOptions;
 	private workbench: Workbench;
-   	private navbarPart: NavbarPart;
+	private navbarPart: NavbarPart;
 
 	private messagesShowingContextKey: IKeybindingContextKey<boolean>;
 
