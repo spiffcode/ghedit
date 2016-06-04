@@ -304,7 +304,7 @@ export class TextFileService extends AbstractTextFileService {
 		let resources: URI[] = [...fileResources, ...targetsForUntitled];
 		for (let i = 0; i < resources.length; i++) {
 			let gistRegEx = (<IMainEnvironment>this.contextService.getConfiguration().env).gistRegEx;
-			if (gistRegEx && !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
+			if (!gistRegEx || !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
 				needsCommitMessage = true;
 				break;
 			}
