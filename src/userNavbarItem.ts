@@ -6,55 +6,77 @@
 'use strict';
 
 import {IDisposable} from 'vs/base/common/lifecycle';
-import {IContextViewService} from 'vs/platform/contextview/browser/contextView';
+import {IContextMenuService} from 'vs/platform/contextview/browser/contextView';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
-import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import dom = require('vs/base/browser/dom');
 import {INavbarItem} from 'forked/navbar';
-import {Builder, $} from 'vs/base/browser/builder';
+import {$} from 'vs/base/browser/builder';
 import {OcticonLabel} from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 import {dispose} from 'vs/base/common/lifecycle';
 import {IGithubService} from 'githubService';
+import {DropdownMenu} from 'vs/base/browser/ui/dropdown/dropdown';
+import {Action} from 'vs/base/common/actions';
+import {TPromise} from 'vs/base/common/winjs.base';
+import dom = require('vs/base/browser/dom');
 
 export class UserNavbarItem implements INavbarItem {
 
-	private textContainer: HTMLElement;
-
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IContextViewService private contextViewService: IContextViewService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IGithubService private githubService: IGithubService
 	) {
 	}
 
+	// If the user is signed out show them a "Sign In" button.
+	// If they're signed in show them a menu that includes a "Sign Out" item.
 	public render(el: HTMLElement): IDisposable {
+		let user = this.githubService.getAuthenticatedUserInfo();
+
+		if (!user) {
+			return this.renderSignedOut(el);
+		}
+
+		let actions = [
+			// TODO: string localization
+			new Action('signOut', 'Sign Out', '', true, (event: any) => {
+				window.localStorage.removeItem('githubToken');
+				window.localStorage.removeItem('githubUser');
+				window.localStorage.removeItem('githubPassword');
+
+				// Refresh to the page to fully present the signed out state.
+				window.location.reload();
+				return TPromise.as(true);
+			}),
+		];
+
+		return this.instantiationService.createInstance(DropdownMenu, el, {
+			tick: true,
+			label: user.login,
+			contextMenuProvider: this.contextMenuService,
+			actions: actions
+		});
+	}
+
+	private renderSignedOut(el: HTMLElement): IDisposable {
 		let toDispose: IDisposable[] = [];
 		dom.addClass(el, 'navbar-entry');
 
-		let user = this.githubService.getAuthenticatedUserInfo();
-
 		// Text Container
-		this.textContainer = document.createElement('a');
+		let textContainer = document.createElement('a');
 
-		$(this.textContainer).on('click', (e) => {
-			if (!this.githubService.isAuthenticated()) {
-				this.githubService.authenticate();
-			} else {
-				// TODO: dropdown user menu w/ "sign out"
-				console.log('user menu not implemented');
-			}
+		$(textContainer).on('click', (e) => {
+			this.githubService.authenticate();
 		}, toDispose);
 
 		// Label
 		// TODO: string localization
-		new OcticonLabel(this.textContainer).text = user ? user.login : 'Sign In';
+		new OcticonLabel(textContainer).text = 'Sign In';
 
 		// Tooltip
 		// TODO: string localization
-		$(this.textContainer).title(user ? 'Hi!' : 'Grant access to your GitHub repos, gists, and user info');
+		$(textContainer).title('Grant access to your GitHub repos, gists, and user info');
 
-		el.appendChild(this.textContainer);
+		el.appendChild(textContainer);
 
 		return {
 			dispose: () => {

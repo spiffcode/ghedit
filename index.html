@@ -137,16 +137,6 @@
 				setZoomLevelLimits: function (min, max) { console.log('webFrame.setZoomLevelLimits'); },
 				setZoomLevel: function (level) { console.log('webFrame.setZoomLevel'); }
 			};
-			/* TODO:
-			var process = {
-				env: { },
-				platform: 'darwin', // TODO: check actual platform
-				on: function (event, handler) {
-					// TODO: onerror for uncaughtException?
-					console.log('add process.on(\'' + event + '\') handler');
-				},
-			};
-			 */
 
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
@@ -159,9 +149,9 @@
 			if (args.ref)
 				window.localStorage.setItem('githubRef', args.ref);
 
+			var selfURL = location.origin + location.pathname;
 			if (args.code) {
 				// Ask our auth server to ask for a GitHub access token and redirect with it back to here.
-				var selfURL = location.origin + location.pathname;
 				window.location = 'https://jasper-rider.hyperdev.space/ghauth?code=' + args.code + '&redirect=' + encodeURIComponent(selfURL);
 
 			} else if (args.access_token) {
@@ -169,9 +159,11 @@
 				window.localStorage.setItem('githubToken', args.access_token);
 
 				// Reclaim the stashed repo and ref.
-				// TODO: Use window.history.pushState to rewrite the URL to remove access_code and add repo and ref.
 				args.repo = window.localStorage.getItem('githubRepo');
 				args.ref = window.localStorage.getItem('githubRef');
+
+				// Rewrite the browser URL to remove access_code and add repo and ref.
+				window.history.replaceState(null, '', selfURL + '?repo=' + args.repo + (args.ref ? '&ref=' + args.ref : ''));
 
 			} else if (args.error) {
 				console.log(args.error + ': ' + decodeURIComponent(args.error_description.replace(/\+/g, '%20')));
