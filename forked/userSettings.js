@@ -242,7 +242,7 @@ define(["require", "exports", 'vs/base/common/json', 'vs/base/common/objects', '
                         }
                     }, 0);
                 }, function (error) {
-                    console.log('UserSettings error loading: ' + appSettingsPath);
+                    // console.log('UserSettings error loading: ' + appSettingsPath)
                 });
             }
             // Load keybindings json
@@ -260,7 +260,7 @@ define(["require", "exports", 'vs/base/common/json', 'vs/base/common/objects', '
                         setTimeout(function () { return _this.updateSettingsKey('keybindings', keybindings); }, 0);
                     }
                 }, function (error) {
-                    console.log('UserSettings error loading: ' + appKeybindingsPath);
+                    // console.log('UserSettings error loading: ' + appKeybindingsPath)
                 });
             }
         };

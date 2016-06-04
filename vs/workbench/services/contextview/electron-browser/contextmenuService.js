@@ -6,10 +6,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/sever
     'use strict';
     var ContextMenuService = (function () {
         function ContextMenuService(messageService, telemetryService, keybindingService) {
-            this.serviceId = contextView_1.IContextMenuService;
             this.messageService = messageService;
             this.telemetryService = telemetryService;
             this.keybindingService = keybindingService;
+            this.serviceId = contextView_1.IContextMenuService;
         }
         ContextMenuService.prototype.showContextMenu = function (delegate) {
             var _this = this;

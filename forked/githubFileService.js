@@ -5,6 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/base/common/http'], function (require, exports, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, http) {
     'use strict';
+    var github = require('lib/github');
     // TODO: Use vs/base/node/encoding replacement.
     var encoding = {
         UTF8: 'utf8',
@@ -174,15 +175,124 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             });
         };
         FileService.prototype.updateContent = function (resource, value, options) {
-            var _this = this;
             if (options === void 0) { options = Object.create(null); }
-            var absolutePath = this.toAbsolutePath(resource);
-            if (this.isGistPath(absolutePath)) {
-                return winjs_base_1.TPromise.wrapError({
-                    message: 'Error updating gist paths not supported yet: ' + absolutePath,
-                    fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-                });
+            if (this.isGistPath(resource)) {
+                return this.updateGistContent(resource, value, options);
             }
+            else {
+                return this.updateRepoContent(resource, value, options);
+            }
+        };
+        FileService.prototype.updateGist = function (info, description, filename, value) {
+            // Cases are:
+            // 1. gist with description exists, file in gist exists.
+            // 2. gist with description exists, file doesn't exist.
+            // 3. gist with description doesn't exist.
+            return new winjs_base_1.TPromise(function (c, e) {
+                var data = {
+                    description: description,
+                    public: false,
+                    files: {}
+                };
+                data.files[filename] = { content: value };
+                // Gist exists?
+                if (info.gist) {
+                    // Gists exists. Update it.							
+                    var gist = new github.Gist({ id: info.gist.id });
+                    gist.update(data, function (err) {
+                        if (err) {
+                            e(err);
+                        }
+                        else {
+                            c(true);
+                        }
+                    });
+                }
+                else {
+                    // Create
+                    var gist = new github.Gist({});
+                    gist.create(data, function (err) {
+                        if (err) {
+                            e(err);
+                        }
+                        else {
+                            c(true);
+                        }
+                    });
+                }
+            });
+        };
+        FileService.prototype.updateGistContent = function (resource, value, options) {
+            var _this = this;
+            // 0 = '', 1 = '$gist', 2 = description, 3 = filename
+            var absolutePath = this.toAbsolutePath(resource);
+            var parts = absolutePath.split('/');
+            return new winjs_base_1.TPromise(function (c, e) {
+                _this.findGist(resource).then(function (info) {
+                    // 1.) check file
+                    return _this.checkFile(absolutePath, options).then(function (exists) {
+                        var encodingToWrite = _this.getEncoding(resource, options.encoding);
+                        var addBomPromise = winjs_base_1.TPromise.as(false);
+                        // UTF_16 BE and LE as well as UTF_8 with BOM always have a BOM
+                        if (encodingToWrite === encoding.UTF16be || encodingToWrite === encoding.UTF16le || encodingToWrite === encoding.UTF8_with_bom) {
+                            addBomPromise = winjs_base_1.TPromise.as(true);
+                        }
+                        else if (exists && encodingToWrite === encoding.UTF8) {
+                            // TODO: Node-independent detectEncodingByBOM
+                            // if (options.overwriteEncoding) {
+                            // 	addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
+                            // } else {
+                            // 	addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then((enc) => enc === encoding.UTF8); // otherwise preserve it if found
+                            // }
+                            addBomPromise = winjs_base_1.TPromise.as(false);
+                        }
+                        // 3.) check to add UTF BOM
+                        return addBomPromise.then(function (addBom) {
+                            var writeFilePromise = winjs_base_1.TPromise.as(false);
+                            // Write fast if we do UTF 8 without BOM
+                            if (!addBom && encodingToWrite === encoding.UTF8) {
+                                writeFilePromise = _this.updateGist(info, parts[2], parts[3], value).then(function () {
+                                    // Is this one of the settings files that requires change notification?
+                                    if (_this.options.settingsNotificationPaths) {
+                                        var notify = false;
+                                        for (var i = 0; i < _this.options.settingsNotificationPaths.length; i++) {
+                                            if (absolutePath === _this.options.settingsNotificationPaths[i]) {
+                                                notify = true;
+                                                break;
+                                            }
+                                        }
+                                        if (notify) {
+                                            setTimeout(function () { _this.eventEmitter.emit("settingsFileChanged"); }, 0);
+                                        }
+                                    }
+                                    return true;
+                                }, function (error) {
+                                    console.log('failed to gist.update ' + resource.toString(true));
+                                });
+                            }
+                            else {
+                                throw new Error('githubFileService.updateContent with non-UTF8 encoding not implemented yet');
+                            }
+                            // 4.) set contents
+                            return writeFilePromise.then(function () {
+                                _this.resolve(resource).then(function (result) {
+                                    c(result);
+                                }, function (error) {
+                                    e(error);
+                                });
+                            });
+                        });
+                    });
+                }, function (error) {
+                    return winjs_base_1.TPromise.wrapError({
+                        fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+                    });
+                });
+            });
+        };
+        FileService.prototype.updateRepoContent = function (resource, value, options) {
+            var _this = this;
+            var absolutePath = this.toAbsolutePath(resource);
             // 1.) check file
             return this.checkFile(absolutePath, options).then(function (exists) {
                 var encodingToWrite = _this.getEncoding(resource, options.encoding);
@@ -366,26 +476,25 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             }
             return paths.normalize(resource.fsPath);
         };
-        FileService.prototype.isGistPath = function (path) {
+        FileService.prototype.isGistPath = function (resource) {
             // /$gist/<gist description property>/<filename>
-            var parts = path.split('/');
-            return (parts && parts.length == 4 && parts[1] == '$gist');
+            return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));
         };
         FileService.prototype.resolve = function (resource, options) {
             if (options === void 0) { options = Object.create(null); }
-            if (this.isGistPath(resource.path)) {
+            if (this.isGistPath(resource)) {
                 return this.resolveGistFile(resource, options);
             }
             else {
                 return this.resolveRepoFile(resource, options);
             }
         };
-        FileService.prototype.resolveGistFile = function (resource, options) {
+        FileService.prototype.findGist = function (resource) {
             var _this = this;
             return new winjs_base_1.TPromise(function (c, e) {
                 if (!_this.githubService.isAuthenticated()) {
                     // We don't have access to the current user's Gists.
-                    e(files.FileOperationResult.FILE_NOT_FOUND);
+                    e({ path: resource.path, error: "not authenticated" });
                     return;
                 }
                 var user = _this.githubService.github.getUser();
@@ -393,48 +502,60 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     // Github api error
                     if (err) {
                         console.log('Error user.gists api ' + resource.path + ": " + err);
-                        e(files.FileOperationResult.FILE_NOT_FOUND);
+                        e(err);
                         return;
                     }
-                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename
-                    var parts = resource.path.split('/');
-                    // Find the raw url referenced by the path
-                    var gist;
+                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+                    var parts = _this.toAbsolutePath(resource).split('/');
+                    // Find the raw url referenced by the path				
                     for (var i = 0; i < gists.length; i++) {
-                        var gistT = gists[i];
-                        if (gistT.description !== parts[2]) {
+                        var gist = gists[i];
+                        if (gist.description !== parts[2]) {
                             continue;
                         }
-                        for (var filename in gistT.files) {
+                        for (var filename in gist.files) {
                             if (filename === parts[3]) {
-                                gist = gistT;
-                                break;
+                                c({ gist: gist, fileExists: true });
+                                return;
                             }
                         }
-                        if (gist) {
-                            break;
-                        }
+                        c({ gist: gist, fileExists: false });
+                        return;
                     }
-                    // Github api worked but could not find the file
-                    if (!gist) {
-                        console.log('Error file not found in user gists: ' + resource.path);
+                    c({ gist: null, fileExists: false });
+                });
+            });
+        };
+        FileService.prototype.resolveGistFile = function (resource, options) {
+            var _this = this;
+            return new winjs_base_1.TPromise(function (c, e) {
+                _this.findGist(resource).then(function (info) {
+                    // Gist found but if file doesn't exist, error.
+                    if (!info.gist || !info.fileExists) {
                         e(files.FileOperationResult.FILE_NOT_FOUND);
                         return;
                     }
+                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+                    var parts = _this.toAbsolutePath(resource).split('/');
                     // Use the raw url even though direct gist query can return 1MB of contents.
-                    // Either case is an extra request and the raw url has fewer restrictions.
-                    var url = gist.files[parts[3]]['raw_url'];
+                    // Either case is an extra request and the raw url has fewer restrictions.				
+                    var url = info.gist.files[parts[3]].raw_url;
+                    // Request the contents
                     _this.requestService.makeRequest({ url: url }).then(function (res) {
                         if (res.status == 200) {
+                            // Github is not returning Access-Control-Expose-Headers: ETag, so we
+                            // don't have access to that header in the response. Make
+                            // up an ETag. ETags don't have format dependencies.
+                            var etag_1 = info.gist.updated_at + res.responseText.length;
                             var stat = {
                                 resource: uri_1.default.file(resource.path),
                                 isDirectory: false,
                                 hasChildren: false,
                                 name: parts[2],
-                                mtime: Date.parse(gist.updated_at),
-                                etag: uri_1.default.parse(url).path.split('/')[3],
+                                mtime: Date.parse(info.gist.updated_at),
+                                etag: etag_1,
                                 size: res.responseText.length,
-                                mime: baseMime.guessMimeTypes(parts[3]).join(', ')
+                                mime: info.gist.files[parts[3]].type
                             };
                             // Hack: the caller currently expects content this way.
                             stat.content = btoa(res.responseText);
@@ -444,6 +565,10 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                             console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
                             e(files.FileOperationResult.FILE_NOT_FOUND);
                         }
+                    });
+                }, function (error) {
+                    return winjs_base_1.TPromise.wrapError({
+                        fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
                     });
                 });
             });
@@ -537,7 +662,7 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                     c(content);
                 });
             }, function (error) {
-                console.log('Error resolving: ' + resource.path + ' error: ' + error);
+                // console.log('Error resolving: ' + resource.path + ' error: ' + error);
                 return winjs_base_1.TPromise.wrapError({
                     fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
                 });

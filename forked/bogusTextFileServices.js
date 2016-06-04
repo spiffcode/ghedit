@@ -17,7 +17,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'forked/windowService'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1) {
+define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/paths', 'vs/base/common/strings', 'vs/base/common/platform', 'vs/base/common/uri', 'vs/platform/event/common/event', 'vs/workbench/parts/files/browser/textFileServices', 'vs/workbench/parts/files/common/editors/textFileEditorModel', 'vs/workbench/parts/files/common/files', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/platform/files/common/files', 'vs/workbench/common/editor/binaryEditorModel', 'vs/platform/instantiation/common/instantiation', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/telemetry/common/telemetry', 'vs/platform/configuration/common/configuration', 'vs/editor/common/services/modeService', 'vs/workbench/services/editor/common/editorService', 'forked/windowService', 'vs/workbench/browser/parts/quickopen/quickOpenController'], function (require, exports, nls, winjs_base_1, paths, strings, platform_1, uri_1, event_1, textFileServices_1, textFileEditorModel_1, files_1, untitledEditorService_1, files_2, binaryEditorModel_1, instantiation_1, contextService_1, lifecycle_1, telemetry_1, configuration_1, modeService_1, editorService_1, windowService_1, quickOpenController_1) {
     'use strict';
     var TextFileService = (function (_super) {
         __extends(TextFileService, _super);
@@ -207,27 +207,8 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                     targetsForUntitled.push(uri_1.default.file(targetPath));
                 }
             }
-            // Prompt for a commit message.
-            // We get the QuickOpenService here instead of via service injection because it hasn't
-            // yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
-            // PLACE TO DO THIS.
-            // TODO: validateInput fn to put appropriate constraints on the commit message.
-            // TODO: let quickOpenService = this.instService.createInstance<IQuickOpenService>(IQuickOpenService);
-            var quickOpenService = null;
-            return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message' }).then(function (result) {
-                // If user canceled the input box.
-                if (!result)
-                    return winjs_base_1.TPromise.as({
-                        results: fileResources.concat(untitledResources).map(function (r) {
-                            return {
-                                source: r
-                            };
-                        })
-                    });
-                // This hack gets the commit message from here to the bowels of the githubFileService where
-                // it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
-                // but that would involve forking a number of VSC source files.
-                _this.fileService.updateOptions({ commitMessage: result });
+            // This returns a TPromise that performs the save.
+            var saveAll = function () {
                 // Handle files
                 return _super.prototype.saveAll.call(_this, fileResources).then(function (result) {
                     // Handle untitled
@@ -246,7 +227,47 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
                         return result;
                     });
                 });
-            });
+            };
+            // See if any of these need a commit message
+            var needsCommitMessage = false;
+            var resources = fileResources.concat(targetsForUntitled);
+            for (var i = 0; i < resources.length; i++) {
+                var gistRegEx = this.contextService.getConfiguration().env.gistRegEx;
+                if (!gistRegEx || !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
+                    needsCommitMessage = true;
+                    break;
+                }
+            }
+            if (needsCommitMessage) {
+                // Prompt for a commit message.
+                // We get the QuickOpenService here instead of via service injection because it hasn't
+                // yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+                // PLACE TO DO THIS.
+                // TODO: validateInput fn to put appropriate constraints on the commit message.
+                var quickOpenService = this.instService.createInstance(quickOpenController_1.QuickOpenController);
+                return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message' }).then(function (result) {
+                    // If user canceled the input box.
+                    if (!result) {
+                        return winjs_base_1.TPromise.as({
+                            results: fileResources.concat(untitledResources).map(function (r) {
+                                return {
+                                    source: r
+                                };
+                            })
+                        });
+                    }
+                    // This hack gets the commit message from here to the bowels of the githubFileService where
+                    // it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+                    // but that would involve forking a number of VSC source files.
+                    _this.fileService.updateOptions({ commitMessage: result });
+                    // Save the files
+                    return saveAll();
+                });
+            }
+            else {
+                // No commit message needed; just save.
+                return saveAll();
+            }
         };
         TextFileService.prototype.saveAs = function (resource, target) {
             var _this = this;

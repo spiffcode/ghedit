@@ -104,7 +104,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
             this.navbarPart.create(navbarContainer);
         };
         WorkbenchShell.prototype.fillNavbar = function (instantiationService) {
-            this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'test tool tip...', command: 'whatever' }, navbarService_1.NavbarAlignment.LEFT, 1000);
+            this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, navbarService_1.NavbarAlignment.LEFT, 1000);
             var userItem = instantiationService.createInstance(userNavbarItem_1.UserNavbarItem);
             this.navbarPart.addItem(userItem, navbarService_1.NavbarAlignment.RIGHT, 400);
             this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, navbarService_1.NavbarAlignment.RIGHT, 300);
@@ -220,6 +220,13 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
             var requestService = new simpleServices_1.SimpleEditorRequestService(this.contextService, this.telemetryService);
             // TODO: this.toUnbind.push(lifecycleService.onShutdown(() => requestService.dispose()));
             var fileService = new fileService_1.FileService(this.configurationService, this.eventService, this.contextService, this.messageService, requestService, this.githubService);
+            fileService.updateOptions({
+                settingsNotificationPaths: [
+                    this.configuration.env.appSettingsPath,
+                    this.configuration.env.appKeybindingsPath
+                ],
+                gistRegEx: this.configuration.env.gistRegEx
+            });
             this.contextViewService = new contextViewService_1.ContextViewService(this.container, this.telemetryService, this.messageService);
             var lifecycleService = lifecycle_2.NullLifecycleService;
             this.toUnbind.push(lifecycleService.onShutdown(function () { return fileService.dispose(); }));
