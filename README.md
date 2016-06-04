@@ -46,9 +46,7 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* DM: user auth UI
-* session preservation (e.g. across refresh, browser/tab close/open)
-* SL: user settings
+* DP: session preservation (e.g. across refresh, browser/tab close/open)
 * project aka workspace settings
 * themes
 * search
