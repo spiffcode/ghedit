@@ -103,6 +103,7 @@ import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarServic
 import {ISettingsService, UserSettings} from 'forked/userSettings';
 import {UserNavbarItem} from 'userNavbarItem';
 import {IGithubService} from 'githubService';
+import {IMainEnvironment} from 'forked/main';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar'
@@ -433,10 +434,13 @@ export class WorkbenchShell {
 			this.githubService			
 		);
 				
-		fileService.updateOptions({ settingsNotificationPaths: [
-			this.contextService.getConfiguration().env.appSettingsPath,
-			this.contextService.getConfiguration().env.appKeybindingsPath
-		]});
+		fileService.updateOptions({
+			settingsNotificationPaths: [
+				this.configuration.env.appSettingsPath,
+				this.configuration.env.appKeybindingsPath
+			],
+			gistRegEx: (<IMainEnvironment>this.configuration.env).gistRegEx
+		});
 		
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
 

@@ -34,6 +34,7 @@ import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/edito
 import {IWindowService} from 'forked/windowService';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 import {QuickOpenController} from 'vs/workbench/browser/parts/quickopen/quickOpenController';
+import {IMainEnvironment} from 'forked/main';
 
 export class TextFileService extends AbstractTextFileService {
 	private instService: IInstantiationService;
@@ -273,28 +274,8 @@ export class TextFileService extends AbstractTextFileService {
 			}
 		}
 
-		// Prompt for a commit message.
-		// We get the QuickOpenService here instead of via service injection because it hasn't
-		// yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
-		// PLACE TO DO THIS.
-		// TODO: validateInput fn to put appropriate constraints on the commit message.
-		let quickOpenService = this.instService.createInstance<IQuickOpenService>(QuickOpenController);
-		return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
-			// If user canceled the input box.
-			if (!result)
-				return TPromise.as({
-					results: [...fileResources, ...untitledResources].map((r) => {
-						return {
-							source: r
-						};
-					})
-				});
-
-			// This hack gets the commit message from here to the bowels of the githubFileService where
-			// it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
-			// but that would involve forking a number of VSC source files.
-			this.fileService.updateOptions({ commitMessage: result });
-
+		// This returns a TPromise that performs the save.
+		let saveAll = () => {
 			// Handle files
 			return super.saveAll(fileResources).then((result) => {
 
@@ -315,8 +296,51 @@ export class TextFileService extends AbstractTextFileService {
 				return TPromise.join(untitledSaveAsPromises).then(() => {
 					return result;
 				});
+			});			
+		} 
+
+		// See if any of these need a commit message
+		let needsCommitMessage: boolean = false;
+		let resources: URI[] = [...fileResources, ...targetsForUntitled];
+		for (let i = 0; i < resources.length; i++) {
+			let gistRegEx = (<IMainEnvironment>this.contextService.getConfiguration().env).gistRegEx;
+			if (gistRegEx && !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
+				needsCommitMessage = true;
+				break;
+			}
+		}
+					
+		if (needsCommitMessage) {
+			// Prompt for a commit message.
+			// We get the QuickOpenService here instead of via service injection because it hasn't
+			// yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+			// PLACE TO DO THIS.
+			// TODO: validateInput fn to put appropriate constraints on the commit message.
+			let quickOpenService = this.instService.createInstance<IQuickOpenService>(QuickOpenController);
+			return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
+				// If user canceled the input box.
+				if (!result) {
+					return TPromise.as({
+						results: [...fileResources, ...untitledResources].map((r) => {
+							return {
+								source: r
+							};
+						})
+					});
+				}
+
+				// This hack gets the commit message from here to the bowels of the githubFileService where
+				// it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+				// but that would involve forking a number of VSC source files.
+				this.fileService.updateOptions({ commitMessage: result });
+
+				// Save the files
+				return saveAll();
 			});
-		});
+		} else {
+			// No commit message needed; just save.
+			return saveAll();
+		}
 	}
 
 	public saveAs(resource: URI, target?: URI): TPromise<URI> {

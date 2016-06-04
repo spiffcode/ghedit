@@ -65,6 +65,7 @@ export interface IPath {
 	columnNumber?: number;
 }
 
+// TODO: Perhaps move these into IEnvironment? Then accessing them would be easier from IConfiguration.
 export interface IMainEnvironment extends IEnvironment {
 	workspacePath?: string;
 	filesToOpen?: IPath[];
@@ -75,6 +76,7 @@ export interface IMainEnvironment extends IEnvironment {
 	userEnv: IEnv;
 	githubRef?: string;
 	githubRepo?: string;
+	gistRegEx?: RegExp;
 }
 
 export function startup(environment: IMainEnvironment, globalSettings: IGlobalSettings): winjs.TPromise<void> {

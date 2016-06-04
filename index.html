@@ -180,6 +180,7 @@
 //			args.config = '{ "userEnv": { "githubUsername": "darrinm", "githubPassword": "<secret>" }, "appSettingsPath": "/", "appSettingsHome": ".settings" }';
 			args.config = '{ "userEnv": {}, "appSettingsPath": "/$gist/GHCode Settings/settings.json", "appKeybindingsPath": "/$gist/GHCode Settings/keybindings.json", "appSettingsHome": "/$gist/GHCode Settings" }';
 			var configuration = JSON.parse(args['config']);
+			configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 			configuration.workspacePath = args.workspacePath;
 			if (args.repo) {
 				configuration.githubRepo = args.repo;

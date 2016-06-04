@@ -73,6 +73,7 @@ export interface IFileServiceOptions {
 	commitMessage?: string;
 	debugBrkFileWatcherPort?: number;
 	settingsNotificationPaths?: string[];
+	gistRegEx?: RegExp;
 }
 
 /* TODO:
@@ -623,8 +624,7 @@ export class FileService implements files.IFileService {
 	private isGistPath(resource: uri) : boolean
 	{
 		// /$gist/<gist description property>/<filename>
-		var parts = this.toAbsolutePath(resource).split('/');
-		return (parts && parts.length == 4 && parts[1] == '$gist');		
+		return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));		
 	}
 	
 	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
@@ -639,7 +639,7 @@ export class FileService implements files.IFileService {
 		return new TPromise<GistInfo>((c, e) => {
 			if (!this.githubService.isAuthenticated()) {
 				// We don't have access to the current user's Gists.
-                e({ path: resource.path, error: "not authenticated" });
+				e({ path: resource.path, error: "not authenticated" });
 				return;
 			}
 			
