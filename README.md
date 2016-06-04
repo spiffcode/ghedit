@@ -55,6 +55,7 @@ Start a web server in the ghcode directory.
 * 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
 * Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
+* review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 
 #### BUGS
 
