@@ -47,13 +47,13 @@ Start a web server in the ghcode directory.
 #### TO DO
 
 * DP: session preservation (e.g. across refresh, browser/tab close/open)
-* project aka workspace settings
+* SL: project aka workspace settings
 * themes
 * search
 * DM: repo/branch/tag selection
 * DM: clean up stuff
 * 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
-* Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
+* SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 
