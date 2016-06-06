@@ -52,13 +52,15 @@ Start a web server in the ghcode directory.
 * search
 * DM: repo/branch/tag selection
 * DM: clean up stuff
-* 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
+* DM: 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
 * SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 * better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
 * move auth server to spiffhub.com
 * sync up with vscode 1.2
+* implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
+  Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
 
 #### BUGS
 

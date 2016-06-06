@@ -246,7 +246,7 @@ export class WorkbenchShell {
 // TODO:		this.toShutdown.push(this.navbarPart);
 				serviceCollection.set(INavbarService, this.navbarPart);
 				this.createNavbarPart();
-				this.fillNavbar(instantiationService);
+				this.populateNavbar(instantiationService);
 			}
 		});
 
@@ -278,13 +278,15 @@ export class WorkbenchShell {
 		this.navbarPart.create(navbarContainer);
 	}
     
-	private fillNavbar(instantiationService: InstantiationService): void {
+	private populateNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
-		this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
-		this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
-		this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
+		if (this.githubService.isAuthenticated) {
+			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
+			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
+			this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
+		}
 	}
 
 	private onWorkbenchStarted(): void {
