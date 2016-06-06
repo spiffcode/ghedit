@@ -56,6 +56,9 @@ Start a web server in the ghcode directory.
 * SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
+* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
+* move auth server to spiffhub.com
+* sync up with vscode 1.2
 
 #### BUGS
 
