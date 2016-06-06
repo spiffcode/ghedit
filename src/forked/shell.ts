@@ -282,7 +282,7 @@ export class WorkbenchShell {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
-		if (this.githubService.isAuthenticated) {
+		if (this.githubService.isAuthenticated()) {
 			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
 			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
 			this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
