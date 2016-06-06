@@ -1,0 +1,1 @@
+{"version":3,"file":"welcomePart.js","sourceRoot":"","sources":["../src/welcomePart.ts"],"names":[],"mappings":";;;;;;;IAGA;QAA0B,+BAAI;QAG7B,qBACC,EAAU;YAEV,kBAAM,EAAE,CAAC,CAAC;QACX,CAAC;QAEM,uCAAiB,GAAxB,UAAyB,MAAe;YACvC,IAAI,CAAC,iBAAiB,GAAG,WAAC,CAAC,MAAM,CAAC,CAAC;YAEnC,MAAM,CAAC,IAAI,CAAC,iBAAiB,CAAC;QAC/B,CAAC;QACF,kBAAC;IAAD,CAAC,AAdD,CAA0B,WAAI,GAc7B"}

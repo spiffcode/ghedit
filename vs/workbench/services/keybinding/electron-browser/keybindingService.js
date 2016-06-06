@@ -85,14 +85,14 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
     });
     var WorkbenchKeybindingService = (function (_super) {
         __extends(WorkbenchKeybindingService, _super);
-        function WorkbenchKeybindingService(configurationService, contextService, eventService, telemetryService, messageService, statusBarService, extensionService, domNode) {
+        function WorkbenchKeybindingService(configurationService, contextService, eventService, telemetryService, messageService, extensionService, domNode) {
             var _this = this;
-            _super.call(this, configurationService, messageService, statusBarService);
+            _super.call(this, configurationService, messageService);
             this.contextService = contextService;
             this.eventService = eventService;
             this.telemetryService = telemetryService;
             this._extensionService = extensionService;
-            this.toDispose = this.eventService.addListener2(events_1.EventType.WORKBENCH_OPTIONS_CHANGED, function (e) { return _this.onOptionsChanged(e); });
+            this.toDispose = this.eventService.addListener(events_1.EventType.WORKBENCH_OPTIONS_CHANGED, function (e) { return _this.onOptionsChanged(e); });
             this._eventService = eventService;
             keybindingsExtPoint.setHandler(function (extensions) {
                 var commandAdded = false;
@@ -138,7 +138,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
             }
         };
         WorkbenchKeybindingService.prototype.dispose = function () {
-            this.toDispose.dispose();
+            this.toDispose();
         };
         WorkbenchKeybindingService.prototype.getLabelFor = function (keybinding) {
             return keybinding.toCustomLabel(nativeKeymap_1.getNativeLabelProvider());
@@ -210,7 +210,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/platform', 'vs/base/comm
             }
             var desc = {
                 id: command,
-                when: keybindingResolver_1.IOSupport.readKeybindingWhen(when),
+                context: keybindingResolver_1.IOSupport.readKeybindingContexts(when),
                 weight: weight,
                 primary: keybindingResolver_1.IOSupport.readKeybinding(key),
                 mac: mac && { primary: keybindingResolver_1.IOSupport.readKeybinding(mac) },
