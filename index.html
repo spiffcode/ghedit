@@ -145,9 +145,9 @@
 			// TODO: Pass them as part of the ghauth redirect to avoid persistent state. As of now
 			// ghauth redirects with entirely new query args.
 			if (args.repo)
-				window.localStorage.setItem('githubRepo', args.repo);
+				window.sessionStorage.setItem('githubRepo', args.repo);
 			if (args.ref)
-				window.localStorage.setItem('githubRef', args.ref);
+				window.sessionStorage.setItem('githubRef', args.ref);
 
 			var selfURL = location.origin + location.pathname;
 			if (args.code) {
@@ -159,8 +159,8 @@
 				window.localStorage.setItem('githubToken', args.access_token);
 
 				// Reclaim the stashed repo and ref.
-				args.repo = window.localStorage.getItem('githubRepo');
-				args.ref = window.localStorage.getItem('githubRef');
+				args.repo = window.sessionStorage.getItem('githubRepo');
+				args.ref = window.sessionStorage.getItem('githubRef');
 
 				// Rewrite the browser URL to remove access_code and add repo and ref.
 				window.history.replaceState(null, '', selfURL + '?repo=' + args.repo + (args.ref ? '&ref=' + args.ref : ''));
@@ -174,11 +174,26 @@
 			var configuration = JSON.parse(args['config']);
 			configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 			configuration.workspacePath = args.workspacePath;
+
+			// If there's no repo in the URL, look in sessionStorage, then localStorage
+			if (!args.repo) {
+				args.repo = window.sessionStorage.getItem('githubRepo');
+				args.ref = window.sessionStorage.getItem('githubRef');
+				if (!args.repo) {
+					args.repo = window.localStorage.getItem('lastGithubRepo');
+					args.ref = window.localStorage.getItem('lastGithubRef');
+				}
+			}
+
 			if (args.repo) {
 				configuration.githubRepo = args.repo;
+				configuration.githubRef = args.ref || 'master';
 				configuration.workspacePath = '/';
+				window.localStorage.setItem('lastGithubRepo', configuration.githubRepo);
+				window.localStorage.setItem('lastGithubRef', configuration.githubRef);
+				window.sessionStorage.setItem('githubRepo', configuration.githubRepo);
+				window.sessionStorage.setItem('githubRef', configuration.githubRef);
 			}
-			configuration.githubRef = args.ref || 'master';
 
 			configuration.userEnv.githubToken = window.localStorage.getItem('githubToken');
 			if (args.u)
