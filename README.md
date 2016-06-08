@@ -49,22 +49,23 @@ Start a web server in the ghcode directory.
 * DP: session preservation (e.g. across refresh, browser/tab close/open)
 * SL: project aka workspace settings
 * DP: themes
-* search
+* search (https://developer.github.com/v3/search/#search-code)
 * DM: repo/branch/tag selection
 * DM: clean up stuff
-* DM: 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing panels)
+* DM: 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing UI)
 * SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 * better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
 * move auth server to spiffhub.com
-* sync up with vscode 1.2
+* sync up with latest vscode
 * implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
   Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
 * DP: Minimizing out-build
 
 #### BUGS
 
+* search within Command Palette barfs
 * need error message for invalid/inaccessible repo
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency

@@ -66,4 +66,27 @@ declare module "github" {
 		name?: string;
 		email?: string;
 	}
+
+	interface RepositoryInfo {
+		id: Number,
+		owner: UserInfo,
+		name: string,
+		full_name: string,
+		description: string,
+		private: boolean,
+		fork: boolean,
+		url: string,
+		html_url: string,
+		default_branch: string,
+		pushed_at: string,
+		created_at: string,
+		updated_at: string,
+		permissions: Permissions
+	}
+
+	interface Permissions {
+		admin: boolean,
+		push: boolean,
+		pull: boolean
+	}
 }

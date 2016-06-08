@@ -105,9 +105,11 @@ import {ISettingsService, UserSettings} from 'forked/userSettings';
 import {UserNavbarItem} from 'userNavbarItem';
 import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
+import {WelcomePart} from 'welcomePart';
 
 const Identifiers = {
-	NAVBAR_PART: 'workbench.parts.navbar'
+	NAVBAR_PART: 'workbench.parts.navbar',
+	WELCOME_PART: 'workbench.parts.welcome'
 };
 
 // self registering service
@@ -165,6 +167,7 @@ export class WorkbenchShell {
 	private options: IOptions;
 	private workbench: Workbench;
 	private navbarPart: NavbarPart;
+	private welcomePart: WelcomePart;
 
 	private messagesShowingContextKey: IKeybindingContextKey<boolean>;
 
@@ -246,7 +249,7 @@ export class WorkbenchShell {
 // TODO:		this.toShutdown.push(this.navbarPart);
 				serviceCollection.set(INavbarService, this.navbarPart);
 				this.createNavbarPart();
-				this.populateNavbar(instantiationService);
+				this.fillNavbar(instantiationService);
 			}
 		});
 
@@ -278,15 +281,27 @@ export class WorkbenchShell {
 		this.navbarPart.create(navbarContainer);
 	}
     
-	private populateNavbar(instantiationService: InstantiationService): void {
+	private fillNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
-		if (this.githubService.isAuthenticated()) {
+
+		// Don't show these elements when in welcome mdoe.
+		if (!this.isWelcomeMode()) {
 			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
-			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);		
+			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);
 			this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
 		}
+	}
+
+	private createWelcomePart(): void {
+		this.welcomePart = new WelcomePart(Identifiers.WELCOME_PART, this.githubService);
+
+		this.welcomePart.create(this.contentsContainer);
+	}
+
+	private isWelcomeMode(): boolean {
+		return !this.githubService.isAuthenticated() || !this.githubService.repo;
 	}
 
 	private onWorkbenchStarted(): void {
@@ -531,6 +546,11 @@ export class WorkbenchShell {
 
 		// Create Contents
 		this.contentsContainer = this.createContents($(this.content));
+
+		// If the user isn't authenticated or no repository has been specified show them a
+		// special welcome to help them get started.
+		if (this.isWelcomeMode())
+			this.createWelcomePart();
 
 		// Layout
 		this.layout();
