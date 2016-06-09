@@ -48,7 +48,7 @@ Start a web server in the ghcode directory.
 
 * DP: session preservation (e.g. across refresh, browser/tab close/open)
 * SL: project aka workspace settings
-* themes
+* DP: themes
 * search
 * DM: repo/branch/tag selection
 * DM: clean up stuff
@@ -61,6 +61,7 @@ Start a web server in the ghcode directory.
 * sync up with vscode 1.2
 * implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
   Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
+* DP: Minimizing out-build
 
 #### BUGS
 
