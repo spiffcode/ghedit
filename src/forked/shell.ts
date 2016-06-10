@@ -172,6 +172,8 @@ export class WorkbenchShell {
 	private messagesShowingContextKey: IKeybindingContextKey<boolean>;
 
 	constructor(container: HTMLElement, workspace: IWorkspace, services: ICoreServices, configuration: IConfiguration, options: IOptions) {
+		if (!container)
+			throw 'WorkbenchShell container == null?!';
 		this.container = container;
 
 		this.workspace = workspace;

@@ -144,6 +144,17 @@
 			// Stash the repo and ref so we can pick them up after auth completes.
 			// TODO: Pass them as part of the ghauth redirect to avoid persistent state. As of now
 			// ghauth redirects with entirely new query args.
+			/*
+			if (window.sessionStorage.getItem('githubRepo') == 'null')
+				window.sessionStorage.removeItem('githubRepo');
+			if (window.sessionStorage.getItem('githubRef') == 'null')
+				window.sessionStorage.removeItem('githubRef');
+			if (window.localStorage.getItem('lastGithubRepo') == 'null')
+				window.localStorage.removeItem('lastGithubRepo');
+			if (window.localStorage.getItem('lastGithubRef') == 'null')
+				window.localStorage.removeItem('lastGithubRef');
+			*/
+
 			if (args.repo)
 				window.sessionStorage.setItem('githubRepo', args.repo);
 			if (args.ref)
@@ -163,7 +174,7 @@
 				args.ref = window.sessionStorage.getItem('githubRef');
 
 				// Rewrite the browser URL to remove access_code and add repo and ref.
-				window.history.replaceState(null, '', selfURL + '?repo=' + args.repo + (args.ref ? '&ref=' + args.ref : ''));
+				window.history.replaceState(null, '', selfURL + (args.repo ? '?repo=' + args.repo + (args.ref ? '&ref=' + args.ref : '') : ''));
 
 			} else if (args.error) {
 				console.log(args.error + ': ' + decodeURIComponent(args.error_description.replace(/\+/g, '%20')));

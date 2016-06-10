@@ -42,6 +42,10 @@ export class UserNavbarItem implements INavbarItem {
 				window.localStorage.removeItem('githubToken');
 				window.localStorage.removeItem('githubUser');
 				window.localStorage.removeItem('githubPassword');
+				window.sessionStorage.removeItem('githubRepo');
+				window.sessionStorage.removeItem('githuRef');
+				window.localStorage.removeItem('lastGithubRepo');
+				window.localStorage.removeItem('lastGithubRef');
 
 				// Refresh to the page to fully present the signed out state.
 				window.location.reload();
