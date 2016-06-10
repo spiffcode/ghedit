@@ -37,7 +37,7 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
                     window.localStorage.removeItem('lastGithubRepo');
                     window.localStorage.removeItem('lastGithubRef');
                     // Refresh to the page to fully present the signed out state.
-                    window.location.reload();
+                    location.href = location.origin + location.pathname;
                     return winjs_base_1.TPromise.as(true);
                 }),
             ];
