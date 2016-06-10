@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.welcome-part {
+	width: 100%;
+	height: 100%;
+	color: white;
+	padding: 10px;
+	font-size: 14px;
+	box-sizing: border-box;
+}
+
+.welcome-part > .input-prompt {
+	font-weight: bold;
+}
+
+.welcome-part > .header {
+	font-weight: bold;
+	padding-top: 12px;
+	padding-bottom: 4px;
+}
+
+.welcome-part > .monaco-inputbox {
+	display: inline-block;
+	margin: 0 5px;
+}
+
+.welcome-part > .monaco-button {
+	display: inline;
+}
+
+.welcome-text > a {
+	color: #4080D0;
+}
+
+/* High Contrast Black */
+
+.hc-black .welcome-part {
+	background-color: #000;
+}
