@@ -48,7 +48,7 @@ export class UserNavbarItem implements INavbarItem {
 				window.localStorage.removeItem('lastGithubRef');
 
 				// Refresh to the page to fully present the signed out state.
-				window.location.reload();
+				location.href = location.origin + location.pathname;
 				return TPromise.as(true);
 			}),
 		];
