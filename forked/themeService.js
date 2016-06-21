@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'forked/windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event'], function (require, exports, winjs_base_1, nls, Paths, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/common/paths', 'vs/base/common/json', 'vs/platform/extensions/common/extensionsRegistry', 'vs/workbench/services/themes/common/themeService', 'vs/platform/theme/common/themes', 'forked/windowService', 'vs/platform/storage/common/storage', 'vs/workbench/common/constants', 'vs/base/browser/builder', 'vs/base/common/event'], function (require, exports, winjs_base_1, nls, Paths, Json, extensionsRegistry_1, themeService_1, themes_1, windowService_1, storage_1, constants_1, builder_1, event_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Spiffcode, Inc. All rights reserved.
      *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -71,6 +71,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     _this.onThemes(ext.description.extensionFolderPath, ext.description.id, ext.value, ext.collector);
                 }
             });
+            for (var _i = 0, themesInitialize_1 = themesInitialize; _i < themesInitialize_1.length; _i++) {
+                var theme = themesInitialize_1[_i];
+                this.onThemes("", theme.extensionId, theme.themes, null);
+            }
             windowService.onBroadcast(function (e) {
                 if (e.channel === THEME_CHANNEL && typeof e.payload === 'string') {
                     _this.setTheme(e.payload, false);
@@ -204,31 +208,24 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         });
     }
     function _loadThemeDocument(themePath) {
-        return winjs_base_1.TPromise.wrapError(nls.localize('error.cannotparse', "_themeLoadDocument not implemented"));
-        /* TODO:
-        return pfs.readFile(themePath).then(content => {
+        // return pfs.readFile(themePath).then(content => {
+        var rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
+        return winjs_base_1.xhr({ type: 'GET', url: rootUrl + themePath }).then(function (xhr) {
             if (Paths.extname(themePath) === '.json') {
-                let errors: string[] = [];
-                let contentValue = <ThemeDocument> Json.parse(content.toString(), errors);
+                var errors = [];
+                var contentValue_1 = Json.parse(xhr.responseText, errors);
                 if (errors.length > 0) {
-                    return TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
+                    return winjs_base_1.TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
                 }
-                if (contentValue.include) {
-                    return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue.include)).then(includedValue => {
-                        contentValue.settings = includedValue.settings.concat(contentValue.settings);
-                        return TPromise.as(contentValue);
+                if (contentValue_1.include) {
+                    return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue_1.include)).then(function (includedValue) {
+                        contentValue_1.settings = includedValue.settings.concat(contentValue_1.settings);
+                        return winjs_base_1.TPromise.as(contentValue_1);
                     });
                 }
-                return TPromise.as(contentValue);
-            } else {
-                let parseResult = plist.parse(content.toString());
-                if (parseResult.errors && parseResult.errors.length) {
-                    return TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
-                }
-                return TPromise.as(parseResult.value);
+                return winjs_base_1.TPromise.as(contentValue_1);
             }
         });
-        */
     }
     function _processThemeObject(themeId, themeDocument) {
         var cssRules = [];
@@ -341,6 +338,43 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             themeStyles[0].innerHTML = styleSheetContent;
         }
     }
+    var themesInitialize = [
+        {
+            extensionId: "vscode.theme-defaults",
+            themes: [
+                {
+                    id: "",
+                    label: "Dark+ (default dark)",
+                    uiTheme: "vs-dark",
+                    path: "./themes/dark_plus.json"
+                },
+                {
+                    id: "",
+                    label: "Light+ (default light)",
+                    uiTheme: "vs",
+                    path: "./themes/light_plus.json"
+                },
+                {
+                    id: "",
+                    label: "Dark (Visual Studio)",
+                    uiTheme: "vs-dark",
+                    path: "./themes/dark_vs.json"
+                },
+                {
+                    id: "",
+                    label: "Light (Visual Studio)",
+                    uiTheme: "vs",
+                    path: "./themes/light_vs.json"
+                },
+                {
+                    id: "",
+                    label: "High Contrast",
+                    uiTheme: "hc-black",
+                    path: "./themes/hc_black.json"
+                }
+            ],
+        }
+    ];
     var Color = (function () {
         function Color(arg) {
             if (typeof arg === 'string') {
