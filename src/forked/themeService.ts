@@ -9,10 +9,10 @@
 // This is a port of vs/workbench/services/themes/electron-browser/themeService.ts
 // with Electron and Node dependencies removed/replaced.
 
-import {TPromise} from 'vs/base/common/winjs.base';
+import {TPromise, xhr} from 'vs/base/common/winjs.base';
 import nls = require('vs/nls');
 import Paths = require('vs/base/common/paths');
-// TODO: import Json = require('vs/base/common/json');
+import Json = require('vs/base/common/json');
 import {IThemeExtensionPoint} from 'vs/platform/theme/common/themeExtensionPoint';
 import {IExtensionService} from 'vs/platform/extensions/common/extensions';
 import {ExtensionsRegistry, IExtensionMessageCollector} from 'vs/platform/extensions/common/extensionsRegistry';
@@ -117,6 +117,10 @@ export class ThemeService implements IThemeService {
 				this.onThemes(ext.description.extensionFolderPath, ext.description.id, ext.value, ext.collector);
 			}
 		});
+
+		for (let theme of themesInitialize) {
+			this.onThemes("", theme.extensionId, theme.themes, null);
+		}
 
 		windowService.onBroadcast(e => {
 			if (e.channel === THEME_CHANNEL && typeof e.payload === 'string') {
@@ -266,12 +270,11 @@ function applyTheme(theme: IThemeData, onApply: (themeId:string) => void): TProm
 }
 
 function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
-	return TPromise.wrapError(nls.localize('error.cannotparse', "_themeLoadDocument not implemented"));
-	/* TODO:
-	return pfs.readFile(themePath).then(content => {
+	// return pfs.readFile(themePath).then(content => {
+	return xhr({ type: 'GET', url: 'src/' + themePath }).then((xhr: XMLHttpRequest) => {
 		if (Paths.extname(themePath) === '.json') {
 			let errors: string[] = [];
-			let contentValue = <ThemeDocument> Json.parse(content.toString(), errors);
+			let contentValue = <ThemeDocument> Json.parse(xhr.responseText, errors);
 			if (errors.length > 0) {
 				return TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
 			}
@@ -282,15 +285,14 @@ function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
 				});
 			}
 			return TPromise.as(contentValue);
-		} else {
-			let parseResult = plist.parse(content.toString());
-			if (parseResult.errors && parseResult.errors.length) {
-				return TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
-			}
-			return TPromise.as(parseResult.value);
+		// } else {
+		// 	let parseResult = plist.parse(content.toString());
+		// 	if (parseResult.errors && parseResult.errors.length) {
+		// 		return TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
+		// 	}
+		// 	return TPromise.as(parseResult.value);
 		}
 	});
-	*/
 }
 
 function _processThemeObject(themeId: string, themeDocument: ThemeDocument): string {
@@ -412,6 +414,44 @@ function _applyRules(styleSheetContent: string) {
 		(<HTMLStyleElement>themeStyles[0]).innerHTML = styleSheetContent;
 	}
 }
+
+let themesInitialize = [
+	{
+		extensionId: "vscode.theme-defaults",
+		themes: [
+			{
+				id: "",
+				label: "Dark+ (default dark)",
+				uiTheme: "vs-dark",
+				path: "./themes/dark_plus.json"
+			},
+			{
+				id: "",
+				label: "Light+ (default light)",
+				uiTheme: "vs",
+				path: "./themes/light_plus.json"
+			},
+			{
+				id: "",
+				label: "Dark (Visual Studio)",
+				uiTheme: "vs-dark",
+				path: "./themes/dark_vs.json"
+			},
+			{
+				id: "",
+				label: "Light (Visual Studio)",
+				uiTheme: "vs",
+				path: "./themes/light_vs.json"
+			},
+			{
+				id: "",
+				label: "High Contrast",
+				uiTheme: "hc-black",
+				path: "./themes/hc_black.json"
+			}
+		],
+	}
+];
 
 interface RGBA { r: number; g: number; b: number; a: number; }
 
