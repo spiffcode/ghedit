@@ -271,7 +271,8 @@ function applyTheme(theme: IThemeData, onApply: (themeId:string) => void): TProm
 
 function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
 	// return pfs.readFile(themePath).then(content => {
-	return xhr({ type: 'GET', url: 'src/' + themePath }).then((xhr: XMLHttpRequest) => {
+	let rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
+	return xhr({ type: 'GET', url: rootUrl + themePath }).then((xhr: XMLHttpRequest) => {
 		if (Paths.extname(themePath) === '.json') {
 			let errors: string[] = [];
 			let contentValue = <ThemeDocument> Json.parse(xhr.responseText, errors);

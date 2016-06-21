@@ -11,6 +11,8 @@ gulp.task('pre-build', shell.task([
 		'cp src/forked/*.css out-build/forked',
 		'cp src/*.css out-build',
     'cp src/forked/*.png out-build/forked',
+    'mkdir -p out-build/themes',
+		'cp src/themes/*.* out-build/themes',
 ]));
 
 gulp.task('build', ['pre-build'], shell.task([
