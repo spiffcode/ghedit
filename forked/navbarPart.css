@@ -79,3 +79,7 @@
 	border-top: 1px solid #6FC3DF;
 	background-color: #000;
 }
+
+.tight-menu-items {
+	padding: 0.4em 1em !important;
+}

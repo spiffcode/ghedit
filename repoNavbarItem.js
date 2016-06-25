@@ -26,7 +26,7 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
                     return;
                 _this._actions = [];
                 var _loop_1 = function(repo) {
-                    var action = new actions_1.Action('repo', repo.full_name, '', true, function (event) {
+                    var action = new actions_1.Action('repo', repo.full_name, 'tight-menu-items', true, function (event) {
                         githubService_1.openRepository(repo.full_name);
                         return winjs_base_1.TPromise.as(true);
                     });
