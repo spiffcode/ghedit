@@ -46,9 +46,7 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* DP: session preservation (e.g. across refresh, browser/tab close/open)
 * SL: project aka workspace settings
-* DP: themes
 * search (https://developer.github.com/v3/search/#search-code)
 * DM: repo/branch/tag selection
 * DM: clean up stuff
