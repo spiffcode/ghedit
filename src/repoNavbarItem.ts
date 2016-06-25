@@ -32,7 +32,7 @@ export class RepoNavbarItem implements INavbarItem, IActionProvider {
 
 			this._actions = [];
 			for (let repo of repos) {
-				let action = new Action('repo', repo.full_name, '', true, (event: any) => {
+				let action = new Action('repo', repo.full_name, 'tight-menu-items', true, (event: any) => {
 					openRepository(repo.full_name);
 					return TPromise.as(true);
 				});

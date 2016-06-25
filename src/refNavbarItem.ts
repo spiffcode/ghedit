@@ -33,7 +33,7 @@ export class RefNavbarItem implements INavbarItem, IActionProvider {
 
 			this._actions = [];
 			for (let branch of branches) {
-				let action = new Action('ref', branch, '', true, (event: any) => {
+				let action = new Action('ref', branch, 'tight-menu-items', true, (event: any) => {
 					openRepository(this.githubService.repo, branch);
 					return TPromise.as(true);
 				});
