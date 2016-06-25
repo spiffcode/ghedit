@@ -273,9 +273,10 @@ function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
 	// return pfs.readFile(themePath).then(content => {
 	let rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
 	return xhr({ type: 'GET', url: rootUrl + themePath }).then((xhr: XMLHttpRequest) => {
+		let content = xhr.responseText;
 		if (Paths.extname(themePath) === '.json') {
 			let errors: string[] = [];
-			let contentValue = <ThemeDocument> Json.parse(xhr.responseText, errors);
+			let contentValue = <ThemeDocument> Json.parse(content, errors);
 			if (errors.length > 0) {
 				return TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
 			}
@@ -449,7 +450,61 @@ let themesInitialize = [
 				label: "High Contrast",
 				uiTheme: "hc-black",
 				path: "./themes/hc_black.json"
-			}
+			},
+			{
+				id: "",
+				label: "Monokai",
+				uiTheme: "vs-dark",
+				path: "./themes/Monokai.json"
+			},
+			{
+				id: "",
+				label: "Monokai Dimmed",
+				uiTheme: "vs-dark",
+				path: "./themes/dimmed-monokai.json"
+			},
+			{
+				id: "",
+				label: "Abyss",
+				uiTheme: "vs-dark",
+				path: "./themes/Abyss.json"
+			},
+			{
+				id: "",
+				label: "Kimbie Dark",
+				uiTheme: "vs-dark",
+				path: "./themes/Kimbie_dark.json"
+			},
+			{
+				id: "",
+				label: "Quiet Light",
+				uiTheme: "vs",
+				path: "./themes/QuietLight.json"
+			},
+			{
+				id: "",
+				label: "Red",
+				uiTheme: "vs-dark",
+				path: "./themes/red.json"
+			},
+			{
+				id: "",
+				label: "Solarized Dark",
+				uiTheme: "vs-dark",
+				path: "./themes/Solarized-dark.json"
+			},
+			{
+				id: "",
+				label: "Solarized Light",
+				uiTheme: "vs",
+				path: "./themes/Solarized-light.json"
+			},
+			{
+				id: "",
+				label: "Tomorrow Night Blue",
+				uiTheme: "vs-dark",
+				path: "./themes/Tomorrow-Night-Blue.json"
+			},
 		],
 	}
 ];
