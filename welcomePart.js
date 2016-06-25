@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part', 'vs/base/browser/builder', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/button/button', 'vs/base/common/keyCodes', 'vs/base/browser/keyboardEvent', 'vs/css!./welcomePart'], function (require, exports, dom, part_1, builder_1, inputBox_1, button_1, keyCodes_1, keyboardEvent_1) {
+define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part', 'vs/base/browser/builder', 'githubService', 'vs/base/browser/ui/inputbox/inputBox', 'vs/base/browser/ui/button/button', 'vs/base/common/keyCodes', 'vs/base/browser/keyboardEvent', 'vs/css!./welcomePart'], function (require, exports, dom, part_1, builder_1, githubService_1, inputBox_1, button_1, keyCodes_1, keyboardEvent_1) {
     'use strict';
     // TODO: localization
     var DEFAULT_INPUT_ARIA_LABEL = 'Enter a Repository';
@@ -40,14 +40,14 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part'
                 dom.addDisposableListener(this.inputBox.inputElement, dom.EventType.KEY_DOWN, function (e) {
                     var keyboardEvent = new keyboardEvent_1.StandardKeyboardEvent(e);
                     if (keyboardEvent.keyCode === keyCodes_1.KeyCode.Enter) {
-                        _this.openRepository(_this.inputBox.value);
+                        githubService_1.openRepository(_this.inputBox.value);
                     }
                 });
                 this.openButton = new button_1.Button(el);
                 // TODO: localization
                 this.openButton.label = 'Open';
                 this.openButton.on('click', function () {
-                    _this.openRepository(_this.inputBox.value);
+                    githubService_1.openRepository(_this.inputBox.value);
                 });
                 // Present a list of the user's repositories.
                 var header = document.createElement('div');
@@ -69,7 +69,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part'
                         builder_1.$(item).bind(repo);
                         builder_1.$(item).on('click', function (e, builder) {
                             var repo = builder.getBinding();
-                            _this.openRepository(repo.full_name);
+                            githubService_1.openRepository(repo.full_name);
                         });
                         var anchor = document.createElement('a');
                         builder_1.$(anchor).text(repo.full_name);
@@ -90,10 +90,6 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part'
                 });
             }
             return this.container;
-        };
-        WelcomePart.prototype.openRepository = function (repo) {
-            var selfURL = window.location.origin + window.location.pathname;
-            window.location.href = selfURL + '?repo=' + repo;
         };
         return WelcomePart;
     }(part_1.Part));

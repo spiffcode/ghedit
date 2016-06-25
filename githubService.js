@@ -65,5 +65,10 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
         return GithubService;
     }());
     exports.GithubService = GithubService;
+    function openRepository(repo, ref) {
+        var selfURL = window.location.origin + window.location.pathname;
+        window.location.href = selfURL + '?repo=' + repo + (ref ? '&ref=' + ref : '');
+    }
+    exports.openRepository = openRepository;
 });
 //# sourceMappingURL=githubService.js.map
