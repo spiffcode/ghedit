@@ -95,3 +95,8 @@ export class GithubService implements IGithubService {
 		});
 	}
 }
+
+export function openRepository(repo: string, ref?: string) {
+	let selfURL = window.location.origin + window.location.pathname;
+	window.location.href = selfURL + '?repo=' + repo + (ref ? '&ref=' + ref : '');
+}

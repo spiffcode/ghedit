@@ -103,6 +103,8 @@ import {NavbarPart} from 'forked/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
 import {ISettingsService, UserSettings} from 'forked/userSettings';
 import {UserNavbarItem} from 'userNavbarItem';
+import {RepoNavbarItem} from 'repoNavbarItem';
+import {RefNavbarItem} from 'refNavbarItem';
 import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
 import {WelcomePart} from 'welcomePart';
@@ -285,6 +287,12 @@ export class WorkbenchShell {
     
 	private fillNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
+		if (this.githubService.isAuthenticated()) {
+			let repoItem = instantiationService.createInstance(RepoNavbarItem);
+			this.navbarPart.addItem(repoItem, NavbarAlignment.LEFT, 500);
+			let refItem = instantiationService.createInstance(RefNavbarItem);
+			this.navbarPart.addItem(refItem, NavbarAlignment.LEFT, 400);
+		}
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
 

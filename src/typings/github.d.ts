@@ -36,6 +36,8 @@ declare module "github" {
 		contents(ref: string, path: string, cb: (err: Error, contents?: any, xhr?: any) => void);
 		write(branch: string, path: string, content: string, message: string, cb: (err: Error, response?: any, xhr?: any) => void);
 		write(branch: string, path: string, content: string, message: string, options: any, cb: (err: Error, response?: any, xhr?: any) => void);
+		listBranches(cb: (err: Error, heads?: string[], xhr?: any) => void);
+		listTags(cb: (err: Error, tags?: TagInfo[], xhr?: any) => void);
 	}
 	
 	class Gist {
@@ -88,5 +90,17 @@ declare module "github" {
 		admin: boolean,
 		push: boolean,
 		pull: boolean
+	}
+
+	interface CommitInfo {
+		sha: string,
+		url: string
+	}
+
+	interface TagInfo {
+		name: string,
+		commit: CommitInfo,
+		zipball_url: string,
+		tarball_url: string
 	}
 }

@@ -11,7 +11,7 @@ import dom = require('vs/base/browser/dom');
 import {Part} from 'vs/workbench/browser/part';
 import {Builder, $} from 'vs/base/browser/builder';
 import {RepositoryInfo, Error} from 'github';
-import {IGithubService} from 'githubService';
+import {IGithubService, openRepository} from 'githubService';
 import {InputBox} from 'vs/base/browser/ui/inputbox/inputBox';
 import {Button} from 'vs/base/browser/ui/button/button';
 import {KeyCode} from 'vs/base/common/keyCodes';
@@ -56,7 +56,7 @@ export class WelcomePart extends Part {
 			dom.addDisposableListener(this.inputBox.inputElement, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let keyboardEvent: StandardKeyboardEvent = new StandardKeyboardEvent(e);
 				if (keyboardEvent.keyCode === KeyCode.Enter) {
-					this.openRepository(this.inputBox.value);
+					openRepository(this.inputBox.value);
 				}
 			});
 
@@ -64,7 +64,7 @@ export class WelcomePart extends Part {
 			// TODO: localization
 			this.openButton.label = 'Open';
 			this.openButton.on('click', () => {
-				this.openRepository(this.inputBox.value);
+				openRepository(this.inputBox.value);
 			});
 
 			// Present a list of the user's repositories.
@@ -89,7 +89,7 @@ export class WelcomePart extends Part {
 
 					$(item).on('click', (e, builder: Builder) => {
 						let repo = builder.getBinding() as RepositoryInfo;
-						this.openRepository(repo.full_name);
+						openRepository(repo.full_name);
 					});
 
 					let anchor = document.createElement('a');
@@ -122,10 +122,5 @@ export class WelcomePart extends Part {
 		}
 
 		return this.container;
-	}
-
-	private openRepository(repo: string) {
-		let selfURL = window.location.origin + window.location.pathname;
-		window.location.href = selfURL + '?repo=' + repo;
 	}
 }
