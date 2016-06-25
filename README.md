@@ -48,9 +48,7 @@ Start a web server in the ghcode directory.
 
 * SL: project aka workspace settings
 * search (https://developer.github.com/v3/search/#search-code)
-* DM: repo/branch/tag selection
 * DM: clean up stuff
-* DM: 'no repository' experience (Welcome & about text, clear means to open a repo, no useless/confusing UI)
 * SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
@@ -68,3 +66,6 @@ Start a web server in the ghcode directory.
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
 * file encoding smarts (disabled due to Node dependency)
+* DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
+* DM: tags aren't presented on ref menu
+* DM: repo and ref menus need to scroll (or something) when too many items to fit in available view space
