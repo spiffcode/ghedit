@@ -211,9 +211,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
         // return pfs.readFile(themePath).then(content => {
         var rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
         return winjs_base_1.xhr({ type: 'GET', url: rootUrl + themePath }).then(function (xhr) {
+            var content = xhr.responseText;
             if (Paths.extname(themePath) === '.json') {
                 var errors = [];
-                var contentValue_1 = Json.parse(xhr.responseText, errors);
+                var contentValue_1 = Json.parse(content, errors);
                 if (errors.length > 0) {
                     return winjs_base_1.TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
                 }
@@ -371,7 +372,61 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
                     label: "High Contrast",
                     uiTheme: "hc-black",
                     path: "./themes/hc_black.json"
-                }
+                },
+                {
+                    id: "",
+                    label: "Monokai",
+                    uiTheme: "vs-dark",
+                    path: "./themes/Monokai.json"
+                },
+                {
+                    id: "",
+                    label: "Monokai Dimmed",
+                    uiTheme: "vs-dark",
+                    path: "./themes/dimmed-monokai.json"
+                },
+                {
+                    id: "",
+                    label: "Abyss",
+                    uiTheme: "vs-dark",
+                    path: "./themes/Abyss.json"
+                },
+                {
+                    id: "",
+                    label: "Kimbie Dark",
+                    uiTheme: "vs-dark",
+                    path: "./themes/Kimbie_dark.json"
+                },
+                {
+                    id: "",
+                    label: "Quiet Light",
+                    uiTheme: "vs",
+                    path: "./themes/QuietLight.json"
+                },
+                {
+                    id: "",
+                    label: "Red",
+                    uiTheme: "vs-dark",
+                    path: "./themes/red.json"
+                },
+                {
+                    id: "",
+                    label: "Solarized Dark",
+                    uiTheme: "vs-dark",
+                    path: "./themes/Solarized-dark.json"
+                },
+                {
+                    id: "",
+                    label: "Solarized Light",
+                    uiTheme: "vs",
+                    path: "./themes/Solarized-light.json"
+                },
+                {
+                    id: "",
+                    label: "Tomorrow Night Blue",
+                    uiTheme: "vs-dark",
+                    path: "./themes/Tomorrow-Night-Blue.json"
+                },
             ],
         }
     ];

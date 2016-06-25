@@ -7,6 +7,9 @@
 // This is a port of vs/workbench/workbench.main.js with Electron
 // and Node dependencies removed/replaced.
 require.config({
+    // paths : {
+    // 	'sax' : 'lib/sax.js',
+    // },
     ignoreDuplicateModules: [
         'vs/workbench/parts/search/common/searchModel',
         'vs/workbench/parts/search/common/searchQuery'
