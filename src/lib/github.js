@@ -623,7 +623,7 @@
                var data = {
                   message: message,
                   author: {
-                     name: options.user,
+                     name: userData.name,
                      email: userData.email
                   },
                   parents: [

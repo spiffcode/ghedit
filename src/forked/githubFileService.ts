@@ -493,15 +493,25 @@ export class FileService implements files.IFileService {
 	}
 
 	public rename(resource: uri, newName: string): TPromise<files.IFileStat> {
-		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.rename not implemented (' + resource.toString(true) + ')',
-			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-		});
-		/* TODO:
-		let newPath = paths.join(paths.dirname(resource.fsPath), newName);
 
-		return this.moveFile(resource, uri.file(newPath));
-		*/
+		let oldPath = this.toAbsolutePath(resource);
+		if (oldPath[0] == '/')
+			oldPath = oldPath.slice(1, oldPath.length);
+		let newPath = paths.join(paths.dirname(oldPath), newName);
+
+		return new TPromise<files.IFileStat>((c, e) => {
+			this.repo.move(this.ref, oldPath, newPath, (err: GithubError) => {
+				err ? e(err) : c(null);
+			});
+		}).then(() => {
+			return this.resolveFile(uri.file(newPath));
+		}, (err: GithubError) => {
+			console.log('failed to rename file ' + resource.toString(true));
+			return TPromise.wrapError(<files.IFileOperationResult>{
+				message: 'failed to rename file',
+				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+			});			
+		});
 	}
 
 	public moveFile(source: uri, target: uri, overwrite?: boolean): TPromise<files.IFileStat> {
