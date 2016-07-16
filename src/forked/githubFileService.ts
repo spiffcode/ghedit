@@ -599,13 +599,18 @@ export class FileService implements files.IFileService {
 	}
 
 	public del(resource: uri): TPromise<void> {
-		console.log('githubFileService.del not implemented (' + resource.toString(true) + ')');
-		return TPromise.as<void>(null);
-		/* TODO:
-		let absolutePath = this.toAbsolutePath(resource);
-
-		return nfcall(extfs.del, absolutePath, this.tmpPath);
-		*/
+		return new TPromise<void>((c, e) => {
+			let absPath = this.toAbsolutePath(resource);
+			if (absPath[0] == '/')
+				absPath = absPath.slice(1, absPath.length);
+			this.repo.delete(this.ref, absPath, (err: GithubError) => {
+				err ? e(err) : c(null);
+			});
+		}).then(() => {
+			return;
+		}, (error: GithubError) => {
+			console.log('failed to remove file ' + resource.toString(true));
+		});
 	}
 
 	// Helpers

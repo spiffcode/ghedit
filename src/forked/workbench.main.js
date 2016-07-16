@@ -42,7 +42,8 @@ define([
 
 	'vs/workbench/parts/files/browser/explorerViewlet',
 	'vs/workbench/parts/files/browser/workingFilesPicker',
-	'vs/workbench/parts/files/browser/fileActions.contribution',
+	//'vs/workbench/parts/files/browser/fileActions.contribution',
+	'forked/fileActions.contribution',
 	'vs/workbench/parts/files/browser/files.contribution',
 // TODO:	'vs/workbench/parts/files/electron-browser/files.electron.contribution',
 

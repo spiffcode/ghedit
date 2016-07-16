@@ -38,6 +38,7 @@ declare module "github" {
 		write(branch: string, path: string, content: string, message: string, options: any, cb: (err: Error, response?: any, xhr?: any) => void);
 		listBranches(cb: (err: Error, heads?: string[], xhr?: any) => void);
 		listTags(cb: (err: Error, tags?: TagInfo[], xhr?: any) => void);
+		delete(branch: string, path:string, cb: (err: Error, contents?: any, xhr?: any) => void);
 	}
 	
 	class Gist {
