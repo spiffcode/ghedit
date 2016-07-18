@@ -146,7 +146,7 @@
 				var xhr = new XMLHttpRequest();
 				// TODO: timeout, retry, etc
 				xhr.open('POST', 'https://jasper-rider.hyperdev.space/ghauth?code=' + args.code);
-				xhr.onload = function (e) {
+				xhr.onload = function () {
 					if (this.status == 200) {
 						var result = {};
 						var params = this.responseText.split(/[?&]/);
@@ -170,7 +170,18 @@
 							document.write(error);
 							console.log(error);
 						}
+					} else {
+						xhr.onerror();
 					}
+				}
+				xhr.onerror = function () {
+					document.write('authorization failed. status: ' + xhr.status + ', statusText: ' + xhr.statusText + ', responseText: ' + xhr.responseText);
+					var output = '';
+					for (var property in xhr) {
+						if (typeof(xhr[property]) != 'function')
+							output += '\n    ' + property + ': ' + xhr[property];
+					}
+					console.log('authorization failed: ' + output);
 				}
 				xhr.send();
 				document.write('Authorizing...');
