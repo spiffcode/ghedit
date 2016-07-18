@@ -145,7 +145,7 @@
 				// Ask our auth server to ask for a GitHub access token and redirect with it back to here.
 				var xhr = new XMLHttpRequest();
 				// TODO: timeout, retry, etc
-				xhr.open('POST', 'https://jasper-rider.hyperdev.space/ghauth?code=' + args.code);
+				xhr.open('POST', 'https://us-central1-ghcodex.cloudfunctions.net/github-auth?code=' + args.code);
 				xhr.onload = function () {
 					if (this.status == 200) {
 						var result = {};
@@ -185,55 +185,6 @@
 				}
 				xhr.send();
 				document.write('Authorizing...');
-
-/* This is the authorization server code:
-
-var https = require('https');
-var express = require('express');
-var app = express();
-
-app.use(express.static('public'));
-app.use(allowCrossDomain);
-
-function allowCrossDomain(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-
-  if (req.method == 'OPTIONS') {
-    res.send(200);
-  } else {
-    next();
-  }
-}
-
-app.post("/ghauth", function (request, response) {
-  console.log('ghauth ' + JSON.stringify(request.headers));
-  var localhost = request.headers.origin ? (request.headers.origin.indexOf('localhost') != -1) : false;
-  console.log('localhost: ' + localhost);
-  var client = 'client_id=' + (localhost ? process.env.LOCALHOST_CLIENT_ID : process.env.GITHUB_CLIENT_ID) + 
-      '&client_secret=' + (localhost ? process.env.LOCALHOST_CLIENT_SECRET : process.env.GITHUB_CLIENT_SECRET);
-  var options = {
-    hostname: 'github.com', port: 443, method: 'POST',
-    path: '/login/oauth/access_token?' + client + '&code=' + request.query.code
-  };
-  var req = https.request(options, function(res) {
-    console.log('Status: ' + res.statusCode);
-    res.setEncoding('utf8');
-    res.on('data', function (body) {
-      console.log('Body: ' + body);
-      response.statusCode = res.statusCode;
-      response.statusMessage = res.statusMessage;
-      response.end(body);
-    });
-  });
-  req.on('error', function(e) {
-    console.log('problem with request: ' + e.message);
-    response.sendStatus(res.statusCode);
-  });
-  req.end();
-});
-*/
-
 			} else {
 				startup2(args);
 			}
