@@ -86,7 +86,7 @@ export class FileService implements IFileService {
 
 		// create service
 		let workspace = this.contextService.getWorkspace();
-		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService);
+		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService, this.contextService);
 
 		// Listeners
 		this.registerListeners();

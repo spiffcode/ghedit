@@ -16,6 +16,9 @@
 // TODO: import crypto = require('crypto');
 // TODO: import assert = require('assert');
 
+import Files = require('vs/workbench/parts/files/common/files');
+import {FileStat} from 'vs/workbench/parts/files/common/explorerViewModel';
+
 import files = require('vs/platform/files/common/files');
 import strings = require('vs/base/common/strings');
 import arrays = require('vs/base/common/arrays');
@@ -42,6 +45,7 @@ var github = require('lib/github');
 import {IEventService} from 'vs/platform/event/common/event';
 import {Github, Repository, User, Gist, Error as GithubError} from 'github';
 import {IGithubService} from 'githubService';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 
 interface GistInfo {
 	gist: Gist;
@@ -128,7 +132,7 @@ export class FileService implements files.IFileService {
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	// TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
 
-	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: IGithubService) {
+	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: IGithubService, private contextService: IWorkspaceContextService) {
 		this.basePath = basePath ? paths.normalize(basePath) : void 0;
 
 		this.options = options || Object.create(null);
@@ -476,20 +480,17 @@ export class FileService implements files.IFileService {
 	}
 
 	public createFolder(resource: uri): TPromise<files.IFileStat> {
-		return TPromise.wrapError(<files.IFileOperationResult>{
-			message: 'githubFileService.createFolder not implemented (' + resource.toString(true) + ')',
-			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+		let path = this.toAbsolutePath(resource);
+		if (path[0] == '/')
+			path = path.slice(1, path.length);
+		let newPath = paths.join(paths.dirname(path + '/'), ".keepdir");
+		
+		return this.createFile(uri.file(newPath), 'Git requires at least 1 file to be present in a folder.').then((stat: files.IFileStat) => {
+			this.forceExplorerViewRefresh();
+			return stat;
+		}, (err: any) => {
+			return err;
 		});
-
-		/* TODO:
-		// 1.) create folder
-		let absolutePath = this.toAbsolutePath(resource);
-		return pfs.mkdirp(absolutePath).then(() => {
-
-			// 2.) resolve
-			return this.resolve(resource);
-		});
-		*/
 	}
 
 	public rename(resource: uri, newName: string): TPromise<files.IFileStat> {
@@ -526,12 +527,22 @@ export class FileService implements files.IFileService {
 		});
 	}
 
+	private forceExplorerViewRefresh() {
+		// Should be part of fileActions.ts, trying not to 'fork' that file because it is imported in
+		// many places.
+		let event = new Files.LocalFileChangeEvent(new FileStat(this.contextService.getWorkspace().resource, true, true), new FileStat(this.contextService.getWorkspace().resource, true, true));       
+		this.eventEmitter.emit('files.internal:fileChanged', event);
+	}
+
 	private deleteGithubFile(sourcePath: string) : TPromise<boolean> {
 		return new TPromise<void>((c, e) => {
 			this.repo.delete(this.ref, sourcePath, (err: GithubError) => {
 				err ? e(err) : c(null);
 			});
 		}).then(() => {
+			// When the last file of a git directory is deleted, that directory is no longer part
+			// of the repo. Refresh the entire explorer view to catch this case.
+			this.forceExplorerViewRefresh();
 			return true;
 		}, (error: GithubError) => {
 			console.log('failed to delete file ' + sourcePath);
