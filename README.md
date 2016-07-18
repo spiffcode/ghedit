@@ -46,10 +46,8 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
-* SL: project aka workspace settings
-* search (https://developer.github.com/v3/search/#search-code)
+* SL: search (https://developer.github.com/v3/search/#search-code)
 * DM: clean up stuff
-* SL: Explorer functionality: New File, New Folder, File Copy, File Paste, Rename, Delete
 * JSON Schema intellisense
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 * better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
