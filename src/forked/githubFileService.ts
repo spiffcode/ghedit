@@ -493,24 +493,16 @@ export class FileService implements files.IFileService {
 	}
 
 	public rename(resource: uri, newName: string): TPromise<files.IFileStat> {
-
 		let oldPath = this.toAbsolutePath(resource);
 		if (oldPath[0] == '/')
 			oldPath = oldPath.slice(1, oldPath.length);
 		let newPath = paths.join(paths.dirname(oldPath), newName);
 
-		return new TPromise<files.IFileStat>((c, e) => {
-			this.repo.move(this.ref, oldPath, newPath, (err: GithubError) => {
-				err ? e(err) : c(null);
-			});
-		}).then(() => {
+		return this.moveGithubFile(oldPath, newPath).then(() => {
 			return this.resolveFile(uri.file(newPath));
-		}, (err: GithubError) => {
+		}, () => {
 			console.log('failed to rename file ' + resource.toString(true));
-			return TPromise.wrapError(<files.IFileOperationResult>{
-				message: 'failed to rename file',
-				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-			});			
+			return TPromise.as(false);
 		});
 	}
 
@@ -534,10 +526,93 @@ export class FileService implements files.IFileService {
 		});
 	}
 
+	private deleteGithubFile(sourcePath: string) : TPromise<boolean> {
+		return new TPromise<void>((c, e) => {
+			this.repo.delete(this.ref, sourcePath, (err: GithubError) => {
+				err ? e(err) : c(null);
+			});
+		}).then(() => {
+			return true;
+		}, (error: GithubError) => {
+			console.log('failed to delete file ' + sourcePath);
+			return false;
+		});
+	}
+
+	private copyGithubFile(sourcePath: string, targetPath: string) : TPromise<boolean> {
+		return new TPromise<boolean>((c, e) => {
+			return this.resolveFileContent(uri.file(sourcePath)).then((content: files.IContent) => {
+				return this.updateContent(uri.file(targetPath), content.value).then(()=> {
+					c(true);
+				}, () => {
+					c(false);
+				});
+			});
+		}); 
+	}
+
+	private moveGithubFile(sourcePath: string, targetPath: string) : TPromise<boolean> {
+		return this.existsFile(uri.file(targetPath)).then((exists) => {
+			if (exists) {
+				return TPromise.wrapError(<files.IFileOperationResult>{
+					fileOperationResult: files.FileOperationResult.FILE_MOVE_CONFLICT
+				});				
+			}
+
+			return this.copyGithubFile(sourcePath, targetPath).then((success: boolean) => {
+				if (success) {
+					return this.deleteGithubFile(sourcePath);
+				} else {
+					return this.deleteGithubFile(targetPath);
+				}
+			});
+		});
+	}
+
 	private doMoveOrCopyFile(sourcePath: string, targetPath: string, keepCopy: boolean, overwrite: boolean): TPromise<boolean /* exists */> {
+/*
 		return TPromise.wrapError(<files.IFileOperationResult>{
 			message: 'githubFileService.doMoveOrCopyFile not implemented (' + sourcePath + ' -> ' + targetPath + ')',
 			fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+		});
+*/
+
+		return this.existsFile(uri.file(targetPath)).then((exists) => {
+			let isCaseRename = sourcePath.toLowerCase() === targetPath.toLowerCase();
+			let isSameFile = sourcePath === targetPath;
+
+			// Return early with conflict if target exists and we are not told to overwrite
+			if (exists && !isCaseRename && !overwrite) {
+				return TPromise.wrapError(<files.IFileOperationResult>{
+					fileOperationResult: files.FileOperationResult.FILE_MOVE_CONFLICT
+				});
+			}
+
+			// 2.) make sure target is deleted before we move/copy unless this is a case rename of the same file
+			let deleteTargetPromise = TPromise.as(null);
+			if (exists && !isCaseRename) {
+				if (paths.isEqualOrParent(sourcePath, targetPath)) {
+					return TPromise.wrapError(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in.")); // catch this corner case!
+				}
+
+				deleteTargetPromise = this.del(uri.file(targetPath));
+			}
+
+			return deleteTargetPromise.then(() => {
+				// Dir doesn't need to exist since this is git semantics not file system semantics
+				// TODO: 3.) make sure parents exists
+				// TODO: return pfs.mkdirp(paths.dirname(targetPath)).then(() => {
+				return TPromise.as(true).then(() => {
+					// 4.) copy/move
+					if (isSameFile) {
+						return TPromise.as(null);
+					} else if (keepCopy) {
+						return this.copyGithubFile(sourcePath, targetPath);
+					} else {
+						return this.moveGithubFile(sourcePath, targetPath);
+					}
+				}).then(() => exists);
+			});
 		});
 
 		/* TODO:
@@ -609,17 +684,13 @@ export class FileService implements files.IFileService {
 	}
 
 	public del(resource: uri): TPromise<void> {
-		return new TPromise<void>((c, e) => {
-			let absPath = this.toAbsolutePath(resource);
-			if (absPath[0] == '/')
-				absPath = absPath.slice(1, absPath.length);
-			this.repo.delete(this.ref, absPath, (err: GithubError) => {
-				err ? e(err) : c(null);
+		let absPath = this.toAbsolutePath(resource);
+		if (absPath[0] == '/')
+			absPath = absPath.slice(1, absPath.length);
+		return new TPromise<void>((c) => {
+			return this.deleteGithubFile(absPath).then(() => {
+				c(<void>null);
 			});
-		}).then(() => {
-			return;
-		}, (error: GithubError) => {
-			console.log('failed to remove file ' + resource.toString(true));
 		});
 	}
 
