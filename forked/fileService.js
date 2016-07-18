@@ -47,7 +47,7 @@ define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/co
             }
             // create service
             var workspace = this.contextService.getWorkspace();
-            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService);
+            this.raw = new githubFileService_1.FileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService, this.contextService);
             // Listeners
             this.registerListeners();
         }

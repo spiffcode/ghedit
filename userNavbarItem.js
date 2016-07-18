@@ -28,7 +28,7 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
             }
             var actions = [
                 // TODO: string localization
-                new actions_1.Action('signOut', 'Sign Out', '', true, function (event) {
+                new actions_1.Action('signOut', 'Sign Out', 'tight-menu-items', true, function (event) {
                     window.localStorage.removeItem('githubToken');
                     window.localStorage.removeItem('githubUser');
                     window.localStorage.removeItem('githubPassword');

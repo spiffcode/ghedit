@@ -3,7 +3,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/base/common/http'], function (require, exports, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, http) {
+define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/nls', 'vs/base/common/http'], function (require, exports, Files, explorerViewModel_1, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, nls, http) {
     'use strict';
     var github = require('lib/github');
     // TODO: Use vs/base/node/encoding replacement.
@@ -28,10 +28,11 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
     }
     var FileService = (function () {
         // TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
-        function FileService(basePath, options, eventEmitter, requestService, githubService) {
+        function FileService(basePath, options, eventEmitter, requestService, githubService, contextService) {
             this.eventEmitter = eventEmitter;
             this.requestService = requestService;
             this.githubService = githubService;
+            this.contextService = contextService;
             this.serviceId = files.IFileService;
             this.basePath = basePath ? paths.normalize(basePath) : void 0;
             this.options = options || Object.create(null);
@@ -344,30 +345,30 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             return this.updateContent(resource, content);
         };
         FileService.prototype.createFolder = function (resource) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.createFolder not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+            var _this = this;
+            var path = this.toAbsolutePath(resource);
+            if (path[0] == '/')
+                path = path.slice(1, path.length);
+            var newPath = paths.join(paths.dirname(path + '/'), ".keepdir");
+            return this.createFile(uri_1.default.file(newPath), 'Git requires at least 1 file to be present in a folder.').then(function (stat) {
+                _this.forceExplorerViewRefresh();
+                return stat;
+            }, function (err) {
+                return err;
             });
-            /* TODO:
-            // 1.) create folder
-            let absolutePath = this.toAbsolutePath(resource);
-            return pfs.mkdirp(absolutePath).then(() => {
-    
-                // 2.) resolve
-                return this.resolve(resource);
-            });
-            */
         };
         FileService.prototype.rename = function (resource, newName) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.rename not implemented (' + resource.toString(true) + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+            var _this = this;
+            var oldPath = this.toAbsolutePath(resource);
+            if (oldPath[0] == '/')
+                oldPath = oldPath.slice(1, oldPath.length);
+            var newPath = paths.join(paths.dirname(oldPath), newName);
+            return this.moveGithubFile(oldPath, newPath).then(function () {
+                return _this.resolveFile(uri_1.default.file(newPath));
+            }, function () {
+                console.log('failed to rename file ' + resource.toString(true));
+                return winjs_base_1.TPromise.as(false);
             });
-            /* TODO:
-            let newPath = paths.join(paths.dirname(resource.fsPath), newName);
-    
-            return this.moveFile(resource, uri.file(newPath));
-            */
         };
         FileService.prototype.moveFile = function (source, target, overwrite) {
             return this.moveOrCopyFile(source, target, false, overwrite);
@@ -385,10 +386,100 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
                 return _this.resolve(target);
             });
         };
+        FileService.prototype.forceExplorerViewRefresh = function () {
+            // Should be part of fileActions.ts, trying not to 'fork' that file because it is imported in
+            // many places.
+            var event = new Files.LocalFileChangeEvent(new explorerViewModel_1.FileStat(this.contextService.getWorkspace().resource, true, true), new explorerViewModel_1.FileStat(this.contextService.getWorkspace().resource, true, true));
+            this.eventEmitter.emit('files.internal:fileChanged', event);
+        };
+        FileService.prototype.deleteGithubFile = function (sourcePath) {
+            var _this = this;
+            return new winjs_base_1.TPromise(function (c, e) {
+                _this.repo.delete(_this.ref, sourcePath, function (err) {
+                    err ? e(err) : c(null);
+                });
+            }).then(function () {
+                // When the last file of a git directory is deleted, that directory is no longer part
+                // of the repo. Refresh the entire explorer view to catch this case.
+                _this.forceExplorerViewRefresh();
+                return true;
+            }, function (error) {
+                console.log('failed to delete file ' + sourcePath);
+                return false;
+            });
+        };
+        FileService.prototype.copyGithubFile = function (sourcePath, targetPath) {
+            var _this = this;
+            return new winjs_base_1.TPromise(function (c, e) {
+                return _this.resolveFileContent(uri_1.default.file(sourcePath)).then(function (content) {
+                    return _this.updateContent(uri_1.default.file(targetPath), content.value).then(function () {
+                        c(true);
+                    }, function () {
+                        c(false);
+                    });
+                });
+            });
+        };
+        FileService.prototype.moveGithubFile = function (sourcePath, targetPath) {
+            var _this = this;
+            return this.existsFile(uri_1.default.file(targetPath)).then(function (exists) {
+                if (exists) {
+                    return winjs_base_1.TPromise.wrapError({
+                        fileOperationResult: files.FileOperationResult.FILE_MOVE_CONFLICT
+                    });
+                }
+                return _this.copyGithubFile(sourcePath, targetPath).then(function (success) {
+                    if (success) {
+                        return _this.deleteGithubFile(sourcePath);
+                    }
+                    else {
+                        return _this.deleteGithubFile(targetPath);
+                    }
+                });
+            });
+        };
         FileService.prototype.doMoveOrCopyFile = function (sourcePath, targetPath, keepCopy, overwrite) {
-            return winjs_base_1.TPromise.wrapError({
-                message: 'githubFileService.doMoveOrCopyFile not implemented (' + sourcePath + ' -> ' + targetPath + ')',
-                fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+            /*
+                    return TPromise.wrapError(<files.IFileOperationResult>{
+                        message: 'githubFileService.doMoveOrCopyFile not implemented (' + sourcePath + ' -> ' + targetPath + ')',
+                        fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+                    });
+            */
+            var _this = this;
+            return this.existsFile(uri_1.default.file(targetPath)).then(function (exists) {
+                var isCaseRename = sourcePath.toLowerCase() === targetPath.toLowerCase();
+                var isSameFile = sourcePath === targetPath;
+                // Return early with conflict if target exists and we are not told to overwrite
+                if (exists && !isCaseRename && !overwrite) {
+                    return winjs_base_1.TPromise.wrapError({
+                        fileOperationResult: files.FileOperationResult.FILE_MOVE_CONFLICT
+                    });
+                }
+                // 2.) make sure target is deleted before we move/copy unless this is a case rename of the same file
+                var deleteTargetPromise = winjs_base_1.TPromise.as(null);
+                if (exists && !isCaseRename) {
+                    if (paths.isEqualOrParent(sourcePath, targetPath)) {
+                        return winjs_base_1.TPromise.wrapError(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in.")); // catch this corner case!
+                    }
+                    deleteTargetPromise = _this.del(uri_1.default.file(targetPath));
+                }
+                return deleteTargetPromise.then(function () {
+                    // Dir doesn't need to exist since this is git semantics not file system semantics
+                    // TODO: 3.) make sure parents exists
+                    // TODO: return pfs.mkdirp(paths.dirname(targetPath)).then(() => {
+                    return winjs_base_1.TPromise.as(true).then(function () {
+                        // 4.) copy/move
+                        if (isSameFile) {
+                            return winjs_base_1.TPromise.as(null);
+                        }
+                        else if (keepCopy) {
+                            return _this.copyGithubFile(sourcePath, targetPath);
+                        }
+                        else {
+                            return _this.moveGithubFile(sourcePath, targetPath);
+                        }
+                    }).then(function () { return exists; });
+                });
             });
             /* TODO:
             // 1.) check if target exists
@@ -457,13 +548,15 @@ define(["require", "exports", 'vs/platform/files/common/files', 'vs/base/common/
             */
         };
         FileService.prototype.del = function (resource) {
-            console.log('githubFileService.del not implemented (' + resource.toString(true) + ')');
-            return winjs_base_1.TPromise.as(null);
-            /* TODO:
-            let absolutePath = this.toAbsolutePath(resource);
-    
-            return nfcall(extfs.del, absolutePath, this.tmpPath);
-            */
+            var _this = this;
+            var absPath = this.toAbsolutePath(resource);
+            if (absPath[0] == '/')
+                absPath = absPath.slice(1, absPath.length);
+            return new winjs_base_1.TPromise(function (c) {
+                return _this.deleteGithubFile(absPath).then(function () {
+                    c(null);
+                });
+            });
         };
         // Helpers
         FileService.prototype.toAbsolutePath = function (arg1) {
