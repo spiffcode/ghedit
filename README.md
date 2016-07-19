@@ -64,6 +64,7 @@ M3: Release followup
 #### BUGS
 
 M1
+* SL: delete / rename doesn't work on a directory. Disable / Remove menu items?
 
 M2
 * DM: tags aren't presented on ref menu
@@ -72,6 +73,7 @@ M2
 * search within Command Palette barfs
 
 M3
+* Rename a file loses commit history for that file
 * need error message for invalid/inaccessible repo
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
