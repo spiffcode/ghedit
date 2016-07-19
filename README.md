@@ -46,24 +46,33 @@ Start a web server in the ghcode directory.
 
 #### TO DO
 
+M1: MS Preview
+* DP: Minimizing out-build
 * SL: search (https://developer.github.com/v3/search/#search-code)
-* DM: clean up stuff
-* JSON Schema intellisense
-* review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
-* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
-* move auth server to spiffhub.com
+
+M2: Public Release 
 * sync up with latest vscode
+* JSON Schema intellisense
+* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
+* review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
+
+M3: Release followup
+* DM: clean up stuff
 * implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
   Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
-* DP: Minimizing out-build
 
 #### BUGS
 
+M1
+
+M2
+* DM: tags aren't presented on ref menu
+* DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
+* DM: repo and ref menus need to scroll (or something) when too many items to fit in available view space
 * search within Command Palette barfs
+
+M3
 * need error message for invalid/inaccessible repo
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
 * file encoding smarts (disabled due to Node dependency)
-* DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
-* DM: tags aren't presented on ref menu
-* DM: repo and ref menus need to scroll (or something) when too many items to fit in available view space
