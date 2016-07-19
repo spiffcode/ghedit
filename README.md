@@ -65,6 +65,7 @@ M3: Release followup
 
 M1
 * SL: delete / rename doesn't work on a directory. Disable / Remove menu items?
+* DM: welcome mode is unreadable under light theme
 
 M2
 * DM: tags aren't presented on ref menu
