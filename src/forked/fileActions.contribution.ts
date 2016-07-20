@@ -87,8 +87,9 @@ class FilesViewerActionContributor extends ActionBarContributor {
 		let workspace = this.contextService.getWorkspace();
 		let isRoot = workspace && stat.resource.toString() === workspace.resource.toString();
 
-		// Copy File/Folder
-		if (!isRoot) {
+		// Copy File
+		// TODO: Make copying work for directories
+		if (!isRoot && !stat.isDirectory) {
 			actions.push(this.instantiationService.createInstance(CopyFileAction, tree, <FileStat>stat));
 		}
 
@@ -98,13 +99,16 @@ class FilesViewerActionContributor extends ActionBarContributor {
 		}
 
 		// Rename File/Folder
+		/* TODO: Currently high level github api doesn't support renaming.
 		if (!isRoot) {
 			actions.push(new Separator(null, 150));
 			actions.push(this.instantiationService.createInstance(TriggerRenameFileAction, tree, <FileStat>stat));
 		}
+		*/
 
-		// Delete File/Folder
-		if (!isRoot) {
+		// Delete File
+		// TODO: make deleting work for directories
+		if (!isRoot && !stat.isDirectory) {
 			// TODO: actions.push(this.instantiationService.createInstance(MoveFileToTrashAction, tree, <FileStat>stat));
 			actions.push(this.instantiationService.createInstance(DeleteFileAction, tree, <FileStat>stat));
 		}
