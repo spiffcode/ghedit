@@ -65,8 +65,9 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/browser
             }
             var workspace = this.contextService.getWorkspace();
             var isRoot = workspace && stat.resource.toString() === workspace.resource.toString();
-            // Copy File/Folder
-            if (!isRoot) {
+            // Copy File
+            // TODO: Make copying work for directories
+            if (!isRoot && !stat.isDirectory) {
                 actions.push(this.instantiationService.createInstance(fileActions_1.CopyFileAction, tree, stat));
             }
             // Paste File/Folder
@@ -74,12 +75,15 @@ define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/browser
                 actions.push(this.instantiationService.createInstance(fileActions_1.PasteFileAction, tree, stat));
             }
             // Rename File/Folder
+            /* TODO: Currently high level github api doesn't support renaming.
             if (!isRoot) {
-                actions.push(new actionbar_1.Separator(null, 150));
-                actions.push(this.instantiationService.createInstance(fileActions_1.TriggerRenameFileAction, tree, stat));
+                actions.push(new Separator(null, 150));
+                actions.push(this.instantiationService.createInstance(TriggerRenameFileAction, tree, <FileStat>stat));
             }
-            // Delete File/Folder
-            if (!isRoot) {
+            */
+            // Delete File
+            // TODO: make deleting work for directories
+            if (!isRoot && !stat.isDirectory) {
                 // TODO: actions.push(this.instantiationService.createInstance(MoveFileToTrashAction, tree, <FileStat>stat));
                 actions.push(this.instantiationService.createInstance(fileActions_1.DeleteFileAction, tree, stat));
             }
