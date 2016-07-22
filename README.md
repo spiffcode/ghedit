@@ -2,6 +2,9 @@
 
 #### INSTALLING
 ```bash
+# Install TypeScript, if not already
+npm install -g typescript
+
 # Clone Visual Studio Code if you haven't already.
 git clone https://github.com/spiffcode/vscode.git
 
@@ -23,7 +26,7 @@ git clone https://github.com/spiffcode/ghcode.git
 
 # Create symbolic link to Visual Studio Code sources.
 cd ghcode
-ln -s ../vscode/src/vs src/vs
+ln -s ../../vscode/src/vs src/vs
 
 # Install local npm packages
 npm install
