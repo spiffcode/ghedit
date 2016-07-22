@@ -40,3 +40,11 @@
 .hc-black .welcome-part {
 	background-color: #000;
 }
+
+.vs-dark .welcome-part {
+	color: white;
+}
+
+.vs .welcome-part {
+	color: black;
+}
