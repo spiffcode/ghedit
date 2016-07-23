@@ -52,7 +52,7 @@
       //
       // I'm not proud of this and neither should you be if you were responsible for the XMLHttpRequest spec.
 
-      var _request = Github._request = function _request(method, path, data, cb, raw) {
+      var _request = Github._request = function _request(method, path, data, cb, accept) {
          function getURL() {
             var url = path.indexOf('//') >= 0 ? path : API_URL + path;
 
@@ -70,9 +70,18 @@
                (typeof window !== 'undefined' ? '&timestamp=' + new Date().getTime() : '');
          }
 
+         var accept_header = 'application/vnd.github.v3+json';
+         if (accept) {
+             if (accept === 'raw') {
+                 accept_header = 'application/vnd.github.v3.raw+json';
+             } else if (accept === 'text_match') {
+                 accept_header = 'application/vnd.github.v3.text-match+json';
+             }
+         }
+
          var config = {
             headers: {
-               Accept: raw ? 'application/vnd.github.v3.raw+json' : 'application/vnd.github.v3+json',
+               'Accept': accept_header,
                'Content-Type': 'application/json;charset=UTF-8'
             },
             method: method,
@@ -792,7 +801,7 @@
 
          this.read = function (branch, path, cb) {
             _request('GET', repoPath + '/contents/' + encodeURI(path) + (branch ? '?ref=' + branch : ''),
-               null, cb, true);
+               null, cb, 'raw');
          };
 
          // Remove a file
@@ -1101,7 +1110,7 @@
          };
 
          this.code = function (options, cb) {
-            _request('GET', path + 'code' + query, options, cb);
+            _request('GET', path + 'code' + query, options, cb, 'text_match');
          };
 
          this.issues = function (options, cb) {

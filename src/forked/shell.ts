@@ -38,7 +38,7 @@ import {WorkbenchMessageService as MessageService} from 'vs/workbench/services/m
 // TODO: import {RequestService} from 'vs/workbench/services/request/node/requestService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {FileService} from 'forked/fileService';
-// TODO: import {SearchService} from 'vs/workbench/services/search/node/searchService';
+import {SearchService} from 'forked/searchService';
 // TODO: import {LifecycleService} from 'vs/workbench/services/lifecycle/electron-browser/lifecycleService';
 // TODO: import {WorkbenchKeybindingService} from 'vs/workbench/services/keybinding/electron-browser/keybindingService';
 import {StandaloneKeybindingService as WorkbenchKeybindingService, SimpleExtensionService as MainProcessExtensionService, SimpleEditorRequestService as RequestService} from 'vs/editor/browser/standalone/simpleServices';
@@ -512,7 +512,7 @@ export class WorkbenchShell {
 		serviceCollection.set(IModeService, modeService);
 		serviceCollection.set(IFileService, fileService);
 		serviceCollection.set(IUntitledEditorService, untitledEditorService);
-		// TODO: serviceCollection.set(ISearchService, new SearchService(modelService, untitledEditorService, this.contextService, this.configurationService));
+		serviceCollection.set(ISearchService, new SearchService(this.githubService, modelService, untitledEditorService, this.contextService, this.configurationService));
 		serviceCollection.set(IWindowService, this.windowService);
 		serviceCollection.set(IConfigurationService, this.configurationService);
 		serviceCollection.set(IKeybindingService, this.keybindingService);
