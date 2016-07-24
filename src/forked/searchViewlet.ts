@@ -1280,7 +1280,8 @@ export class SearchViewlet extends Viewlet {
 				} else if (hasExcludes) {
 					message = nls.localize('noResultsExcludes', "No results found excluding '{0}' - ", excludePattern);
 				} else {
-					message = nls.localize('noResultsFound', "No results found. Review your settings for configured exclusions - ");
+					// message = nls.localize('noResultsFound', "No results found. Review your settings for configured exclusions - ");
+					message = nls.localize('noResultsFound', "No results found.");					
 				}
 
 				// Indicate as status to ARIA
@@ -1312,6 +1313,8 @@ export class SearchViewlet extends Viewlet {
 
 						this.onQueryChanged(true);
 					});
+				}
+/*	
 				} else {
 					$(div).a({
 						'class': ['pointer', 'prominent'],
@@ -1324,6 +1327,7 @@ export class SearchViewlet extends Viewlet {
 						action.run().done(() => action.dispose(), errors.onUnexpectedError);
 					});
 				}
+*/
 			} else {
 				this.viewModel.toggleHighlights(true); // show highlights
 
