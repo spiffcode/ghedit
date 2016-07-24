@@ -47,7 +47,8 @@ define([
 	'vs/workbench/parts/files/browser/files.contribution',
 // TODO:	'vs/workbench/parts/files/electron-browser/files.electron.contribution',
 
-	'vs/workbench/parts/search/browser/search.contribution',
+//	'vs/workbench/parts/search/browser/search.contribution',
+	'forked/search.contribution',
 
 // TODO:	'vs/workbench/parts/git/electron-browser/git.contribution',
 	'vs/workbench/parts/git/browser/gitQuickOpen',
