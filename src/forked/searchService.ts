@@ -234,6 +234,13 @@ class GithubSearch {
 
 	private textSearch(query: ISearchQuery) : PPromise<ISearchComplete, ISearchProgressItem> {
 		return new PPromise<ISearchComplete, ISearchProgressItem>((c, e, p) => {
+			// If this isn't the default branch, fail.
+			if (!this.githubService.isDefaultBranch()) {
+				let br = this.githubService.getDefaultBranch();
+				e("Github only provides search on the default branch (" + br + ").");
+				return;
+			}
+
 			// q=foo+repo:spiffcode/ghcode_test
 			let q:string = query.contentPattern.pattern + '+repo:' + this.githubService.repo;
 			let s: GithubApiSearch = new github.Search({ query: encodeURIComponent(q) });
@@ -259,11 +266,13 @@ class GithubSearch {
 					p(m);
 				}
 
+				// Github only provides search on forks if the fork has
+				// more star ratings than the parent.
 				if (matches.length == 0 && this.githubService.isFork()) {
-					e("Github doesn't provide search on forked repos.");
+					e("Github doesn't provide search on forked repos unless the star rating is greater than the parent repo.");
 					return;
 				}
-				
+
 				c({ limitHit: result.incomplete_results, results: matches });
 			});
 		});

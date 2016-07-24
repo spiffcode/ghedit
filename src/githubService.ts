@@ -19,6 +19,8 @@ export interface IGithubService {
 	ref: string;
 
 	isFork(): boolean;
+	isDefaultBranch(): boolean;
+	getDefaultBranch(): string;
 	hasCredentials(): boolean;
 	isAuthenticated(): boolean;
 	authenticateUser(): TPromise<UserInfo>;
@@ -45,6 +47,14 @@ export class GithubService implements IGithubService {
 
 	public isFork(): boolean {
 		return 'parent' in this.repoInfo;
+	}
+
+	public isDefaultBranch(): boolean {
+		return this.ref === this.repoInfo.default_branch;
+	}
+
+	public getDefaultBranch(): string {
+		return this.repoInfo.default_branch;
 	}
 
 	public hasCredentials(): boolean {
