@@ -18,6 +18,7 @@ export interface IGithubService {
 	repo: string;
 	ref: string;
 
+	isFork(): boolean;
 	hasCredentials(): boolean;
 	isAuthenticated(): boolean;
 	authenticateUser(): TPromise<UserInfo>;
@@ -40,6 +41,10 @@ export class GithubService implements IGithubService {
 	constructor(options?: any) {
 		this.options = options;
 		this.github = new github(options);
+	}
+
+	public isFork(): boolean {
+		return 'parent' in this.repoInfo;
 	}
 
 	public hasCredentials(): boolean {
@@ -80,7 +85,7 @@ export class GithubService implements IGithubService {
 
 	public openRepository(repoName: string, ref?: string): TPromise<any> {
 		this.repo = repoName;
-		this.ref = ref;
+		this.ref = ref; 
 
 		let repo = this.github.getRepo(this.repo);
 		return new TPromise<any>((complete, error) => {

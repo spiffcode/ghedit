@@ -258,6 +258,12 @@ class GithubSearch {
 					matches.push(m);
 					p(m);
 				}
+
+				if (matches.length == 0 && this.githubService.isFork()) {
+					e("Github doesn't provide search on forked repos.");
+					return;
+				}
+				
 				c({ limitHit: result.incomplete_results, results: matches });
 			});
 		});
