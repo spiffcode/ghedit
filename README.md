@@ -53,10 +53,10 @@ M1: MS Preview
 * DP: Minimizing out-build
 * SL: search (https://developer.github.com/v3/search/#search-code)
 
-M2: Public Release 
+M2: Public Release
 * sync up with latest vscode
 * JSON Schema intellisense
-* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript) 
+* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript)
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 
 M3: Release followup

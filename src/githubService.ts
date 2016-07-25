@@ -95,7 +95,7 @@ export class GithubService implements IGithubService {
 
 	public openRepository(repoName: string, ref?: string): TPromise<any> {
 		this.repo = repoName;
-		this.ref = ref; 
+		this.ref = ref;
 
 		let repo = this.github.getRepo(this.repo);
 		return new TPromise<any>((complete, error) => {
