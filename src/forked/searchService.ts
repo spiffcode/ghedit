@@ -78,7 +78,7 @@ export class SearchService implements ISearchService {
 			};
 
 			// Delegate to parent for real file results
-			// rawSearchQuery = this.diskSearch.search(query).then(			
+			// rawSearchQuery = this.diskSearch.search(query).then(
 			rawSearchQuery = this.githubSearch.search(query).then(
 
 				// on Complete
@@ -209,10 +209,10 @@ class GithubSearch {
 		// Fragments often don't start on a line, and there is no line number information.
 		let lineMatches: LineMatch[] = [];
 
-		// Pull hacky ILineMatch info from the fragment.  
+		// Pull hacky ILineMatch info from the fragment.
 		let parts = [];
 		let indexStart = 0;
-		let lines: string[] = fragment.split('\n');		
+		let lines: string[] = fragment.split('\n');
 		for (let i = 0; i < lines.length; i++) {
 			let indexEnd = indexStart + lines[i].length;
 			parts.push({ line: lines[i], start: indexStart, end: indexEnd });
@@ -221,9 +221,9 @@ class GithubSearch {
 
 		for (let i = 0; i < matches.length; i++) {
 			let start = matches[i].indices[0];
-			let end = matches[i].indices[1];			
+			let end = matches[i].indices[1];
 			for (let j = 0; j < parts.length; j++) {
-				if (start >= parts[j].start && end <= parts[j].end) { 
+				if (start >= parts[j].start && end <= parts[j].end) {
 					lineMatches.push(new LineMatch(parts[j].line, this.fakeLineNumber++, [[ start - parts[j].start, end - start ]]));
 				}
 			}
@@ -257,7 +257,7 @@ class GithubSearch {
 				let matches: FileMatch[] = [];
 				for (let i = 0; i < result.items.length; i++) {
 					let item: ResultItem = result.items[i];
-					let m = new FileMatch(uri.file(item.path)); 
+					let m = new FileMatch(uri.file(item.path));
 					for (let j = 0; j < item.text_matches.length; j++) {
 						let lineMatches = this.lineMatchesFromFragments(item.text_matches[j].fragment, item.text_matches[j].matches);
 						m.lineMatches = m.lineMatches.concat(lineMatches);

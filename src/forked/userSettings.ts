@@ -65,7 +65,7 @@ export class UserSettings implements ISettingsService {
 		//this._onChange = new Emitter<ISettings>();
 
 		//this.registerWatchers();
-		
+
 		this.globalSettings = {
 			settings: {},
 			keybindings: []
@@ -80,7 +80,7 @@ export class UserSettings implements ISettingsService {
 			const appSettingsPath = contextService.getConfiguration().env.appSettingsPath;
 
 			// fs.readFile(appSettingsPath, (error, fileContents) => {
-			this.readSettingsFile(appSettingsPath, (fileContents) => {				
+			this.readSettingsFile(appSettingsPath, (fileContents) => {
 				let root = Object.create(null);
 				let content = fileContents ? fileContents.toString() : '{}';
 
@@ -243,7 +243,7 @@ export class UserSettings implements ISettingsService {
 /*
 	private doLoadKeybindingsSync(): any {
 		try {
-			return json.parse(fs.readFileSync(this.appKeybindingsPath).toString());			
+			return json.parse(fs.readFileSync(this.appKeybindingsPath).toString());
 		} catch (error) {
 			// Ignore loading and parsing errors
 		}
@@ -251,7 +251,7 @@ export class UserSettings implements ISettingsService {
 		return [];
 	}
 */
-	
+
 /*
 	public dispose(): void {
 		if (this.watcher) {
@@ -266,14 +266,14 @@ export class UserSettings implements ISettingsService {
 		// so that one notification broadcast can occur after loading both settings and keybindings.
 		// See https://blogs.msdn.microsoft.com/windowsappdev/2013/06/11/all-about-promises-for-windows-store-apps-written-in-javascript/
 		// to get the sequencing correct.
-			
+
 		// Load settings json
 		let appSettingsPath = this.contextService.getConfiguration().env.appSettingsPath;
 		if (appSettingsPath) {
 			this.fileService.resolveContent(URI.file(appSettingsPath), { acceptTextOnly: true }).then((settingsContent: IContent) => {
 				let settings: any = {};
-				let settingsParseErrors: any[] = [];			
-				
+				let settingsParseErrors: any[] = [];
+
 				// Parse settings. The loop turns it into a dictionary tree, which is the runtime format.
 				try {
 					let contents = json.parse(settingsContent.value);
@@ -298,11 +298,11 @@ export class UserSettings implements ISettingsService {
 
 		// Load keybindings json
 		let appKeybindingsPath: string = this.contextService.getConfiguration().env.appKeybindingsPath;
-		if (appKeybindingsPath != null) { 
+		if (appKeybindingsPath != null) {
 			this.fileService.resolveContent(URI.file(appKeybindingsPath), { acceptTextOnly: true }).then((keyBindingsContent: IContent) => {
-				let keybindings: any[] = [];		
+				let keybindings: any[] = [];
 				try {
-					keybindings = json.parse(keyBindingsContent.value);			
+					keybindings = json.parse(keyBindingsContent.value);
 				} catch (error) {
 					// Ignore loading and parsing errors for keybindings
 				}
@@ -320,13 +320,13 @@ export class UserSettings implements ISettingsService {
 	private updateSettingsKey(key: string, value: any): void {
 		if (!this.globalSettings.hasOwnProperty(key) || !objects.equals(this.globalSettings[key], value)) {
 			this.globalSettings[key] = value;
-			this.contextService.updateOptions('globalSettings', this.globalSettings);					
+			this.contextService.updateOptions('globalSettings', this.globalSettings);
 		}
 	}
-	
+
 	private registerListener(): void {
 		this.eventService.addListener("settingsFileChanged", () => {
 			this.loadSettings();
 		});
-	}	
+	}
 }

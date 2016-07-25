@@ -238,9 +238,9 @@ export class WorkbenchShell {
 				this.onWorkbenchStarted();
 
 				// Asynchronously load settings
-				let settingsService = instantiationService.createInstance(UserSettings);			
+				let settingsService = instantiationService.createInstance(UserSettings);
 				serviceCollection.set(settingsService, UserSettings);
-				settingsService.loadSettings();				
+				settingsService.loadSettings();
 			},
 
 			onServicesCreated: () => {
@@ -284,7 +284,7 @@ export class WorkbenchShell {
 
 		this.navbarPart.create(navbarContainer);
 	}
-    
+
 	private fillNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
 		if (this.githubService.isAuthenticated()) {
@@ -459,9 +459,9 @@ export class WorkbenchShell {
 			this.contextService,
 			this.messageService,
 			requestService,
-			this.githubService			
+			this.githubService
 		);
-				
+
 		fileService.updateOptions({
 			settingsNotificationPaths: [
 				this.configuration.env.appSettingsPath,
@@ -469,7 +469,7 @@ export class WorkbenchShell {
 			],
 			gistRegEx: (<IMainEnvironment>this.configuration.env).gistRegEx
 		});
-		
+
 		this.contextViewService = new ContextViewService(this.container, this.telemetryService, this.messageService);
 
 		let lifecycleService = NullLifecycleService;

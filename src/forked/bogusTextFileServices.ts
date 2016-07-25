@@ -296,8 +296,8 @@ export class TextFileService extends AbstractTextFileService {
 				return TPromise.join(untitledSaveAsPromises).then(() => {
 					return result;
 				});
-			});			
-		} 
+			});
+		}
 
 		// See if any of these need a commit message
 		let needsCommitMessage: boolean = false;
@@ -309,7 +309,7 @@ export class TextFileService extends AbstractTextFileService {
 				break;
 			}
 		}
-					
+
 		if (needsCommitMessage) {
 			// Prompt for a commit message.
 			// We get the QuickOpenService here instead of via service injection because it hasn't

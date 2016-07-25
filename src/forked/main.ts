@@ -111,7 +111,7 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 	if (environment.enablePerformance) {
 		timer.ENABLE_TIMER = true;
 	}
-	
+
 	var options = {};
 	if (environment.userEnv['githubToken']) {
 		options['token'] = environment.userEnv['githubToken'];
@@ -168,7 +168,7 @@ function getWorkspace(environment: IMainEnvironment, repoInfo: any): IWorkspace 
 	}
 
 	let workspaceResource = uri.file(environment.workspacePath);
-	
+
 	let workspace: IWorkspace = {
 		'resource': workspaceResource,
 		'id': environment.githubRepo,
