@@ -63,6 +63,43 @@ declare module "github" {
 		show(username: string, cb: (err: Error, info?: UserInfo, xhr?: any) => void);
 	}
 
+	interface SearchOptions {
+		query: string;
+	}
+
+  interface FragmentMatch {
+		text: string,
+		indices: number[]
+	}
+
+	interface TextMatch {
+		object_type: string,
+		fragment: string,
+		matches: FragmentMatch[]
+	}
+
+	interface ResultItem {
+		name: string,
+		path: string,
+		sha: string,
+		score: string,
+		text_matches: TextMatch[]
+	}
+
+	interface SearchResult {
+		total_count: number,
+		incomplete_results: boolean,
+		items: ResultItem[]
+	}
+
+	class Search {
+		constructor(options: any);
+		repositories(options: SearchOptions, cb: (err: Error, result: SearchResult, xhr?: any) => void);
+		code(options: SearchOptions, cb: (err: Error, result: SearchResult, xhr?: any) => void);
+		issues(options: SearchOptions, cb: (err: Error, result: SearchResult, xhr?: any) => void);
+		users(options: SearchOptions, cb: (err: Error, result: SearchResult, xhr?: any) => void);
+	}
+
 	interface UserInfo {
 		login: string;
 		id: Number;
