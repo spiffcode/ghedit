@@ -835,8 +835,7 @@ export class FileService implements files.IFileService {
 			});
 		}).then((contents: any) => {
 			if (!Array.isArray(contents)) {
-				// TODO: switch on contents.type (file | symlink | submodule)
-				return {
+				let fileStat = {
 					resource: uri.file(contents.path),
 					isDirectory: false,
 					hasChildren: false,
@@ -847,17 +846,42 @@ export class FileService implements files.IFileService {
 					mime: baseMime.guessMimeTypes(contents.name).join(', '),
 					content: contents.content
 				}
+
+				switch (contents.type) {
+					case 'file':
+						return fileStat;
+
+					// Return the symlink target as its "contents". Magically when this is edited and
+					// saved/committed it will work! It's basically the same behavior GitHub provides.
+					case 'symlink':
+						fileStat.name += ' (symlink)';
+						fileStat.content = btoa(contents.target);
+						return fileStat;
+
+					// Return the submodule URL and SHA as its "contents". If the user edits and attempts
+					// to save the file it will silently fail.
+					// TODO: make opened file read only or fail not-silently or design smarter submodule behavior
+					case 'submodule':
+						// TODO: localize
+						fileStat.content = btoa('Submodule URL: ' + contents.submodule_git_url + '\nCommit SHA: ' + contents.sha);
+						return fileStat;
+				}
 			}
 			
 			// TODO: recurse subdirs
 			var stats: files.IFileStat[] = [];
 			for (var i = 0; i < contents.length; i++) {
 				let content = contents[i];
+				// From GitHub API documentation:
+				// When listing the contents of a directory, submodules have their "type" specified as "file".
+				// Logically, the value should be "submodule". This behavior exists in API v3 for backwards
+				// compatibility purposes. In the next major version of the API, the type will be returned as "submodule".
+				let typeEmbellishment = content.type == 'symlink' ? ' (symlink)' : content.type == 'submodule' ? ' (submodule)' : '';
 				stats.push({
 					resource: uri.file(content.path),
-					isDirectory: content.type == "dir", // TODO: symlink, submodule
-					hasChildren: content.type == "dir",
-					name: content.name,
+					isDirectory: content.type == 'dir',
+					hasChildren: content.type == 'dir',
+					name: content.name + typeEmbellishment,
 					mtime: content.updated_at, // TODO:
 					etag: content.sha,
 					size: content.size,
