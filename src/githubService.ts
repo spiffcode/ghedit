@@ -90,7 +90,7 @@ export class GithubService implements IGithubService {
 		// so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
 		// the authorization is done.
 		let client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
-		window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=user repo gist';
+		window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=repo gist';
 	}
 
 	public openRepository(repoName: string, ref?: string): TPromise<any> {
