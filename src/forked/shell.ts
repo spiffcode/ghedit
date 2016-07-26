@@ -287,7 +287,7 @@ export class WorkbenchShell {
 
 	private fillNavbar(instantiationService: InstantiationService): void {
 		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
-		if (this.githubService.isAuthenticated()) {
+		if (this.githubService.isAuthenticated() && !this.isWelcomeMode()) {
 			let repoItem = instantiationService.createInstance(RepoNavbarItem);
 			this.navbarPart.addItem(repoItem, NavbarAlignment.LEFT, 500);
 			let refItem = instantiationService.createInstance(RefNavbarItem);
