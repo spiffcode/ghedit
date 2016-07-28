@@ -42,7 +42,7 @@ export class RepoNavbarItem implements INavbarItem, IActionProvider {
 
 		return this.instantiationService.createInstance(DropdownMenu, el, {
 			tick: true,
-			label: this.githubService.repo,
+			label: this.githubService.repoName,
 			contextMenuProvider: this.contextMenuService,
 			actionProvider: this
 		});

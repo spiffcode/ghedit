@@ -26,7 +26,7 @@ export class RefNavbarItem implements INavbarItem, IActionProvider {
 	}
 
 	public render(el: HTMLElement): IDisposable {
-		let repo = this.githubService.github.getRepo(this.githubService.repo);
+		let repo = this.githubService.github.getRepo(this.githubService.repoName);
 		repo.listBranches((err: Error, branches: string[]) => {
 			if (err)
 				return;
@@ -34,7 +34,7 @@ export class RefNavbarItem implements INavbarItem, IActionProvider {
 			this._actions = [];
 			for (let branch of branches) {
 				let action = new Action('ref', branch, 'tight-menu-items', true, (event: any) => {
-					openRepository(this.githubService.repo, branch);
+					openRepository(this.githubService.repoName, branch);
 					return TPromise.as(true);
 				});
 				this._actions.push(action);

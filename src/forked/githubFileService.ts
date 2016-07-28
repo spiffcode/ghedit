@@ -155,7 +155,7 @@ export class FileService implements files.IFileService {
 		this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
 		this.undeliveredRawFileChangesEvents = [];
 		*/
-		this.repo = this.githubService.github.getRepo(this.githubService.repo);
+		this.repo = this.githubService.github.getRepo(this.githubService.repoName);
 		this.ref = this.githubService.ref;
 	}
 
@@ -450,6 +450,7 @@ export class FileService implements files.IFileService {
 							err ? e(err) : c(null);
 						});
 					}).then(() => {
+						this.githubService.getCache().scheduleRefresh();
 						return;
 					}, (error: GithubError) => {
 						console.log('failed to repo.write ' + resource.toString(true));
@@ -543,6 +544,7 @@ export class FileService implements files.IFileService {
 			// When the last file of a git directory is deleted, that directory is no longer part
 			// of the repo. Refresh the entire explorer view to catch this case.
 			this.forceExplorerViewRefresh();
+			this.githubService.getCache().scheduleRefresh();
 			return true;
 		}, (error: GithubError) => {
 			console.log('failed to delete file ' + sourcePath);

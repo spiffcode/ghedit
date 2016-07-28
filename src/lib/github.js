@@ -76,7 +76,9 @@
                  accept_header = 'application/vnd.github.v3.raw+json';
              } else if (accept === 'text_match') {
                  accept_header = 'application/vnd.github.v3.text-match+json';
-             }
+             } else if (accept === 'sha') {
+                 accept_header = 'application/vnd.github.VERSION.sha';
+						 }
          }
 
          var config = {
@@ -541,8 +543,21 @@
          // Retrieve the tree a commit points to
          // -------
 
-         this.getTree = function (tree, cb) {
-            _request('GET', repoPath + '/git/trees/' + tree, null, function (err, res, xhr) {
+         this.getTree = function (sha, cb) {
+            _request('GET', repoPath + '/git/trees/' + sha, null, function (err, res, xhr) {
+               if (err) {
+                  return cb(err);
+               }
+
+               cb(null, res.tree, xhr);
+            });
+         };
+
+         // Retrieve the recursive tree a commit points to
+         // -------
+
+         this.getTreeRecursive = function (sha, cb) {
+            _request('GET', repoPath + '/git/trees/' + sha, {recursive: 1}, function (err, res, xhr) {
                if (err) {
                   return cb(err);
                }
@@ -830,7 +845,7 @@
 
          this.move = function (branch, path, newPath, cb) {
             updateTree(branch, function (err, latestCommit) {
-               that.getTree(latestCommit + '?recursive=true', function (err, tree) {
+               that.getTreeRecursive(latestCommit, function (err, tree) {
                   // Update Tree
                   tree.forEach(function (ref) {
                      if (ref.path === path) {

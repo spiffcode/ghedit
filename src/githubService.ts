@@ -6,21 +6,24 @@
 'use strict';
 
 var github = require('lib/github');
-import {Github, UserInfo, Error as GithubError} from 'github';
+import {Github, Repository, UserInfo, Error as GithubError} from 'github';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {TPromise} from 'vs/base/common/winjs.base';
+import {GithubTreeCache, IGithubTreeCache} from 'githubTreeCache';
 
 export var IGithubService = createDecorator<IGithubService>('githubService');
 
 export interface IGithubService {
 	serviceId: ServiceIdentifier<any>;
 	github: Github;
-	repo: string;
+	repo: Repository;
+	repoName: string;
 	ref: string;
 
 	isFork(): boolean;
 	isDefaultBranch(): boolean;
 	getDefaultBranch(): string;
+	getCache(): IGithubTreeCache;
 	hasCredentials(): boolean;
 	isAuthenticated(): boolean;
 	authenticateUser(): TPromise<UserInfo>;
@@ -33,12 +36,14 @@ export class GithubService implements IGithubService {
 
 	public serviceId = IGithubService;
 	public github: Github;
-	public repo: string;
+	public repo: Repository;
+	public repoName: string;
 	public ref: string;
 
 	private options: any;
 	private authenticatedUserInfo: any;
 	private repoInfo: any;
+	private cache: GithubTreeCache;
 
 	constructor(options?: any) {
 		this.options = options;
@@ -55,6 +60,10 @@ export class GithubService implements IGithubService {
 
 	public getDefaultBranch(): string {
 		return this.repoInfo.default_branch;
+	}
+
+	public getCache(): IGithubTreeCache {
+		return this.cache;
 	}
 
 	public hasCredentials(): boolean {
@@ -94,16 +103,17 @@ export class GithubService implements IGithubService {
 	}
 
 	public openRepository(repoName: string, ref?: string): TPromise<any> {
-		this.repo = repoName;
+		this.repoName = repoName;
 		this.ref = ref;
-
-		let repo = this.github.getRepo(this.repo);
+		this.repo = this.github.getRepo(this.repoName);
+		
 		return new TPromise<any>((complete, error) => {
-			repo.show((err: GithubError, info?: any) => {
+			this.repo.show((err: GithubError, info?: any) => {
 				if (err) {
 					error(err);
 				} else {
 					this.repoInfo = info;
+					this.cache = new GithubTreeCache(this);
 					complete(info);
 				}
 			});

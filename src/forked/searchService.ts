@@ -25,6 +25,8 @@ import {IConfigurationService} from 'vs/platform/configuration/common/configurat
 import {IGithubService} from 'githubService';
 var github = require('lib/github');
 import {Github, SearchResult, ResultItem, TextMatch, FragmentMatch, SearchOptions, Search as GithubApiSearch, Error as GithubError} from 'github';
+import {IRawSearch} from 'vs/workbench/services/search/node/search';
+import {Engine as GithubFileSearchEngine} from 'forked/fileSearch';
 
 export class SearchService implements ISearchService {
 	public serviceId = ISearchService;
@@ -242,7 +244,7 @@ class GithubSearch {
 			}
 
 			// q=foo+repo:spiffcode/ghcode_test
-			let q:string = query.contentPattern.pattern + '+repo:' + this.githubService.repo;
+			let q:string = query.contentPattern.pattern + '+repo:' + this.githubService.repoName;
 			let s: GithubApiSearch = new github.Search({ query: encodeURIComponent(q) });
 			s.code(null, (err: GithubError, result: SearchResult) => {
 				if (err) {
@@ -279,7 +281,50 @@ class GithubSearch {
 	}
 
 	private fileSearch(query: ISearchQuery) : PPromise<ISearchComplete, ISearchProgressItem> {
-		return null;
+		// Map from ISearchQuery to IRawSearch
+		let config: IRawSearch = {
+			rootFolders: [''],
+			filePattern: query.filePattern,
+			excludePattern: query.excludePattern,
+			includePattern: query.includePattern,
+			contentPattern: query.contentPattern,
+			maxResults: query.maxResults,
+			fileEncoding: query.fileEncoding
+		};
+
+		if (query.folderResources) {
+			config.rootFolders = [];
+			query.folderResources.forEach((r) => {
+				config.rootFolders.push(r.path);
+			});
+		}
+
+		if (query.extraFileResources) {
+			config.extraFiles = [];
+			query.extraFileResources.forEach((r) => {
+				config.extraFiles.push(r.path);
+			});
+		}
+
+		let engine = new GithubFileSearchEngine(config, this.githubService.getCache());
+	
+		let matches: IFileMatch[] = [];
+		return new PPromise<ISearchComplete, ISearchProgressItem>((c, e, p) => {
+			engine.search((match) => {
+				if (match) {
+					matches.push(match);
+					p(match);
+				}
+			}, (progress) => {
+				p(progress);
+			}, (error, isLimitHit) => {
+				if (error) {
+					e(error);
+				} else {
+					c({ limitHit: isLimitHit, results: matches });
+				}
+			});
+		}, () => engine.cancel());
 	}
 
 	public search(query: ISearchQuery): PPromise<ISearchComplete, ISearchProgressItem> {

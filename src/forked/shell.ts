@@ -311,7 +311,7 @@ export class WorkbenchShell {
 	}
 
 	private isWelcomeMode(): boolean {
-		return !this.githubService.isAuthenticated() || !this.githubService.repo;
+		return !this.githubService.isAuthenticated() || !this.githubService.repoName;
 	}
 
 	private onWorkbenchStarted(): void {
