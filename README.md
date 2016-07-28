@@ -51,7 +51,6 @@ Start a web server in the ghcode directory.
 
 M1: MS Preview
 * DP: Minimizing out-build
-* SL: search (https://developer.github.com/v3/search/#search-code)
 
 M2: Public Release
 * sync up with latest vscode
@@ -67,7 +66,7 @@ M3: Release followup
 #### BUGS
 
 M1
-* SL: delete / rename doesn't work on a directory. Disable / Remove menu items?
+<empty>
 
 M2
 * DM: tags aren't presented on ref menu
