@@ -64,7 +64,7 @@ export class GithubTreeCache implements IGithubTreeCache
         this.scheduleRefresh(true);
     }
  
-    private findEntry(path: string): DirEntry {
+    private findEntry(path: string, symlinks: boolean): DirEntry {
         if (!this.tree)
             return null;
         let parts = path.split('/');
@@ -72,6 +72,13 @@ export class GithubTreeCache implements IGithubTreeCache
         let i = 1;
         for (; i < parts.length - 1; i++) {
             entry = entry.children[parts[i]];
+            if (symlinks) {
+                while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
+                    if (!entry.realpath)
+                        return null;
+                    entry = this.findEntry(entry.realpath, true);
+                }
+            }
             if (!entry)
                 return null;
         }
@@ -96,7 +103,7 @@ export class GithubTreeCache implements IGithubTreeCache
 
             // Add the entry
             let dir = paths.dirname('/' + item.path);            
-            let parent: DirEntry = this.findEntry(dir);
+            let parent: DirEntry = this.findEntry(dir, false);
             if (!parent.children)
                 parent.children = {};
             parent.children[entry.name] = entry;
@@ -106,8 +113,11 @@ export class GithubTreeCache implements IGithubTreeCache
                 entry.realpath = null;
                 symlinkPromises.push(limiter.queue(() => new TPromise<void>((s) => {
                     this.githubService.repo.getBlob(item.sha, (err: GithubError, path: string) => {
-                        if (!err) {                            
-                            entry.realpath = paths.makeAbsolute(paths.join(dir, path));
+                        if (!err) {
+                            // github.js relies on axios, which returns numbers for results
+                            // that can be parsed as numbers. Make sure the path is
+                            // converted to a string.
+                            entry.realpath = paths.makeAbsolute(paths.join(dir, '' + path));
                         }
                         s(null);
                     });
@@ -158,32 +168,22 @@ export class GithubTreeCache implements IGithubTreeCache
 
     public stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
         // stat follows symlinks
-        let entry = this.findEntry(path);
+        let entry = this.findEntry(path, true);
         if (!entry)
             return cb(new Error('Cannot find file or directory.'));
-
-        while ((entry.mode & S_IFMT) === S_IFLNK) {
-            if (!entry.realpath)
-                return cb(new Error('Cannot resolve path for symlink.'));
-
-            entry = this.findEntry(entry.realpath);
-            if (!entry)
-                return cb(new Error('Cannot find parent directory for resolved symlink.'));
-        }
-
         return cb(null, new GithubTreeStat(entry.mode, entry.size));
     }
 
     public lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
         // lstat does not follow symlinks
-        let entry = this.findEntry(path);
+        let entry = this.findEntry(path, false);
         if (!entry)
             return cb(new Error('Cannot find file or directory.'));
         return cb(null, new GithubTreeStat(entry.mode, entry.size));
     }
 
     public realpath(path: string, cb: (error: Error, result?: string) => void) : void {
-        let entry = this.findEntry(path);
+        let entry = this.findEntry(path, false);
         if (!entry)
             return cb(new Error('Cannot find file or directory.'));        
                 
@@ -196,7 +196,7 @@ export class GithubTreeCache implements IGithubTreeCache
     }
 
     public readdir(path: string, cb: (error: Error, files?: string[]) => void): void {
-        let entry = this.findEntry(path);
+        let entry = this.findEntry(path, true);
         if (!entry)
             return cb(new Error('Cannot find file or directory.'));                
 
