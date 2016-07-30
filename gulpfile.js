@@ -23,6 +23,9 @@ gulp.task('watch', ['pre-build'], shell.task([
     'cd src && tsc -w'
 ]));
 
+gulp.task('ghcode-distro', ['pre-build'], shell.task([
+		'cd src && gulp',
+]))
 gulp.task('push', shell.task([
     'bin/push'
 ]));
