@@ -6,12 +6,14 @@
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-shell": "^0.5.2"
+    "gulp-shell": "^0.5.2",
+		"underscore": "^1.8.2"
   },
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp build",
     "watch": "gulp watch",
-    "push": "gulp push"
+    "push": "gulp push",
+		"minify": "gulp ghcode-distro"
   }
 }
