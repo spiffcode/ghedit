@@ -2,7 +2,7 @@
  *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 'vs/base/common/winjs.base'], function (require, exports, instantiation_1, winjs_base_1) {
+define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 'vs/base/common/winjs.base', 'githubTreeCache'], function (require, exports, instantiation_1, winjs_base_1, githubTreeCache_1) {
     'use strict';
     var github = require('lib/github');
     exports.IGithubService = instantiation_1.createDecorator('githubService');
@@ -12,6 +12,18 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
             this.options = options;
             this.github = new github(options);
         }
+        GithubService.prototype.isFork = function () {
+            return 'parent' in this.repoInfo;
+        };
+        GithubService.prototype.isDefaultBranch = function () {
+            return this.ref === this.repoInfo.default_branch;
+        };
+        GithubService.prototype.getDefaultBranch = function () {
+            return this.repoInfo.default_branch;
+        };
+        GithubService.prototype.getCache = function () {
+            return this.cache;
+        };
         GithubService.prototype.hasCredentials = function () {
             return (this.options.username && this.options.password) || this.options.token;
         };
@@ -43,20 +55,21 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
             // so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
             // the authorization is done.
             var client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
-            window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=user repo gist';
+            window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=repo gist';
         };
         GithubService.prototype.openRepository = function (repoName, ref) {
             var _this = this;
-            this.repo = repoName;
+            this.repoName = repoName;
             this.ref = ref;
-            var repo = this.github.getRepo(this.repo);
+            this.repo = this.github.getRepo(this.repoName);
             return new winjs_base_1.TPromise(function (complete, error) {
-                repo.show(function (err, info) {
+                _this.repo.show(function (err, info) {
                     if (err) {
                         error(err);
                     }
                     else {
                         _this.repoInfo = info;
+                        _this.cache = new githubTreeCache_1.GithubTreeCache(_this);
                         complete(info);
                     }
                 });

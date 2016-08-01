@@ -39,7 +39,7 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
             });
             return this.instantiationService.createInstance(dropdown_1.DropdownMenu, el, {
                 tick: true,
-                label: this.githubService.repo,
+                label: this.githubService.repoName,
                 contextMenuProvider: this.contextMenuService,
                 actionProvider: this
             });

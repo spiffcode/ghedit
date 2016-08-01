@@ -29,7 +29,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/timer
     exports.NullTelemetryService = {
         serviceId: undefined,
         timedPublicLog: function (name, data) { return timer_1.nullEvent; },
-        publicLog: function (eventName, data) { },
+        publicLog: function (eventName, data) { console.log('log: ' + eventName + ' ' + JSON.stringify(data)); },
         addTelemetryAppender: function (appender) { return { dispose: function () { } }; },
         getTelemetryInfo: function () {
             return winjs_base_1.TPromise.as({

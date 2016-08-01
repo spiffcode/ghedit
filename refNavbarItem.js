@@ -21,14 +21,14 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
         }
         RefNavbarItem.prototype.render = function (el) {
             var _this = this;
-            var repo = this.githubService.github.getRepo(this.githubService.repo);
+            var repo = this.githubService.github.getRepo(this.githubService.repoName);
             repo.listBranches(function (err, branches) {
                 if (err)
                     return;
                 _this._actions = [];
                 var _loop_1 = function(branch) {
                     var action = new actions_1.Action('ref', branch, 'tight-menu-items', true, function (event) {
-                        githubService_1.openRepository(_this.githubService.repo, branch);
+                        githubService_1.openRepository(_this.githubService.repoName, branch);
                         return winjs_base_1.TPromise.as(true);
                     });
                     _this._actions.push(action);

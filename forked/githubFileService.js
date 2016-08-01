@@ -55,7 +55,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
             this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
             this.undeliveredRawFileChangesEvents = [];
             */
-            this.repo = this.githubService.github.getRepo(this.githubService.repo);
+            this.repo = this.githubService.github.getRepo(this.githubService.repoName);
             this.ref = this.githubService.ref;
         }
         FileService.prototype.updateOptions = function (options) {
@@ -92,7 +92,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
             // TODO:			content.mime = detected.mimes.join(', ');
             /* TODO:
             let absolutePath = this.toAbsolutePath(resource);
-            
+    
             // 1.) detect mimes
             return nfcall(mime.detectMimesFromFile, absolutePath).then((detected: mime.IMimeAndEncoding) => {
                 let isText = detected.mimes.indexOf(baseMime.MIME_BINARY) === -1;
@@ -198,7 +198,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                 data.files[filename] = { content: value };
                 // Gist exists?
                 if (info.gist) {
-                    // Gists exists. Update it.							
+                    // Gists exists. Update it.
                     var gist = new github.Gist({ id: info.gist.id });
                     gist.update(data, function (err) {
                         if (err) {
@@ -324,6 +324,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                                 err ? e(err) : c(null);
                             });
                         }).then(function () {
+                            _this.githubService.getCache().scheduleRefresh();
                             return;
                         }, function (error) {
                             console.log('failed to repo.write ' + resource.toString(true));
@@ -402,6 +403,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                 // When the last file of a git directory is deleted, that directory is no longer part
                 // of the repo. Refresh the entire explorer view to catch this case.
                 _this.forceExplorerViewRefresh();
+                _this.githubService.getCache().scheduleRefresh();
                 return true;
             }, function (error) {
                 console.log('failed to delete file ' + sourcePath);
@@ -598,9 +600,9 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                         e(err);
                         return;
                     }
-                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename
                     var parts = _this.toAbsolutePath(resource).split('/');
-                    // Find the raw url referenced by the path				
+                    // Find the raw url referenced by the path
                     for (var i = 0; i < gists.length; i++) {
                         var gist = gists[i];
                         if (gist.description !== parts[2]) {
@@ -628,10 +630,10 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                         e(files.FileOperationResult.FILE_NOT_FOUND);
                         return;
                     }
-                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename				
+                    // 0 = '', 1 = '$gist', 2 = description, 3 = filename
                     var parts = _this.toAbsolutePath(resource).split('/');
                     // Use the raw url even though direct gist query can return 1MB of contents.
-                    // Either case is an extra request and the raw url has fewer restrictions.				
+                    // Either case is an extra request and the raw url has fewer restrictions.
                     var url = info.gist.files[parts[3]].raw_url;
                     // Request the contents
                     _this.requestService.makeRequest({ url: url }).then(function (res) {
@@ -680,8 +682,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                 });
             }).then(function (contents) {
                 if (!Array.isArray(contents)) {
-                    // TODO: switch on contents.type (file | symlink | submodule)
-                    return {
+                    var fileStat = {
                         resource: uri_1.default.file(contents.path),
                         isDirectory: false,
                         hasChildren: false,
@@ -692,16 +693,38 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                         mime: baseMime.guessMimeTypes(contents.name).join(', '),
                         content: contents.content
                     };
+                    switch (contents.type) {
+                        case 'file':
+                            return fileStat;
+                        // Return the symlink target as its "contents". Magically when this is edited and
+                        // saved/committed it will work! It's basically the same behavior GitHub provides.
+                        case 'symlink':
+                            fileStat.name += ' (symlink)';
+                            fileStat.content = btoa(contents.target);
+                            return fileStat;
+                        // Return the submodule URL and SHA as its "contents". If the user edits and attempts
+                        // to save the file it will silently fail.
+                        // TODO: make opened file read only or fail not-silently or design smarter submodule behavior
+                        case 'submodule':
+                            // TODO: localize
+                            fileStat.content = btoa('Submodule URL: ' + contents.submodule_git_url + '\nCommit SHA: ' + contents.sha);
+                            return fileStat;
+                    }
                 }
                 // TODO: recurse subdirs
                 var stats = [];
                 for (var i = 0; i < contents.length; i++) {
                     var content = contents[i];
+                    // From GitHub API documentation:
+                    // When listing the contents of a directory, submodules have their "type" specified as "file".
+                    // Logically, the value should be "submodule". This behavior exists in API v3 for backwards
+                    // compatibility purposes. In the next major version of the API, the type will be returned as "submodule".
+                    var typeEmbellishment = content.type == 'symlink' ? ' (symlink)' : content.type == 'submodule' ? ' (submodule)' : '';
                     stats.push({
                         resource: uri_1.default.file(content.path),
-                        isDirectory: content.type == "dir",
-                        hasChildren: content.type == "dir",
-                        name: content.name,
+                        isDirectory: content.type == 'dir',
+                        hasChildren: content.type == 'dir',
+                        name: content.name + typeEmbellishment,
                         mtime: content.updated_at,
                         etag: content.sha,
                         size: content.size,
@@ -989,7 +1012,7 @@ export class StatResolver {
 
     private resolveChildren(absolutePath: string, absoluteTargetPaths: string[], resolveSingleChildDescendants: boolean, callback: (children: files.IFileStat[]) => void): void {
         console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
-        
+
         extfs.readdir(absolutePath, (error: Error, files: string[]) => {
             if (error) {
                 if (this.verboseLogging) {
