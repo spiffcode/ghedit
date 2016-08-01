@@ -6,7 +6,7 @@
 var gulp = require('gulp');
 var path = require('path');
 var _ = require('underscore');
-var buildfile = require('../forked/buildfile');
+var buildfile = require('../src/forked/buildfile');
 var util = require('./lib/util');
 var common = require('./gulpfile.common');
 
@@ -16,16 +16,16 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 // Build
 
 var ghcodeEntryPoints = _.flatten([
-	buildfile.entrypoint('vs/editor/editor.main'),
+	buildfile.entrypoint('forked/main'),
 	buildfile.base,
 	buildfile.standaloneLanguages,
 	buildfile.standaloneLanguages2,
-	buildfile.editor,
+	buildfile.ghcode,
 	buildfile.languages
 ]);
 
 var ghcodeResources = [
-	'out-build/vs/{base,editor}/**/*.{svg,png}',
+	'out-build/vs/{base,ghcode}/**/*.{svg,png}',
 	'out-build/vs/base/worker/workerMainCompatibility.html',
 	'out-build/vs/base/worker/workerMain.{js,js.map}',
 	'!out-build/vs/workbench/**',
