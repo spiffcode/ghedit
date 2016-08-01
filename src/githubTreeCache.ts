@@ -60,11 +60,11 @@ export class GithubTreeCache implements IGithubTreeCache
     private refresh_counter: number;
     private tree: any;
 
-    constructor(private githubService: IGithubService) {
+    constructor(private githubService: IGithubService, private supportSymlinks: boolean) {
         this.scheduleRefresh(true);
     }
 
-    private findEntry(path: string, symlinks: boolean): DirEntry {
+    private findEntry(path: string, useSymlinks: boolean): DirEntry {
         if (!this.tree)
             return null;
 
@@ -87,13 +87,14 @@ export class GithubTreeCache implements IGithubTreeCache
             // Get the child entry
             entry = entry.children[parts[i]];
 
-            // Follow symlinks so that only real paths are ever returned.
-            // GHCode file loading code doesn't resolve paths with symlinks.
-            if (symlinks) {
-                while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
-                    if (!entry.realpath)
-                        return null;
-                    entry = this.findEntry(entry.realpath, true);
+            // Follow symlinks
+            if (this.supportSymlinks) {
+                if (i !== parts.length - 1 || useSymlinks) {
+                    while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
+                        if (!entry.realpath)
+                            return null;
+                        entry = this.findEntry(entry.realpath, true);
+                    }
                 }
             }
             if (!entry)

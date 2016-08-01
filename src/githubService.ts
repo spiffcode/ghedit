@@ -113,7 +113,9 @@ export class GithubService implements IGithubService {
 					error(err);
 				} else {
 					this.repoInfo = info;
-					this.cache = new GithubTreeCache(this);
+
+					// Don't support symlinks until githubFileService can load symlinked paths
+					this.cache = new GithubTreeCache(this, false);
 					complete(info);
 				}
 			});
