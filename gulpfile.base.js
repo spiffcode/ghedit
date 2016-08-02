@@ -112,16 +112,22 @@ gulp.task('watch-client-build', ['clean-client-build'], watchTask('out-build', t
 gulp.task('default', ['compile']);
 
 // All
-gulp.task('clean', ['clean-client', 'clean-extensions']);
-gulp.task('compile', ['compile-client', 'compile-extensions']);
-gulp.task('watch', ['watch-client', 'watch-extensions']);
+gulp.task('clean', ['clean-client']);
+gulp.task('compile', ['compile-client']);
+gulp.task('watch', ['watch-client']);
+// gulp.task('clean', ['clean-client', 'clean-extensions']);
+// gulp.task('compile', ['compile-client', 'compile-extensions']);
+// gulp.task('watch', ['watch-client', 'watch-extensions']);
 
 // All Build
-gulp.task('clean-build', ['clean-client-build', 'clean-extensions-build']);
-gulp.task('compile-build', ['compile-client-build', 'compile-extensions-build']);
-gulp.task('watch-build', ['watch-client-build', 'watch-extensions-build']);
+gulp.task('clean-build', ['clean-client-build']);
+gulp.task('compile-build', ['compile-client-build']);
+gulp.task('watch-build', ['watch-client-build']);
+// gulp.task('clean-build', ['clean-client-build', 'clean-extensions-build']);
+// gulp.task('compile-build', ['compile-client-build', 'compile-extensions-build']);
+// gulp.task('watch-build', ['watch-client-build', 'watch-extensions-build']);
 
 require('./build/gulpfile.hygiene');
-require('./build/gulpfile.vscode');
+// require('./build/gulpfile.vscode');
 require('./build/gulpfile.ghcode');
-require('./build/gulpfile.extensions');
+// require('./build/gulpfile.extensions');
