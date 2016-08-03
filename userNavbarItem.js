@@ -30,6 +30,10 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
                 // TODO: string localization
                 new actions_1.Action('signOut', 'Sign Out', 'tight-menu-items', true, function (event) {
                     window.localStorage.removeItem('githubToken');
+                    var d = new Date();
+                    d.setTime(d.getTime() - 1000);
+                    document.cookie = 'githubToken=;expires=' + d.toUTCString();
+                    ;
                     window.localStorage.removeItem('githubUser');
                     window.localStorage.removeItem('githubPassword');
                     window.sessionStorage.removeItem('githubRepo');

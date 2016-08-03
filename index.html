@@ -90,6 +90,28 @@
 				return result;
 			}
 
+			function setCookie(cname, cvalue, exdays) {
+				var d = new Date();
+				d.setTime(d.getTime() + (exdays*24*60*60*1000));
+				var expires = "expires="+ d.toUTCString();
+				document.cookie = cname + "=" + cvalue + "; " + expires;
+			}
+
+			function getCookie(cname) {
+				var name = cname + "=";
+				var ca = document.cookie.split(';');
+				for(var i = 0; i <ca.length; i++) {
+						var c = ca[i];
+						while (c.charAt(0)==' ') {
+								c = c.substring(1);
+						}
+						if (c.indexOf(name) == 0) {
+								return c.substring(name.length,c.length);
+						}
+				}
+				return "";
+			}
+
 			function createScript(src, onload) {
 				var script = document.createElement('script');
 				script.src = src;
@@ -171,7 +193,12 @@
 						}
 						if (result.access_token) {
 							// Retain the access token in local storage for future use.
-							window.localStorage.setItem('githubToken', result.access_token);
+							try {
+								window.localStorage.setItem('githubToken', result.access_token);
+							} catch (error) {
+								// Safari raises Quota Exceeded exception in Private Browsing mode.
+								setCookie('githubToken', result.access_token, 365);
+							}
 
 							startup2(args);
 
@@ -225,21 +252,38 @@
 					configuration.githubRepo = args.repo;
 					configuration.githubRef = args.ref || 'master';
 					configuration.workspacePath = '/';
-					window.localStorage.setItem('lastGithubRepo', configuration.githubRepo);
-					window.localStorage.setItem('lastGithubRef', configuration.githubRef);
-					window.sessionStorage.setItem('githubRepo', configuration.githubRepo);
-					window.sessionStorage.setItem('githubRef', configuration.githubRef);
+					try {
+						window.localStorage.setItem('lastGithubRepo', configuration.githubRepo);
+						window.localStorage.setItem('lastGithubRef', configuration.githubRef);
+					} catch (error) {
+						// Safari raises Quota Exceeded exception in Private Browsing mode.
+					}
+
+					try {
+						window.sessionStorage.setItem('githubRepo', configuration.githubRepo);
+						window.sessionStorage.setItem('githubRef', configuration.githubRef);
+					} catch (error) {
+						// Safari raises Quota Exceeded exception in Private Browsing mode.
+					}
 				}
 
 				configuration.userEnv.githubToken = window.localStorage.getItem('githubToken');
+				if (configuration.userEnv.githubToken === null)
+					configuration.userEnv.githubToken = getCookie('githubToken');
 				if (args.u)
 					configuration.userEnv.githubUsername = args.u;
 				if (args.p)
 					configuration.userEnv.githubPassword = args.p;
 				if (args.t)
 					configuration.userEnv.githubToken = args.t;
-				if (configuration.userEnv.githubToken !== null)
-					window.localStorage.setItem('githubToken', configuration.userEnv.githubToken);
+				if (configuration.userEnv.githubToken !== null) {
+					try {
+						window.localStorage.setItem('githubToken', configuration.userEnv.githubToken);
+					} catch (error) {
+						// Safari raises Quota Exceeded exception in Private Browsing mode.
+						setCookie('githubToken', configuration.userEnv.githubToken, 365);
+					}
+				}
 				var enableDeveloperTools = !configuration.isBuilt || !!configuration.extensionDevelopmentPath;
 
 	// TODO:			process.env['VSCODE_SHARED_IPC_HOOK'] = configuration.sharedIPCHandle;

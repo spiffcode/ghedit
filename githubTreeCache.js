@@ -24,11 +24,12 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/async
     }());
     exports.GithubTreeStat = GithubTreeStat;
     var GithubTreeCache = (function () {
-        function GithubTreeCache(githubService) {
+        function GithubTreeCache(githubService, supportSymlinks) {
             this.githubService = githubService;
+            this.supportSymlinks = supportSymlinks;
             this.scheduleRefresh(true);
         }
-        GithubTreeCache.prototype.findEntry = function (path, symlinks) {
+        GithubTreeCache.prototype.findEntry = function (path, useSymlinks) {
             if (!this.tree)
                 return null;
             // The path must begin with '/'
@@ -46,13 +47,14 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/async
                     return null;
                 // Get the child entry
                 entry = entry.children[parts[i]];
-                // Follow symlinks so that only real paths are ever returned.
-                // GHCode file loading code doesn't resolve paths with symlinks.
-                if (symlinks) {
-                    while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
-                        if (!entry.realpath)
-                            return null;
-                        entry = this.findEntry(entry.realpath, true);
+                // Follow symlinks
+                if (this.supportSymlinks) {
+                    if (i !== parts.length - 1 || useSymlinks) {
+                        while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
+                            if (!entry.realpath)
+                                return null;
+                            entry = this.findEntry(entry.realpath, true);
+                        }
                     }
                 }
                 if (!entry)

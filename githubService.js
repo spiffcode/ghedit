@@ -69,7 +69,8 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
                     }
                     else {
                         _this.repoInfo = info;
-                        _this.cache = new githubTreeCache_1.GithubTreeCache(_this);
+                        // Don't support symlinks until githubFileService can load symlinked paths
+                        _this.cache = new githubTreeCache_1.GithubTreeCache(_this, false);
                         complete(info);
                     }
                 });
