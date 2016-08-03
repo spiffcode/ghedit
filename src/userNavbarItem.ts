@@ -40,6 +40,9 @@ export class UserNavbarItem implements INavbarItem {
 			// TODO: string localization
 			new Action('signOut', 'Sign Out', 'tight-menu-items', true, (event: any) => {
 				window.localStorage.removeItem('githubToken');
+				var d = new Date();
+				d.setTime(d.getTime() - 1000);
+				document.cookie = 'githubToken=;expires=' + d.toUTCString();;
 				window.localStorage.removeItem('githubUser');
 				window.localStorage.removeItem('githubPassword');
 				window.sessionStorage.removeItem('githubRepo');
