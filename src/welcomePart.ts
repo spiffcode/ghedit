@@ -117,7 +117,7 @@ export class WelcomePart extends Part {
 			// TODO: localization
 			this.openButton.label = 'Sign In';
 			this.openButton.on('click', () => {
-				this.githubService.authenticate();
+				this.githubService.authenticate(false);
 			});
 		}
 

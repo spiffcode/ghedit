@@ -72,7 +72,7 @@ export class UserNavbarItem implements INavbarItem {
 		let textContainer = document.createElement('a');
 
 		$(textContainer).on('click', (e) => {
-			this.githubService.authenticate();
+			this.githubService.authenticate(false);
 		}, toDispose);
 
 		// Label
