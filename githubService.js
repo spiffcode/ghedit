@@ -50,12 +50,13 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
         GithubService.prototype.getAuthenticatedUserInfo = function () {
             return this.authenticatedUserInfo;
         };
-        GithubService.prototype.authenticate = function () {
+        GithubService.prototype.authenticate = function (privateRepos) {
             // If we're running on localhost authorize via the "GH Code localhost" application
             // so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
             // the authorization is done.
             var client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
-            window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=repo gist';
+            var repoScope = privateRepos ? 'repo' : 'public_repo';
+            window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=' + repoScope + ' gist';
         };
         GithubService.prototype.openRepository = function (repoName, ref) {
             var _this = this;

@@ -59,7 +59,7 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
             // Text Container
             var textContainer = document.createElement('a');
             builder_1.$(textContainer).on('click', function (e) {
-                _this.githubService.authenticate();
+                _this.githubService.authenticate(false);
             }, toDispose);
             // Label
             // TODO: string localization

@@ -86,7 +86,7 @@ define(["require", "exports", 'vs/base/browser/dom', 'vs/workbench/browser/part'
                 // TODO: localization
                 this.openButton.label = 'Sign In';
                 this.openButton.on('click', function () {
-                    _this.githubService.authenticate();
+                    _this.githubService.authenticate(false);
                 });
             }
             return this.container;
