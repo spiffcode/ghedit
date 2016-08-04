@@ -7,6 +7,7 @@
 require('events').EventEmitter.defaultMaxListeners = 100;
 
 var gulp = require('gulp');
+var shell = require('gulp-shell');
 var debug = require('gulp-debug');
 var tsb = require('gulp-tsb');
 var filter = require('gulp-filter');
@@ -64,7 +65,7 @@ function createCompile(build, emitError) {
 				sourceRoot: tsOptions.sourceRoot
 			}))
 			.pipe(tsFilter.restore)
-			.pipe(debug({title: 'help!'}))
+
 			.pipe(quiet ? es.through() : reporter.end(emitError));
 		console.log('input: ', input)
 		console.log('output: ', output)
@@ -100,12 +101,18 @@ function watchTask(out, build) {
 
 // Fast compile for development time
 gulp.task('clean-client', util.rimraf('out'));
-gulp.task('compile-client', ['clean-client'], compileTask('out', false));
+gulp.task('compile-client', ['clean-client'], shell.task([
+	'cd src && tsc'
+]));
+// gulp.task('compile-client', ['clean-client'], compileTask('out', false));
 gulp.task('watch-client', ['clean-client'], watchTask('out', false));
 
 // Full compile, including nls and inline sources in sourcemaps, for build
 gulp.task('clean-client-build', util.rimraf('out-build'));
-gulp.task('compile-client-build', ['clean-client-build'], compileTask('out-build', true));
+// gulp.task('compile-client-build', ['clean-client-build'], compileTask('out-build', true));
+gulp.task('compile-client-build', ['clean-client'], shell.task([
+	'cd src && tsc'
+]));
 gulp.task('watch-client-build', ['clean-client-build'], watchTask('out-build', true));
 
 // Default

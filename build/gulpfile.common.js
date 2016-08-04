@@ -5,6 +5,7 @@
 
 var path = require('path');
 var gulp = require('gulp');
+var debug = require('gulp-debug');
 var sourcemaps = require('gulp-sourcemaps');
 var filter = require('gulp-filter');
 var minifyCSS = require('gulp-cssnano');
@@ -151,6 +152,7 @@ exports.optimizeTask = function(opts) {
 		var otherSourcesStreamArr = [];
 
 		gulp.src(otherSources, { base: 'out-build' })
+			.pipe(debug({title: 'opt-task'}))
 			.pipe(es.through(function (data) {
 				otherSourcesStreamArr.push(toConcatStream(bundledFileHeader, [data], data.relative));
 			}, function () {
