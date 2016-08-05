@@ -66,6 +66,7 @@ export class UserNavbarItem implements INavbarItem {
 
 	private renderSignedOut(el: HTMLElement): IDisposable {
 		let toDispose: IDisposable[] = [];
+		/*
 		dom.addClass(el, 'navbar-entry');
 
 		// Text Container
@@ -84,7 +85,7 @@ export class UserNavbarItem implements INavbarItem {
 		$(textContainer).title('Grant access to your GitHub repos, gists, and user info');
 
 		el.appendChild(textContainer);
-
+		*/
 		return {
 			dispose: () => {
 				toDispose = dispose(toDispose);
