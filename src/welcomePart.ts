@@ -111,13 +111,16 @@ export class WelcomePart extends Part {
 			<li>IntelliSense for many languages including Javascript, Typescript, ...</li>
 			<li>Lots of other cool stuff</li>
 			</ul>
-			To open GitHub repositories with GH Code sign in to your GitHub account and grant permissions.</div><p>`;
+			Sign in to your GitHub account to open GitHub repositories.</div><p>
+			<input id='privateRepos' type='checkbox'>
+			<label for='privateRepos'>Include my private repositories (optional)</label>`;
 
 			this.openButton = new Button(el);
 			// TODO: localization
 			this.openButton.label = 'Sign In';
 			this.openButton.on('click', () => {
-				this.githubService.authenticate(false);
+				let checkbox = <HTMLInputElement>document.getElementById('privateRepos');
+				this.githubService.authenticate(checkbox.checked);
 			});
 		}
 
