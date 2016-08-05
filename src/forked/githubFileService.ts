@@ -16,6 +16,7 @@
 // TODO: import crypto = require('crypto');
 // TODO: import assert = require('assert');
 
+import flow = require('forked/flow');
 import Files = require('vs/workbench/parts/files/common/files');
 import {FileStat} from 'vs/workbench/parts/files/common/explorerViewModel';
 
@@ -46,6 +47,7 @@ import {IEventService} from 'vs/platform/event/common/event';
 import {Github, Repository, User, Gist, Error as GithubError} from 'github';
 import {IGithubService} from 'githubService';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
 
 interface GistInfo {
 	gist: Gist;
@@ -125,6 +127,7 @@ export class FileService implements files.IFileService {
 	private options: IFileServiceOptions;
 	private repo: Repository;
 	private ref: string;
+	private cache: IGithubTreeCache;
 
 	private workspaceWatcherToDispose: () => void;
 
@@ -157,6 +160,7 @@ export class FileService implements files.IFileService {
 		*/
 		this.repo = this.githubService.github.getRepo(this.githubService.repoName);
 		this.ref = this.githubService.ref;
+		this.cache = this.githubService.getCache();
 	}
 
 	public updateOptions(options: IFileServiceOptions): void {
@@ -450,7 +454,7 @@ export class FileService implements files.IFileService {
 							err ? e(err) : c(null);
 						});
 					}).then(() => {
-						this.githubService.getCache().scheduleRefresh();
+						this.cache.markDirty();
 						return;
 					}, (error: GithubError) => {
 						console.log('failed to repo.write ' + resource.toString(true));
@@ -543,8 +547,8 @@ export class FileService implements files.IFileService {
 		}).then(() => {
 			// When the last file of a git directory is deleted, that directory is no longer part
 			// of the repo. Refresh the entire explorer view to catch this case.
+			this.cache.markDirty();			
 			this.forceExplorerViewRefresh();
-			this.githubService.getCache().scheduleRefresh();
 			return true;
 		}, (error: GithubError) => {
 			console.log('failed to delete file ' + sourcePath);
@@ -720,24 +724,37 @@ export class FileService implements files.IFileService {
 		return paths.normalize(resource.fsPath);
 	}
 
+	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
+		if (this.isGistPath(resource)) {
+			return this.resolveGistFile(resource, options);
+		} else {
+			return this.toStatResolver(resource).then(model => model.resolve(options));
+		}
+	}
+
+	private toStatResolver(resource: uri): TPromise<StatResolver> {
+		let absolutePath = this.toAbsolutePath(resource);
+		return new TPromise<StatResolver>((c, e) => {
+			this.cache.stat(absolutePath, (error: Error, result: IGithubTreeStat) => {
+				if (error) {
+					e(error)
+				} else {
+					c(new StatResolver(this.cache, resource, result, this.options.verboseLogging));
+				}
+			});
+		});
+	}
+
 	private isGistPath(resource: uri) : boolean
 	{
 		// /$gist/<gist description property>/<filename>
 		return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));
 	}
 
-	private resolve(resource: uri, options: files.IResolveFileOptions = Object.create(null)): TPromise<files.IFileStat> {
-		if (this.isGistPath(resource)) {
-			return this.resolveGistFile(resource, options);
-		} else {
-			return this.resolveRepoFile(resource, options);
-		}
-	}
-
 	private findGist(resource: uri) : TPromise<GistInfo> {
 		return new TPromise<GistInfo>((c, e) => {
 			if (!this.githubService.isAuthenticated()) {
-				// We don't have access to the current user's Gists.
+				// We don't have access to the current paths.makeAbsoluteuser's Gists.
 				e({ path: resource.path, error: "not authenticated" });
 				return;
 			}
@@ -786,124 +803,28 @@ export class FileService implements files.IFileService {
 				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
 				let parts = this.toAbsolutePath(resource).split('/');
 
-				// Use the raw url even though direct gist query can return 1MB of contents.
-				// Either case is an extra request and the raw url has fewer restrictions.
-				let url: string = info.gist.files[parts[3]].raw_url;
-
-				// Request the contents
-				this.requestService.makeRequest({ url }).then((res: http.IXHRResponse) => {
-					if (res.status == 200) {
-						// Github is not returning Access-Control-Expose-Headers: ETag, so we
-						// don't have access to that header in the response. Make
-						// up an ETag. ETags don't have format dependencies.
-						let etag: string = info.gist.updated_at + res.responseText.length;
-						let stat: files.IFileStat = {
-							resource: uri.file(resource.path),
-							isDirectory: false,
-							hasChildren: false,
-							name: parts[2],
-							mtime: Date.parse(info.gist.updated_at),
-							etag: etag,
-							size: res.responseText.length,
-							mime: info.gist.files[parts[3]].type
-						};
-
-						// Hack: the caller currently expects content this way.
-						(<any>stat).content = btoa(res.responseText);
-						c(stat);
-					} else {
-						console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
-						e(files.FileOperationResult.FILE_NOT_FOUND);
-					}
-				});
-			}, (error: GithubError) => {
-				return TPromise.wrapError(<files.IFileOperationResult>{
-					fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-				});
-			});
-		});
-	}
-
-	private resolveRepoFile(resource: uri, options: files.IResolveFileOptions): TPromise<files.IFileStat> {
-		return new TPromise<files.IFileStat>((c, e) => {
-			// TODO: This API has an upper limit of 1,000 files per directory.
-			// TODO: This API only supports files up to 1 MB in size. So use,
-			//		https://raw.githubusercontent.com/:owner/:repo/master/:path
-			//		or download_url of directory entry
-			//		or curl -H 'Authorization: token INSERTACCESSTOKENHERE' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/owner/repo/contents/path
-			// TODO: GET /repos/:owner/:repo/git/trees/:sha for directories
-			this.repo.contents(this.ref, resource.path.slice(1), (err: GithubError, contents?: any) => {
-				err ? e(err) : c(contents);
-			});
-		}).then((contents: any) => {
-			if (!Array.isArray(contents)) {
-				let fileStat = {
-					resource: uri.file(contents.path),
+				// Github is not returning Access-Control-Expose-Headers: ETag, so we
+				// don't have access to that header in the response. Make
+				// up an ETag. ETags don't have format dependencies.
+				let size = info.gist.files[parts[3]].size; 
+				let etag: string = info.gist.updated_at + size;
+				let stat: files.IFileStat = {
+					resource: uri.file(resource.path),
 					isDirectory: false,
 					hasChildren: false,
-					name: contents.name,
-					mtime: contents.updated_at, // TODO:
-					etag: contents.sha,
-					size: contents.size,
-					mime: baseMime.guessMimeTypes(contents.name).join(', '),
-					content: contents.content
-				}
+					name: parts[2],
+					mtime: Date.parse(info.gist.updated_at),
+					etag: etag,
+					size: size,
+					mime: info.gist.files[parts[3]].type
+				};
 
-				switch (contents.type) {
-					case 'file':
-						return fileStat;
+				// Extra data to return to the caller, for getting content
+				(<any>stat).url = info.gist.files[parts[3]].raw_url;
+				c(stat);
 
-					// Return the symlink target as its "contents". Magically when this is edited and
-					// saved/committed it will work! It's basically the same behavior GitHub provides.
-					case 'symlink':
-						fileStat.name += ' (symlink)';
-						fileStat.content = btoa(contents.target);
-						return fileStat;
-
-					// Return the submodule URL and SHA as its "contents". If the user edits and attempts
-					// to save the file it will silently fail.
-					// TODO: make opened file read only or fail not-silently or design smarter submodule behavior
-					case 'submodule':
-						// TODO: localize
-						fileStat.content = btoa('Submodule URL: ' + contents.submodule_git_url + '\nCommit SHA: ' + contents.sha);
-						return fileStat;
-				}
-			}
-
-			// TODO: recurse subdirs
-			var stats: files.IFileStat[] = [];
-			for (var i = 0; i < contents.length; i++) {
-				let content = contents[i];
-				// From GitHub API documentation:
-				// When listing the contents of a directory, submodules have their "type" specified as "file".
-				// Logically, the value should be "submodule". This behavior exists in API v3 for backwards
-				// compatibility purposes. In the next major version of the API, the type will be returned as "submodule".
-				let typeEmbellishment = content.type == 'symlink' ? ' (symlink)' : content.type == 'submodule' ? ' (submodule)' : '';
-				stats.push({
-					resource: uri.file(content.path),
-					isDirectory: content.type == 'dir',
-					hasChildren: content.type == 'dir',
-					name: content.name + typeEmbellishment,
-					mtime: content.updated_at, // TODO:
-					etag: content.sha,
-					size: content.size,
-					mime: baseMime.guessMimeTypes(content.name).join(', ')
-				});
-			}
-			return {
-				resource: resource,
-				isDirectory: true,
-				hasChildren: true,
-				name: resource.path, // TODO:
-				mtime: 0, // TODO:
-				etag: '', // TODO: etag(fileStat),
-				children: stats,
-				mime: undefined
-			}
-		}, (error: GithubError) => {
-			console.log('Unable to repo.contents ' + resource.toString(true));
-			return TPromise.wrapError(<files.IFileOperationResult>{
-				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+			}, (error: GithubError) => {
+				e(files.FileOperationResult.FILE_NOT_FOUND);
 			});
 		});
 	}
@@ -928,21 +849,48 @@ export class FileService implements files.IFileService {
 				});
 			}
 
-			// 2.) read contents
+			// Prepare result
+			let result: files.IContent = {
+				resource: model.resource,
+				name: model.name,
+				mtime: model.mtime,
+				etag: model.etag,
+				mime: model.mime,
+				value: undefined,
+				encoding: encoding.UTF8 // TODO
+			};
+
+			// Either a gist file or a repo file
 			return new TPromise<files.IContent>((c, e) => {
-				var content: files.IContent = {
-					resource: model.resource,
-					name: model.name,
-					mtime: model.mtime,
-					etag: model.etag,
-					mime: model.mime,
-					value: atob((<any>model).content.replace(/\s/g, '')),
-					encoding: encoding.UTF8 // TODO:
+				if ((<any>model).submodule_git_url) {
+					result.value = 'Submodule URL: ' + (<any>model).submodule_git_url + '\nCommit SHA: ' + model.etag;
+					c(result);					
+				} else if (this.isGistPath(resource)) {
+					// Gist urls don't require authentication
+					let url = (<any>model).url;
+					this.requestService.makeRequest({ url }).then((res: http.IXHRResponse) => {					
+						if (res.status == 200) {
+							result.value = res.responseText;
+							c(result);
+						} else {
+							console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
+							e(files.FileOperationResult.FILE_NOT_FOUND);
+						}
+					});
+				} else {
+					// Regular repo file
+					this.repo.getBlob(model.etag, (err: GithubError, content: string) => {
+						if (!err) {
+							result.value = content;
+							c(result);
+						} else {
+							console.log('repo.getBlob error using sha ' + model.etag);
+							e(files.FileOperationResult.FILE_NOT_FOUND);
+						}
+					});
 				}
-				c(content);
 			});
 		}, (error) => {
-			// console.log('Error resolving: ' + resource.path + ' error: ' + error);
 			return TPromise.wrapError(<files.IFileOperationResult>{
 				fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
 			});
@@ -1114,29 +1062,34 @@ export class FileService implements files.IFileService {
 	}
 }
 
-/*
 export class StatResolver {
-	private resource: uri;
 	private isDirectory: boolean;
 	private mtime: number;
 	private name: string;
 	private mime: string;
 	private etag: string;
 	private size: number;
-	private verboseLogging: boolean;
 
-	constructor(resource: uri, isDirectory: boolean, mtime: number, size: number, verboseLogging: boolean) {
+	constructor(private cache: IGithubTreeCache, private resource: uri, private stat: IGithubTreeStat, private verboseLogging: boolean) {
 		// TODO: assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
 
-		this.resource = resource;
-		this.isDirectory = isDirectory;
-		this.mtime = mtime;
+		this.isDirectory = stat.isDirectory();
+		this.mtime = this.cache.getFakeMtime();
 		this.name = paths.basename(resource.fsPath);
 		this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
-		this.etag = etag(size, mtime);
-		this.size = size;
+		// this.etag = etag(size, mtime);
+		this.etag = stat.sha;		
+		this.size = stat.size;
+	}
 
-		this.verboseLogging = verboseLogging;
+	private addGithubFields(fileStat: files.IFileStat, githubStat: IGithubTreeStat) {
+		if (githubStat.isSymbolicLink()) {
+			(<any>fileStat).type = 'symlink';
+		}
+		if (githubStat.submodule_git_url) {
+			(<any>fileStat).type = 'submodule';
+			(<any>fileStat).submodule_git_url = githubStat.submodule_git_url;
+		}
 	}
 
 	public resolve(options: files.IResolveFileOptions): TPromise<files.IFileStat> {
@@ -1152,6 +1105,9 @@ export class StatResolver {
 			mtime: this.mtime,
 			mime: this.mime
 		};
+
+		// Add github fields
+		this.addGithubFields(fileStat, this.stat);
 
 		// File Specific Data
 		if (!this.isDirectory) {
@@ -1185,9 +1141,8 @@ export class StatResolver {
 	}
 
 	private resolveChildren(absolutePath: string, absoluteTargetPaths: string[], resolveSingleChildDescendants: boolean, callback: (children: files.IFileStat[]) => void): void {
-		console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
-
-		extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+		// extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+		this.cache.readdir(absolutePath, (error: Error, files: string[]) => {			
 			if (error) {
 				if (this.verboseLogging) {
 					console.error(error);
@@ -1198,8 +1153,10 @@ export class StatResolver {
 
 			// for each file in the folder
 			flow.parallel(files, (file: string, clb: (error: Error, children: files.IFileStat) => void) => {
-				let fileResource = uri.file(paths.resolve(absolutePath, file));
-				let fileStat: fs.Stats;
+				//let fileResource = uri.file(paths.resolve(absolutePath, file));
+				let fileResource = uri.file(paths.makeAbsolute(paths.join(absolutePath, file)));
+				// let fileStat: fs.Stats;
+				let fileStat: IGithubTreeStat;
 				let $this = this;
 
 				flow.sequence(
@@ -1212,14 +1169,17 @@ export class StatResolver {
 					},
 
 					function stat(): void {
-						fs.stat(fileResource.fsPath, this);
+						// fs.stat(fileResource.fsPath, this);
+						$this.cache.stat(fileResource.fsPath, this);
 					},
 
-					function countChildren(fsstat: fs.Stats): void {
+					// function countChildren(fsstat: fs.stats): void {
+					function countChildren(fsstat: IGithubTreeStat): void {						
 						fileStat = fsstat;
 
 						if (fileStat.isDirectory()) {
-							extfs.readdir(fileResource.fsPath, (error, result) => {
+							// extfs.readdir(fileResource.fsPath, (error, result) => {							
+							$this.cache.readdir(fileResource.fsPath, (error, result) => {
 								this(null, result ? result.length : 0);
 							});
 						} else {
@@ -1233,11 +1193,16 @@ export class StatResolver {
 							isDirectory: fileStat.isDirectory(),
 							hasChildren: childCount > 0,
 							name: file,
-							mtime: fileStat.mtime.getTime(),
-							etag: etag(fileStat),
+							// mtime: fileStat.mtime.getTime(),
+							// etag: etag(fileStat)							
+							mtime: $this.cache.getFakeMtime(),
+							etag: fileStat.sha,
 							size: fileStat.size,
 							mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : undefined
 						};
+
+						// Add github fields						
+						$this.addGithubFields(childStat, fileStat);
 
 						// Return early for files
 						if (!fileStat.isDirectory()) {
@@ -1274,5 +1239,3 @@ export class StatResolver {
 		});
 	}
 }
-*/
-

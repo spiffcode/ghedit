@@ -21,21 +21,18 @@ export interface IGithubTreeStat
 {
     isDirectory() : boolean,
     isSymbolicLink() : boolean,
+    mode: number,
     size: number,
+    sha: string,
+    submodule_git_url?: string
 }
 
-export interface IGithubTreeCache
-{
-    scheduleRefresh(): void,
-    stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
-    lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
-    realpath(path: string, cb: (error: Error, result?: string) => void) : void,
-    readdir(path: string, callback: (error: Error, files?: string[]) => void): void,
-}
+class DirEntry implements IGithubTreeStat {
+    realpath: string;
+    children: { [name: string]: DirEntry };
+    submodule_git_url: string;
 
-export class GithubTreeStat
-{
-    constructor(private mode: number, public size: number) {
+    constructor(public name: string, public mode: number, public size: number, public sha: string) {        
     }
 
     public isDirectory() : boolean {
@@ -47,27 +44,36 @@ export class GithubTreeStat
     }
 }
 
-interface DirEntry {
-    name: string,
-    mode: number,
-    size: number,
-    realpath?: string,
-    children?: { [name: string]: DirEntry }
+export interface IGithubTreeCache
+{
+    markDirty(): void,
+    getFakeMtime() : number,
+    stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
+    lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
+    realpath(path: string, cb: (error: Error, result?: string) => void) : void,
+    readdir(path: string, callback: (error: Error, files?: string[]) => void): void,
 }
 
 export class GithubTreeCache implements IGithubTreeCache
 {
-    private refresh_counter: number;
-    private tree: any;
+    private tree: DirEntry;
+    private dirty: boolean;
+    private fakeMtime: number;
 
     constructor(private githubService: IGithubService, private supportSymlinks: boolean) {
-        this.scheduleRefresh(true);
+        this.markDirty();
+        this.fakeMtime = new Date().getTime();
+    }
+
+    public markDirty() {
+        this.dirty = true;
+    }
+
+    public getFakeMtime(): number {
+        return this.fakeMtime;
     }
 
     private findEntry(path: string, useSymlinks: boolean): DirEntry {
-        if (!this.tree)
-            return null;
-
         // The path must begin with '/'
         let parts = path.split('/');
         if (parts[0] !== '')
@@ -103,128 +109,142 @@ export class GithubTreeCache implements IGithubTreeCache
         return entry;
     }
 
-    private updateTreeWorker(items: TreeItem[], refresh_counter: number): void {
+    private updateTreeWorker(items: TreeItem[]): TPromise<void> {
+        // Limit to one query at a time to not flood github api
         let limiter = new Limiter(1);
-        let symlinkPromises: TPromise<void>[] = [];
+        let promises: TPromise<void>[] = [];
 
         // Rebuild the tree
-        this.tree = { name: '', mode: S_IFDIR, size: 0 };
+        this.tree = new DirEntry('', S_IFDIR, 0, '');
         items.forEach((item: TreeItem) => {
-            let entry: DirEntry = {
-                name: paths.basename(item.path),
-                mode: parseInt(item.mode, 8),
-                size: item.size
-            };
-
             // Add the entry
+            let entry = new DirEntry(paths.basename(item.path), parseInt(item.mode, 8), item.size || 0, item.sha);
             let dir = paths.dirname('/' + item.path);            
             let parent: DirEntry = this.findEntry(dir, false);
             if (!parent.children)
                 parent.children = {};
             parent.children[entry.name] = entry;
 
-            // If it is a symlink, the symlink path needs to be retrieved
-            if ((entry.mode & S_IFMT) == S_IFLNK) {
+            // If it's a type 'commit' it may be a git submodule in which case we need the gitsubmodule_url.
+            if (item.type === 'commit') {
+                promises.push(limiter.queue(() => new TPromise<void>((c, e) => {
+                    this.githubService.repo.contents(this.githubService.ref, item.path, (err: GithubError, contents?: any) => {
+                        if (err) {
+                            console.log('repo.contents api failed ' + item.path);
+                            e(null);
+                        } else {
+                            if (contents.submodule_git_url) {
+                                entry.submodule_git_url = contents.submodule_git_url;
+                            }
+                            c(null);
+                        }
+                    });
+                })));
+            }
+
+            // If it is a symlink, the symlink's realpath needs to be retrieved              
+            if (this.supportSymlinks && entry.isSymbolicLink()) {                                                
                 entry.realpath = null;
-                symlinkPromises.push(limiter.queue(() => new TPromise<void>((s) => {
+                promises.push(limiter.queue(() => new TPromise<void>((c, e) => {
                     this.githubService.repo.getBlob(item.sha, (err: GithubError, path: string) => {
-                        if (!err) {
+                        if (err) {
+                            e(null);
+                        } else {
                             // github.js relies on axios, which returns numbers for results
                             // that can be parsed as numbers. Make sure the path is
                             // converted to a string.
                             entry.realpath = paths.makeAbsolute(paths.join(dir, '' + path));
+                            c(null);
                         }
-                        s(null);
                     });
                 })));
             }
         });
 
         // Wait for the symlink resolution to finish
-        TPromise.join(symlinkPromises).then(() => {
-            if (refresh_counter != this.refresh_counter) {
-                this.scheduleRefresh(true);
-            } else {
-                this.refresh_counter = 0;
-            }
+        return TPromise.join(promises).then(() => {
+            return;
         });
     }
 
-    private updateTree(): void {
-        // Remember the counter at the start so we know when we've caught up
-        let refresh_counter = this.refresh_counter;
-        let error = false;
-        this.githubService.repo.getRef('heads/' + this.githubService.ref, (err: GithubError, sha: string) => {
-            if (err) {
-                error = true;
-                return;
-            }
-            this.githubService.repo.getTreeRecursive(sha, (err: GithubError, items: TreeItem[]) => {
-                if (err) {
-                    error = true
-                    return;
-                }
-                this.updateTreeWorker(items, refresh_counter);
+    private refresh(): TPromise<void> {
+        return new TPromise<void>((c, e) => {
+            if (!this.dirty)
+                return c(null);
+            this.githubService.repo.getRef('heads/' + this.githubService.ref, (err: GithubError, sha: string) => {
+                if (err)
+                    return e(null);
+                this.githubService.repo.getTreeRecursive(sha, (err: GithubError, items: TreeItem[]) => {
+                    if (err)
+                        return e(null);
+                    this.updateTreeWorker(items).then(() => {
+                        this.dirty = false;
+                        return c(null);
+                    }, () => e(null));
+                });
             });
         });
-        if (error)
-            this.scheduleRefresh(true);
-    }
-
-    public scheduleRefresh(force = false): void {
-        // Edge trigger delayed updates        
-        if (force)
-            this.refresh_counter = 0;
-        this.refresh_counter++;
-        if (this.refresh_counter == 1) {
-            setTimeout(() => this.updateTree(), 250);
-        }
     }
 
     public stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
         // stat follows symlinks
-        let entry = this.findEntry(path, true);
-        if (!entry)
-            return cb(new Error('Cannot find file or directory.'));
-        return cb(null, new GithubTreeStat(entry.mode, entry.size));
+        this.refresh().then(() => {
+            let entry = this.findEntry(path, true);
+            if (!entry)
+                return cb(new Error('Cannot find file or directory.'));
+            return cb(null, entry);
+        }, () => {
+            return cb(new Error('Error contacting service.'));
+        });
     }
 
     public lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
         // lstat does not follow symlinks
-        let entry = this.findEntry(path, false);
-        if (!entry)
-            return cb(new Error('Cannot find file or directory.'));
-        return cb(null, new GithubTreeStat(entry.mode, entry.size));
+        this.refresh().then(() => {
+            let entry = this.findEntry(path, false);
+            if (!entry)
+                return cb(new Error('Cannot find file or directory.'));
+            return cb(null, entry);
+        }, () => {
+            return cb(new Error('Error contacting service.'));
+        });
     }
 
     public realpath(path: string, cb: (error: Error, result?: string) => void) : void {
-        let entry = this.findEntry(path, false);
-        if (!entry)
-            return cb(new Error('Cannot find file or directory.'));        
-                
-        if ((entry.mode & S_IFMT) === S_IFLNK) {
-            if (entry.realpath)
-                return cb(null, entry.realpath);
-        }
+        this.refresh().then(() => {
+            let entry = this.findEntry(path, false);
+            if (!entry)
+                return cb(new Error('Cannot find file or directory.'));        
 
-        return cb(null, path);
+            if ((entry.mode & S_IFMT) === S_IFLNK) {
+                if (entry.realpath)
+                    return cb(null, entry.realpath);
+            }
+            return cb(null, path);
+        }, () => {
+            return cb(new Error('Error contacting service.'));
+        });
     }
 
     public readdir(path: string, cb: (error: Error, files?: string[]) => void): void {
-        let entry = this.findEntry(path, true);
-        if (!entry)
-            return cb(new Error('Cannot find file or directory.'));                
+        this.refresh().then(() => {
+            let entry = this.findEntry(path, true);
+            if (!entry)
+                return cb(new Error('Cannot find file or directory.'));                
 
-        if ((entry.mode & S_IFMT) !== S_IFDIR) {
-            cb(new Error('This path is not a directory.'));
-            return;
-        }
+            if ((entry.mode & S_IFMT) !== S_IFDIR) {
+                cb(new Error('This path is not a directory.'));
+                return;
+            }
 
-        if (!entry.children) {
-            cb(null, []);
-            return;
-        }
+            if (!entry.children) {
+                cb(null, []);
+                return;
+            }
 
-        cb(null, Object.keys(entry.children)); 
+            cb(null, Object.keys(entry.children));
+        }, () => {
+            return cb(new Error('Error contacting service.'));
+        });
     }
 }
