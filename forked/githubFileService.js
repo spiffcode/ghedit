@@ -3,7 +3,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/nls', 'vs/base/common/http'], function (require, exports, Files, explorerViewModel_1, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, nls, http) {
+define(["require", "exports", 'forked/flow', 'vs/workbench/parts/files/common/files', 'vs/workbench/parts/files/common/explorerViewModel', 'vs/platform/files/common/files', 'vs/base/common/arrays', 'vs/base/common/mime', 'vs/base/common/paths', 'vs/base/common/winjs.base', 'vs/base/common/types', 'vs/base/common/objects', 'vs/base/common/async', 'vs/base/common/uri', 'vs/nls', 'vs/base/common/http'], function (require, exports, flow, Files, explorerViewModel_1, files, arrays, baseMime, paths, winjs_base_1, types, objects, async_1, uri_1, nls, http) {
     'use strict';
     var github = require('lib/github');
     // TODO: Use vs/base/node/encoding replacement.
@@ -57,6 +57,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
             */
             this.repo = this.githubService.github.getRepo(this.githubService.repoName);
             this.ref = this.githubService.ref;
+            this.cache = this.githubService.getCache();
         }
         FileService.prototype.updateOptions = function (options) {
             if (options) {
@@ -324,7 +325,7 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                                 err ? e(err) : c(null);
                             });
                         }).then(function () {
-                            _this.githubService.getCache().scheduleRefresh();
+                            _this.cache.markDirty();
                             return;
                         }, function (error) {
                             console.log('failed to repo.write ' + resource.toString(true));
@@ -402,8 +403,8 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
             }).then(function () {
                 // When the last file of a git directory is deleted, that directory is no longer part
                 // of the repo. Refresh the entire explorer view to catch this case.
+                _this.cache.markDirty();
                 _this.forceExplorerViewRefresh();
-                _this.githubService.getCache().scheduleRefresh();
                 return true;
             }, function (error) {
                 console.log('failed to delete file ' + sourcePath);
@@ -571,24 +572,38 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
             }
             return paths.normalize(resource.fsPath);
         };
-        FileService.prototype.isGistPath = function (resource) {
-            // /$gist/<gist description property>/<filename>
-            return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));
-        };
         FileService.prototype.resolve = function (resource, options) {
             if (options === void 0) { options = Object.create(null); }
             if (this.isGistPath(resource)) {
                 return this.resolveGistFile(resource, options);
             }
             else {
-                return this.resolveRepoFile(resource, options);
+                return this.toStatResolver(resource).then(function (model) { return model.resolve(options); });
             }
+        };
+        FileService.prototype.toStatResolver = function (resource) {
+            var _this = this;
+            var absolutePath = this.toAbsolutePath(resource);
+            return new winjs_base_1.TPromise(function (c, e) {
+                _this.cache.stat(absolutePath, function (error, result) {
+                    if (error) {
+                        e(error);
+                    }
+                    else {
+                        c(new StatResolver(_this.cache, resource, result, _this.options.verboseLogging));
+                    }
+                });
+            });
+        };
+        FileService.prototype.isGistPath = function (resource) {
+            // /$gist/<gist description property>/<filename>
+            return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));
         };
         FileService.prototype.findGist = function (resource) {
             var _this = this;
             return new winjs_base_1.TPromise(function (c, e) {
                 if (!_this.githubService.isAuthenticated()) {
-                    // We don't have access to the current user's Gists.
+                    // We don't have access to the current paths.makeAbsoluteuser's Gists.
                     e({ path: resource.path, error: "not authenticated" });
                     return;
                 }
@@ -632,123 +647,31 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                     }
                     // 0 = '', 1 = '$gist', 2 = description, 3 = filename
                     var parts = _this.toAbsolutePath(resource).split('/');
-                    // Use the raw url even though direct gist query can return 1MB of contents.
-                    // Either case is an extra request and the raw url has fewer restrictions.
-                    var url = info.gist.files[parts[3]].raw_url;
-                    // Request the contents
-                    _this.requestService.makeRequest({ url: url }).then(function (res) {
-                        if (res.status == 200) {
-                            // Github is not returning Access-Control-Expose-Headers: ETag, so we
-                            // don't have access to that header in the response. Make
-                            // up an ETag. ETags don't have format dependencies.
-                            var etag_1 = info.gist.updated_at + res.responseText.length;
-                            var stat = {
-                                resource: uri_1.default.file(resource.path),
-                                isDirectory: false,
-                                hasChildren: false,
-                                name: parts[2],
-                                mtime: Date.parse(info.gist.updated_at),
-                                etag: etag_1,
-                                size: res.responseText.length,
-                                mime: info.gist.files[parts[3]].type
-                            };
-                            // Hack: the caller currently expects content this way.
-                            stat.content = btoa(res.responseText);
-                            c(stat);
-                        }
-                        else {
-                            console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
-                            e(files.FileOperationResult.FILE_NOT_FOUND);
-                        }
-                    });
-                }, function (error) {
-                    return winjs_base_1.TPromise.wrapError({
-                        fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
-                    });
-                });
-            });
-        };
-        FileService.prototype.resolveRepoFile = function (resource, options) {
-            var _this = this;
-            return new winjs_base_1.TPromise(function (c, e) {
-                // TODO: This API has an upper limit of 1,000 files per directory.
-                // TODO: This API only supports files up to 1 MB in size. So use,
-                //		https://raw.githubusercontent.com/:owner/:repo/master/:path
-                //		or download_url of directory entry
-                //		or curl -H 'Authorization: token INSERTACCESSTOKENHERE' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/owner/repo/contents/path
-                // TODO: GET /repos/:owner/:repo/git/trees/:sha for directories
-                _this.repo.contents(_this.ref, resource.path.slice(1), function (err, contents) {
-                    err ? e(err) : c(contents);
-                });
-            }).then(function (contents) {
-                if (!Array.isArray(contents)) {
-                    var fileStat = {
-                        resource: uri_1.default.file(contents.path),
+                    // Github is not returning Access-Control-Expose-Headers: ETag, so we
+                    // don't have access to that header in the response. Make
+                    // up an ETag. ETags don't have format dependencies.
+                    var size = info.gist.files[parts[3]].size;
+                    var etag = info.gist.updated_at + size;
+                    var stat = {
+                        resource: uri_1.default.file(resource.path),
                         isDirectory: false,
                         hasChildren: false,
-                        name: contents.name,
-                        mtime: contents.updated_at,
-                        etag: contents.sha,
-                        size: contents.size,
-                        mime: baseMime.guessMimeTypes(contents.name).join(', '),
-                        content: contents.content
+                        name: parts[2],
+                        mtime: Date.parse(info.gist.updated_at),
+                        etag: etag,
+                        size: size,
+                        mime: info.gist.files[parts[3]].type
                     };
-                    switch (contents.type) {
-                        case 'file':
-                            return fileStat;
-                        // Return the symlink target as its "contents". Magically when this is edited and
-                        // saved/committed it will work! It's basically the same behavior GitHub provides.
-                        case 'symlink':
-                            fileStat.name += ' (symlink)';
-                            fileStat.content = btoa(contents.target);
-                            return fileStat;
-                        // Return the submodule URL and SHA as its "contents". If the user edits and attempts
-                        // to save the file it will silently fail.
-                        // TODO: make opened file read only or fail not-silently or design smarter submodule behavior
-                        case 'submodule':
-                            // TODO: localize
-                            fileStat.content = btoa('Submodule URL: ' + contents.submodule_git_url + '\nCommit SHA: ' + contents.sha);
-                            return fileStat;
-                    }
-                }
-                // TODO: recurse subdirs
-                var stats = [];
-                for (var i = 0; i < contents.length; i++) {
-                    var content = contents[i];
-                    // From GitHub API documentation:
-                    // When listing the contents of a directory, submodules have their "type" specified as "file".
-                    // Logically, the value should be "submodule". This behavior exists in API v3 for backwards
-                    // compatibility purposes. In the next major version of the API, the type will be returned as "submodule".
-                    var typeEmbellishment = content.type == 'symlink' ? ' (symlink)' : content.type == 'submodule' ? ' (submodule)' : '';
-                    stats.push({
-                        resource: uri_1.default.file(content.path),
-                        isDirectory: content.type == 'dir',
-                        hasChildren: content.type == 'dir',
-                        name: content.name + typeEmbellishment,
-                        mtime: content.updated_at,
-                        etag: content.sha,
-                        size: content.size,
-                        mime: baseMime.guessMimeTypes(content.name).join(', ')
-                    });
-                }
-                return {
-                    resource: resource,
-                    isDirectory: true,
-                    hasChildren: true,
-                    name: resource.path,
-                    mtime: 0,
-                    etag: '',
-                    children: stats,
-                    mime: undefined
-                };
-            }, function (error) {
-                console.log('Unable to repo.contents ' + resource.toString(true));
-                return winjs_base_1.TPromise.wrapError({
-                    fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
+                    // Extra data to return to the caller, for getting content
+                    stat.url = info.gist.files[parts[3]].raw_url;
+                    c(stat);
+                }, function (error) {
+                    e(files.FileOperationResult.FILE_NOT_FOUND);
                 });
             });
         };
         FileService.prototype.resolveFileContent = function (resource, etag, enc) {
+            var _this = this;
             var absolutePath = this.toAbsolutePath(resource);
             // 1.) stat
             return this.resolve(resource).then(function (model) {
@@ -764,21 +687,51 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
                         fileOperationResult: files.FileOperationResult.FILE_TOO_LARGE
                     });
                 }
-                // 2.) read contents
+                // Prepare result
+                var result = {
+                    resource: model.resource,
+                    name: model.name,
+                    mtime: model.mtime,
+                    etag: model.etag,
+                    mime: model.mime,
+                    value: undefined,
+                    encoding: encoding.UTF8 // TODO
+                };
+                // Either a gist file or a repo file
                 return new winjs_base_1.TPromise(function (c, e) {
-                    var content = {
-                        resource: model.resource,
-                        name: model.name,
-                        mtime: model.mtime,
-                        etag: model.etag,
-                        mime: model.mime,
-                        value: atob(model.content.replace(/\s/g, '')),
-                        encoding: encoding.UTF8 // TODO:
-                    };
-                    c(content);
+                    if (model.submodule_git_url) {
+                        result.value = 'Submodule URL: ' + model.submodule_git_url + '\nCommit SHA: ' + model.etag;
+                        c(result);
+                    }
+                    else if (_this.isGistPath(resource)) {
+                        // Gist urls don't require authentication
+                        var url_1 = model.url;
+                        _this.requestService.makeRequest({ url: url_1 }).then(function (res) {
+                            if (res.status == 200) {
+                                result.value = res.responseText;
+                                c(result);
+                            }
+                            else {
+                                console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url_1);
+                                e(files.FileOperationResult.FILE_NOT_FOUND);
+                            }
+                        });
+                    }
+                    else {
+                        // Regular repo file
+                        _this.repo.getBlob(model.etag, function (err, content) {
+                            if (!err) {
+                                result.value = content;
+                                c(result);
+                            }
+                            else {
+                                console.log('repo.getBlob error using sha ' + model.etag);
+                                e(files.FileOperationResult.FILE_NOT_FOUND);
+                            }
+                        });
+                    }
                 });
             }, function (error) {
-                // console.log('Error resolving: ' + resource.path + ' error: ' + error);
                 return winjs_base_1.TPromise.wrapError({
                     fileOperationResult: files.FileOperationResult.FILE_NOT_FOUND
                 });
@@ -939,166 +892,155 @@ define(["require", "exports", 'vs/workbench/parts/files/common/files', 'vs/workb
         return FileService;
     }());
     exports.FileService = FileService;
-});
-/*
-export class StatResolver {
-    private resource: uri;
-    private isDirectory: boolean;
-    private mtime: number;
-    private name: string;
-    private mime: string;
-    private etag: string;
-    private size: number;
-    private verboseLogging: boolean;
-
-    constructor(resource: uri, isDirectory: boolean, mtime: number, size: number, verboseLogging: boolean) {
-        // TODO: assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
-
-        this.resource = resource;
-        this.isDirectory = isDirectory;
-        this.mtime = mtime;
-        this.name = paths.basename(resource.fsPath);
-        this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
-        this.etag = etag(size, mtime);
-        this.size = size;
-
-        this.verboseLogging = verboseLogging;
-    }
-
-    public resolve(options: files.IResolveFileOptions): TPromise<files.IFileStat> {
-
-        // General Data
-        let fileStat: files.IFileStat = {
-            resource: this.resource,
-            isDirectory: this.isDirectory,
-            hasChildren: undefined,
-            name: this.name,
-            etag: this.etag,
-            size: this.size,
-            mtime: this.mtime,
-            mime: this.mime
+    var StatResolver = (function () {
+        function StatResolver(cache, resource, stat, verboseLogging) {
+            // TODO: assert.ok(resource && resource.scheme === 'file', 'Invalid resource: ' + resource);
+            this.cache = cache;
+            this.resource = resource;
+            this.stat = stat;
+            this.verboseLogging = verboseLogging;
+            this.isDirectory = stat.isDirectory();
+            this.mtime = this.cache.getFakeMtime();
+            this.name = paths.basename(resource.fsPath);
+            this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
+            // this.etag = etag(size, mtime);
+            this.etag = stat.sha;
+            this.size = stat.size;
+        }
+        StatResolver.prototype.addGithubFields = function (fileStat, githubStat) {
+            if (githubStat.isSymbolicLink()) {
+                fileStat.type = 'symlink';
+            }
+            if (githubStat.submodule_git_url) {
+                fileStat.type = 'submodule';
+                fileStat.submodule_git_url = githubStat.submodule_git_url;
+            }
         };
-
-        // File Specific Data
-        if (!this.isDirectory) {
-            return TPromise.as(fileStat);
-        }
-
-        // Directory Specific Data
-        else {
-
-            // Convert the paths from options.resolveTo to absolute paths
-            let absoluteTargetPaths: string[] = null;
-            if (options && options.resolveTo) {
-                absoluteTargetPaths = [];
-                options.resolveTo.forEach((resource) => {
-                    absoluteTargetPaths.push(resource.fsPath);
-                });
+        StatResolver.prototype.resolve = function (options) {
+            var _this = this;
+            // General Data
+            var fileStat = {
+                resource: this.resource,
+                isDirectory: this.isDirectory,
+                hasChildren: undefined,
+                name: this.name,
+                etag: this.etag,
+                size: this.size,
+                mtime: this.mtime,
+                mime: this.mime
+            };
+            // Add github fields
+            this.addGithubFields(fileStat, this.stat);
+            // File Specific Data
+            if (!this.isDirectory) {
+                return winjs_base_1.TPromise.as(fileStat);
             }
-
-            return new TPromise((c, e) => {
-
-                // Load children
-                this.resolveChildren(this.resource.fsPath, absoluteTargetPaths, options && options.resolveSingleChildDescendants, (children) => {
-                    children = arrays.coalesce(children); // we don't want those null children (could be permission denied when reading a child)
-                    fileStat.hasChildren = children && children.length > 0;
-                    fileStat.children = children || [];
-
-                    c(fileStat);
-                });
-            });
-        }
-    }
-
-    private resolveChildren(absolutePath: string, absoluteTargetPaths: string[], resolveSingleChildDescendants: boolean, callback: (children: files.IFileStat[]) => void): void {
-        console.log('githubFileService.resolveChildren not implemented (' + absolutePath + ')');
-
-        extfs.readdir(absolutePath, (error: Error, files: string[]) => {
-            if (error) {
-                if (this.verboseLogging) {
-                    console.error(error);
+            else {
+                // Convert the paths from options.resolveTo to absolute paths
+                var absoluteTargetPaths_1 = null;
+                if (options && options.resolveTo) {
+                    absoluteTargetPaths_1 = [];
+                    options.resolveTo.forEach(function (resource) {
+                        absoluteTargetPaths_1.push(resource.fsPath);
+                    });
                 }
-
-                return callback(null); // return - we might not have permissions to read the folder
+                return new winjs_base_1.TPromise(function (c, e) {
+                    // Load children
+                    _this.resolveChildren(_this.resource.fsPath, absoluteTargetPaths_1, options && options.resolveSingleChildDescendants, function (children) {
+                        children = arrays.coalesce(children); // we don't want those null children (could be permission denied when reading a child)
+                        fileStat.hasChildren = children && children.length > 0;
+                        fileStat.children = children || [];
+                        c(fileStat);
+                    });
+                });
             }
-
-            // for each file in the folder
-            flow.parallel(files, (file: string, clb: (error: Error, children: files.IFileStat) => void) => {
-                let fileResource = uri.file(paths.resolve(absolutePath, file));
-                let fileStat: fs.Stats;
-                let $this = this;
-
-                flow.sequence(
-                    function onError(error: Error): void {
+        };
+        StatResolver.prototype.resolveChildren = function (absolutePath, absoluteTargetPaths, resolveSingleChildDescendants, callback) {
+            var _this = this;
+            // extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+            this.cache.readdir(absolutePath, function (error, files) {
+                if (error) {
+                    if (_this.verboseLogging) {
+                        console.error(error);
+                    }
+                    return callback(null); // return - we might not have permissions to read the folder
+                }
+                // for each file in the folder
+                flow.parallel(files, function (file, clb) {
+                    //let fileResource = uri.file(paths.resolve(absolutePath, file));
+                    var fileResource = uri_1.default.file(paths.makeAbsolute(paths.join(absolutePath, file)));
+                    // let fileStat: fs.Stats;
+                    var fileStat;
+                    var $this = _this;
+                    flow.sequence(function onError(error) {
                         if ($this.verboseLogging) {
                             console.error(error);
                         }
-
                         clb(null, null); // return - we might not have permissions to read the folder or stat the file
-                    },
-
-                    function stat(): void {
-                        fs.stat(fileResource.fsPath, this);
-                    },
-
-                    function countChildren(fsstat: fs.Stats): void {
+                    }, function stat() {
+                        // fs.stat(fileResource.fsPath, this);
+                        $this.cache.stat(fileResource.fsPath, this);
+                    }, 
+                    // function countChildren(fsstat: fs.stats): void {
+                    function countChildren(fsstat) {
+                        var _this = this;
                         fileStat = fsstat;
-
                         if (fileStat.isDirectory()) {
-                            extfs.readdir(fileResource.fsPath, (error, result) => {
-                                this(null, result ? result.length : 0);
+                            // extfs.readdir(fileResource.fsPath, (error, result) => {							
+                            $this.cache.readdir(fileResource.fsPath, function (error, result) {
+                                _this(null, result ? result.length : 0);
                             });
-                        } else {
+                        }
+                        else {
                             this(null, 0);
                         }
-                    },
-
-                    function resolve(childCount: number): void {
-                        let childStat: files.IFileStat = {
+                    }, function resolve(childCount) {
+                        var childStat = {
                             resource: fileResource,
                             isDirectory: fileStat.isDirectory(),
                             hasChildren: childCount > 0,
                             name: file,
-                            mtime: fileStat.mtime.getTime(),
-                            etag: etag(fileStat),
+                            // mtime: fileStat.mtime.getTime(),
+                            // etag: etag(fileStat)							
+                            mtime: $this.cache.getFakeMtime(),
+                            etag: fileStat.sha,
                             size: fileStat.size,
                             mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : undefined
                         };
-
+                        // Add github fields						
+                        $this.addGithubFields(childStat, fileStat);
                         // Return early for files
                         if (!fileStat.isDirectory()) {
                             return clb(null, childStat);
                         }
-
                         // Handle Folder
-                        let resolveFolderChildren = false;
+                        var resolveFolderChildren = false;
                         if (files.length === 1 && resolveSingleChildDescendants) {
                             resolveFolderChildren = true;
-                        } else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => paths.isEqualOrParent(targetPath, fileResource.fsPath))) {
+                        }
+                        else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some(function (targetPath) { return paths.isEqualOrParent(targetPath, fileResource.fsPath); })) {
                             resolveFolderChildren = true;
                         }
-
                         // Continue resolving children based on condition
                         if (resolveFolderChildren) {
-                            $this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, (children) => {
-                                children = arrays.coalesce(children);  // we don't want those null children
+                            $this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, function (children) {
+                                children = arrays.coalesce(children); // we don't want those null children
                                 childStat.hasChildren = children && children.length > 0;
                                 childStat.children = children || [];
-
                                 clb(null, childStat);
                             });
                         }
-
-                        // Otherwise return result
                         else {
                             clb(null, childStat);
                         }
                     });
-            }, (errors, result) => {
-                callback(result);
+                }, function (errors, result) {
+                    callback(result);
+                });
             });
-        });
-    }
-}
-*/
+        };
+        return StatResolver;
+    }());
+    exports.StatResolver = StatResolver;
+});
 //# sourceMappingURL=githubFileService.js.map

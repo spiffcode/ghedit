@@ -81,9 +81,14 @@ define(["require", "exports"], function (require, exports) {
                                 if (result) {
                                     results_1.push(result);
                                 }
-                                process.nextTick(function () {
+                                /*
+                                                            process.nextTick(() => {
+                                                                looper(i + 1);
+                                                            });
+                                */
+                                setTimeout(function () {
                                     looper_1(i + 1);
-                                });
+                                }, 0);
                             }
                         }, i, param.length);
                     }

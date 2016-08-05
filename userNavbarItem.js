@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/base/browser/builder', 'vs/base/browser/ui/octiconLabel/octiconLabel', 'vs/base/common/lifecycle', 'githubService', 'vs/base/browser/ui/dropdown/dropdown', 'vs/base/common/actions', 'vs/base/common/winjs.base', 'vs/base/browser/dom'], function (require, exports, contextView_1, instantiation_1, builder_1, octiconLabel_1, lifecycle_1, githubService_1, dropdown_1, actions_1, winjs_base_1, dom) {
+define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/lifecycle', 'githubService', 'vs/base/browser/ui/dropdown/dropdown', 'vs/base/common/actions', 'vs/base/common/winjs.base'], function (require, exports, contextView_1, instantiation_1, lifecycle_1, githubService_1, dropdown_1, actions_1, winjs_base_1) {
     'use strict';
     var UserNavbarItem = (function () {
         function UserNavbarItem(instantiationService, contextMenuService, githubService) {
@@ -53,21 +53,27 @@ define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs
             });
         };
         UserNavbarItem.prototype.renderSignedOut = function (el) {
-            var _this = this;
             var toDispose = [];
+            /*
             dom.addClass(el, 'navbar-entry');
+    
             // Text Container
-            var textContainer = document.createElement('a');
-            builder_1.$(textContainer).on('click', function (e) {
-                _this.githubService.authenticate(false);
+            let textContainer = document.createElement('a');
+    
+            $(textContainer).on('click', (e) => {
+                this.githubService.authenticate(false);
             }, toDispose);
+    
             // Label
             // TODO: string localization
-            new octiconLabel_1.OcticonLabel(textContainer).text = 'Sign In';
+            new OcticonLabel(textContainer).text = 'Sign In';
+    
             // Tooltip
             // TODO: string localization
-            builder_1.$(textContainer).title('Grant access to your GitHub repos, gists, and user info');
+            $(textContainer).title('Grant access to your GitHub repos, gists, and user info');
+    
             el.appendChild(textContainer);
+            */
             return {
                 dispose: function () {
                     toDispose = lifecycle_1.dispose(toDispose);
