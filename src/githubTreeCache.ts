@@ -75,7 +75,7 @@ export class GithubTreeCache implements IGithubTreeCache
 
     private findEntry(path: string, useSymlinks: boolean): DirEntry {
         // The path must begin with '/'
-        let parts = path.split('/');
+        let parts = paths.normalize(path, false).split('/');
         if (parts[0] !== '')
             return null;
 
