@@ -879,7 +879,7 @@ export class FileService implements files.IFileService {
 					});
 				} else {
 					// Regular repo file
-					this.repo.getBlob(model.etag, (err: GithubError, content: string) => {
+					this.repo.getBlobRaw(model.etag, (err: GithubError, content: string) => {
 						if (!err) {
 							result.value = content;
 							c(result);
