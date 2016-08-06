@@ -719,7 +719,7 @@ define(["require", "exports", 'forked/flow', 'vs/workbench/parts/files/common/fi
                     }
                     else {
                         // Regular repo file
-                        _this.repo.getBlob(model.etag, function (err, content) {
+                        _this.repo.getBlobRaw(model.etag, function (err, content) {
                             if (!err) {
                                 result.value = content;
                                 c(result);

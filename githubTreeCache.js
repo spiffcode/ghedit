@@ -39,7 +39,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/async
         };
         GithubTreeCache.prototype.findEntry = function (path, useSymlinks) {
             // The path must begin with '/'
-            var parts = path.split('/');
+            var parts = paths.normalize(path, false).split('/');
             if (parts[0] !== '')
                 return null;
             // Resolve each successive path component
