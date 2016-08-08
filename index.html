@@ -221,8 +221,9 @@
 					console.log('authorization failed: ' + output);
 				}
 				xhr.send();
-				document.write('Authorizing...');
+				document.write('<span style="color: #e2e2e2">Authorizing...</span>');
 			} else {
+				document.write('<span style="color: #e2e2e2">Loading... <span id="loading_percent"></span>%</span>');
 				startup2(args);
 			}
 
@@ -368,6 +369,27 @@
 					}
 
 					timers.beforeLoad = new Date();
+
+					// Simple progress indicator
+					{
+						var elPercent = document.getElementById('loading_percent');
+						var idScriptLoaded = AMDLoader.LoaderEventType.EndLoadingScriptOK;
+						var percentComplete = 0;
+						var percentLoadEach = 100 / 540;
+						var percentUpdateLast = 0;
+						AMDLoader.LoaderEventRecorder.prototype.record = function(type, detail) {
+							if (type === idScriptLoaded) {
+								percentComplete += percentLoadEach;
+								if (percentUpdateLast != Math.ceil(percentComplete)) {
+									percentUpdateLast = Math.ceil(percentComplete);
+									elPercent.innerHTML = percentUpdateLast <= 100 ? percentUpdateLast : 100;
+								}
+							}
+						};
+						var loaderConfig = require.getConfig();
+						loaderConfig.recordStats = true;
+						require.config(loaderConfig, false);
+					}
 
 					require([
 						'forked/workbench.main',
