@@ -174,7 +174,7 @@
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
 
 			if (args.code) {
-				// Ask our auth server to ask for a GitHub access token and redirect with it back to here.
+				// Ask our auth server to get a GitHub access token.
 				var xhr = new XMLHttpRequest();
 				// TODO: timeout, retry, etc
 				xhr.open('POST', 'https://us-central1-ghcodex.cloudfunctions.net/github-auth?code=' + args.code);
