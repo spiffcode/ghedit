@@ -210,12 +210,7 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/base/co
             var editableData = this.state.getEditableData(stat);
             if (!editableData) {
                 var label = builder_1.$('.explorer-item-label').appendTo(item);
-                if (stat.type) {
-                    builder_1.$('a.plain').text(stat.name + ' (' + stat.type + ')').appendTo(label);
-                }
-                else {
-                    builder_1.$('a.plain').text(stat.name).appendTo(label);
-                }
+                builder_1.$('a.plain').text(stat.name).appendTo(label);
                 return null;
             }
             // Input field (when creating a new file or folder or renaming)
