@@ -173,6 +173,7 @@
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
 
+			document.write('<progress id="loading_percent" value="0" max="100" style="width: 100%"></progress>');
 			if (args.code) {
 				// Ask our auth server to get a GitHub access token.
 				var xhr = new XMLHttpRequest();
@@ -221,7 +222,6 @@
 					console.log('authorization failed: ' + output);
 				}
 				xhr.send();
-				document.write('Authorizing...');
 			} else {
 				startup2(args);
 			}
@@ -368,6 +368,27 @@
 					}
 
 					timers.beforeLoad = new Date();
+
+					// Simple progress indicator
+					{
+						var elPercent = document.getElementById('loading_percent');
+						var idScriptLoaded = AMDLoader.LoaderEventType.EndLoadingScriptOK;
+						var percentComplete = 0;
+						var percentLoadEach = 100 / 540;
+						var percentUpdateLast = 0;
+						AMDLoader.LoaderEventRecorder.prototype.record = function(type, detail) {
+							if (type === idScriptLoaded) {
+								percentComplete += percentLoadEach;
+								if (percentUpdateLast != Math.ceil(percentComplete)) {
+									percentUpdateLast = Math.ceil(percentComplete);
+									elPercent.value = percentUpdateLast <= 100 ? percentUpdateLast : 100;
+								}
+							}
+						};
+						var loaderConfig = require.getConfig();
+						loaderConfig.recordStats = true;
+						require.config(loaderConfig, false);
+					}
 
 					require([
 						'forked/workbench.main',
