@@ -16,7 +16,7 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 // Build
 
 var ghcodeEntryPoints = _.flatten([
-	buildfile.entrypoint('forked/main'),
+	buildfile.entrypoint('forked/workbench.main'),
 	// buildfile.base,
 	// buildfile.standaloneLanguages,
 	// buildfile.standaloneLanguages2,
