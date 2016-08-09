@@ -9,6 +9,7 @@
 		<!-- Theming (do not remove, we want to early load it to avoid flashing background) -->
 		<style>
 			.monaco-shell.vs-dark { background-color: #1E1E1E; }
+			.ghcode-body-startup { margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback"; }
 		</style>
 
 		<script>
@@ -401,6 +402,11 @@
 						var main = require('forked/main');
 						main.startup(configuration, globalSettings).then(function() {
 							mainStarted = true;
+
+							// Remove the progress indicator and related startup styles
+							var elBody = document.getElementsByTagName("body")[0];
+							elBody.classList.remove('ghcode-body-startup');
+							elBody.removeChild(document.getElementById('loading_percent'));
 						}, function(error) { onError(error, enableDeveloperTools) });
 					});
 				});
@@ -408,7 +414,7 @@
 
 		</script>
 	</head>
-	<body class="monaco-shell vs-dark" aria-label=""> <!-- setting aria label to empty here seems to prevent NVDA from reading the full URL of the application on start/reload -->
+	<body class="ghcode-body-startup monaco-shell vs-dark" aria-label=""> <!-- setting aria label to empty here seems to prevent NVDA from reading the full URL of the application on start/reload -->
 		<script>
 			(function() {
 				try {
