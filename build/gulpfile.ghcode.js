@@ -17,17 +17,17 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 
 var ghcodeEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/main'),
-	buildfile.base,
-	buildfile.standaloneLanguages,
-	buildfile.standaloneLanguages2,
-	buildfile.ghcode,
-	buildfile.languages
+	// buildfile.base,
+	// buildfile.standaloneLanguages,
+	// buildfile.standaloneLanguages2,
+	// buildfile.ghcode,
+	// buildfile.languages
 ]);
 
 var ghcodeResources = [
 	'out-build/vs/{base,ghcode}/**/*.{svg,png}',
-	'out-build/vs/base/worker/workerMainCompatibility.html',
-	'out-build/vs/base/worker/workerMain.{js,js.map}',
+	// 'out-build/vs/base/worker/workerMainCompatibility.html',
+	// 'out-build/vs/base/worker/workerMain.{js,js.map}',
 	'!out-build/vs/workbench/**',
 	'!**/test/**'
 ];
@@ -50,6 +50,14 @@ var BUNDLED_FILE_HEADER = [
 
 function ghcodeLoaderConfig(removeAllOSS) {
 	var result = common.loaderConfig();
+
+	result.paths.forked = 'out-build/forked';
+	result.paths.githubService = 'out-build/githubService';
+	result.paths.githubTreeCache = 'out-build/githubTreeCache';
+	result.paths.userNavbarItem = 'out-build/userNavbarItem';
+	result.paths.repoNavbarItem = 'out-build/repoNavbarItem';
+	result.paths.refNavbarItem = 'out-build/refNavbarItem';
+	result.paths.welcomePart = 'out-build/welcomePart';
 
 	// never ship marked in ghcode
 	result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
