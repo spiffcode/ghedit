@@ -18,10 +18,10 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 var ghcodeEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/workbench.main'),
 	// buildfile.base,
-	// buildfile.standaloneLanguages,
-	// buildfile.standaloneLanguages2,
+	buildfile.standaloneLanguages,
+	buildfile.standaloneLanguages2,
 	// buildfile.ghcode,
-	// buildfile.languages
+	buildfile.languages
 ]);
 
 var ghcodeResources = [
@@ -51,6 +51,7 @@ var BUNDLED_FILE_HEADER = [
 function ghcodeLoaderConfig(removeAllOSS) {
 	var result = common.loaderConfig();
 
+	result.paths.lib = 'out-build/lib';
 	result.paths.forked = 'out-build/forked';
 	result.paths.githubService = 'out-build/githubService';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
@@ -62,7 +63,7 @@ function ghcodeLoaderConfig(removeAllOSS) {
 	// never ship marked in ghcode
 	result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
 	// never ship octicons in ghcode
-	result.paths['vs/base/browser/ui/octiconLabel/octiconLabel'] = 'out-build/vs/base/browser/ui/octiconLabel/octiconLabel.mock';
+	// result.paths['vs/base/browser/ui/octiconLabel/octiconLabel'] = 'out-build/vs/base/browser/ui/octiconLabel/octiconLabel.mock';
 
 	if (removeAllOSS) {
 		result.paths['vs/languages/lib/common/beautify-html'] = 'out-build/vs/languages/lib/common/beautify-html.mock';

@@ -262,7 +262,7 @@
 
 				// Load the loader and start loading the workbench
 	// TODO:			var rootUrl = uriFromPath(configuration.appRoot) + '/out';
-				var rootUrl = window.location.pathname == '/ghcode/' ? '/ghcode' : '/out-ghcode-min';
+				var rootUrl = window.location.pathname == '/ghcode/' ? '/ghcode' : '/out-ghcode';
 				// In the bundled version the nls plugin is packaged with the loader so the NLS Plugins
 				// loads as soon as the loader loads. To be able to have pseudo translation
 				createScript(rootUrl + '/vs/loader.js', function() {
@@ -317,9 +317,9 @@
 
 					require([
 						'forked/workbench.main',
-						'lib/github',
-						'vs/nls!vs/workbench/workbench.main',
-						'vs/css!vs/workbench/workbench.main'
+						// 'lib/github',
+						// 'vs/nls!vs/workbench/workbench.main',
+						// 'vs/css!vs/workbench/workbench.main'
 					], function() {
 						timers.afterLoad = new Date();
 

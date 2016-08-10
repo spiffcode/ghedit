@@ -16,6 +16,7 @@ require.config({
 });
 
 define([
+	'lib/github',
 
 	// Base
 	'vs/base/common/strings',
@@ -98,6 +99,10 @@ define([
 // TODO:	'vs/workbench/electron-browser/main.contribution',
 	// TODO: How is Electron-browser getting this css?
 	'vs/css!vs/editor/browser/standalone/media/standalone-tokens',
+
+	'vs/nls!vs/workbench/workbench.main',
+	'vs/css!vs/workbench/workbench.main',
+
 	'forked/main' // Replaces 'vs/workbench/electron-browser/main'
 
 // TODO:	'vs/workbench/parts/themes/test/electron-browser/themes.test.contribution'

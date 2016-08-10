@@ -6,7 +6,8 @@
 exports.base = require('../vs/base/buildfile').collectModules();
 exports.editor = require('../vs/editor/buildfile').collectModules();
 exports.languages = require('../vs/languages/buildfile').collectModules();
-exports.ghcode = require('../vs/workbench/buildfile').collectModules(['vs/workbench/workbench.main']);
+exports.ghcode = require('../lib/buildfile').collectModules();
+// exports.ghcode = require('../vs/workbench/buildfile').collectModules(['vs/workbench/workbench.main']);
 exports.standaloneLanguages = require('../vs/editor/standalone-languages/buildfile').collectModules();
 exports.standaloneLanguages2 = require('../vs/languages/buildfile-editor-languages').collectModules();
 
