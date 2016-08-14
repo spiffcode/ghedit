@@ -19,6 +19,7 @@ export interface IGithubService {
 	repo: Repository;
 	repoName: string;
 	ref: string;
+	isTag: boolean;
 
 	isFork(): boolean;
 	isDefaultBranch(): boolean;
@@ -29,7 +30,7 @@ export interface IGithubService {
 	authenticateUser(): TPromise<UserInfo>;
 	getAuthenticatedUserInfo(): UserInfo;
 	authenticate(privateRepos: boolean);
-	openRepository(repo: string, ref?: string): TPromise<any>;
+	openRepository(repo: string, ref?: string, isTag?: boolean): TPromise<any>;
 }
 
 export class GithubService implements IGithubService {
@@ -39,6 +40,7 @@ export class GithubService implements IGithubService {
 	public repo: Repository;
 	public repoName: string;
 	public ref: string;
+	public isTag: boolean;
 
 	private options: any;
 	private authenticatedUserInfo: any;
@@ -55,7 +57,7 @@ export class GithubService implements IGithubService {
 	}
 
 	public isDefaultBranch(): boolean {
-		return this.ref === this.repoInfo.default_branch;
+		return !this.isTag && this.ref === this.repoInfo.default_branch;
 	}
 
 	public getDefaultBranch(): string {
@@ -103,9 +105,10 @@ export class GithubService implements IGithubService {
 		window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=' + repoScope + ' gist';
 	}
 
-	public openRepository(repoName: string, ref?: string): TPromise<any> {
+	public openRepository(repoName: string, ref?: string, isTag?: boolean): TPromise<any> {
 		this.repoName = repoName;
 		this.ref = ref;
+		this.isTag = isTag;
 		this.repo = this.github.getRepo(this.repoName);
 
 		return new TPromise<any>((complete, error) => {
@@ -124,7 +127,10 @@ export class GithubService implements IGithubService {
 	}
 }
 
-export function openRepository(repo: string, ref?: string) {
-	let selfURL = window.location.origin + window.location.pathname;
-	window.location.href = selfURL + '?repo=' + repo + (ref ? '&ref=' + ref : '');
+export function openRepository(repo: string, ref?: string, isTag?: boolean) {
+	let url = window.location.origin + window.location.pathname + '?repo=' + repo;
+	if (ref) {
+		url += (isTag ? '&tag=' : '&branch=') + ref;
+	}
+	window.location.href = url;
 }

@@ -74,8 +74,9 @@ export interface IMainEnvironment extends IEnvironment {
 	extensionsToInstall?: string[];
 	github?: Github;
 	userEnv: IEnv;
-	githubRef?: string;
-	githubRepo?: string;
+	githubRepo?: string;	
+	githubBranch?: string;
+	githubTag?: string;
 	gistRegEx?: RegExp;
 }
 
@@ -127,7 +128,10 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 			// Open workbench without a workspace.
 			return openWorkbench(null, shellConfiguration, shellOptions, githubService);
 
-		return githubService.openRepository(environment.githubRepo, environment.githubRef).then((repoInfo: any) => {
+		return githubService.openRepository(environment.githubRepo, environment.githubBranch ? environment.githubBranch : environment.githubTag, !environment.githubBranch).then((repoInfo: any) => {
+			// Tags aren't editable.
+			if (!environment.githubBranch)
+				shellOptions.readOnly = true;
 			let workspace = getWorkspace(environment, repoInfo);
 			return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
 		}, (err: Error) => {

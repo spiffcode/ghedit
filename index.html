@@ -238,33 +238,54 @@
 				// If there's no repo in the URL, look in sessionStorage, then localStorage
 				if (!args.repo) {
 					args.repo = window.sessionStorage.getItem('githubRepo');
-					args.ref = window.sessionStorage.getItem('githubRef');
+					args.branch = window.sessionStorage.getItem('githubBranch');
+					args.tag = window.sessionStorage.getItem('githubTag');
 					if (!args.repo) {
 						args.repo = window.localStorage.getItem('lastGithubRepo');
-						args.ref = window.localStorage.getItem('lastGithubRef');
+						args.branch = window.localStorage.getItem('lastGithubBranch');
+						args.tag = window.localStorage.getItem('lastGithubTag');
 					}
 				}
 
-				// Clear "code=" and any other unneeded args out of the URL and show the active repo and ref.
-				var selfURL = location.origin + location.pathname;
-				window.history.replaceState(null, '', selfURL + (args.repo ? '?repo=' + args.repo + (args.ref ? '&ref=' + args.ref : '') : ''));
+				// Clear "code=" and any other unneeded args out of the URL and show the active repo and branch/tag.
+				var urlReplace = location.origin + location.pathname;
+				if (args.repo) {
+					urlReplace += '?repo=' + args.repo;
+					if (args.branch) {
+						urlReplace += '&branch=' + args.branch;
+					} else if (args.tag) {
+						urlReplace += '&tag=' + args.tag;
+					}
+				}
+				window.history.replaceState(null, '', urlReplace);
 
 				// If a repo is specified and the user has been authorized, configure the workspace
 				// to use it and persist in local/session storage for parameterless reloads.
 				if (args.repo) {
 					configuration.githubRepo = args.repo;
-					configuration.githubRef = args.ref || 'master';
+					if (args.branch) {
+						configuration.githubBranch = args.branch;
+						configuration.githubTag = '';
+					} else if (args.tag) {
+						configuration.githubBranch = '';
+						configuration.githubTag = args.tag;
+					} else {
+						configuration.githubBranch = 'master';
+						configuration.githubTag = '';
+					}
 					configuration.workspacePath = '/';
 					try {
 						window.localStorage.setItem('lastGithubRepo', configuration.githubRepo);
-						window.localStorage.setItem('lastGithubRef', configuration.githubRef);
+						window.localStorage.setItem('lastGithubBranch', configuration.githubBranch);
+						window.localStorage.setItem('lastGithubTag', configuration.githubTag);
 					} catch (error) {
 						// Safari raises Quota Exceeded exception in Private Browsing mode.
 					}
 
 					try {
 						window.sessionStorage.setItem('githubRepo', configuration.githubRepo);
-						window.sessionStorage.setItem('githubRef', configuration.githubRef);
+						window.sessionStorage.setItem('githubBranch', configuration.githubBranch);
+						window.sessionStorage.setItem('githubTag', configuration.githubTag);
 					} catch (error) {
 						// Safari raises Quota Exceeded exception in Private Browsing mode.
 					}

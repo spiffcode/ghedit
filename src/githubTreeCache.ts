@@ -171,7 +171,8 @@ export class GithubTreeCache implements IGithubTreeCache
         return new TPromise<void>((c, e) => {
             if (!this.dirty)
                 return c(null);
-            this.githubService.repo.getRef('heads/' + this.githubService.ref, (err: GithubError, sha: string) => {
+            let kind = this.githubService.isTag ? 'tags/' : 'heads/';
+            this.githubService.repo.getRef(kind + this.githubService.ref, (err: GithubError, sha: string) => {
                 if (err)
                     return e(null);
                 this.githubService.repo.getTreeRecursive(sha, (err: GithubError, items: TreeItem[]) => {
