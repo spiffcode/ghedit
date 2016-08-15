@@ -16,7 +16,7 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
             return 'parent' in this.repoInfo;
         };
         GithubService.prototype.isDefaultBranch = function () {
-            return this.ref === this.repoInfo.default_branch;
+            return !this.isTag && this.ref === this.repoInfo.default_branch;
         };
         GithubService.prototype.getDefaultBranch = function () {
             return this.repoInfo.default_branch;
@@ -58,10 +58,11 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
             var repoScope = privateRepos ? 'repo' : 'public_repo';
             window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=' + repoScope + ' gist';
         };
-        GithubService.prototype.openRepository = function (repoName, ref) {
+        GithubService.prototype.openRepository = function (repoName, ref, isTag) {
             var _this = this;
             this.repoName = repoName;
             this.ref = ref;
+            this.isTag = isTag;
             this.repo = this.github.getRepo(this.repoName);
             return new winjs_base_1.TPromise(function (complete, error) {
                 _this.repo.show(function (err, info) {
@@ -80,9 +81,12 @@ define(["require", "exports", 'vs/platform/instantiation/common/instantiation', 
         return GithubService;
     }());
     exports.GithubService = GithubService;
-    function openRepository(repo, ref) {
-        var selfURL = window.location.origin + window.location.pathname;
-        window.location.href = selfURL + '?repo=' + repo + (ref ? '&ref=' + ref : '');
+    function openRepository(repo, ref, isTag) {
+        var url = window.location.origin + window.location.pathname + '?repo=' + repo;
+        if (ref) {
+            url += (isTag ? '&tag=' : '&branch=') + ref;
+        }
+        window.location.href = url;
     }
     exports.openRepository = openRepository;
 });

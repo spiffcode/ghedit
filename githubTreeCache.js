@@ -129,7 +129,8 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/async
             return new winjs_base_1.TPromise(function (c, e) {
                 if (!_this.dirty)
                     return c(null);
-                _this.githubService.repo.getRef('heads/' + _this.githubService.ref, function (err, sha) {
+                var kind = _this.githubService.isTag ? 'tags/' : 'heads/';
+                _this.githubService.repo.getRef(kind + _this.githubService.ref, function (err, sha) {
                     if (err)
                         return e(null);
                     _this.githubService.repo.getTreeRecursive(sha, function (err, items) {

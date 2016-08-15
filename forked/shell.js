@@ -3,7 +3,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'vs/workbench/browser/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'forked/windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'forked/fileService', 'forked/searchService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/search/common/search', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'forked/themeService', 'vs/workbench/parts/files/common/files', 'forked/bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'forked/navbarPart', 'forked/navbarService', 'forked/userSettings', 'userNavbarItem', 'repoNavbarItem', 'refNavbarItem', 'githubService', 'welcomePart', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/css!./editorpart', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas', 'vs/platform/opener/electron-browser/opener.contribution'], function (require, exports, platform, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, searchService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, storage_2, serviceCollection_1, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, search_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1, navbarPart_1, navbarService_1, userSettings_1, userNavbarItem_1, repoNavbarItem_1, refNavbarItem_1, githubService_1, welcomePart_1) {
+define(["require", "exports", 'vs/base/common/winjs.base', 'vs/base/common/platform', 'vs/base/browser/builder', 'vs/base/browser/dom', 'vs/base/browser/ui/aria/aria', 'vs/base/common/lifecycle', 'vs/base/common/errors', 'vs/platform/contextview/browser/contextViewService', 'vs/platform/contextview/browser/contextMenuService', 'vs/base/common/timer', 'forked/workbench', 'vs/workbench/common/storage', 'vs/platform/telemetry/common/telemetry', 'vs/platform/telemetry/common/workspaceStats', 'forked/windowService', 'vs/workbench/services/message/browser/messageService', 'vs/platform/configuration/common/configuration', 'forked/fileService', 'forked/searchService', 'vs/editor/browser/standalone/simpleServices', 'vs/platform/thread/common/mainThreadService', 'vs/platform/markers/common/markerService', 'vs/platform/actions/common/actions', 'vs/platform/actions/common/actionsService', 'vs/editor/common/services/modelService', 'vs/editor/common/services/modelServiceImpl', 'vs/editor/browser/services/codeEditorServiceImpl', 'vs/editor/common/services/codeEditorService', 'vs/editor/common/services/editorWorkerServiceImpl', 'vs/editor/common/services/editorWorkerService', 'vs/platform/storage/common/storage', 'vs/platform/instantiation/common/serviceCollection', 'vs/platform/instantiation/common/instantiationService', 'vs/platform/contextview/browser/contextView', 'vs/platform/event/common/event', 'vs/platform/files/common/files', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/lifecycle/common/lifecycle', 'vs/platform/markers/common/markers', 'vs/platform/message/common/message', 'vs/platform/request/common/request', 'vs/platform/search/common/search', 'vs/platform/thread/common/thread', 'vs/workbench/services/workspace/common/contextService', 'vs/platform/extensions/common/extensions', 'vs/editor/common/services/modeServiceImpl', 'vs/editor/common/services/modeService', 'vs/workbench/services/untitled/common/untitledEditorService', 'vs/workbench/services/themes/common/themeService', 'forked/themeService', 'vs/workbench/parts/files/common/files', 'forked/bogusTextFileServices', 'vs/editor/common/modes/modesRegistry', 'vs/platform/extensions/common/extensionsRegistry', 'vs/platform/jsonschemas/common/jsonContributionRegistry', 'vs/platform/platform', 'forked/navbarPart', 'forked/navbarService', 'forked/userSettings', 'userNavbarItem', 'githubService', 'welcomePart', 'vs/workbench/browser/actions/openSettings', 'githubActions', 'vs/workbench/common/actionRegistry', 'vs/css!vs/workbench/electron-browser/media/shell', 'vs/css!./editorpart', 'vs/languages/json/common/json.contribution', 'vs/editor/standalone-languages/all', 'vs/editor/browser/standalone/standaloneSchemas', 'vs/platform/opener/electron-browser/opener.contribution'], function (require, exports, winjs_base_1, platform, builder_1, dom, aria, lifecycle_1, errors, contextViewService_1, contextMenuService_1, timer, workbench_1, storage_1, telemetry_1, workspaceStats_1, windowService_1, messageService_1, configuration_1, fileService_1, searchService_1, simpleServices_1, mainThreadService_1, markerService_1, actions_1, actionsService_1, modelService_1, modelServiceImpl_1, codeEditorServiceImpl_1, codeEditorService_1, editorWorkerServiceImpl_1, editorWorkerService_1, storage_2, serviceCollection_1, instantiationService_1, contextView_1, event_1, files_1, keybindingService_1, lifecycle_2, markers_1, message_1, request_1, search_1, thread_1, contextService_1, extensions_1, modeServiceImpl_1, modeService_1, untitledEditorService_1, themeService_1, themeService_2, files_2, bogusTextFileServices_1, modesRegistry_1, extensionsRegistry_1, jsonContributionRegistry_1, platform_1, navbarPart_1, navbarService_1, userSettings_1, userNavbarItem_1, githubService_1, welcomePart_1, openSettings_1, githubActions_1, actionRegistry_1) {
     'use strict';
     var Identifiers = {
         NAVBAR_PART: 'workbench.parts.navbar',
@@ -63,7 +63,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
             serviceCollection.set(IExtensionsService, extensionsService);
             */
             // Workbench
-            this.workbench = instantiationService.createInstance(workbench_1.Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, serviceCollection);
+            this.workbench = instantiationService.createInstance(workbench_1.Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, this.isWelcomeMode(), serviceCollection);
             this.workbench.startup({
                 onWorkbenchStarted: function () {
                     _this.onWorkbenchStarted();
@@ -71,6 +71,17 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
                     var settingsService = instantiationService.createInstance(userSettings_1.UserSettings);
                     serviceCollection.set(settingsService, userSettings_1.UserSettings);
                     settingsService.loadSettings();
+                    // If authenticated but no repository, run ChooseRepositoryAction.
+                    if (_this.githubService.isAuthenticated() && !_this.githubService.repoName) {
+                        // Lookup commands
+                        var id = githubActions_1.ChooseRepositoryAction.ID;
+                        var builtInActionDescriptor = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions).getWorkbenchAction(id);
+                        if (builtInActionDescriptor) {
+                            var action = instantiationService.createInstance(builtInActionDescriptor.syncDescriptor);
+                            var promise = action.run() || winjs_base_1.TPromise.as(null);
+                            promise.done(null, null);
+                        }
+                    }
                 },
                 onServicesCreated: function () {
                     // The Navbar requires the IWorkbenchEditorService instantiated by the Workbench
@@ -83,7 +94,7 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
                     serviceCollection.set(navbarService_1.INavbarService, _this.navbarPart);
                     _this.createNavbarPart();
                     _this.fillNavbar(instantiationService);
-                }
+                },
             });
             // Electron integration
             // TODO:		this.workbench.getInstantiationService().createInstance(ElectronIntegration).integrate(this.container);
@@ -107,19 +118,31 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
             this.navbarPart.create(navbarContainer);
         };
         WorkbenchShell.prototype.fillNavbar = function (instantiationService) {
-            this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, navbarService_1.NavbarAlignment.LEFT, 1000);
-            if (this.githubService.isAuthenticated() && !this.isWelcomeMode()) {
-                var repoItem = instantiationService.createInstance(repoNavbarItem_1.RepoNavbarItem);
-                this.navbarPart.addItem(repoItem, navbarService_1.NavbarAlignment.LEFT, 500);
-                var refItem = instantiationService.createInstance(refNavbarItem_1.RefNavbarItem);
-                this.navbarPart.addItem(refItem, navbarService_1.NavbarAlignment.LEFT, 400);
+            this.navbarPart.addEntry({
+                text: '$(beaker) GH Code' + (this.options.readOnly ? ' (read only)' : ''),
+                tooltip: githubActions_1.AboutGHCodeAction.LABEL,
+                command: githubActions_1.AboutGHCodeAction.ID,
+            }, navbarService_1.NavbarAlignment.LEFT, 1000);
+            if (this.githubService.isAuthenticated()) {
+                this.navbarPart.addEntry({
+                    text: this.githubService.repoName ? this.githubService.repoName : githubActions_1.ChooseRepositoryAction.LABEL,
+                    tooltip: githubActions_1.ChooseRepositoryAction.LABEL,
+                    command: githubActions_1.ChooseRepositoryAction.ID
+                }, navbarService_1.NavbarAlignment.LEFT, 500);
+                if (this.githubService.repoName) {
+                    this.navbarPart.addEntry({
+                        text: this.githubService.ref,
+                        tooltip: githubActions_1.ChooseReferenceAction.LABEL,
+                        command: githubActions_1.ChooseReferenceAction.ID
+                    }, navbarService_1.NavbarAlignment.LEFT, 400);
+                }
             }
             var userItem = instantiationService.createInstance(userNavbarItem_1.UserNavbarItem);
             this.navbarPart.addItem(userItem, navbarService_1.NavbarAlignment.RIGHT, 400);
             // Don't show these elements when in welcome mdoe.
             if (!this.isWelcomeMode()) {
-                this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, navbarService_1.NavbarAlignment.RIGHT, 300);
-                this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, navbarService_1.NavbarAlignment.RIGHT, 200);
+                this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: openSettings_1.OpenGlobalSettingsAction.ID }, navbarService_1.NavbarAlignment.RIGHT, 300);
+                this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: openSettings_1.OpenGlobalKeybindingsAction.ID }, navbarService_1.NavbarAlignment.RIGHT, 200);
                 this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, navbarService_1.NavbarAlignment.RIGHT, 100);
             }
         };
@@ -311,9 +334,8 @@ define(["require", "exports", 'vs/base/common/platform', 'vs/base/browser/builde
             this.writeTimers();
             // Create Contents
             this.contentsContainer = this.createContents(builder_1.$(this.content));
-            // If the user isn't authenticated or no repository has been specified show them a
-            // special welcome to help them get started.
-            if (this.isWelcomeMode())
+            // If the user isn't authenticated show a special welcome to help them get started.
+            if (!this.githubService.isAuthenticated())
                 this.createWelcomePart();
             // Layout
             this.layout();

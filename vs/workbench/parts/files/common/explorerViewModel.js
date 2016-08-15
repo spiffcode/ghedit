@@ -31,11 +31,18 @@ define(["require", "exports", 'vs/base/common/assert', 'vs/base/common/types', '
             }
             this.isDirectoryResolved = false;
         }
+        FileStat.prototype.break = function (path) {
+            console.log('found path ' + path);
+        };
         FileStat.prototype.getId = function () {
             return this.resource.toString();
         };
         FileStat.create = function (raw, resolveTo) {
             var stat = new FileStat(raw.resource, raw.isDirectory, raw.hasChildren, raw.name, raw.mtime, raw.etag);
+            // Special state that'll be used in UI. 
+            if (raw.type) {
+                stat.type = raw.type;
+            }
             // Recursively add children if present
             if (stat.isDirectory) {
                 // isDirectoryResolved is a very important indicator in the stat model that tells if the folder was fully resolved

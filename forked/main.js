@@ -68,7 +68,10 @@ define(["require", "exports", 'vs/base/common/winjs.base', 'forked/shell', 'vs/b
             if (!environment.githubRepo)
                 // Open workbench without a workspace.
                 return openWorkbench(null, shellConfiguration, shellOptions, githubService);
-            return githubService.openRepository(environment.githubRepo, environment.githubRef).then(function (repoInfo) {
+            return githubService.openRepository(environment.githubRepo, environment.githubBranch ? environment.githubBranch : environment.githubTag, !environment.githubBranch).then(function (repoInfo) {
+                // Tags aren't editable.
+                if (!environment.githubBranch)
+                    shellOptions.readOnly = true;
                 var workspace = getWorkspace(environment, repoInfo);
                 return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
             }, function (err) {
