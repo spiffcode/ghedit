@@ -63,15 +63,32 @@ export class GithubTreeCache implements IGithubTreeCache
     constructor(private githubService: IGithubService) {
         this.scheduleRefresh(true);
     }
- 
+
     private findEntry(path: string, symlinks: boolean): DirEntry {
         if (!this.tree)
             return null;
+
+        // The path must begin with '/'
         let parts = path.split('/');
+        if (parts[0] !== '')
+            return null;
+
+        // Resolve each successive path component
         let entry: DirEntry = this.tree;
-        let i = 1;
-        for (; i < parts.length - 1; i++) {
+        for (let i = 1; i < parts.length; i++) {
+            // Ignore trailing slash
+            if (i === parts.length - 1 && parts[i] === '')
+                break;
+            
+            // Make sure this entry is a directory and it has children
+            if ((entry.mode & S_IFMT) !== S_IFDIR || !entry.children)
+                return null;
+
+            // Get the child entry
             entry = entry.children[parts[i]];
+
+            // Follow symlinks so that only real paths are ever returned.
+            // GHCode file loading code doesn't resolve paths with symlinks.
             if (symlinks) {
                 while (entry && (entry.mode & S_IFMT) === S_IFLNK) {
                     if (!entry.realpath)
@@ -80,11 +97,8 @@ export class GithubTreeCache implements IGithubTreeCache
                 }
             }
             if (!entry)
-                return null;
+                return null;       
         }
-        if (parts[i] !== '')
-            entry = entry.children[parts[i]];
-
         return entry;
     }
 
