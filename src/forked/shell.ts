@@ -25,7 +25,7 @@ import errors = require('vs/base/common/errors');
 import {ContextViewService} from 'vs/platform/contextview/browser/contextViewService';
 import {ContextMenuService} from 'vs/platform/contextview/browser/contextMenuService';
 import timer = require('vs/base/common/timer');
-import {Workbench} from 'vs/workbench/browser/workbench';
+import {Workbench} from 'forked/workbench';
 import {Storage, inMemoryLocalStorageInstance} from 'vs/workbench/common/storage';
 import {ITelemetryService, NullTelemetryService} from 'vs/platform/telemetry/common/telemetry';
 // TODO: import {ElectronTelemetryService} from  'vs/platform/telemetry/electron-browser/electronTelemetryService';
@@ -103,11 +103,13 @@ import {NavbarPart} from 'forked/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
 import {ISettingsService, UserSettings} from 'forked/userSettings';
 import {UserNavbarItem} from 'userNavbarItem';
-import {RepoNavbarItem} from 'repoNavbarItem';
-import {RefNavbarItem} from 'refNavbarItem';
 import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
 import {WelcomePart} from 'welcomePart';
+import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbench/browser/actions/openSettings';
+import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHCodeAction} from 'githubActions';
+import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
+import {IAction} from 'vs/base/common/actions';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar',
@@ -232,7 +234,7 @@ export class WorkbenchShell {
 		*/
 
 		// Workbench
-		this.workbench = instantiationService.createInstance(Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, serviceCollection);
+		this.workbench = instantiationService.createInstance(Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, this.isWelcomeMode(), serviceCollection);
 		this.workbench.startup({
 			onWorkbenchStarted: () => {
 				this.onWorkbenchStarted();
@@ -241,6 +243,18 @@ export class WorkbenchShell {
 				let settingsService = instantiationService.createInstance(UserSettings);
 				serviceCollection.set(settingsService, UserSettings);
 				settingsService.loadSettings();
+
+				// If authenticated but no repository, run ChooseRepositoryAction.
+				if (this.githubService.isAuthenticated() && !this.githubService.repoName) {
+					// Lookup commands
+					let id = ChooseRepositoryAction.ID;
+					let builtInActionDescriptor = (<IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions)).getWorkbenchAction(id);
+					if (builtInActionDescriptor) {
+						let action: IAction = instantiationService.createInstance(builtInActionDescriptor.syncDescriptor);
+						let promise = action.run() || TPromise.as(null);
+						promise.done(null, null);
+					}
+				}
 			},
 
 			onServicesCreated: () => {
@@ -253,8 +267,8 @@ export class WorkbenchShell {
 // TODO:		this.toShutdown.push(this.navbarPart);
 				serviceCollection.set(INavbarService, this.navbarPart);
 				this.createNavbarPart();
-				this.fillNavbar(instantiationService);
-			}
+				this.fillNavbar(instantiationService);								
+			},
 		});
 
 		// Electron integration
@@ -286,20 +300,34 @@ export class WorkbenchShell {
 	}
 
 	private fillNavbar(instantiationService: InstantiationService): void {
-		this.navbarPart.addEntry({ text: '$(beaker) GH Code', tooltip: 'Brought to you by Spiffcode, Inc', command: 'whatever' }, NavbarAlignment.LEFT, 1000);
-		if (this.githubService.isAuthenticated() && !this.isWelcomeMode()) {
-			let repoItem = instantiationService.createInstance(RepoNavbarItem);
-			this.navbarPart.addItem(repoItem, NavbarAlignment.LEFT, 500);
-			let refItem = instantiationService.createInstance(RefNavbarItem);
-			this.navbarPart.addItem(refItem, NavbarAlignment.LEFT, 400);
+		this.navbarPart.addEntry({
+			text: '$(beaker) GH Code' + (this.options.readOnly ? ' (read only)' : ''),
+			tooltip: AboutGHCodeAction.LABEL,
+			command: AboutGHCodeAction.ID,
+		}, NavbarAlignment.LEFT, 1000);
+
+		if (this.githubService.isAuthenticated()) { 
+			this.navbarPart.addEntry({
+				text: this.githubService.repoName ? this.githubService.repoName : ChooseRepositoryAction.LABEL,
+				tooltip: ChooseRepositoryAction.LABEL,
+				command: ChooseRepositoryAction.ID
+			}, NavbarAlignment.LEFT, 500);
+
+			if (this.githubService.repoName) {
+				this.navbarPart.addEntry({
+					text: this.githubService.ref,
+					tooltip: ChooseReferenceAction.LABEL,
+					command: ChooseReferenceAction.ID
+				}, NavbarAlignment.LEFT, 400);
+			}			
 		}
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
 
 		// Don't show these elements when in welcome mdoe.
 		if (!this.isWelcomeMode()) {
-			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: 'workbench.action.openGlobalSettings' }, NavbarAlignment.RIGHT, 300);
-			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: 'workbench.action.openGlobalKeybindings' }, NavbarAlignment.RIGHT, 200);
+			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: OpenGlobalSettingsAction.ID }, NavbarAlignment.RIGHT, 300);
+			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: OpenGlobalKeybindingsAction.ID }, NavbarAlignment.RIGHT, 200);
 			this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
 		}
 	}
@@ -557,9 +585,8 @@ export class WorkbenchShell {
 		// Create Contents
 		this.contentsContainer = this.createContents($(this.content));
 
-		// If the user isn't authenticated or no repository has been specified show them a
-		// special welcome to help them get started.
-		if (this.isWelcomeMode())
+		// If the user isn't authenticated show a special welcome to help them get started.
+		if (!this.githubService.isAuthenticated())
 			this.createWelcomePart();
 
 		// Layout

@@ -40,6 +40,9 @@ export class UserNavbarItem implements INavbarItem {
 			// TODO: string localization
 			new Action('signOut', 'Sign Out', 'tight-menu-items', true, (event: any) => {
 				window.localStorage.removeItem('githubToken');
+				var d = new Date();
+				d.setTime(d.getTime() - 1000);
+				document.cookie = 'githubToken=;expires=' + d.toUTCString();;
 				window.localStorage.removeItem('githubUser');
 				window.localStorage.removeItem('githubPassword');
 				window.sessionStorage.removeItem('githubRepo');
@@ -63,13 +66,14 @@ export class UserNavbarItem implements INavbarItem {
 
 	private renderSignedOut(el: HTMLElement): IDisposable {
 		let toDispose: IDisposable[] = [];
+		/*
 		dom.addClass(el, 'navbar-entry');
 
 		// Text Container
 		let textContainer = document.createElement('a');
 
 		$(textContainer).on('click', (e) => {
-			this.githubService.authenticate();
+			this.githubService.authenticate(false);
 		}, toDispose);
 
 		// Label
@@ -81,7 +85,7 @@ export class UserNavbarItem implements INavbarItem {
 		$(textContainer).title('Grant access to your GitHub repos, gists, and user info');
 
 		el.appendChild(textContainer);
-
+		*/
 		return {
 			dispose: () => {
 				toDispose = dispose(toDispose);

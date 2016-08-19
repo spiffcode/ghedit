@@ -52,7 +52,7 @@
       //
       // I'm not proud of this and neither should you be if you were responsible for the XMLHttpRequest spec.
 
-      var _request = Github._request = function _request(method, path, data, cb, accept) {
+      var _request = Github._request = function _request(method, path, data, cb, accept, raw_response) {
          function getURL() {
             var url = path.indexOf('//') >= 0 ? path : API_URL + path;
 
@@ -78,7 +78,7 @@
                  accept_header = 'application/vnd.github.v3.text-match+json';
              } else if (accept === 'sha') {
                  accept_header = 'application/vnd.github.VERSION.sha';
-						 }
+             }
          }
 
          var config = {
@@ -90,6 +90,10 @@
             data: data ? data : {},
             url: getURL()
          };
+         
+         if (raw_response) {
+           config.transformResponse = [function(data) { return data; }];
+         }
 
          if ((options.token) || (options.username && options.password)) {
             config.headers.Authorization = options.token ?
@@ -506,6 +510,10 @@
 
          this.getBlob = function (sha, cb) {
             _request('GET', repoPath + '/git/blobs/' + sha, null, cb, 'raw');
+         };
+
+         this.getBlobRaw = function (sha, cb) {
+            _request('GET', repoPath + '/git/blobs/' + sha, null, cb, 'raw', true);
          };
 
          // For a given file path, get the corresponding sha (blob for files, tree for dirs)

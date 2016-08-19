@@ -19,6 +19,7 @@ export interface IGithubService {
 	repo: Repository;
 	repoName: string;
 	ref: string;
+	isTag: boolean;
 
 	isFork(): boolean;
 	isDefaultBranch(): boolean;
@@ -28,8 +29,8 @@ export interface IGithubService {
 	isAuthenticated(): boolean;
 	authenticateUser(): TPromise<UserInfo>;
 	getAuthenticatedUserInfo(): UserInfo;
-	authenticate();
-	openRepository(repo: string, ref?: string): TPromise<any>;
+	authenticate(privateRepos: boolean);
+	openRepository(repo: string, ref?: string, isTag?: boolean): TPromise<any>;
 }
 
 export class GithubService implements IGithubService {
@@ -39,6 +40,7 @@ export class GithubService implements IGithubService {
 	public repo: Repository;
 	public repoName: string;
 	public ref: string;
+	public isTag: boolean;
 
 	private options: any;
 	private authenticatedUserInfo: any;
@@ -55,7 +57,7 @@ export class GithubService implements IGithubService {
 	}
 
 	public isDefaultBranch(): boolean {
-		return this.ref === this.repoInfo.default_branch;
+		return !this.isTag && this.ref === this.repoInfo.default_branch;
 	}
 
 	public getDefaultBranch(): string {
@@ -94,26 +96,30 @@ export class GithubService implements IGithubService {
 		return this.authenticatedUserInfo;
 	}
 
-	public authenticate() {
+	public authenticate(privateRepos: boolean) {
 		// If we're running on localhost authorize via the "GH Code localhost" application
 		// so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
 		// the authorization is done.
 		let client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
-		window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=repo gist';
+		let repoScope = privateRepos ? 'repo' : 'public_repo';
+		window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + client_id + '&scope=' + repoScope + ' gist';
 	}
 
-	public openRepository(repoName: string, ref?: string): TPromise<any> {
+	public openRepository(repoName: string, ref?: string, isTag?: boolean): TPromise<any> {
 		this.repoName = repoName;
 		this.ref = ref;
+		this.isTag = isTag;
 		this.repo = this.github.getRepo(this.repoName);
-		
+
 		return new TPromise<any>((complete, error) => {
 			this.repo.show((err: GithubError, info?: any) => {
 				if (err) {
 					error(err);
 				} else {
 					this.repoInfo = info;
-					this.cache = new GithubTreeCache(this);
+
+					// Don't support symlinks until githubFileService can load symlinked paths
+					this.cache = new GithubTreeCache(this, false);
 					complete(info);
 				}
 			});
@@ -121,7 +127,10 @@ export class GithubService implements IGithubService {
 	}
 }
 
-export function openRepository(repo: string, ref?: string) {
-	let selfURL = window.location.origin + window.location.pathname;
-	window.location.href = selfURL + '?repo=' + repo + (ref ? '&ref=' + ref : '');
+export function openRepository(repo: string, ref?: string, isTag?: boolean) {
+	let url = window.location.origin + window.location.pathname + '?repo=' + repo;
+	if (ref) {
+		url += (isTag ? '&tag=' : '&branch=') + ref;
+	}
+	window.location.href = url;
 }

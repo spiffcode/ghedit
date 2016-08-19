@@ -11,7 +11,7 @@ import dom = require('vs/base/browser/dom');
 import {Part} from 'vs/workbench/browser/part';
 import {Builder, $} from 'vs/base/browser/builder';
 import {RepositoryInfo, Error} from 'github';
-import {IGithubService, openRepository} from 'githubService';
+import {IGithubService} from 'githubService';
 import {InputBox} from 'vs/base/browser/ui/inputbox/inputBox';
 import {Button} from 'vs/base/browser/ui/button/button';
 import {KeyCode} from 'vs/base/common/keyCodes';
@@ -39,68 +39,7 @@ export class WelcomePart extends Part {
 		dom.addClass(el, 'monaco-workbench welcome-part');
 		this.container.append(el, 0);
 
-		if (this.githubService.isAuthenticated()) {
-			// Encourage the user to choose a repository.
-			let inputPrompt = document.createElement('span');
-			// TODO: localization
-			inputPrompt.textContent = 'Choose a Repository:';
-			dom.addClass(inputPrompt, 'input-prompt');
-			el.appendChild(inputPrompt);
-
-			this.inputBox = new InputBox(el, null, {
-				// TODO: localization
-				placeholder: 'user/repository',
-				ariaLabel: DEFAULT_INPUT_ARIA_LABEL
-			});
-			this.inputBox.focus();
-			dom.addDisposableListener(this.inputBox.inputElement, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-				let keyboardEvent: StandardKeyboardEvent = new StandardKeyboardEvent(e);
-				if (keyboardEvent.keyCode === KeyCode.Enter) {
-					openRepository(this.inputBox.value);
-				}
-			});
-
-			this.openButton = new Button(el);
-			// TODO: localization
-			this.openButton.label = 'Open';
-			this.openButton.on('click', () => {
-				openRepository(this.inputBox.value);
-			});
-
-			// Present a list of the user's repositories.
-			let header = document.createElement('div');
-			dom.addClass(header, 'header');
-			// TODO: localization
-			header.innerHTML = `Your GitHub Repositories`;
-			el.appendChild(header);
-
-			this.githubService.github.getUser().repos((err: Error, repos: RepositoryInfo[]) => {
-				if (err)
-					return;
-				let list = document.createElement('div');
-				dom.addClass(list, 'monaco-tree monaco-tree-rows');
-				el.appendChild(list);
-
-				for (var repo of repos) {
-					let item = document.createElement('div');
-					dom.addClass(item, 'monaco-tree-row');
-					list.appendChild(item);
-					$(item).bind(repo);
-
-					$(item).on('click', (e, builder: Builder) => {
-						let repo = builder.getBinding() as RepositoryInfo;
-						openRepository(repo.full_name);
-					});
-
-					let anchor = document.createElement('a');
-					$(anchor).text(repo.full_name);
-					$(anchor).title(repo.description);
-
-					item.appendChild(anchor);
-				}
-			});
-
-		} else {
+		if (!this.githubService.isAuthenticated()) {
 			// Encourage the user to sign in.
 			// TODO: localization
 			el.innerHTML = `<div class='content welcome-text'>Welcome! <a href='https://github.com/spiffcode/ghcode' target='_blank'>GH Code</a> is an
@@ -111,13 +50,16 @@ export class WelcomePart extends Part {
 			<li>IntelliSense for many languages including Javascript, Typescript, ...</li>
 			<li>Lots of other cool stuff</li>
 			</ul>
-			To open GitHub repositories with GH Code sign in to your GitHub account and grant permissions.</div><p>`;
+			Sign in to your GitHub account to open GitHub repositories.</div><p>
+			<input id='privateRepos' type='checkbox'>
+			<label for='privateRepos'>Include my private repositories (optional)</label>`;
 
 			this.openButton = new Button(el);
 			// TODO: localization
 			this.openButton.label = 'Sign In';
 			this.openButton.on('click', () => {
-				this.githubService.authenticate();
+				let checkbox = <HTMLInputElement>document.getElementById('privateRepos');
+				this.githubService.authenticate(checkbox.checked);
 			});
 		}
 

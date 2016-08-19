@@ -103,9 +103,14 @@ export function loop<E>(param: any, fn: (item: any, callback: (error: Error, res
 								results.push(result);
 							}
 
+/*
 							process.nextTick(() => {
 								looper(i + 1);
 							});
+*/
+							setTimeout(() => {
+								looper(i + 1);
+							}, 0);
 						}
 					}, i, param.length);
 				} catch (error) {

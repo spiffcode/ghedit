@@ -52,6 +52,7 @@ declare module "github" {
 		getRef(ref: string, cb: (err: Error, sha?: string, xhr?: any) => void);
 		getTreeRecursive(sha: string, cb: (err: Error, items?: TreeItem[], xhr?: any) => void);
 		getBlob(sha: string, cb: (err: Error, content?: string, xhr?: any) => void);
+		getBlobRaw(sha: string, cb: (err: Error, content?: string, xhr?: any) => void);
 	}
 	
 	class Gist {
