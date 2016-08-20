@@ -1,4 +1,7 @@
 src/vs
 out-build
+out-ghcode
+out-ghcode-min
 node_modules
+.vscode
 .DS_Store

@@ -100,7 +100,7 @@ define([
 	// TODO: How is Electron-browser getting this css?
 	'vs/css!vs/editor/browser/standalone/media/standalone-tokens',
 
-	'vs/nls!vs/workbench/workbench.main',
+	// 'vs/nls!vs/workbench/workbench.main',
 	'vs/css!vs/workbench/workbench.main',
 
 	'forked/main' // Replaces 'vs/workbench/electron-browser/main'

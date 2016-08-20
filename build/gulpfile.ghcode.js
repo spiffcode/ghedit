@@ -25,10 +25,13 @@ var ghcodeEntryPoints = _.flatten([
 ]);
 
 var ghcodeResources = [
-	'out-build/vs/{base,ghcode}/**/*.{svg,png}',
+	'out-build/forked/**/*.{svg,png}',
+	// 'out-build/vs/**/*.{svg,png}',
+	'out-build/vs/{base,editor,workbench}/**/*.{svg,png}',
+	'out-build/vs/{base,editor,workbench}/**/*.{woff,ttf}',
 	// 'out-build/vs/base/worker/workerMainCompatibility.html',
 	// 'out-build/vs/base/worker/workerMain.{js,js.map}',
-	'!out-build/vs/workbench/**',
+	// '!out-build/vs/workbench/**',
 	'!**/test/**'
 ];
 
@@ -54,16 +57,16 @@ function ghcodeLoaderConfig(removeAllOSS) {
 	result.paths.lib = 'out-build/lib';
 	result.paths.forked = 'out-build/forked';
 	result.paths.githubService = 'out-build/githubService';
+	result.paths.githubActions = 'out-build/githubActions';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
 	result.paths.userNavbarItem = 'out-build/userNavbarItem';
 	result.paths.repoNavbarItem = 'out-build/repoNavbarItem';
 	result.paths.refNavbarItem = 'out-build/refNavbarItem';
 	result.paths.welcomePart = 'out-build/welcomePart';
 
+	// TODO: Is this what we want?
 	// never ship marked in ghcode
 	result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
-	// never ship octicons in ghcode
-	// result.paths['vs/base/browser/ui/octiconLabel/octiconLabel'] = 'out-build/vs/base/browser/ui/octiconLabel/octiconLabel.mock';
 
 	if (removeAllOSS) {
 		result.paths['vs/languages/lib/common/beautify-html'] = 'out-build/vs/languages/lib/common/beautify-html.mock';
