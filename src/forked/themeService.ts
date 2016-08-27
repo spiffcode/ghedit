@@ -21,6 +21,7 @@ import {getBaseThemeId, getSyntaxThemeId} from 'vs/platform/theme/common/themes'
 // TODO: import {IWindowService} from 'vs/workbench/services/window/electron-browser/windowService';
 import {IWindowService} from 'forked/windowService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {Preferences} from 'vs/workbench/common/constants';
 import {$} from 'vs/base/browser/builder';
 import Event, {Emitter} from 'vs/base/common/event';
@@ -107,6 +108,7 @@ export class ThemeService implements IThemeService {
 
 	constructor(
 			private extensionService: IExtensionService,
+			private contextService: IWorkspaceContextService,
 			@IWindowService private windowService: IWindowService,
 			@IStorageService private storageService: IStorageService) {
 		this.knownThemes = [];
@@ -271,6 +273,7 @@ function applyTheme(theme: IThemeData, onApply: (themeId:string) => void): TProm
 
 function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
 	// return pfs.readFile(themePath).then(content => {
+	// TODO: Figure out how to get IConfiguration/IEnvironment to include rootUrl without forking more files...
 	let rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
 	return xhr({ type: 'GET', url: rootUrl + themePath }).then((xhr: XMLHttpRequest) => {
 		let content = xhr.responseText;

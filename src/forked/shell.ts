@@ -524,7 +524,7 @@ export class WorkbenchShell {
 		let editorWorkerService = this.editorWorkerService = new EditorWorkerServiceImpl(modelService);
 
 		let untitledEditorService = instantiationService.createInstance(UntitledEditorService);
-		this.themeService = new ThemeService(extensionService, this.windowService, this.storageService);
+		this.themeService = new ThemeService(extensionService, this.contextService, this.windowService, this.storageService);
 
 		serviceCollection.set(ITelemetryService, this.telemetryService);
 		serviceCollection.set(IEventService, this.eventService);

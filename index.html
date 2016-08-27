@@ -235,6 +235,24 @@
 				configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 				configuration.workspacePath = args.workspacePath;
 
+				// If we're running on gh-pages the root is '/ghcode'
+				// TODO: Unfortunately you can't access inside a .ts file as I'd need to update IEnvironment and that might mean more forking...
+				if (window.location.pathname === '/ghcode/') {
+					configuration.rootUrl = '/ghcode';
+				} else {
+					// If we're running locally then we're running out of one of the 'out-*' directories
+					if (args.rootUrl) {
+						configuration.rootUrl = args.rootUrl;
+					} else {
+						configuration.rootUrl = window.sessionStorage.getItem('rootUrl');
+						if (configuration.rootUrl === null) {
+							// Default to 'out-build' if nothing is specified
+							configuration.rootUrl = 'out-build';
+						}
+					}
+					window.sessionStorage.setItem('rootUrl', configuration.rootUrl);
+				}
+
 				// If there's no repo in the URL, look in sessionStorage, then localStorage
 				if (!args.repo) {
 					args.repo = window.sessionStorage.getItem('githubRepo');
@@ -256,6 +274,9 @@
 					} else if (args.tag) {
 						urlReplace += '&tag=' + args.tag;
 					}
+				}
+				if (args.rootUrl) {
+					urlReplace += '&rootUrl=' + args.rootUrl;
 				}
 				window.history.replaceState(null, '', urlReplace);
 
@@ -340,7 +361,7 @@
 
 				// Load the loader and start loading the workbench
 	// TODO:			var rootUrl = uriFromPath(configuration.appRoot) + '/out';
-				var rootUrl = window.location.pathname == '/ghcode/' ? '/ghcode' : '/out-build';
+				var rootUrl = configuration.rootUrl;
 				// In the bundled version the nls plugin is packaged with the loader so the NLS Plugins
 				// loads as soon as the loader loads. To be able to have pseudo translation
 				createScript(rootUrl + '/vs/loader.js', function() {
@@ -414,12 +435,7 @@
 						require.config(loaderConfig, false);
 					}
 
-					require([
-						'forked/workbench.main',
-						'lib/github',
-						'vs/nls!vs/workbench/workbench.main',
-						'vs/css!vs/workbench/workbench.main'
-					], function() {
+					require(['forked/workbench.main'], function() {
 						timers.afterLoad = new Date();
 
 						var main = require('forked/main');
