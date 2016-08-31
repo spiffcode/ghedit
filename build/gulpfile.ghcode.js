@@ -76,23 +76,23 @@ function ghcodeLoaderConfig(removeAllOSS) {
 	return result;
 }
 
-gulp.task('clean-optimized-ghcode', util.rimraf('out-ghcode'));
+gulp.task('clean-optimized-ghcode', util.rimraf('out-build-opt'));
 gulp.task('optimize-ghcode', ['clean-optimized-ghcode', 'compile-build'], common.optimizeTask({
 	entryPoints: ghcodeEntryPoints,
 	otherSources: ghcodeOtherSources,
 	resources: ghcodeResources,
 	loaderConfig: ghcodeLoaderConfig(false),
 	header: BUNDLED_FILE_HEADER,
-	out: 'out-ghcode'
+	out: 'out-build-opt'
 }));
 gulp.task('build-opt', ['optimize-ghcode']);
 
-gulp.task('clean-minified-ghcode', util.rimraf('out-ghcode-min'));
-gulp.task('minify-ghcode', ['clean-minified-ghcode', 'optimize-ghcode'], common.minifyTask('out-ghcode', true));
+gulp.task('clean-minified-ghcode', util.rimraf('out-build-min'));
+gulp.task('minify-ghcode', ['clean-minified-ghcode', 'optimize-ghcode'], common.minifyTask('out-build-opt', 'out-build-min', true));
 gulp.task('build-min', ['minify-ghcode'], shell.task([
-	'cp index.html out-ghcode-min',
-	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-ghcode-min/forked/workbench.main.js > /tmp/workbench.main.js',
-	'mv /tmp/workbench.main.js out-ghcode-min/forked/workbench.main.js',
+	'cp index.html out-build-min',
+	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/forked/workbench.main.js > /tmp/workbench.main.js',
+	'mv /tmp/workbench.main.js out-build-min/forked/workbench.main.js',
 ]));
 // Is this below running optimize-ghcode twice?
 // gulp.task('ghcode-distro', ['minify-ghcode', 'optimize-ghcode']);

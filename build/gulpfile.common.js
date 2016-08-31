@@ -235,7 +235,7 @@ function uglifyWithCopyrights() {
 	});
 }
 
-exports.minifyTask = function (src, addSourceMapsComment) {
+exports.minifyTask = function (src, dst, addSourceMapsComment) {
 	return function() {
 		var jsFilter = filter('**/*.js', { restore: true });
 		var cssFilter = filter('**/*.css', { restore: true });
@@ -256,6 +256,6 @@ exports.minifyTask = function (src, addSourceMapsComment) {
 				includeContent: true,
 				addComment: addSourceMapsComment
 			}))
-			.pipe(gulp.dest(src + '-min'));
+			.pipe(gulp.dest(dst || src + '-min'));
 	};
 };
