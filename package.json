@@ -58,6 +58,8 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp build",
+    "build-optimize": "gulp optimize-ghcode",
+    "build-minify": "gulp minify-ghcode",
     "watch": "gulp watch",
     "push": "gulp push"
   }
