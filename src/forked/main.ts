@@ -78,6 +78,8 @@ export interface IMainEnvironment extends IEnvironment {
 	githubBranch?: string;
 	githubTag?: string;
 	gistRegEx?: RegExp;
+	rootPath?: string;
+	buildType?: string;
 }
 
 export function startup(environment: IMainEnvironment, globalSettings: IGlobalSettings): winjs.TPromise<void> {

@@ -15,6 +15,8 @@ import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workb
 import {IGithubService, openRepository} from 'githubService';
 import {RepositoryInfo, TagInfo, Error} from 'github';
 import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IMainEnvironment} from 'forked/main';
 
 export class AboutGHCodeAction extends Action {
 
@@ -24,7 +26,7 @@ export class AboutGHCodeAction extends Action {
 	constructor(
 		actionId: string,
 		actionLabel: string,
-        @IGithubService private githubService: IGithubService,
+		@IGithubService private githubService: IGithubService,
 		@IMessageService private messageService: IMessageService
 	) {
 		super(actionId, actionLabel);
@@ -51,7 +53,8 @@ export class ChooseRepositoryAction extends Action {
 		actionId: string,
 		actionLabel: string,
 		@IQuickOpenService private quickOpenService: IQuickOpenService,
-        @IGithubService private githubService: IGithubService
+		@IGithubService private githubService: IGithubService,
+		@IWorkspaceContextService private contextService: IWorkspaceContextService
 	) {
 		super(actionId, actionLabel);
 	}
@@ -80,7 +83,7 @@ export class ChooseRepositoryAction extends Action {
 
         return this.quickOpenService.pick(choices, options).then((result) => {
             if (result && result !== this.githubService.repoName) {
-                openRepository(result);
+							openRepository(result, <IMainEnvironment>this.contextService.getConfiguration().env);
             }
         });
     }
@@ -95,7 +98,8 @@ export class ChooseReferenceAction extends Action {
 		actionId: string,
 		actionLabel: string,
 		@IQuickOpenService private quickOpenService: IQuickOpenService,
-        @IGithubService private githubService: IGithubService
+		@IGithubService private githubService: IGithubService,
+		@IWorkspaceContextService private contextService: IWorkspaceContextService
 	) {
 		super(actionId, actionLabel);
 	}
@@ -169,7 +173,7 @@ export class ChooseReferenceAction extends Action {
 
         return this.quickOpenService.pick(promise, options).then((result) => {
             if (result && result.label !== this.githubService.ref) {
-                openRepository(this.githubService.repoName, result.label, result.id === 'tag');
+                openRepository(this.githubService.repoName, <IMainEnvironment>this.contextService.getConfiguration().env, result.label, result.id === 'tag');
             }
         });
     }

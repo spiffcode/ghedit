@@ -236,21 +236,22 @@
 				configuration.workspacePath = args.workspacePath;
 
 				// If we're running on gh-pages the root is '/ghcode'
-				// TODO: Unfortunately you can't access inside a .ts file as I'd need to update IEnvironment and that might mean more forking...
 				if (window.location.pathname === '/ghcode/') {
-					configuration.rootUrl = '/ghcode';
+					configuration.rootPath = '/ghcode';
 				} else {
 					// If we're running locally then we're running out of one of the 'out-*' directories
-					if (args.rootUrl) {
-						configuration.rootUrl = args.rootUrl;
-					} else {
-						configuration.rootUrl = window.sessionStorage.getItem('rootUrl');
-						if (configuration.rootUrl === null) {
-							// Default to 'out-build' if nothing is specified
-							configuration.rootUrl = 'out-build';
-						}
+					configuration.buildType = args.b;
+					switch (configuration.buildType) {
+					case 'opt':
+						configuration.rootPath = '/out-ghcode';
+						break;
+					case 'min':
+						configuration.rootPath = '/out-ghcode-min';
+						break;
+					default:
+						configuration.rootPath = '/out-build'
+						break;
 					}
-					window.sessionStorage.setItem('rootUrl', configuration.rootUrl);
 				}
 
 				// If there's no repo in the URL, look in sessionStorage, then localStorage
@@ -275,8 +276,8 @@
 						urlReplace += '&tag=' + args.tag;
 					}
 				}
-				if (args.rootUrl) {
-					urlReplace += '&rootUrl=' + args.rootUrl;
+				if (args.b) {
+					urlReplace += '&b=' + args.b;
 				}
 				window.history.replaceState(null, '', urlReplace);
 
@@ -361,10 +362,10 @@
 
 				// Load the loader and start loading the workbench
 	// TODO:			var rootUrl = uriFromPath(configuration.appRoot) + '/out';
-				var rootUrl = configuration.rootUrl;
+				var rootPath = configuration.rootPath;
 				// In the bundled version the nls plugin is packaged with the loader so the NLS Plugins
 				// loads as soon as the loader loads. To be able to have pseudo translation
-				createScript(rootUrl + '/vs/loader.js', function() {
+				createScript(rootPath + '/vs/loader.js', function() {
 					var nlsConfig;
 					try {
 						// TODO: var config = process.env['VSCODE_NLS_CONFIG'];
@@ -378,7 +379,7 @@
 						nlsConfig = { availableLanguages: {} };
 					}
 					require.config({
-						baseUrl: rootUrl,
+						baseUrl: rootPath,
 						'vs/nls': nlsConfig,
 						recordStats: configuration.enablePerformance
 					});

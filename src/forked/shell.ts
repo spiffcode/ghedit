@@ -518,13 +518,12 @@ export class WorkbenchShell {
 
 		let markerService = new MainProcessMarkerService(this.threadService);
 
-
 		let modeService = this.modeService = new MainThreadModeServiceImpl(this.threadService, extensionService, this.configurationService);
 		let modelService = this.modelService = new ModelServiceImpl(this.threadService, markerService, modeService, this.configurationService, this.messageService);
 		let editorWorkerService = this.editorWorkerService = new EditorWorkerServiceImpl(modelService);
 
 		let untitledEditorService = instantiationService.createInstance(UntitledEditorService);
-		this.themeService = new ThemeService(extensionService, this.contextService, this.windowService, this.storageService);
+		this.themeService = new ThemeService(extensionService, this.windowService, this.storageService, this.contextService);
 
 		serviceCollection.set(ITelemetryService, this.telemetryService);
 		serviceCollection.set(IEventService, this.eventService);

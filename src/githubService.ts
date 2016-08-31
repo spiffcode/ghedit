@@ -10,6 +10,7 @@ import {Github, Repository, UserInfo, Error as GithubError} from 'github';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {TPromise} from 'vs/base/common/winjs.base';
 import {GithubTreeCache, IGithubTreeCache} from 'githubTreeCache';
+import {IMainEnvironment} from 'forked/main';
 
 export var IGithubService = createDecorator<IGithubService>('githubService');
 
@@ -127,10 +128,13 @@ export class GithubService implements IGithubService {
 	}
 }
 
-export function openRepository(repo: string, ref?: string, isTag?: boolean) {
+export function openRepository(repo: string, env: IMainEnvironment, ref?: string, isTag?: boolean) {
 	let url = window.location.origin + window.location.pathname + '?repo=' + repo;
 	if (ref) {
 		url += (isTag ? '&tag=' : '&branch=') + ref;
 	}
+	if (env.buildType) {
+		url += '&b=' + env.buildType;
+	}	
 	window.location.href = url;
 }

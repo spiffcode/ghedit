@@ -22,6 +22,7 @@ import {getBaseThemeId, getSyntaxThemeId} from 'vs/platform/theme/common/themes'
 import {IWindowService} from 'forked/windowService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IMainEnvironment} from 'forked/main';
 import {Preferences} from 'vs/workbench/common/constants';
 import {$} from 'vs/base/browser/builder';
 import Event, {Emitter} from 'vs/base/common/event';
@@ -108,9 +109,9 @@ export class ThemeService implements IThemeService {
 
 	constructor(
 			private extensionService: IExtensionService,
-			private contextService: IWorkspaceContextService,
 			@IWindowService private windowService: IWindowService,
-			@IStorageService private storageService: IStorageService) {
+			@IStorageService private storageService: IStorageService,
+			@IWorkspaceContextService private contextService: IWorkspaceContextService) {
 		this.knownThemes = [];
 		this.onThemeChange = new Emitter<string>();
 
@@ -199,9 +200,10 @@ export class ThemeService implements IThemeService {
 	}
 
 	private applyThemeCSS(themeId: string, defaultId: string, onApply: (themeId:string) => void): TPromise<boolean> {
+		let rootPath = (<IMainEnvironment>this.contextService.getConfiguration().env).rootPath + '/';
 		return this.loadTheme(themeId, defaultId).then(theme => {
 			if (theme) {
-				return applyTheme(theme, onApply);
+				return applyTheme(theme, rootPath, onApply);
 			}
 			return false;
 		});
@@ -254,13 +256,13 @@ function toCssSelector(str: string) {
 	return str.replace(/[^_\-a-zA-Z0-9]/g, '-');
 }
 
-function applyTheme(theme: IThemeData, onApply: (themeId:string) => void): TPromise<boolean> {
+function applyTheme(theme: IThemeData, rootPath: string, onApply: (themeId:string) => void): TPromise<boolean> {
 	if (theme.styleSheetContent) {
 		_applyRules(theme.styleSheetContent);
 		onApply(theme.id);
 		return TPromise.as(true);
 	}
-	return _loadThemeDocument(theme.path).then(themeDocument => {
+	return _loadThemeDocument(theme.path, rootPath).then(themeDocument => {
 		let styleSheetContent = _processThemeObject(theme.id, themeDocument);
 		theme.styleSheetContent = styleSheetContent;
 		_applyRules(styleSheetContent);
@@ -271,11 +273,9 @@ function applyTheme(theme: IThemeData, onApply: (themeId:string) => void): TProm
 	});
 }
 
-function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
+function _loadThemeDocument(themePath: string, rootPath: string) : TPromise<ThemeDocument> {
 	// return pfs.readFile(themePath).then(content => {
-	// TODO: Figure out how to get IConfiguration/IEnvironment to include rootUrl without forking more files...
-	let rootUrl = window.location.pathname === '/ghcode/' ? '/ghcode/' : '/out-build/';
-	return xhr({ type: 'GET', url: rootUrl + themePath }).then((xhr: XMLHttpRequest) => {
+	return xhr({ type: 'GET', url: rootPath + themePath }).then((xhr: XMLHttpRequest) => {
 		let content = xhr.responseText;
 		if (Paths.extname(themePath) === '.json') {
 			let errors: string[] = [];
@@ -284,7 +284,7 @@ function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
 				return TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.join(', '))));
 			}
 			if (contentValue.include) {
-				return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue.include)).then(includedValue => {
+				return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue.include), rootPath).then(includedValue => {
 					contentValue.settings = includedValue.settings.concat(contentValue.settings);
 					return TPromise.as(contentValue);
 				});
