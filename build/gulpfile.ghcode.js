@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 var gulp = require('gulp');
+var shell = require('gulp-shell');
 var path = require('path');
 var _ = require('underscore');
 var buildfile = require('../src/forked/buildfile');
@@ -43,7 +44,6 @@ var ghcodeOtherSources = [
 
 var BUNDLED_FILE_HEADER = [
 	'/*!-----------------------------------------------------------',
-	' * Copyright (c) Spiffcode, Inc. All rights reserved.',
 	' * Copyright (c) Microsoft Corporation. All rights reserved.',
 	' * Version: ' + headerVersion,
 	' * Released under the MIT license',
@@ -85,7 +85,14 @@ gulp.task('optimize-ghcode', ['clean-optimized-ghcode', 'compile-build'], common
 	header: BUNDLED_FILE_HEADER,
 	out: 'out-ghcode'
 }));
+gulp.task('build-opt', ['optimize-ghcode']);
 
 gulp.task('clean-minified-ghcode', util.rimraf('out-ghcode-min'));
 gulp.task('minify-ghcode', ['clean-minified-ghcode', 'optimize-ghcode'], common.minifyTask('out-ghcode', true));
-gulp.task('ghcode-distro', ['minify-ghcode', 'optimize-ghcode']);
+gulp.task('build-min', ['minify-ghcode'], shell.task([
+	'cp index.html out-ghcode-min',
+	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-ghcode-min/forked/workbench.main.js > /tmp/workbench.main.js',
+	'mv /tmp/workbench.main.js out-ghcode-min/forked/workbench.main.js',
+]));
+// Is this below running optimize-ghcode twice?
+// gulp.task('ghcode-distro', ['minify-ghcode', 'optimize-ghcode']);
