@@ -242,20 +242,20 @@ exports.minifyTask = function (src, dst, addSourceMapsComment) {
 
 		return gulp.src([src + '/**', '!' + src + '/**/*.map'])
 			.pipe(jsFilter)
-			.pipe(sourcemaps.init({ loadMaps: true }))
+			// .pipe(sourcemaps.init({ loadMaps: true }))
 			.pipe(uglifyWithCopyrights())
 			.pipe(jsFilter.restore)
 			.pipe(cssFilter)
 			.pipe(minifyCSS({ reduceIdents: false }))
 			.pipe(cssFilter.restore)
-			.pipe(sourcemaps.write('./', {
-				sourceMappingURL: function (file) {
-					return 'https://ticino.blob.core.windows.net/sourcemaps/' + commit + '/' + file.relative + '.map';
-				},
-				sourceRoot: null,
-				includeContent: true,
-				addComment: addSourceMapsComment
-			}))
+			// .pipe(sourcemaps.write('./', {
+			// 	sourceMappingURL: function (file) {
+			// 		return 'https://ticino.blob.core.windows.net/sourcemaps/' + commit + '/' + file.relative + '.map';
+			// 	},
+			// 	sourceRoot: null,
+			// 	includeContent: true,
+			// 	addComment: addSourceMapsComment
+			// }))
 			.pipe(gulp.dest(dst || src + '-min'));
 	};
 };
