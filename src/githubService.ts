@@ -15,7 +15,8 @@ import {IMainEnvironment} from 'forked/main';
 export var IGithubService = createDecorator<IGithubService>('githubService');
 
 export interface IGithubService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
+
 	github: Github;
 	repo: Repository;
 	repoName: string;
@@ -35,6 +36,7 @@ export interface IGithubService {
 }
 
 export class GithubService implements IGithubService {
+	public _serviceBrand: any;
 
 	public serviceId = IGithubService;
 	public github: Github;
@@ -135,6 +137,6 @@ export function openRepository(repo: string, env: IMainEnvironment, ref?: string
 	}
 	if (env.buildType) {
 		url += '&b=' + env.buildType;
-	}	
+	}
 	window.location.href = url;
 }

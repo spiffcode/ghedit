@@ -4,11 +4,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Sort of forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/services/statusbar/common/statusbarService.ts
+// Sort of forked from vs/workbench/services/statusbar/common/statusbarService.ts
 
 'use strict';
 
-import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 import {IDisposable} from 'vs/base/common/lifecycle';
 
 export var INavbarService = createDecorator<INavbarService>('forked/navbarService');
@@ -46,7 +46,7 @@ export interface INavbarEntry {
 }
 
 export interface INavbarService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
 
 	/**
 	 * Adds an entry to the navbar with the given alignment and priority. Use the returned IDisposable

@@ -6,7 +6,7 @@
 
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/electron-browser/main.ts
+// Forked from vs/workbench/electron-browser/main.ts
 // This is a port of vs/workbench/electron-browser/main.ts with Electron and Node dependencies
 // removed/replaced.
 
@@ -56,8 +56,19 @@ var fs = {
 // TODO: import gracefulFs = require('graceful-fs');
 // TODO: gracefulFs.gracefulify(fs);
 
-const timers = (<any>window).GlobalEnvironment.timers;
-const domContentLoaded: Function = (<any>winjs).Utilities.ready;
+const timers = (<any>window).MonacoEnvironment.timers;
+
+function domContentLoaded(): winjs.Promise {
+	return new winjs.Promise((c, e) => {
+		const readyState = document.readyState;
+		if (readyState === 'complete' || (document && document.body !== null)) {
+			// DESKTOP: window.setImmediate(c);
+			window.setTimeout(c);
+		} else {
+			window.addEventListener('DOMContentLoaded', c, false);
+		}
+	});
+}
 
 export interface IPath {
 	filePath: string;
@@ -73,8 +84,8 @@ export interface IMainEnvironment extends IEnvironment {
 	filesToDiff?: IPath[];
 	extensionsToInstall?: string[];
 	github?: Github;
-	userEnv: IEnv;
-	githubRepo?: string;	
+	userEnv: { [key: string]: string; };
+	githubRepo?: string;
 	githubBranch?: string;
 	githubTag?: string;
 	gistRegEx?: RegExp;
@@ -108,7 +119,8 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 		filesToCreate: filesToCreate,
 		filesToDiff: filesToDiff,
 		extensionsToInstall: environment.extensionsToInstall,
-		globalSettings: globalSettings
+		globalSettings: globalSettings,
+		editor: { readOnly: false }
 	};
 
 	if (environment.enablePerformance) {
@@ -133,7 +145,7 @@ export function startup(environment: IMainEnvironment, globalSettings: IGlobalSe
 		return githubService.openRepository(environment.githubRepo, environment.githubBranch ? environment.githubBranch : environment.githubTag, !environment.githubBranch).then((repoInfo: any) => {
 			// Tags aren't editable.
 			if (!environment.githubBranch)
-				shellOptions.readOnly = true;
+				shellOptions.editor.readOnly = true;
 			let workspace = getWorkspace(environment, repoInfo);
 			return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
 		}, (err: Error) => {
@@ -195,7 +207,7 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 	return configurationService.initialize().then(() => {
 		timers.beforeReady = new Date();
 
-		return domContentLoaded(() => {
+		return domContentLoaded().then(() => {
 			timers.afterReady = new Date();
 
 			// Open Shell
@@ -220,6 +232,6 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 					}
 				}
 			});
-		}, true);
+		});
 	});
 }

@@ -5,8 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:
-// vs/base/browser/ui/findinput/findInput.ts
+// Forked from vs/base/browser/ui/findinput/findInput.ts
 
 import 'vs/css!vs/base/browser/ui/findinput/findInput';
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/services/search/node/searchService.ts
+// Forked from vs/workbench/services/search/node/searchService.ts
 // This is a port of vs/workbench/services/search/node/searchService.ts with Node dependencies
 // removed/replaced.
 
@@ -14,13 +14,14 @@ import glob = require('vs/base/common/glob');
 import objects = require('vs/base/common/objects');
 import scorer = require('vs/base/common/scorer');
 import strings = require('vs/base/common/strings');
+// TODO: import {getNextTickChannel} from 'vs/base/parts/ipc/common/ipc';
 // TODO: import {Client} from 'vs/base/parts/ipc/node/ipc.cp';
 import {IProgress, LineMatch, FileMatch, ISearchComplete, ISearchProgressItem, QueryType, IFileMatch, ISearchQuery, ISearchConfiguration, ISearchService} from 'vs/platform/search/common/search';
 import {IUntitledEditorService} from 'vs/workbench/services/untitled/common/untitledEditorService';
 import {IModelService} from 'vs/editor/common/services/modelService';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
-// TODO: import {IRawSearch, ISerializedSearchComplete, ISerializedSearchProgressItem, IRawSearchService} from './search';
+// TODO: import {IRawSearch, ISerializedSearchComplete, ISerializedSearchProgressItem, ISerializedFileMatch, IRawSearchService} from './search';
 // TODO: import {ISearchChannel, SearchChannelClient} from './searchIpc';
 import {IGithubService} from 'githubService';
 var github = require('lib/github');
@@ -29,17 +30,17 @@ import {IRawSearch} from 'vs/workbench/services/search/node/search';
 import {Engine as GithubFileSearchEngine} from 'forked/fileSearch';
 
 export class SearchService implements ISearchService {
-	public serviceId = ISearchService;
+	public _serviceBrand: any;
 
 	// private diskSearch: DiskSearch;
 	private githubSearch: GithubSearch;
 
 	constructor(
-		private githubService: IGithubService,
 		@IModelService private modelService: IModelService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IGithubService private githubService: IGithubService
 	) {
 		let config = contextService.getConfiguration();
 		// this.diskSearch = new DiskSearch(!config.env.isBuilt || config.env.verboseLogging);
@@ -86,7 +87,11 @@ export class SearchService implements ISearchService {
 				// on Complete
 				(complete) => {
 					flushLocalResultsOnce();
-					onComplete({ results: complete.results.filter((match) => typeof localResults[match.resource.toString()] === 'undefined'), limitHit: complete.limitHit }); // dont override local results
+					onComplete({
+						limitHit: complete.limitHit,
+						results: complete.results.filter((match) => typeof localResults[match.resource.toString()] === 'undefined'), // dont override local results
+						stats: complete.stats
+					});
 				},
 
 				// on Error
@@ -120,7 +125,7 @@ export class SearchService implements ISearchService {
 		if (query.type === QueryType.Text) {
 			let models = this.modelService.getModels();
 			models.forEach((model) => {
-				let resource = model.getAssociatedResource();
+				let resource = model.uri;
 				if (!resource) {
 					return;
 				}
@@ -243,6 +248,8 @@ class GithubSearch {
 				return;
 			}
 
+			let fileWalkStartTime = Date.now();
+
 			// q=foo+repo:spiffcode/ghcode_test
 			let q:string = query.contentPattern.pattern + '+repo:' + this.githubService.repoName;
 			let s: GithubApiSearch = new github.Search({ query: encodeURIComponent(q) });
@@ -275,7 +282,8 @@ class GithubSearch {
 					return;
 				}
 
-				c({ limitHit: result.incomplete_results, results: matches });
+				c({ limitHit: result.incomplete_results, results: matches,
+					stats: { fileWalkStartTime: fileWalkStartTime, fileWalkResultTime: Date.now(), directoriesWalked: 1, filesWalked: 1 } });
 			});
 		});
 	}
@@ -306,8 +314,9 @@ class GithubSearch {
 			});
 		}
 
+		let fileWalkStartTime = Date.now();
 		let engine = new GithubFileSearchEngine(config, this.githubService.getCache());
-	
+
 		let matches: IFileMatch[] = [];
 		return new PPromise<ISearchComplete, ISearchProgressItem>((c, e, p) => {
 			engine.search((match) => {
@@ -317,11 +326,11 @@ class GithubSearch {
 				}
 			}, (progress) => {
 				p(progress);
-			}, (error, isLimitHit) => {
+			}, (error, complete) => {
 				if (error) {
 					e(error);
 				} else {
-					c({ limitHit: isLimitHit, results: matches });
+					c({ limitHit: complete.limitHit, results: matches, stats: complete.stats });
 				}
 			});
 		}, () => engine.cancel());
@@ -337,7 +346,7 @@ class GithubSearch {
 }
 
 /*
-class DiskSearch {
+export class DiskSearch {
 
 	private raw: IRawSearchService;
 
@@ -356,12 +365,11 @@ class DiskSearch {
 			}
 		);
 
-		const channel = client.getChannel<ISearchChannel>('search');
+		const channel = getNextTickChannel(client.getChannel<ISearchChannel>('search'));
 		this.raw = new SearchChannelClient(channel);
 	}
 
 	public search(query: ISearchQuery): PPromise<ISearchComplete, ISearchProgressItem> {
-		let result: IFileMatch[] = [];
 		let request: PPromise<ISerializedSearchComplete, ISerializedSearchProgressItem>;
 
 		let rawSearch: IRawSearch = {
@@ -384,25 +392,31 @@ class DiskSearch {
 			request = this.raw.textSearch(rawSearch);
 		}
 
+		return DiskSearch.collectResults(request);
+	}
+
+	public static collectResults(request: PPromise<ISerializedSearchComplete, ISerializedSearchProgressItem>): PPromise<ISearchComplete, ISearchProgressItem> {
+		let result: IFileMatch[] = [];
 		return new PPromise<ISearchComplete, ISearchProgressItem>((c, e, p) => {
 			request.done((complete) => {
 				c({
 					limitHit: complete.limitHit,
-					results: result
+					results: result,
+					stats: complete.stats
 				});
 			}, e, (data) => {
 
+				// Matches
+				if (Array.isArray(data)) {
+					const fileMatches = data.map(d => this.createFileMatch(d));
+					result = result.concat(fileMatches);
+					fileMatches.forEach(p);
+				}
+
 				// Match
-				if (data.path) {
-					let fileMatch = new FileMatch(uri.file(data.path));
+				else if ((<ISerializedFileMatch>data).path) {
+					const fileMatch = this.createFileMatch(data);
 					result.push(fileMatch);
-
-					if (data.lineMatches) {
-						for (let j = 0; j < data.lineMatches.length; j++) {
-							fileMatch.lineMatches.push(new LineMatch(data.lineMatches[j].preview, data.lineMatches[j].lineNumber, data.lineMatches[j].offsetAndLengths));
-						}
-					}
-
 					p(fileMatch);
 				}
 
@@ -412,6 +426,16 @@ class DiskSearch {
 				}
 			});
 		}, () => request.cancel());
+	}
+
+	private static createFileMatch(data: ISerializedFileMatch): FileMatch {
+		let fileMatch = new FileMatch(uri.file(data.path));
+		if (data.lineMatches) {
+			for (let j = 0; j < data.lineMatches.length; j++) {
+				fileMatch.lineMatches.push(new LineMatch(data.lineMatches[j].preview, data.lineMatches[j].lineNumber, data.lineMatches[j].offsetAndLengths));
+			}
+		}
+		return fileMatch;
 	}
 }
 */

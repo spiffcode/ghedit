@@ -5,26 +5,26 @@
 
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:
-// vs/workbench/services/search/node/fileSearch.ts
+// Forked from vs/workbench/services/search/node/fileSearch.ts
 
 // import fs = require('fs');
 import paths = require('vs/base/common/paths');
 import uri from 'vs/base/common/uri';
+
 import scorer = require('vs/base/common/scorer');
 import arrays = require('vs/base/common/arrays');
 import strings = require('vs/base/common/strings');
 import types = require('vs/base/common/types');
 import glob = require('vs/base/common/glob');
-// import {IProgress} from 'vs/platform/search/common/search';
-import {IProgress, FileMatch, IFileMatch} from 'vs/platform/search/common/search';
+// import {IProgress, ISearchStats} from 'vs/platform/search/common/search';
+import {IProgress, FileMatch, IFileMatch, ISearchStats} from 'vs/platform/search/common/search';
 
 import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
 
 import flow = require('forked/flow');
 
 // import {ISerializedFileMatch, IRawSearch, ISearchEngine} from './search';
-import {IRawSearch, ISearchEngine} from 'vs/workbench/services/search/node/search';
+import {ISerializedFileMatch, ISerializedSearchComplete, IRawSearch, ISearchEngine} from 'vs/workbench/services/search/node/search';
 
 export class FileWalker {
 	private config: IRawSearch;
@@ -37,11 +37,14 @@ export class FileWalker {
 	private isLimitHit: boolean;
 	private resultCount: number;
 	private isCanceled: boolean;
+	private fileWalkStartTime: number;
+	private directoriesWalked: number;
+	private filesWalked: number;
 
 	private walkedPaths: { [path: string]: boolean; };
 
 	// constructor(config: IRawSearch) {
-	constructor(config: IRawSearch, private cache: IGithubTreeCache) {		
+	constructor(config: IRawSearch, private cache: IGithubTreeCache) {
 		this.config = config;
 		this.filePattern = config.filePattern;
 		this.excludePattern = config.excludePattern;
@@ -51,6 +54,8 @@ export class FileWalker {
 		this.walkedPaths = Object.create(null);
 		this.resultCount = 0;
 		this.isLimitHit = false;
+		this.directoriesWalked = 0;
+		this.filesWalked = 0;
 
 		if (this.filePattern) {
 			this.filePattern = this.filePattern.replace(/\\/g, '/'); // Normalize file patterns to forward slashes
@@ -64,6 +69,7 @@ export class FileWalker {
 
 	// public walk(rootFolders: string[], extraFiles: string[], onResult: (result: ISerializedFileMatch, size: number) => void, done: (error: Error, isLimitHit: boolean) => void): void {
 	public walk(rootFolders: string[], extraFiles: string[], onResult: (result: IFileMatch, size: number) => void, done: (error: Error, isLimitHit: boolean) => void): void {
+		this.fileWalkStartTime = Date.now();
 
 		// Support that the file pattern is a full path to a file that exists
 		this.checkFilePatternAbsoluteMatch((exists, size) => {
@@ -96,7 +102,8 @@ export class FileWalker {
 
 			// For each root folder
 			flow.parallel(rootFolders, (absolutePath, perEntryCallback) => {
-				// this.extfs.readdir(absolutePath, (error: Error, files: string[]) => {				
+				this.directoriesWalked++;
+				// this.extfs.readdir(absolutePath, (error: Error, files: string[]) => {
 				this.cache.readdir(absolutePath, (error: Error, files: string[]) => {
 					if (error || this.isCanceled || this.isLimitHit) {
 						return perEntryCallback(null, null);
@@ -110,7 +117,7 @@ export class FileWalker {
 
 						// Report result from file pattern if matching
 						if (match) {
-							// onResult({ path: match }, size);							
+							// onResult({ path: match }, size);
 							onResult(new FileMatch(uri.file(match)), size);
 						}
 
@@ -123,13 +130,22 @@ export class FileWalker {
 		});
 	}
 
+	public getStats(): ISearchStats {
+		return {
+			fileWalkStartTime: this.fileWalkStartTime,
+			fileWalkResultTime: Date.now(),
+			directoriesWalked: this.directoriesWalked,
+			filesWalked: this.filesWalked
+		};
+	}
+
 	private checkFilePatternAbsoluteMatch(clb: (exists: boolean, size?: number) => void): void {
 		if (!this.filePattern || !paths.isAbsolute(this.filePattern)) {
 			return clb(false);
 		}
 
 		// return fs.stat(this.filePattern, (error, stat) => {
-		return this.cache.stat(this.filePattern, (error, stat) => {			
+		return this.cache.stat(this.filePattern, (error, stat) => {
 			return clb(!error && !stat.isDirectory(), stat && stat.size); // only existing files
 		});
 	}
@@ -175,7 +191,7 @@ export class FileWalker {
 			// Use lstat to detect links
 			let currentAbsolutePath = [absolutePath, file].join(paths.sep);
 
-			// Fix double slash by the above join when absolutePath is just '/'. 
+			// Fix double slash by the above join when absolutePath is just '/'.
 			if (currentAbsolutePath.length >= 2 && currentAbsolutePath[0] === '/' && currentAbsolutePath[1] === '/')
 				currentAbsolutePath = currentAbsolutePath.substring(1, currentAbsolutePath.length);
 
@@ -195,6 +211,7 @@ export class FileWalker {
 
 					// Directory: Follow directories
 					if (stat.isDirectory()) {
+						this.directoriesWalked++;
 
 						// to really prevent loops with links we need to resolve the real path of them
 						return this.realPathIfNeeded(currentAbsolutePath, lstat, (error, realpath) => {
@@ -209,7 +226,7 @@ export class FileWalker {
 							this.walkedPaths[realpath] = true; // remember as walked
 
 							// Continue walking
-							// return extfs.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {							
+							// return extfs.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {
 							return this.cache.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {
 								if (error || this.isCanceled || this.isLimitHit) {
 									return clb(null);
@@ -222,6 +239,7 @@ export class FileWalker {
 
 					// File: Check for match on file pattern and include pattern
 					else {
+						this.filesWalked++;
 						if (currentRelativePathWithSlashes === this.filePattern) {
 							return clb(null); // ignore file if its path matches with the file pattern because checkFilePatternRelativeMatch() takes care of those
 						}
@@ -255,7 +273,7 @@ export class FileWalker {
 				this.isLimitHit = true;
 			}
 
-			if (!this.isLimitHit) {				
+			if (!this.isLimitHit) {
 				// onResult({ path: absolutePath }, size);
 				onResult(new FileMatch(uri.file(absolutePath)), size);
 			}
@@ -281,7 +299,7 @@ export class FileWalker {
 	private statLinkIfNeeded(path: string, lstat: IGithubTreeStat, clb: (error: Error, stat: IGithubTreeStat) => void): void {
 		if (lstat.isSymbolicLink()) {
 			// return fs.stat(path, clb); // stat the target the link points to
-			return this.cache.stat(path, clb); // stat the target the link points to			
+			return this.cache.stat(path, clb); // stat the target the link points to
 		}
 
 		return clb(null, lstat); // not a link, so the stat is already ok for us
@@ -290,7 +308,7 @@ export class FileWalker {
 	// private realPathIfNeeded(path: string, lstat: fs.Stats, clb: (error: Error, realpath?: string) => void): void {
 	private realPathIfNeeded(path: string, lstat: IGithubTreeStat, clb: (error: Error, realpath?: string) => void): void {
 		if (lstat.isSymbolicLink()) {
-			// return fs.realpath(path, (error, realpath) => {			
+			// return fs.realpath(path, (error, realpath) => {
 			return this.cache.realpath(path, (error, realpath) => {
 				if (error) {
 					return clb(error);
@@ -318,8 +336,13 @@ export class Engine implements ISearchEngine {
 		this.walker = new FileWalker(config, cache);
 	}
 
-	public search(onResult: (result: IFileMatch) => void, onProgress: (progress: IProgress) => void, done: (error: Error, isLimitHit: boolean) => void): void {
-		this.walker.walk(this.rootFolders, this.extraFiles, onResult, done);
+	public search(onResult: (result: ISerializedFileMatch) => void, onProgress: (progress: IProgress) => void, done: (error: Error, complete: ISerializedSearchComplete) => void): void {
+		this.walker.walk(this.rootFolders, this.extraFiles, onResult, (err: Error, isLimitHit: boolean) => {
+			done(err, {
+				limitHit: isLimitHit,
+				stats: this.walker.getStats()
+			});
+		});
 	}
 
 	public cancel(): void {

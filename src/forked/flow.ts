@@ -5,8 +5,7 @@
 
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:
-// vs/base/node/flow.ts
+// Forked from vs/base/node/flow.ts
 
 // import assert = require('assert');
 

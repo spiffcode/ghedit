@@ -32,7 +32,7 @@ class DirEntry implements IGithubTreeStat {
     children: { [name: string]: DirEntry };
     submodule_git_url: string;
 
-    constructor(public name: string, public mode: number, public size: number, public sha: string) {        
+    constructor(public name: string, public mode: number, public size: number, public sha: string) {
     }
 
     public isDirectory() : boolean {
@@ -85,7 +85,7 @@ export class GithubTreeCache implements IGithubTreeCache
             // Ignore trailing slash
             if (i === parts.length - 1 && parts[i] === '')
                 break;
-            
+
             // Make sure this entry is a directory and it has children
             if ((entry.mode & S_IFMT) !== S_IFDIR || !entry.children)
                 return null;
@@ -104,7 +104,7 @@ export class GithubTreeCache implements IGithubTreeCache
                 }
             }
             if (!entry)
-                return null;       
+                return null;
         }
         return entry;
     }
@@ -119,7 +119,7 @@ export class GithubTreeCache implements IGithubTreeCache
         items.forEach((item: TreeItem) => {
             // Add the entry
             let entry = new DirEntry(paths.basename(item.path), parseInt(item.mode, 8), item.size || 0, item.sha);
-            let dir = paths.dirname('/' + item.path);            
+            let dir = paths.dirname('/' + item.path);
             let parent: DirEntry = this.findEntry(dir, false);
             if (!parent.children)
                 parent.children = {};
@@ -142,8 +142,8 @@ export class GithubTreeCache implements IGithubTreeCache
                 })));
             }
 
-            // If it is a symlink, the symlink's realpath needs to be retrieved              
-            if (this.supportSymlinks && entry.isSymbolicLink()) {                                                
+            // If it is a symlink, the symlink's realpath needs to be retrieved
+            if (this.supportSymlinks && entry.isSymbolicLink()) {
                 entry.realpath = null;
                 promises.push(limiter.queue(() => new TPromise<void>((c, e) => {
                     this.githubService.repo.getBlob(item.sha, (err: GithubError, path: string) => {
@@ -153,7 +153,7 @@ export class GithubTreeCache implements IGithubTreeCache
                             // github.js relies on axios, which returns numbers for results
                             // that can be parsed as numbers. Make sure the path is
                             // converted to a string.
-                            entry.realpath = paths.makeAbsolute(paths.join(dir, '' + path));
+                            entry.realpath = paths.makePosixAbsolute(paths.join(dir, '' + path));
                             c(null);
                         }
                     });
@@ -215,7 +215,7 @@ export class GithubTreeCache implements IGithubTreeCache
         this.refresh().then(() => {
             let entry = this.findEntry(path, false);
             if (!entry)
-                return cb(new Error('Cannot find file or directory.'));        
+                return cb(new Error('Cannot find file or directory.'));
 
             if ((entry.mode & S_IFMT) === S_IFLNK) {
                 if (entry.realpath)
@@ -231,7 +231,7 @@ export class GithubTreeCache implements IGithubTreeCache
         this.refresh().then(() => {
             let entry = this.findEntry(path, true);
             if (!entry)
-                return cb(new Error('Cannot find file or directory.'));                
+                return cb(new Error('Cannot find file or directory.'));
 
             if ((entry.mode & S_IFMT) !== S_IFDIR) {
                 cb(new Error('This path is not a directory.'));

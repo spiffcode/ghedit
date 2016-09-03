@@ -1,5 +1,6 @@
 <!-- Copyright (C) Spiffcode, Inc. All rights reserved. -->
 <!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
+<!-- Forked from vs/workbench/electron-browser/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,8 +9,12 @@
 
 		<!-- Theming (do not remove, we want to early load it to avoid flashing background) -->
 		<style>
-			.monaco-shell.vs-dark { background-color: #1E1E1E; }
-			.ghcode-body-startup { margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback"; }
+			.monaco-shell.vs-dark {
+				background-color: #1E1E1E;
+			}
+			.ghcode-body-startup {
+				margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback";
+			}
 		</style>
 
 		<script>
@@ -377,11 +382,22 @@
 					}
 					if (!nlsConfig) {
 						nlsConfig = { availableLanguages: {} };
+					} else {
+						var locale = nlsConfig.availableLanguages['*'] || 'en';
+						if (locale === 'zh-tw') {
+							locale = 'zh-Hant';
+						} else if (locale === 'zh-cn') {
+							locale = 'zh-Hans';
+						}
+						window.document.documentElement.setAttribute('lang', locale);
 					}
 					require.config({
 						baseUrl: rootPath,
 						'vs/nls': nlsConfig,
-						recordStats: configuration.enablePerformance
+						recordStats: configuration.enablePerformance,
+						ignoreDuplicateModules: [
+							'vs/workbench/parts/search/common/searchQuery'
+						]
 					});
 					if (nlsConfig.pseudo) {
 						require(['vs/nls'], function(nlsPlugin) {
@@ -391,12 +407,12 @@
 
 					var hasWorkspaceContext = configuration.workspacePath;
 
-					window.GlobalEnvironment = {
+					window.MonacoEnvironment = {
 						'enableTasks': hasWorkspaceContext,
 						'enableSendASmile' : !!configuration.sendASmile
 					};
 
-					var timers = window.GlobalEnvironment.timers = {
+					var timers = window.MonacoEnvironment.timers = {
 						start: new Date()
 					};
 
@@ -436,7 +452,7 @@
 						require.config(loaderConfig, false);
 					}
 
-					require(['forked/workbench.main'], function() {
+					require(['forked/workbench.main', 'lib/github'], function() {
 						timers.afterLoad = new Date();
 
 						var main = require('forked/main');
@@ -459,8 +475,11 @@
 			(function() {
 				try {
 					var theme = window.localStorage.getItem('storage://global/workbench.theme');
-					if (theme && theme.indexOf('vs-dark') < 0) {
-						window.document.body.className = 'monaco-shell'; // remove the dark theme class if we are on a light theme
+					if (theme) {
+						var baseTheme = theme.split(' ')[0];
+						if (baseTheme !== 'vs-dark') {
+							window.document.body.className = 'monaco-shell ' + baseTheme;
+						}
 					}
 				} catch (error) {
 					console.error(error);

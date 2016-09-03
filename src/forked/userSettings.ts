@@ -6,16 +6,16 @@
 
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/node/userSettings.ts
+// Forked from vs/workbench/node/userSettings.ts
 // This is a port of vs/workbench/node/userSettings.ts with Electron and Node dependencies
 // removed/replaced.
 
-// import fs = require('fs');
-// import path = require('path');
+// import * as from 'fs';
+// import * as path from 'path';
 
 import winjs = require('vs/base/common/winjs.base');
-import json = require('vs/base/common/json');
-import objects = require('vs/base/common/objects');
+import * as json from 'vs/base/common/json';
+import * as objects from 'vs/base/common/objects';
 import URI from 'vs/base/common/uri';
 import {TPromise} from 'vs/base/common/winjs.base';
 // import Event, {Emitter} from 'vs/base/common/event';
@@ -41,8 +41,7 @@ export class UserSettings implements ISettingsService {
 
 //	private static CHANGE_BUFFER_DELAY = 300;
 
-//	public globalSettings: ISettings;
-	private globalSettings: ISettings;
+	globalSettings: ISettings;
 
 //	private timeoutHandle: number;
 //	private watcher: fs.FSWatcher;
@@ -75,12 +74,12 @@ export class UserSettings implements ISettingsService {
 	}
 
 /*
-	public static getValue(contextService: IWorkspaceContextService, key: string, fallback?: any): TPromise<any> {
-		return new TPromise((c, e) => {
-			const appSettingsPath = contextService.getConfiguration().env.appSettingsPath;
+	static getValue(userDataPath: string, key: string, fallback?: any): TPromise<any> {
+		// TODO@joao cleanup!
+		const appSettingsPath = path.join(userDataPath, 'User', 'settings.json');
 
-			// fs.readFile(appSettingsPath, (error, fileContents) => {
-			this.readSettingsFile(appSettingsPath, (fileContents) => {
+		return new TPromise((c, e) => {
+			fs.readFile(appSettingsPath, (error, fileContents) => {
 				let root = Object.create(null);
 				let content = fileContents ? fileContents.toString() : '{}';
 
@@ -102,13 +101,13 @@ export class UserSettings implements ISettingsService {
 */
 
 /*
-	public get onChange(): Event<ISettings> {
+	get onChange(): Event<ISettings> {
 		return this._onChange.event;
 	}
 */
 
 /*
-	public getValue(key: string, fallback?: any): any {
+	getValue(key: string, fallback?: any): any {
 		return UserSettings.doGetValue(this.globalSettings.settings, key, fallback);
 	}
 */
@@ -160,7 +159,7 @@ export class UserSettings implements ISettingsService {
 */
 
 /*
-	public loadSync(): boolean {
+	loadSync(): boolean {
 		let loadedSettings = this.doLoadSync();
 		if (!objects.equals(loadedSettings, this.globalSettings)) {
 
@@ -191,8 +190,7 @@ export class UserSettings implements ISettingsService {
 		let root = Object.create(null);
 		let content = '{}';
 		try {
-			// content = fs.readFileSync(this.appSettingsPath).toString();
-			content = this.readTextFileSync(this.appSettingsPath);
+			content = fs.readFileSync(this.appSettingsPath).toString();
 		} catch (error) {
 			// ignore
 		}
@@ -253,7 +251,7 @@ export class UserSettings implements ISettingsService {
 */
 
 /*
-	public dispose(): void {
+	dispose(): void {
 		if (this.watcher) {
 			this.watcher.close();
 			this.watcher = null;
@@ -325,7 +323,7 @@ export class UserSettings implements ISettingsService {
 	}
 
 	private registerListener(): void {
-		this.eventService.addListener("settingsFileChanged", () => {
+		this.eventService.addListener2("settingsFileChanged", () => {
 			this.loadSettings();
 		});
 	}

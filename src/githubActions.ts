@@ -21,7 +21,7 @@ import {IMainEnvironment} from 'forked/main';
 export class AboutGHCodeAction extends Action {
 
 	public static ID = 'workbench.action.ghcode.welcome';
-    public static LABEL = 'About GHCode';
+	public static LABEL = 'About GHCode';
 
 	constructor(
 		actionId: string,
@@ -33,15 +33,15 @@ export class AboutGHCodeAction extends Action {
 	}
 
 	public run(): TPromise<any> {
-        // TODO: Show better about UI
-        let s: string[] = [];
-        if (this.githubService.isAuthenticated() && this.githubService.isTag) {
-            s.push('Note: GHCode is in read only mode because you are viewing a tag.');
-        }
-        s.push('Welcome to GHCode, brought to you by Spiffcode, Inc.');
-        this.messageService.show(Severity.Info, s);
-        return TPromise.as(true);
-    }
+		// TODO: Show better about UI
+		let s: string[] = [];
+		if (this.githubService.isAuthenticated() && this.githubService.isTag) {
+			s.push('Note: GHCode is in read only mode because you are viewing a tag.');
+		}
+		s.push('Welcome to GHCode, brought to you by Spiffcode, Inc.');
+		this.messageService.show(Severity.Info, s);
+		return TPromise.as(true);
+	}
 }
 
 export class ChooseRepositoryAction extends Action {
@@ -60,33 +60,33 @@ export class ChooseRepositoryAction extends Action {
 	}
 
 	public run(): TPromise<any> {
-        let choices = new TPromise<string[]>((c, e) => {
-            // By default this api sorts by 'updated', which results in unexpected sort orders.
-            // Instead sort by last push time.
-            this.githubService.github.getUser().repos({sort: 'pushed', per_page: 1000 }, (err: Error, repos: RepositoryInfo[]) => {
-                if (err) {
-                    e('Error contacting service.');
-                } else {
-                    // Put the current repo at the top
-                    let choices = repos.map(repo => repo.full_name).filter(name => name !== this.githubService.repoName);
-                    if (this.githubService.repoName)
-                        choices.splice(0, 0, this.githubService.repoName);
-                    c(choices);
-                }
-            });
-        });
+		let choices = new TPromise<string[]>((c, e) => {
+			// By default this api sorts by 'updated', which results in unexpected sort orders.
+			// Instead sort by last push time.
+			this.githubService.github.getUser().repos({sort: 'pushed', per_page: 1000 }, (err: Error, repos: RepositoryInfo[]) => {
+				if (err) {
+					e('Error contacting service.');
+				} else {
+					// Put the current repo at the top
+					let choices = repos.map(repo => repo.full_name).filter(name => name !== this.githubService.repoName);
+					if (this.githubService.repoName)
+						choices.splice(0, 0, this.githubService.repoName);
+					c(choices);
+				}
+			});
+		});
 
-        let options: IPickOptions = {
-            placeHolder: nls.localize('chooseRepository', 'Choose Repository'),
-            autoFocus: { autoFocusFirstEntry: true }
-        };
+		let options: IPickOptions = {
+				placeHolder: nls.localize('chooseRepository', 'Choose Repository'),
+				autoFocus: { autoFocusFirstEntry: true }
+		};
 
-        return this.quickOpenService.pick(choices, options).then((result) => {
-            if (result && result !== this.githubService.repoName) {
-							openRepository(result, <IMainEnvironment>this.contextService.getConfiguration().env);
-            }
-        });
-    }
+		return this.quickOpenService.pick(choices, options).then((result) => {
+			if (result && result !== this.githubService.repoName) {
+				openRepository(result, <IMainEnvironment>this.contextService.getConfiguration().env);
+			}
+		});
+	}
 }
 
 export class ChooseReferenceAction extends Action {
@@ -104,79 +104,79 @@ export class ChooseReferenceAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	public run(): TPromise<any> {        
-        let repo = this.githubService.github.getRepo(this.githubService.repoName);
+	public run(): TPromise<any> {
+		let repo = this.githubService.github.getRepo(this.githubService.repoName);
 
-        // Get branches as IPickOpenEntry[]        
-        let branches = new TPromise<IPickOpenEntry[]>((c, e) => {
-            repo.listBranches((err: Error, results: string[]) => {
-                if (err) {
-                    e('Error contacting service.');
-                } else {
-                    let items = results;
-                    if (!this.githubService.isTag) {
-                        items = results.filter(branch => branch !== this.githubService.ref);
-                        items.splice(0, 0, this.githubService.ref);
-                    }
-                    let choices: IPickOpenEntry[] = items.map(item => { return { id: 'branch', label: item, description: nls.localize('gitBranch', 'branch') } });
-                    c(choices);
-                }
-            });
-        });
+		// Get branches as IPickOpenEntry[]
+		let branches = new TPromise<IPickOpenEntry[]>((c, e) => {
+			repo.listBranches((err: Error, results: string[]) => {
+				if (err) {
+					e('Error contacting service.');
+				} else {
+					let items = results;
+					if (!this.githubService.isTag) {
+						items = results.filter(branch => branch !== this.githubService.ref);
+						items.splice(0, 0, this.githubService.ref);
+					}
+					let choices: IPickOpenEntry[] = items.map(item => { return { id: 'branch', label: item, description: nls.localize('gitBranch', 'branch') } });
+					c(choices);
+				}
+			});
+		});
 
-        // Get tags as IPickOpenEntry[]
-        let tags = new TPromise<IPickOpenEntry[]>((c, e) => {
-            repo.listTags((err: Error, tags?: TagInfo[]) => {
-                if (err) {
-                    e('Error contacting service.');
-                } else { 
-                    let items = tags.map(tag => tag.name);
-                    if (this.githubService.isTag) {
-                        items = items.filter(name => name !== this.githubService.ref);
-                        items.splice(0, 0, this.githubService.ref);
-                    }
-                    let choices: IPickOpenEntry[] = items.map(item => { return { id: 'tag', label: item, description: nls.localize('gitTag', 'tag') } });
-                    c(choices);
-                }
-            });
-        });
+		// Get tags as IPickOpenEntry[]
+		let tags = new TPromise<IPickOpenEntry[]>((c, e) => {
+			repo.listTags((err: Error, tags?: TagInfo[]) => {
+				if (err) {
+					e('Error contacting service.');
+				} else {
+					let items = tags.map(tag => tag.name);
+					if (this.githubService.isTag) {
+						items = items.filter(name => name !== this.githubService.ref);
+						items.splice(0, 0, this.githubService.ref);
+					}
+					let choices: IPickOpenEntry[] = items.map(item => { return { id: 'tag', label: item, description: nls.localize('gitTag', 'tag') } });
+					c(choices);
+				}
+			});
+		});
 
-        // Wrap these in a promise that returns a single array
-        let promise = new TPromise<IPickOpenEntry[]>((c, e) => {
-            // Execute the tag and branch promises at once
-            TPromise.join([branches, tags]).then((results: IPickOpenEntry[][]) => {
-                // The order of the results is unknown. Figure that out.
-                let indexBranches = -1;
-                for (let i = 0; i < 2; i++) {
-                    // Find out which index is branches, which is tags
-                    if (indexBranches < 0) {                    
-                        if (results[i].length > 0) {
-                            if (results[i][0].id === 'branch') {
-                                indexBranches = i;
-                            }
-                        }
-                    }
-                }
+		// Wrap these in a promise that returns a single array
+		let promise = new TPromise<IPickOpenEntry[]>((c, e) => {
+			// Execute the tag and branch promises at once
+			TPromise.join([branches, tags]).then((results: IPickOpenEntry[][]) => {
+				// The order of the results is unknown. Figure that out.
+				let indexBranches = -1;
+				for (let i = 0; i < 2; i++) {
+					// Find out which index is branches, which is tags
+					if (indexBranches < 0) {
+						if (results[i].length > 0) {
+							if (results[i][0].id === 'branch') {
+								indexBranches = i;
+							}
+						}
+					}
+				}
 
-                let indexOrderFirst = !this.githubService.isTag ? indexBranches : indexBranches ^ 1;
-                let choices: IPickOpenEntry[] = results[indexOrderFirst].concat(results[indexOrderFirst ^ 1]);
-                c(choices);
-            }, (err: any) => {
-                e(err);
-            });
-        });
+				let indexOrderFirst = !this.githubService.isTag ? indexBranches : indexBranches ^ 1;
+				let choices: IPickOpenEntry[] = results[indexOrderFirst].concat(results[indexOrderFirst ^ 1]);
+				c(choices);
+			}, (err: any) => {
+				e(err);
+			});
+		});
 
-        let options: IPickOptions = {
-            placeHolder: nls.localize('chooseBranchOrTag', 'Choose Branch or Tag'),
-            autoFocus: { autoFocusFirstEntry: true }
-        };
+		let options: IPickOptions = {
+				placeHolder: nls.localize('chooseBranchOrTag', 'Choose Branch or Tag'),
+				autoFocus: { autoFocusFirstEntry: true }
+		};
 
-        return this.quickOpenService.pick(promise, options).then((result) => {
-            if (result && result.label !== this.githubService.ref) {
-                openRepository(this.githubService.repoName, <IMainEnvironment>this.contextService.getConfiguration().env, result.label, result.id === 'tag');
-            }
-        });
-    }
+		return this.quickOpenService.pick(promise, options).then((result) => {
+			if (result && result.label !== this.githubService.ref) {
+					openRepository(this.githubService.repoName, <IMainEnvironment>this.contextService.getConfiguration().env, result.label, result.id === 'tag');
+			}
+		});
+	}
 }
 
 // Register these actions
