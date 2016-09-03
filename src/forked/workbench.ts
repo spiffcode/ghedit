@@ -77,7 +77,7 @@ import {ICommandService} from 'vs/platform/commands/common/commands';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {ITextFileService} from 'vs/workbench/parts/files/common/files';
-import {TextFileService} from 'forked/bogusTextFileServices';
+import {TextFileService} from 'forked/textFileServices';
 
 interface WorkbenchParams {
 	workspace?: IWorkspace;
