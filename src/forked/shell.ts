@@ -87,19 +87,8 @@ import {IExtensionManagementService} from 'vs/platform/extensionManagement/commo
 // TODO: import {ReloadWindowAction} from 'vs/workbench/electron-browser/actions';
 import {Registry} from 'vs/platform/platform';
 
-/* TODO: needed anymore?
-// Import everything we need to add all the standalone language and json schema support.
-import {ILanguageExtensionPoint} from 'vs/editor/common/services/modeService';
-import {ModesRegistry} from 'vs/editor/common/modes/modesRegistry';
-import {ExtensionsRegistry} from 'vs/platform/extensions/common/extensionsRegistry';
-import {ILanguage} from 'vs/editor/common/modes/monarch/monarchTypes';
+import {ensureStaticPlatformServices} from 'vs/editor/browser/standalone/standaloneServices';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
-import {Extensions, IJSONContributionRegistry} from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
-import {ILanguageDef} from 'vs/editor/standalone-languages/types';
-import 'vs/languages/json/common/json.contribution';
-import 'vs/editor/standalone-languages/all';
-import 'vs/editor/browser/standalone/standaloneSchemas';
-*/
 
 import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'forked/navbarPart';
@@ -132,11 +121,6 @@ export interface ICoreServices {
 	configurationService: IConfigurationService;
 	githubService: IGithubService;
 }
-
-/* TODO: needed anymore?
-let MonacoEditorLanguages: ILanguageDef[] = this.MonacoEditorLanguages || [];
-let MonacoEditorSchemas: { [url:string]: IJSONSchema } = this.MonacoEditorSchemas || {};
-*/
 
 /**
  * The workbench shell contains the workbench with a rich header containing navigation and the activity bar.
@@ -202,6 +186,34 @@ export class WorkbenchShell {
 
 		// Instantiation service with services
 		let [instantiationService, serviceCollection] = this.initServiceCollection();
+
+		// Initialize the services expected by the standalone editor (Monaco). These are used
+		// by the monaco-json/css/typescript/languages contributions.
+		ensureStaticPlatformServices({
+			modeService: <IModeService>serviceCollection.get(IModeService),
+			modelService: <IModelService>serviceCollection.get(IModelService),
+			markerService: <IMarkerService>serviceCollection.get(IMarkerService),
+			messageService: <IMessageService>serviceCollection.get(IMessageService),
+			commandService: <ICommandService>serviceCollection.get(ICommandService),
+			compatWorkerService: <ICompatWorkerService>serviceCollection.get(ICompatWorkerService),
+			storageService: <IStorageService>serviceCollection.get(IStorageService),
+			telemetryService: <ITelemetryService>serviceCollection.get(ITelemetryService),
+			contextService: <IWorkspaceContextService>serviceCollection.get(IWorkspaceContextService),
+			eventService: <IEventService>serviceCollection.get(IEventService),
+			extensionService: <IExtensionService>serviceCollection.get(IExtensionService),
+			configurationService: <IConfigurationService>serviceCollection.get(IConfigurationService),
+			codeEditorService: <ICodeEditorService>serviceCollection.get(ICodeEditorService),
+			editorWorkerService: <IEditorWorkerService>serviceCollection.get(IEditorWorkerService),
+			instantiationService: instantiationService
+			/* TODO:
+			menuService?:IMenuService;
+			editorService?:IEditorService;
+			keybindingService?:IKeybindingService;
+			contextViewService?:IEditorContextViewService;
+			contextMenuService?:IContextMenuService;
+			progressService?:IProgressService;
+			*/
+		});
 
 		//crash reporting
 		if (!!this.configuration.env.crashReporter) {
@@ -347,86 +359,23 @@ export class WorkbenchShell {
 		}
 		*/
 
-/* TODO: needed anymore?
-		// Register all built-in standalone languages.
-		MonacoEditorLanguages.forEach((language) => {
-			this.registerMonarchStandaloneLanguage(language, language.defModule);
-		});
-
-		// Register the languages we have smarter handlers for.
-		// These lines come from typescript.contrbution.ts which can't simply be imported
-		// because of its dependency on vs/editor/browser/standalone/standaloneCodeEditor
-		// for the registerStandaloneLanguage implementation.
-		this.registerStandaloneLanguage({
-			id: 'typescript',
-			extensions: ['.ts'],
-			aliases: ['TypeScript', 'ts', 'typescript'],
-			mimetypes: ['text/typescript'],
-		}, 'vs/languages/typescript/common/mode');
-
-		this.registerStandaloneLanguage({
-			id: 'javascript',
-			extensions: ['.js', '.es6'],
-			firstLine: '^#!.*\\bnode',
-			filenames: ['jakefile'],
-			aliases: ['JavaScript', 'javascript', 'js'],
-			mimetypes: ['text/javascript'],
-		}, 'vs/languages/typescript/common/mode');
-
-		// Register all built-in standalone JSON schemas.
-		for (var uri in MonacoEditorSchemas) {
-			this.registerStandaloneSchema(uri, MonacoEditorSchemas[uri]);
-		}
-*/
-	}
-
-/* TODO: needed anymore?
-	// These are adapted versions of functions in vs/editor/browser/standalone/standaloneCodeEditor
-	// without the creation of conflicting supporting services.
-	private registerMonarchStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
-		ModesRegistry.registerLanguage(language);
-
-		ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, () => {
-			require([defModule], (value:{language:ILanguage}) => {
-				if (!value.language) {
-					console.error('Expected ' + defModule + ' to export an `language`');
-					return;
-				}
-
-				let modeService = this.modeService;
-				let modelService = this.modelService;
-				modeService.registerMonarchDefinition(modelService, this.editorWorkerService, language.id, value.language);
-			}, (err) => {
-				console.error('Cannot find module ' + defModule, err);
-			});
+		// Load the Monaco (standalone editor) contributions for language syntax, typescript, css, and json.
+		require(['vs/basic-languages/src/monaco.contribution',
+				'vs/language/typescript/src/monaco.contribution',
+				'vs/language/json/monaco.contribution',
+				'vs/language/css/monaco.contribution'], () => {
+			// Register all built-in standalone JSON schemas.
+			let global:any = self;
+			let MonacoEditorSchemas: { [url:string]: IJSONSchema } = global.MonacoEditorSchemas;
+			let schemas = [];
+			for (var uri in MonacoEditorSchemas) {
+				let i = uri.lastIndexOf('/');
+        let pattern = uri.slice(i + 1) + '.json';
+				schemas.push({ uri: uri, fileMatch: [ pattern ], schema: MonacoEditorSchemas[uri] });
+			}
+			global.monaco.languages.json.jsonDefaults.setDiagnosticsOptions({ validate: true, schemas: schemas });
 		});
 	}
-
-	private registerStandaloneLanguage(language:ILanguageExtensionPoint, defModule:string): void {
-		ModesRegistry.registerLanguage(language);
-
-		ExtensionsRegistry.registerOneTimeActivationEventListener('onLanguage:' + language.id, () => {
-			require([defModule], (value:{activate:()=>void}) => {
-				if (!value.activate) {
-					console.error('Expected ' + defModule + ' to export an `activate` function');
-					return;
-				}
-
-				this.workbench.getInstantiationService().invokeFunction(value.activate);
-			}, (err) => {
-				console.error('Cannot find module ' + defModule, err);
-			});
-		});
-	}
-
-	private registerStandaloneSchema(uri:string, schema:IJSONSchema) {
-		let schemaRegistry = <IJSONContributionRegistry>Registry.as(Extensions.JSONContribution);
-		schemaRegistry.registerSchema(uri, schema);
-		var i = uri.lastIndexOf('/');
-		var pattern = uri.slice(i + 1) + '.json';
-		// TODO: schemaRegistry.addSchemaFileAssociation(pattern, uri);
-	}
-*/
 
 	private initServiceCollection(): [InstantiationService, ServiceCollection] {
 		/* DESKTOP:

@@ -88,6 +88,7 @@ import 'forked/themes.contribution';
 // DESKTOP: import 'vs/workbench/api/node/extHost.contribution';
 
 // DESKTOP: import 'vs/workbench/electron-browser/main.contribution';
+import 'forked/editor.main';
 import 'forked/main'; // Replaces 'vs/workbench/electron-browser/main'
 
 // DESKTOP: import 'vs/workbench/parts/themes/test/electron-browser/themes.test.contribution';

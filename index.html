@@ -397,7 +397,13 @@
 						recordStats: configuration.enablePerformance,
 						ignoreDuplicateModules: [
 							'vs/workbench/parts/search/common/searchQuery'
-						]
+						],
+						paths: {
+							'vs/basic-languages': 'monaco-languages',
+							'vs/language/typescript': 'monaco-typescript',
+							'vs/language/json': 'monaco-json',
+							'vs/language/css': 'monaco-css'
+						}
 					});
 					if (nlsConfig.pseudo) {
 						require(['vs/nls'], function(nlsPlugin) {
