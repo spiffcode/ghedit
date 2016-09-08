@@ -35,9 +35,24 @@ export class BogusWindow {
 	}
 
 	public showMessageBox(options: Electron.ShowMessageBoxOptions): number {
-		console.log('BogusWindow.showMessageBox not implemented');
+		const buttonCount = options.buttons != null ? options.buttons.length : 0;
+		switch (buttonCount) {
+			case 0:
+			case 1:
+				window.alert(options.message);
+				return 0;
+
+			case 2:
+				if (options.cancelId === undefined || options.cancelId == 0)
+					return window.confirm(options.message) ? 1 : 0;
+				else
+					throw Error('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
+
+			default:
+				console.log('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
+				throw Error('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
 // TODO:		return dialog.showMessageBox(this.win, options);
-		return 0;
+		}
 	}
 }
 
@@ -72,6 +87,7 @@ export class WindowService implements IWindowService {
 	private _onBroadcast: Emitter<IBroadcast>;
 
 	constructor() {
+		this.win = new BogusWindow();
 		this._onBroadcast = new Emitter<IBroadcast>();
 		this.windowId = windowId;
 
