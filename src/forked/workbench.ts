@@ -234,6 +234,16 @@ export class Workbench implements IPartService {
 			// Register Emitters
 			this.registerEmitters();
 
+			// Prevent drop events being cancelled. Without this tabs can't be dragged around the editor area.
+			// Why isn't this needed in VSCode (Electron)? Perhaps it has different default handling of drag events.
+			let contentArea = this.editorPart.getContentArea().getHTMLElement();
+			this.toDispose.push(DOM.addDisposableListener(contentArea, DOM.EventType.DRAG_OVER, (e: DragEvent) => {
+				e.preventDefault();
+			}));
+
+			// Prevent the browser from popping up its own context menu on top of ours.
+			this.toDispose.push(DOM.addDisposableListener(contentArea, DOM.EventType.CONTEXT_MENU, (e: Event) => DOM.EventHelper.stop(e)));
+
 			// Load composits and editors in parallel
 			let compositeAndEditorPromises: TPromise<any>[] = [];
 
