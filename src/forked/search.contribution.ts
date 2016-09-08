@@ -31,7 +31,8 @@ import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
 import {OpenSearchViewletAction, ReplaceInFilesAction} from 'vs/workbench/parts/search/browser/searchActions';
 import {VIEWLET_ID} from 'vs/workbench/parts/search/common/constants';
 import { registerContributions as replaceContributions } from 'vs/workbench/parts/search/browser/replaceContributions';
-import { registerContributions as searchWidgetContributions } from 'vs/workbench/parts/search/browser/searchWidget';
+// import { registerContributions as searchWidgetContributions } from 'vs/workbench/parts/search/browser/searchWidget';
+import { registerContributions as searchWidgetContributions } from 'forked/searchWidget';
 
 replaceContributions();
 searchWidgetContributions();
