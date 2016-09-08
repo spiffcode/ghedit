@@ -13,6 +13,7 @@
 import 'vs/css!vs/workbench/electron-browser/media/shell'; // Was 'vs/css!./media/shell'
 import 'vs/css!./editorpart';
 
+import fileActions = require('vs/workbench/parts/files/browser/fileActions');
 import * as nls from 'vs/nls';
 import {TPromise} from 'vs/base/common/winjs.base';
 import * as platform from 'vs/base/common/platform';
@@ -122,6 +123,18 @@ export interface ICoreServices {
 	githubService: IGithubService;
 }
 
+// Patch _updateEnablement to consider read only state.
+// Do this directly to prevent forking fileActions.ts which many other files import. 
+var fileActionsReadOnly = false;
+var updateEnablementPrev = fileActions.BaseFileAction.prototype._updateEnablement;
+fileActions.BaseFileAction.prototype._updateEnablement = function() {
+	if (fileActionsReadOnly) {
+		this.enabled = false;
+	} else {
+		updateEnablementPrev.call(this);
+	}
+}
+
 /**
  * The workbench shell contains the workbench with a rich header containing navigation and the activity bar.
  * With the Shell being the top level element in the page, it is also responsible for driving the layouting.
@@ -174,6 +187,9 @@ export class WorkbenchShell {
 
 		this.toUnbind = [];
 		this.previousErrorTime = 0;
+
+		// Set read only state for file actions
+		fileActionsReadOnly = this.githubService.isTag;
 	}
 
 	private createContents(parent: Builder): Builder {
@@ -331,7 +347,6 @@ export class WorkbenchShell {
 	}
 
 	private onWorkbenchStarted(customKeybindingsCount: number): void {
-
 		// Log to telemetry service
 		let windowSize = {
 			innerHeight: window.innerHeight,
