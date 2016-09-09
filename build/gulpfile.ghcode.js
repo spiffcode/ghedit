@@ -18,12 +18,6 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 
 var ghcodeEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/workbench.main'),
-	buildfile.entrypoint('forked/searchActions'),
-	buildfile.entrypoint('forked/searchViewlet'),
-	buildfile.entrypoint('forked/findInput'),
-	buildfile.entrypoint('forked/searchResultsView'),
-	buildfile.entrypoint('vs/workbench/parts/search/common/searchQuery'),
-	buildfile.entrypoint('vs/workbench/parts/search/browser/patternInputWidget'),
 	// buildfile.base,
 	// buildfile.standaloneLanguages,
 	// buildfile.standaloneLanguages2,
@@ -43,9 +37,21 @@ var ghcodeResources = [
 	// 'out-build/vs/base/worker/workerMain.{js,js.map}',
 	// '!out-build/vs/workbench/**',
 	'out-build/monaco-*/**/*.*',
+	'out-build/forked/searchActions.js',
+	'out-build/forked/findInput.js',
+	'out-build/forked/searchResultsView.js',
 	'out-build/forked/searchViewlet.js',
+	'out-build/forked/searchViewlet.css',
+	'out-build/forked/searchWidget.js',
+	'out-build/vs/workbench/parts/search/**/*.*',
 	'!**/test/**'
 ];
+	// buildfile.entrypoint('forked/searchActions'),
+	// buildfile.entrypoint('forked/searchViewlet'),
+	// buildfile.entrypoint('forked/findInput'),
+	// buildfile.entrypoint('forked/searchResultsView'),
+	// buildfile.entrypoint('vs/workbench/parts/search/common/searchQuery'),
+	// buildfile.entrypoint('vs/workbench/parts/search/browser/patternInputWidget'),
 
 var ghcodeOtherSources = [
 	'out-build/vs/css.js',
