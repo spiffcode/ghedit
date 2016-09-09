@@ -8,17 +8,13 @@ var fs = require('fs');
 var event_stream_1 = require('event-stream');
 var File = require('vinyl');
 var Is = require('is');
-var quiet = !!process.env['VSCODE_BUILD_QUIET'] && false;
 var util = require('gulp-util');
 function log(message) {
     var rest = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         rest[_i - 1] = arguments[_i];
     }
-    if (quiet) {
-        return;
-    }
-    util.log.apply(util, [util.colors.cyan('[i18n]'), message].concat(rest));
+    util.log.apply(util, [util.colors.green('[i18n]'), message].concat(rest));
 }
 var LocalizeInfo;
 (function (LocalizeInfo) {
@@ -91,12 +87,6 @@ function sortLanguages(directoryNames) {
         return a.iso639_2 < b.iso639_2 ? -1 : (a.iso639_2 > b.iso639_2 ? 1 : 0);
     });
 }
-var headerComment = [
-    '/*---------------------------------------------------------------------------------------------',
-    ' * Copyright (c) Microsoft Corporation. All rights reserved.',
-    ' * Licensed under the MIT License. See License.txt in the project root for license information.',
-    ' *---------------------------------------------------------------------------------------------*/'
-].join('\n');
 function stripComments(content) {
     /**
     * First capturing group matches double quoted string
@@ -164,7 +154,7 @@ function escapeCharacters(value) {
     }
     return result.join('');
 }
-function processCoreBundleFormat(json, emitter) {
+function processCoreBundleFormat(fileHeader, json, emitter) {
     var keysSection = json.keys;
     var messageSection = json.messages;
     var bundleSection = json.bundles;
@@ -197,7 +187,9 @@ function processCoreBundleFormat(json, emitter) {
         if (!language.iso639_2) {
             return;
         }
-        log("Generating nls bundles for: " + language.iso639_2);
+        if (process.env['VSCODE_BUILD_VERBOSE']) {
+            log("Generating nls bundles for: " + language.iso639_2);
+        }
         statistics[language.iso639_2] = 0;
         var localizedModules = Object.create(null);
         var cwd = path.join(languageDirectory, language.name, 'src');
@@ -210,7 +202,9 @@ function processCoreBundleFormat(json, emitter) {
                 messages = JSON.parse(content);
             }
             else {
-                // log(`No localized messages found for module ${module}. Using default messages.`);
+                if (process.env['VSCODE_BUILD_VERBOSE']) {
+                    log("No localized messages found for module " + module + ". Using default messages.");
+                }
                 messages = defaultMessages[module];
                 statistics[language.iso639_2] = statistics[language.iso639_2] + Object.keys(messages).length;
             }
@@ -225,7 +219,9 @@ function processCoreBundleFormat(json, emitter) {
                 }
                 var message = messages[key];
                 if (!message) {
-                    log("No localized message found for key " + key + " in module " + module + ". Using default message.");
+                    if (process.env['VSCODE_BUILD_VERBOSE']) {
+                        log("No localized message found for key " + key + " in module " + module + ". Using default message.");
+                    }
                     message = defaultMessages[module][key];
                     statistics[language.iso639_2] = statistics[language.iso639_2] + 1;
                 }
@@ -236,7 +232,7 @@ function processCoreBundleFormat(json, emitter) {
         Object.keys(bundleSection).forEach(function (bundle) {
             var modules = bundleSection[bundle];
             var contents = [
-                headerComment,
+                fileHeader,
                 ("define(\"" + bundle + ".nls." + language.iso639_2 + "\", {")
             ];
             modules.forEach(function (module, index) {
@@ -255,10 +251,9 @@ function processCoreBundleFormat(json, emitter) {
             emitter.emit('data', new File({ path: bundle + '.nls.' + language.iso639_2 + '.js', contents: new Buffer(contents.join('\n'), 'utf-8') }));
         });
     });
-    log("Statistics (total " + total + "):");
     Object.keys(statistics).forEach(function (key) {
         var value = statistics[key];
-        log("\t" + value + " untranslated strings for locale " + key + " found.");
+        log(key + " has " + value + " untranslated strings.");
     });
     vscodeLanguages.forEach(function (language) {
         var iso639_2 = iso639_3_to_2[language];
@@ -273,7 +268,7 @@ function processCoreBundleFormat(json, emitter) {
         }
     });
 }
-function processNlsFiles() {
+function processNlsFiles(opts) {
     return event_stream_1.through(function (file) {
         var fileName = path.basename(file.path);
         if (fileName === 'nls.metadata.json') {
@@ -285,7 +280,7 @@ function processNlsFiles() {
                 this.emit('error', "Failed to read component file: " + file.relative);
             }
             if (BundledFormat.is(json)) {
-                processCoreBundleFormat(json, this);
+                processCoreBundleFormat(opts.fileHeader, json, this);
             }
         }
         this.emit('data', file);

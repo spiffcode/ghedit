@@ -18,28 +18,39 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 
 var ghcodeEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/workbench.main'),
+	buildfile.entrypoint('forked/searchActions'),
+	buildfile.entrypoint('forked/searchViewlet'),
+	buildfile.entrypoint('forked/findInput'),
+	buildfile.entrypoint('forked/searchResultsView'),
+	buildfile.entrypoint('vs/workbench/parts/search/common/searchQuery'),
+	buildfile.entrypoint('vs/workbench/parts/search/browser/patternInputWidget'),
 	// buildfile.base,
-	buildfile.standaloneLanguages,
-	buildfile.standaloneLanguages2,
+	// buildfile.standaloneLanguages,
+	// buildfile.standaloneLanguages2,
 	buildfile.languages
 ]);
 
 var ghcodeResources = [
 	'out-build/forked/**/*.{svg,png}',
 	// 'out-build/vs/**/*.{svg,png}',
+	// '!out-build/vs/base/browser/ui/splitview/**/*',
+	// '!out-build/vs/base/browser/ui/toolbar/**/*',
+	// '!out-build/vs/base/browser/ui/octiconLabel/**/*',
 	'out-build/vs/{base,editor,workbench}/**/*.{svg,png}',
 	'out-build/vs/{base,editor,workbench}/**/*.{woff,ttf}',
 	'out-build/themes/**/*.*',
 	// 'out-build/vs/base/worker/workerMainCompatibility.html',
 	// 'out-build/vs/base/worker/workerMain.{js,js.map}',
 	// '!out-build/vs/workbench/**',
+	'out-build/monaco-*/**/*.*',
+	'out-build/forked/searchViewlet.js',
 	'!**/test/**'
 ];
 
 var ghcodeOtherSources = [
 	'out-build/vs/css.js',
-	'out-build/vs/nls.js',
-	'out-build/vs/text.js'
+	'out-build/vs/nls.js'
+	// 'out-build/vs/text.js'
 ];
 
 var BUNDLED_FILE_HEADER = [
@@ -52,7 +63,7 @@ var BUNDLED_FILE_HEADER = [
 	''
 ].join('\n');
 
-function ghcodeLoaderConfig(removeAllOSS) {
+function ghcodeLoaderConfig() {
 	var result = common.loaderConfig();
 
 	result.paths.lib = 'out-build/lib';
@@ -61,17 +72,17 @@ function ghcodeLoaderConfig(removeAllOSS) {
 	result.paths.githubActions = 'out-build/githubActions';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
 	result.paths.userNavbarItem = 'out-build/userNavbarItem';
-	result.paths.repoNavbarItem = 'out-build/repoNavbarItem';
-	result.paths.refNavbarItem = 'out-build/refNavbarItem';
 	result.paths.welcomePart = 'out-build/welcomePart';
 
 	// TODO: Is this what we want?
 	// never ship marked in ghcode
-	result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
+	// result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
 
-	if (removeAllOSS) {
-		result.paths['vs/languages/lib/common/beautify-html'] = 'out-build/vs/languages/lib/common/beautify-html.mock';
-	}
+	result['vs/css'] = { inlineResources: true };
+
+	// if (removeAllOSS) {
+	// 	result.paths['vs/languages/lib/common/beautify-html'] = 'out-build/vs/languages/lib/common/beautify-html.mock';
+	// }
 
 	return result;
 }
@@ -81,8 +92,9 @@ gulp.task('optimize-ghcode', ['clean-optimized-ghcode', 'compile-build'], common
 	entryPoints: ghcodeEntryPoints,
 	otherSources: ghcodeOtherSources,
 	resources: ghcodeResources,
-	loaderConfig: ghcodeLoaderConfig(false),
+	loaderConfig: ghcodeLoaderConfig(),
 	header: BUNDLED_FILE_HEADER,
+	bundleInfo: true,
 	out: 'out-build-opt'
 }));
 gulp.task('build-opt', ['optimize-ghcode']);

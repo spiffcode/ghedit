@@ -458,7 +458,7 @@
 						require.config(loaderConfig, false);
 					}
 
-					require(['forked/workbench.main', 'lib/github'], function() {
+					require(['forked/workbench.main'], function() {
 						timers.afterLoad = new Date();
 
 						var main = require('forked/main');

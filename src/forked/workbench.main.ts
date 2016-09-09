@@ -9,6 +9,7 @@
 // Forked from vs/workbench/workbench.main.ts
 // This is a port of vs/workbench/workbench.main.ts with Electron
 // and Node dependencies removed/replaced.
+import 'lib/github';
 
 // Base
 import 'vs/base/common/strings';
