@@ -95,6 +95,7 @@ import {NavbarPart} from 'forked/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
 import {ISettingsService, UserSettings} from 'forked/userSettings';
 import {UserNavbarItem} from 'userNavbarItem';
+import {MenusNavbarItem} from 'menusNavbarItem';
 import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
 import {WelcomePart} from 'welcomePart';
@@ -102,6 +103,7 @@ import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbenc
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHCodeAction} from 'githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IAction} from 'vs/base/common/actions';
+import { VSCodeMenu } from 'forked/menus';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar',
@@ -288,6 +290,12 @@ export class WorkbenchShell {
 	}
 
 	private fillNavbar(instantiationService: InstantiationService): void {
+		// Install Menu
+		const menu = instantiationService.createInstance(VSCodeMenu);
+		menu.ready();
+		let menusItem = instantiationService.createInstance(MenusNavbarItem);
+		this.navbarPart.addItem(menusItem, NavbarAlignment.LEFT, 900);
+
 		this.navbarPart.addEntry({
 			text: '$(beaker) GH Code' + (this.options.editor.readOnly ? ' (read only)' : ''),
 			tooltip: AboutGHCodeAction.LABEL,
@@ -299,24 +307,23 @@ export class WorkbenchShell {
 				text: this.githubService.repoName ? this.githubService.repoName : ChooseRepositoryAction.LABEL,
 				tooltip: ChooseRepositoryAction.LABEL,
 				command: ChooseRepositoryAction.ID
-			}, NavbarAlignment.LEFT, 500);
+			}, NavbarAlignment.RIGHT, 600);
 
 			if (this.githubService.repoName) {
 				this.navbarPart.addEntry({
 					text: this.githubService.ref,
 					tooltip: ChooseReferenceAction.LABEL,
 					command: ChooseReferenceAction.ID
-				}, NavbarAlignment.LEFT, 400);
+				}, NavbarAlignment.RIGHT, 500);
 			}
 		}
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
 
-		// Don't show these elements when in welcome mdoe.
+		// Don't show these elements when in welcome mode.
 		if (!this.isWelcomeMode()) {
 			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: OpenGlobalSettingsAction.ID }, NavbarAlignment.RIGHT, 300);
 			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: OpenGlobalKeybindingsAction.ID }, NavbarAlignment.RIGHT, 200);
-			this.navbarPart.addEntry({ text: '$(question)', tooltip: 'info menu...', command: 'whatever' }, NavbarAlignment.RIGHT, 100);
 		}
 	}
 
