@@ -18,7 +18,7 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 
 var ghcodeEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/workbench.main'),
-	// buildfile.base,
+	buildfile.base,
 	// buildfile.standaloneLanguages,
 	// buildfile.standaloneLanguages2,
 	buildfile.languages
@@ -33,25 +33,24 @@ var ghcodeResources = [
 	'out-build/vs/{base,editor,workbench}/**/*.{svg,png}',
 	'out-build/vs/{base,editor,workbench}/**/*.{woff,ttf}',
 	'out-build/themes/**/*.*',
-	// 'out-build/vs/base/worker/workerMainCompatibility.html',
-	// 'out-build/vs/base/worker/workerMain.{js,js.map}',
+	'out-build/vs/base/worker/workerMainCompatibility.html',
+	'out-build/vs/base/worker/workerMain.{js,js.map}',
+	'out-build/vs/base/common/worker/*.js',
+	'out-build/vs/base/common/errors.js',
 	// '!out-build/vs/workbench/**',
 	'out-build/monaco-*/**/*.*',
-	'out-build/forked/searchActions.js',
 	'out-build/forked/findInput.js',
+	'out-build/forked/searchActions.js',
 	'out-build/forked/searchResultsView.js',
 	'out-build/forked/searchViewlet.js',
 	'out-build/forked/searchViewlet.css',
 	'out-build/forked/searchWidget.js',
 	'out-build/vs/workbench/parts/search/**/*.*',
-	'!**/test/**'
+	'!**/test/**',
+
+	// SUPER-HACK: This makes the web workers work...
+	'out-build/vs/**/*.*',
 ];
-	// buildfile.entrypoint('forked/searchActions'),
-	// buildfile.entrypoint('forked/searchViewlet'),
-	// buildfile.entrypoint('forked/findInput'),
-	// buildfile.entrypoint('forked/searchResultsView'),
-	// buildfile.entrypoint('vs/workbench/parts/search/common/searchQuery'),
-	// buildfile.entrypoint('vs/workbench/parts/search/browser/patternInputWidget'),
 
 var ghcodeOtherSources = [
 	'out-build/vs/css.js',
