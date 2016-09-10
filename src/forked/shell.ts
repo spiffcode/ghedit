@@ -313,7 +313,7 @@ export class WorkbenchShell {
 		this.navbarPart.addItem(menusItem, NavbarAlignment.LEFT, 900);
 
 		this.navbarPart.addEntry({
-			text: '$(beaker) GH Code' + (this.options.editor.readOnly ? ' (read only)' : ''),
+			text: '$(beaker)' + (this.options.editor.readOnly ? ' (read only)' : ''),
 			tooltip: AboutGHCodeAction.LABEL,
 			command: AboutGHCodeAction.ID,
 		}, NavbarAlignment.LEFT, 1000);
