@@ -104,7 +104,7 @@ import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbenc
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHCodeAction} from 'githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IAction} from 'vs/base/common/actions';
-import { VSCodeMenu } from 'forked/menus';
+import {VSCodeMenu} from 'forked/menus';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar',
@@ -126,7 +126,7 @@ export interface ICoreServices {
 }
 
 // Patch _updateEnablement to consider read only state.
-// Do this directly to prevent forking fileActions.ts which many other files import. 
+// Do this directly to prevent forking fileActions.ts which many other files import.
 var fileActionsReadOnly = false;
 var updateEnablementPrev = fileActions.BaseFileAction.prototype._updateEnablement;
 fileActions.BaseFileAction.prototype._updateEnablement = function() {

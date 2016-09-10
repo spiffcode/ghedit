@@ -16,8 +16,19 @@ export class MenuItem {
 	 * Create a new menu item.
 	 */
 	constructor(private options: MenuItemOptions) {
-		this.label = options.label;
+		this.type = options.type || 'normal';
+		if (options.submenu)
+			this.type == 'submenu';
+		this.role = options.role;
+		this.accelerator = options.accelerator;
+		this.icon = options.icon;
 		this.submenu = options.submenu;
+		this.label = options.label;
+		this.sublabel = options.sublabel;
+		this.enabled = options.enabled;
+		this.visible = options.visible;
+		this.checked = options.checked;
+		this.id = options.id;
 	}
 
 	click: (menuItem: MenuItem, browserWindow: BrowserWindow, event: Event) => void;
@@ -47,6 +58,7 @@ export class MenuItem {
 	enabled: boolean;
 	visible: boolean;
 	checked: boolean;
+	id: string;
 }
 
 export type MenuItemType = 'normal' | 'separator' | 'submenu' | 'checkbox' | 'radio';
@@ -215,6 +227,7 @@ export class Menu extends EventEmitter {
 	popup(browserWindow?: BrowserWindow, x?: number, y?: number, select?: number): void {
 		throw Error('Menu.popup not implemented');
 	}
+
 	/**
 	 * Appends the menuItem to the menu.
 	 */
@@ -300,7 +313,7 @@ export interface IEnvironmentService {
 	mainIPCHandle: string;
 	sharedIPCHandle: string;
 
-	// DESKTO: createPaths(): TPromise<void>;
+	// DESKTOP: createPaths(): TPromise<void>;
 }
 
 // From vs/platform/product.ts

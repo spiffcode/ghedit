@@ -77,14 +77,14 @@ export class VSCodeMenu {
 			product: {
 				nameShort: 'GH Code',
 				nameLong: 'GH Code',
-				documentationUrl: '',
-				releaseNotesUrl: '',
-				twitterUrl: '',
-				requestFeatureUrl: '',
-				reportIssueUrl: '',
-				licenseUrl: '',
-				privacyStatementUrl: '',
-				npsSurveyUrl: ''
+				documentationUrl: 'documentationUrl',
+				releaseNotesUrl: 'releaseNotesUrl',
+				twitterUrl: 'twitterUrl',
+				requestFeatureUrl: 'requestFeatureUrl',
+				reportIssueUrl: 'reportIssueUrl',
+				licenseUrl: 'licenseUrl',
+				privacyStatementUrl: 'privacyStatementUrl',
+				npsSurveyUrl: 'npsSurveyUrl'
 			},
 			updateUrl: '',
 			quality: '',
@@ -411,7 +411,7 @@ export class VSCodeMenu {
 		// TODO: let closeWindow = new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Close &&Window")), accelerator: this.getAccelerator('workbench.action.closeWindow'), click: () => this.windowsService.getLastActiveWindow().win.close(), enabled: this.windowsService.getWindowCount() > 0 });
 
 		// DESKTOP: let closeFolder = this.createMenuItem(nls.localize({ key: 'miCloseFolder', comment: ['&& denotes a mnemonic'] }, "Close &&Folder"), 'workbench.action.closeFolder');
-		let closeEditor = this.createMenuItem(nls.localize({ key: 'miCloseEditor', comment: ['&& denotes a mnemonic'] }, "Close &&Editor"), 'workbench.action.closeActiveEditor');
+		// DESKTOP: let closeEditor = this.createMenuItem(nls.localize({ key: 'miCloseEditor', comment: ['&& denotes a mnemonic'] }, "Close &&Editor"), 'workbench.action.closeActiveEditor');
 
 		let exit = this.createMenuItem(nls.localize({ key: 'miExit', comment: ['&& denotes a mnemonic'] }, "E&&xit"), () => this.quit());
 
@@ -425,13 +425,13 @@ export class VSCodeMenu {
 			// TODO: openRecent,
 			__separator__(),
 			saveFile,
-			saveFileAs,
+			// DESKTOP: saveFileAs,
 			saveAllFiles,
 			__separator__(),
 			!platform.isMacintosh ? preferences : null,
 			!platform.isMacintosh ? __separator__() : null,
 			revertFile,
-			closeEditor,
+			// DESKTOP: closeEditor,
 			// DESKTOP: closeFolder,
 			// TODO: !platform.isMacintosh ? closeWindow : null,
 			!platform.isMacintosh ? __separator__() : null,
@@ -548,23 +548,23 @@ export class VSCodeMenu {
 		let paste: Electron.MenuItem;
 		let selectAll: Electron.MenuItem;
 
+		/* DESKTOP:
 		if (platform.isMacintosh) {
-			/* DESKTOP:
 			undo = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo', (devTools) => devTools.undo());
 			redo = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"), 'redo', (devTools) => devTools.redo());
 			cut = this.createRoleMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "&&Cut"), 'editor.action.clipboardCutAction', 'cut');
 			copy = this.createRoleMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "C&&opy"), 'editor.action.clipboardCopyAction', 'copy');
 			paste = this.createRoleMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction', 'paste');
 			selectAll = this.createDevToolsAwareMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll', (devTools) => devTools.selectAll());
-			*/
 		} else {
+		*/
 			undo = this.createMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo');
 			redo = this.createMenuItem(nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"), 'redo');
 			cut = this.createMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "&&Cut"), 'editor.action.clipboardCutAction');
 			copy = this.createMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "C&&opy"), 'editor.action.clipboardCopyAction');
 			paste = this.createMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction');
 			selectAll = this.createMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll');
-		}
+//		}
 
 		let find = this.createMenuItem(nls.localize({ key: 'miFind', comment: ['&& denotes a mnemonic'] }, "&&Find"), 'actions.find');
 		let replace = this.createMenuItem(nls.localize({ key: 'miReplace', comment: ['&& denotes a mnemonic'] }, "&&Replace"), 'editor.action.startFindReplaceAction');
@@ -575,11 +575,13 @@ export class VSCodeMenu {
 			undo,
 			redo,
 			__separator__(),
+			/* DESKTOP:
 			cut,
 			copy,
 			paste,
 			selectAll,
 			__separator__(),
+			*/
 			find,
 			replace,
 			__separator__(),
@@ -619,22 +621,22 @@ export class VSCodeMenu {
 		let resetZoom = this.createMenuItem(nls.localize({ key: 'miZoomReset', comment: ['&& denotes a mnemonic'] }, "&&Reset Zoom"), 'workbench.action.zoomReset');
 
 		arrays.coalesce([
+			commands,
+			__separator__(),
 			explorer,
 			search,
-			git,
-			debug,
-			extensions,
+			// DESKTOP: git,
+			// DESKTOP: debug,
+			// DESKTOP: extensions,
 			__separator__(),
 			output,
 			problems,
-			debugConsole,
-			integratedTerminal,
-			__separator__(),
-			commands,
+			// DESKTOP: debugConsole,
+			// DESKTOP: integratedTerminal,
 			__separator__(),
 			// TODO: fullscreen,
-			platform.isWindows || platform.isLinux ? toggleMenuBar : void 0,
-			__separator__(),
+			// DESKTOP: platform.isWindows || platform.isLinux ? toggleMenuBar : void 0,
+			// __separator__(),
 			splitEditor,
 			moveSidebar,
 			toggleSidebar,
@@ -644,10 +646,12 @@ export class VSCodeMenu {
 			toggleWordWrap,
 			toggleRenderWhitespace,
 			toggleRenderControlCharacters,
+			/* DESKTOP:
 			__separator__(),
 			zoomIn,
 			zoomOut,
 			resetZoom
+			*/
 		]).forEach((item) => viewMenu.append(item));
 	}
 
@@ -772,7 +776,7 @@ export class VSCodeMenu {
 					}
 				}
 			}) : null,
-			(this.envService.product.licenseUrl || this.envService.product.privacyStatementUrl) ? __separator__() : null,
+			// DESKTOP: (this.envService.product.licenseUrl || this.envService.product.privacyStatementUrl) ? __separator__() : null,
 			// DESKTOP: toggleDevToolsItem,
 		]).forEach((item) => helpMenu.append(item));
 
@@ -853,7 +857,8 @@ export class VSCodeMenu {
 			label: label,
 			accelerator: this.getAccelerator(actionId),
 			click: click,
-			enabled: enabled
+			enabled: enabled,
+			id: actionId
 		};
 
 		return new MenuItem(options);
