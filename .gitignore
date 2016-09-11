@@ -4,3 +4,4 @@ out-build-opt
 out-build-min
 node_modules
 .DS_Store
+npm-debug.log
