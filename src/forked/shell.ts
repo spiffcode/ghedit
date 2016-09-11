@@ -13,6 +13,7 @@
 import 'vs/css!vs/workbench/electron-browser/media/shell'; // Was 'vs/css!./media/shell'
 import 'vs/css!./editorpart';
 
+import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import fileActions = require('vs/workbench/parts/files/browser/fileActions');
 import * as nls from 'vs/nls';
 import {TPromise} from 'vs/base/common/winjs.base';
@@ -274,6 +275,14 @@ export class WorkbenchShell {
 				serviceCollection.set(INavbarService, this.navbarPart);
 				this.createNavbarPart();
 				this.fillNavbar(instantiationService);
+
+				// Tell githubSearch about the editor service. Search needs to use IModels
+				// to perform accurate searches. Github's search is not robust enough (doesn't
+				// return line numbers, or all the matches) and is only used to get a list
+				// of matching uris. 
+				let editorService = <IWorkbenchEditorService>serviceCollection.get(IWorkbenchEditorService);
+				let searchService = <ISearchService>serviceCollection.get(ISearchService);
+				(<any>searchService).githubSearch.setEditorService(editorService);
 			}
 		});
 

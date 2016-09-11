@@ -8,7 +8,7 @@
 // This is a port of vs/workbench/services/search/node/searchService.ts with Node dependencies
 // removed/replaced.
 
-import {PPromise} from 'vs/base/common/winjs.base';
+import {TPromise, PPromise} from 'vs/base/common/winjs.base';
 import uri from 'vs/base/common/uri';
 import glob = require('vs/base/common/glob');
 import objects = require('vs/base/common/objects');
@@ -28,6 +28,10 @@ var github = require('lib/github');
 import {Github, SearchResult, ResultItem, TextMatch, FragmentMatch, SearchOptions, Search as GithubApiSearch, Error as GithubError} from 'github';
 import {IRawSearch} from 'vs/workbench/services/search/node/search';
 import {Engine as GithubFileSearchEngine} from 'forked/fileSearch';
+import {IEditorService} from 'vs/platform/editor/common/editor';
+import {Limiter} from 'vs/base/common/async';
+import {ITextEditorModel} from 'vs/platform/editor/common/editor';
+import {IModel} from 'vs/editor/common/editorCommon';
 
 export class SearchService implements ISearchService {
 	public _serviceBrand: any;
@@ -206,37 +210,14 @@ export class SearchService implements ISearchService {
 
 class GithubSearch {
 	private fakeLineNumber: number;
+	private editorService: IEditorService;
 
 	constructor(private githubService: IGithubService) {
 		this.fakeLineNumber = 1;
 	}
 
-	private lineMatchesFromFragments(fragment: string, matches: FragmentMatch[]) : LineMatch[] {
-		// Github search returns matches from aribtrary fragments pulled from a file.
-		// Fragments often don't start on a line, and there is no line number information.
-		let lineMatches: LineMatch[] = [];
-
-		// Pull hacky ILineMatch info from the fragment.
-		let parts = [];
-		let indexStart = 0;
-		let lines: string[] = fragment.split('\n');
-		for (let i = 0; i < lines.length; i++) {
-			let indexEnd = indexStart + lines[i].length;
-			parts.push({ line: lines[i], start: indexStart, end: indexEnd });
-			indexStart = indexEnd + 1;
-		}
-
-		for (let i = 0; i < matches.length; i++) {
-			let start = matches[i].indices[0];
-			let end = matches[i].indices[1];
-			for (let j = 0; j < parts.length; j++) {
-				if (start >= parts[j].start && end <= parts[j].end) {
-					lineMatches.push(new LineMatch(parts[j].line, this.fakeLineNumber++, [[ start - parts[j].start, end - start ]]));
-				}
-			}
-		}
-
-		return lineMatches;
+	public setEditorService(editorService: IEditorService) {
+		this.editorService = editorService;
 	}
 
 	private textSearch(query: ISearchQuery) : PPromise<ISearchComplete, ISearchProgressItem> {
@@ -263,28 +244,43 @@ class GithubSearch {
 					return;
 				}
 
-				let matches: FileMatch[] = [];
-				for (let i = 0; i < result.items.length; i++) {
-					let item: ResultItem = result.items[i];
-					let m = new FileMatch(uri.file(item.path));
-					for (let j = 0; j < item.text_matches.length; j++) {
-						let lineMatches = this.lineMatchesFromFragments(item.text_matches[j].fragment, item.text_matches[j].matches);
-						m.lineMatches = m.lineMatches.concat(lineMatches);
-					}
-					matches.push(m);
-					p(m);
-				}
-
 				// Github only provides search on forks if the fork has
 				// more star ratings than the parent.
-				if (matches.length == 0 && this.githubService.isFork()) {
+				if (result.items.length == 0 && this.githubService.isFork()) {
 					e("Github doesn't provide search on forked repos unless the star rating is greater than the parent repo.");
 					return;
 				}
 
-				c({ limitHit: result.incomplete_results, results: matches,
-					stats: { fileWalkStartTime: fileWalkStartTime, fileWalkResultTime: Date.now(), directoriesWalked: 1, filesWalked: 1 } });
+				// Search on IModel's to get accurate search results. Github's search results
+				// are not complete and don't have line numbers. 
+				this.modelSearch(query.contentPattern.pattern, result.items.map((item) => uri.file(item.path))).then((matches) => {
+					c({ limitHit: result.incomplete_results, results: matches,
+						stats: { fileWalkStartTime: fileWalkStartTime, fileWalkResultTime: Date.now(), directoriesWalked: 1, filesWalked: 1 } });
+				}, () => {
+					e('Github error performing search.')
+				});
 			});
+		});
+	}
+
+	private modelSearch(pattern: string, uris: uri[]) : TPromise<FileMatch[]> {
+		// Return FileMatch[] given a pattern and a list of uris
+		return new TPromise<FileMatch[]>((c, e) => {
+			let limiter = new Limiter(1);
+			let promises = uris.map((uri) => limiter.queue(() => this.editorService.resolveEditorModel({ resource: uri })));			
+			TPromise.join(promises).then((models: ITextEditorModel[]) => {
+				let matches: FileMatch[] = [];
+				models.forEach((model) => {
+					var textEditorModel = <IModel>model.textEditorModel;
+					let m = new FileMatch(textEditorModel.uri);
+					textEditorModel.findMatches(pattern, false, false, false, true).forEach((r) => {
+						let frag = textEditorModel.getLineContent(r.startLineNumber);
+						m.lineMatches.push(new LineMatch(frag, r.startLineNumber, [[ r.startColumn - 1, r.endColumn - r.startColumn ]]));
+					});
+					matches.push(m);
+				});
+				c(matches);
+			}, () => c([]));
 		});
 	}
 
