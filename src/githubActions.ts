@@ -21,7 +21,7 @@ import {IMainEnvironment} from 'forked/main';
 export class AboutGHCodeAction extends Action {
 
 	public static ID = 'workbench.action.ghcode.welcome';
-	public static LABEL = 'About GHCode';
+	public static LABEL = 'About GH Code';
 
 	constructor(
 		actionId: string,
@@ -36,9 +36,9 @@ export class AboutGHCodeAction extends Action {
 		// TODO: Show better about UI
 		let s: string[] = [];
 		if (this.githubService.isAuthenticated() && this.githubService.isTag) {
-			s.push('Note: GHCode is in read only mode because you are viewing a tag.');
+			s.push('Note: GH Code is in read only mode because you are viewing a tag.');
 		}
-		s.push('Welcome to GHCode, brought to you by Spiffcode, Inc.');
+		s.push('Welcome to GH Code! Brought to you by Spiffcode, Inc.');
 		this.messageService.show(Severity.Info, s);
 		return TPromise.as(true);
 	}

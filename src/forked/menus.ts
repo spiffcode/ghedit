@@ -21,6 +21,7 @@ import * as Electron from 'fakeElectron';
 import { Keybinding } from 'vs/base/common/keyCodes';
 import product from 'vs/platform/product';
 import pkg from 'vs/platform/package';
+import {AboutGHCodeAction} from 'githubActions';
 
 /* DESKTOP:
 export function generateNewIssueUrl(baseUrl: string, name: string, version: string, commit: string, date: string): string {
@@ -350,7 +351,8 @@ export class VSCodeMenu {
 	*/
 
 	private setMacApplicationMenu(macApplicationMenu: Electron.Menu): void {
-		let about = new MenuItem({ label: nls.localize('mAbout', "About {0}", this.envService.product.nameLong), role: 'about' });
+		// DESKTOP: let about = new MenuItem({ label: nls.localize('mAbout', "About {0}", this.envService.product.nameLong), role: 'about' });
+		let about = this.createMenuItem(nls.localize('mAbout', "About {0}", this.envService.product.nameLong), AboutGHCodeAction.ID);
 		// DESKTOP: let checkForUpdates = this.getUpdateMenuItems();
 		let preferences = this.getPreferencesMenu();
 		// DESKTOP: let hide = new MenuItem({ label: nls.localize('mHide', "Hide {0}", this.envService.product.nameLong), role: 'hide', accelerator: 'Command+H' });
@@ -362,7 +364,7 @@ export class VSCodeMenu {
 		// DESKTOP: actions.push(...checkForUpdates);
 		actions.push(...[
 			__separator__(),
-			preferences,
+			...(<Menu>preferences.submenu).items,
 			// DESKTOP: __separator__(),
 			// DESKTOP: hide,
 			// DESKTOP: hideOthers,
@@ -381,7 +383,8 @@ export class VSCodeMenu {
 		if (hasNoWindows) {
 			// DESKTOP: newFile = new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File")), accelerator: this.getAccelerator('workbench.action.files.newUntitledFile'), click: () => this.windowsService.openNewWindow() });
 		} else {
-			newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File"), 'workbench.action.files.newUntitledFile');
+			// TODO: newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File"), 'workbench.action.files.newUntitledFile');
+			newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New File"), 'workbench.action.files.newFile');
 		}
 
 		// TODO: let open = new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miOpen', comment: ['&& denotes a mnemonic'] }, "&&Open...")), accelerator: this.getAccelerator('workbench.action.files.openFileFolder'), click: () => this.windowsService.openFileFolderPicker() });
@@ -418,11 +421,13 @@ export class VSCodeMenu {
 		arrays.coalesce([
 			newFile,
 			// TODO: newWindow,
+			/* TODO:
 			__separator__(),
 			// TODO: platform.isMacintosh ? open : null,
 			!platform.isMacintosh ? openFile : null,
 			// TODO: !platform.isMacintosh ? openFolder : null,
 			// TODO: openRecent,
+			*/
 			__separator__(),
 			saveFile,
 			// DESKTOP: saveFileAs,
@@ -451,8 +456,10 @@ export class VSCodeMenu {
 		preferencesMenu.append(workspaceSettings);
 		preferencesMenu.append(__separator__());
 		preferencesMenu.append(kebindingSettings);
+		/* TODO:
 		preferencesMenu.append(__separator__());
 		preferencesMenu.append(snippetsSettings);
+		*/
 		preferencesMenu.append(__separator__());
 		preferencesMenu.append(themeSelection);
 
@@ -703,9 +710,11 @@ export class VSCodeMenu {
 		[
 			back,
 			forward,
+			/* TODO:
 			__separator__(),
 			switchEditor,
 			switchGroup,
+			*/
 			__separator__(),
 			gotoFile,
 			gotoSymbol,

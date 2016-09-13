@@ -247,7 +247,7 @@ export class Menu extends EventEmitter {
 	/**
 	 * @returns an array containing the menu’s items.
 	 */
-	items: MenuItem[];
+	public items: MenuItem[];
 }
 
 // From vs/code/electron-main/window.ts

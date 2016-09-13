@@ -315,14 +315,17 @@ export class WorkbenchShell {
 	}
 
 	private fillNavbar(instantiationService: InstantiationService): void {
-		// Install Menu
-		const menu = instantiationService.createInstance(VSCodeMenu);
-		menu.ready();
-		let menusItem = instantiationService.createInstance(MenusNavbarItem);
-		this.navbarPart.addItem(menusItem, NavbarAlignment.LEFT, 900);
+		// Don't show these elements when in welcome mode.
+		if (!this.isWelcomeMode()) {
+			// Install Menu
+			const menu = instantiationService.createInstance(VSCodeMenu);
+			menu.ready();
+			let menusItem = instantiationService.createInstance(MenusNavbarItem);
+			this.navbarPart.addItem(menusItem, NavbarAlignment.LEFT, 900);
+		}
 
 		this.navbarPart.addEntry({
-			text: '$(beaker)' + (this.options.editor.readOnly ? ' (read only)' : ''),
+			text: '$(beaker)' + (this.isWelcomeMode() ? ' GH Code' : '') + (this.options.editor.readOnly ? ' (read only)' : ''),
 			tooltip: AboutGHCodeAction.LABEL,
 			command: AboutGHCodeAction.ID,
 		}, NavbarAlignment.LEFT, 1000);
@@ -344,12 +347,6 @@ export class WorkbenchShell {
 		}
 		let userItem = instantiationService.createInstance(UserNavbarItem);
 		this.navbarPart.addItem(userItem, NavbarAlignment.RIGHT, 400);
-
-		// Don't show these elements when in welcome mode.
-		if (!this.isWelcomeMode()) {
-			this.navbarPart.addEntry({ text: '$(gear)', tooltip: 'User Settings', command: OpenGlobalSettingsAction.ID }, NavbarAlignment.RIGHT, 300);
-			this.navbarPart.addEntry({ text: '$(keyboard)', tooltip: 'Keyboard Shortcuts', command: OpenGlobalKeybindingsAction.ID }, NavbarAlignment.RIGHT, 200);
-		}
 	}
 
 	private createWelcomePart(): void {
