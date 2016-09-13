@@ -7,7 +7,7 @@
 
 import * as nls from 'vs/nls';
 // DESKTOP: import * as os from 'os';
-import * as platform from 'vs/base/common/platform';
+import * as underlyingPlatform from 'vs/base/common/platform';
 import * as arrays from 'vs/base/common/arrays';
 // DESKTOP: import * as env from 'vs/code/electron-main/env';
 // DESKTOP: import { ipcMain as ipc, app, shell, dialog, Menu, MenuItem } from 'electron';
@@ -45,6 +45,9 @@ interface IResolvedKeybinding {
 	id: string;
 	binding: number;
 }
+
+// Mac menu style is a better match for the web.
+var platform = { isMacintosh: true, language: underlyingPlatform.language };
 
 export class VSCodeMenu {
 
