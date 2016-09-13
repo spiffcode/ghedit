@@ -61,7 +61,11 @@ export class MenusNavbarItem implements INavbarItem {
 					default:
 						if (subitem.label) {
 							action = new Action(subitem.id, subitem.label, '', true, (event: any) => {
-								this.executeCommand(subitem.id);
+								if (subitem.click) {
+									subitem.click(subitem, null, event);
+								} else {
+									this.executeCommand(subitem.id);
+								}
 								return TPromise.as(null);
 								/*
 								let builtInActionDescriptor = (<IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions)).getWorkbenchAction(subitem.id);

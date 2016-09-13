@@ -78,14 +78,14 @@ export class VSCodeMenu {
 			product: {
 				nameShort: 'GH Code',
 				nameLong: 'GH Code',
-				documentationUrl: 'documentationUrl',
-				releaseNotesUrl: 'releaseNotesUrl',
-				twitterUrl: 'twitterUrl',
-				requestFeatureUrl: 'requestFeatureUrl',
-				reportIssueUrl: 'reportIssueUrl',
-				licenseUrl: 'licenseUrl',
-				privacyStatementUrl: 'privacyStatementUrl',
-				npsSurveyUrl: 'npsSurveyUrl'
+				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.html',
+				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.html',
+				twitterUrl: 'https://twitter.com/ghcode',
+				requestFeatureUrl: 'https://github.com/spiffcode/ghcode/issues',
+				reportIssueUrl: 'https://github.com/spiffcode/ghcode/issues',
+				licenseUrl: 'https://github.com/spiffcode/ghcode/blob/master/LICENSE.txt',
+				privacyStatementUrl: null,
+				npsSurveyUrl: null
 			},
 			updateUrl: '',
 			quality: '',
@@ -941,7 +941,8 @@ export class VSCodeMenu {
 	*/
 
 	private openUrl(url: string, id: string): void {
-		// TODO: shell.openExternal(url);
+		// DESKTOP: shell.openExternal(url);
+		window.open(url, id);
 		this.reportMenuActionTelemetry(id);
 	}
 

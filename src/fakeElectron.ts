@@ -16,6 +16,7 @@ export class MenuItem {
 	 * Create a new menu item.
 	 */
 	constructor(private options: MenuItemOptions) {
+		this.click = options.click;
 		this.type = options.type || 'normal';
 		if (options.submenu)
 			this.type == 'submenu';
