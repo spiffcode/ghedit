@@ -67,15 +67,6 @@ export class MenusNavbarItem implements INavbarItem {
 									this.executeCommand(subitem.id);
 								}
 								return TPromise.as(null);
-								/*
-								let builtInActionDescriptor = (<IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions)).getWorkbenchAction(subitem.id);
-								if (builtInActionDescriptor) {
-									let action: IAction = this.instantiationService.createInstance(builtInActionDescriptor.syncDescriptor);
-									return action.run() || TPromise.as(null);
-								} else {
-									return TPromise.as(null);
-								}
-								*/
 							});
 						}
 					}

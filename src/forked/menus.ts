@@ -104,7 +104,7 @@ export class VSCodeMenu {
 		}
 
 		this.windowsService = {
-			sendToFocused: (channel: string, ...args: any[]): void => { console.log('sendToFocused(' + channel + ', ' + args +')') },
+			sendToFocused: (channel: string, ...args: any[]): void => { console.log('not implemented: sendToFocused(' + channel + ', ' + args + ')') },
 			getWindowCount: () => { return 1; }
 		}
 
@@ -857,7 +857,7 @@ export class VSCodeMenu {
 	private createMenuItem(label: string, click: () => void, enabled?: boolean): Electron.MenuItem;
 	private createMenuItem(arg1: string, arg2: any, arg3?: boolean): Electron.MenuItem {
 		let label = mnemonicLabel(arg1);
-		let click: () => void = (typeof arg2 === 'function') ? arg2 : () => this.windowsService.sendToFocused('vscode:runAction', arg2);
+		let click: () => void = (typeof arg2 === 'function') ? arg2 : null; // TODO: () => this.windowsService.sendToFocused('vscode:runAction', arg2);
 		let enabled = typeof arg3 === 'boolean' ? arg3 : this.windowsService.getWindowCount() > 0;
 
 		let actionId: string;
