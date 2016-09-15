@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Sort of forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/browser/parts/statusbar/statusbarPart.ts
+// Sort of forked from vs/workbench/browser/parts/statusbar/statusbarPart.ts
 
 'use strict';
 
@@ -18,7 +18,7 @@ import {dispose, IDisposable} from 'vs/base/common/lifecycle';
 import {Builder, $} from 'vs/base/browser/builder';
 import {OcticonLabel} from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 import {Registry} from 'vs/platform/platform';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {ICommandService} from 'vs/platform/commands/common/commands';
 import {IAction} from 'vs/base/common/actions';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {Part} from 'vs/workbench/browser/part';
@@ -31,7 +31,7 @@ import {INavbarService, INavbarEntry} from 'forked/navbarService';
 
 export class NavbarPart extends Part implements INavbarService {
 
-	public serviceId = INavbarService;
+	public _serviceBrand: any;
 
 	private static PRIORITY_PROP = 'priority';
 	private static ALIGNMENT_PROP = 'alignment';
@@ -158,7 +158,7 @@ class NavBarEntryItem implements INavbarItem {
 
 	constructor(
 		entry: INavbarEntry,
-		@IKeybindingService private keybindingService: IKeybindingService,
+		@ICommandService private commandService: ICommandService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IMessageService private messageService: IMessageService,
 		@ITelemetryService private telemetryService: ITelemetryService,
@@ -240,7 +240,7 @@ class NavBarEntryItem implements INavbarItem {
 
 		// Fallback to the keybinding service for any other case
 		else {
-			this.keybindingService.executeCommand(id).done(undefined, err => this.messageService.show(Severity.Error, toErrorMessage(err)));
+			this.commandService.executeCommand(id).done(undefined, err => this.messageService.show(Severity.Error, toErrorMessage(err)));
 		}
 	}
 }

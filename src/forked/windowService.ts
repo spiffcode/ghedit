@@ -6,12 +6,12 @@
 
 'use strict';
 
-// Forked from c212f0908f3d29933317bbc3233568fbca7944b1:./vs/workbench/services/window/electron-browser/windowService.ts
+// Forked from vs/workbench/services/window/electron-browser/windowService.ts
 // This is a port of vs/workbench/services/window/electron-browser/windowService.ts
 // with Electron dependencies removed/replaced.
 
 // TODO: import {ElectronWindow} from 'vs/workbench/electron-browser/window';
-import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 import Event, {Emitter} from 'vs/base/common/event';
 
 // TODO: import {ipcRenderer as ipc, remote} from 'electron';
@@ -19,10 +19,10 @@ import Event, {Emitter} from 'vs/base/common/event';
 // TODO: const windowId = remote.getCurrentWindow().id;
 const windowId = 666;
 
-export var IWindowService = createDecorator<IWindowService>('windowService');
+export const IWindowService = createDecorator<IWindowService>('windowService');
 
 export class BogusWindow {
-	public showSaveDialog(options: Electron.Dialog.SaveDialogOptions, callback?: (fileName: string) => void): string {
+	public showSaveDialog(options: Electron.SaveDialogOptions, callback?: (fileName: string) => void): string {
 		console.log('BogusWindow.showSaveDialog not implemented');
 		/* TODO:
 		if (callback) {
@@ -34,10 +34,25 @@ export class BogusWindow {
 		return 'unimplemented';
 	}
 
-	public showMessageBox(options: Electron.Dialog.ShowMessageBoxOptions): number {
-		console.log('BogusWindow.showMessageBox not implemented');
+	public showMessageBox(options: Electron.ShowMessageBoxOptions): number {
+		const buttonCount = options.buttons != null ? options.buttons.length : 0;
+		switch (buttonCount) {
+			case 0:
+			case 1:
+				window.alert(options.message);
+				return 0;
+
+			case 2:
+				if (options.cancelId === undefined || options.cancelId == 0)
+					return window.confirm(options.message) ? 1 : 0;
+				else
+					throw Error('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
+
+			default:
+				console.log('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
+				throw Error('BogusWindow.showMessageBox(' + JSON.stringify(options) + ') not implemented');
 // TODO:		return dialog.showMessageBox(this.win, options);
-		return 0;
+		}
 	}
 }
 
@@ -51,7 +66,7 @@ export interface IBroadcast {
 }
 
 export interface IWindowService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
 
 	getWindowId(): number;
 
@@ -65,13 +80,14 @@ export interface IWindowService {
 }
 
 export class WindowService implements IWindowService {
-	public serviceId = IWindowService;
+	public _serviceBrand: any;
 
 	private win: BogusWindow;
 	private windowId: number;
 	private _onBroadcast: Emitter<IBroadcast>;
 
 	constructor() {
+		this.win = new BogusWindow();
 		this._onBroadcast = new Emitter<IBroadcast>();
 		this.windowId = windowId;
 

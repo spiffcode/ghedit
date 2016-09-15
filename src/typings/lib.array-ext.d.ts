@@ -3,21 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-const cp = require('child_process');
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-
-const extensions = [
-	'vscode-api-tests',
-	'vscode-colorize-tests',
-	'json',
-	'typescript',
-	'php',
-	'javascript'
-];
-
-extensions.forEach(extension => {
-	cp.spawnSync(npm, ['install'], {
-		cwd: `extensions/${ extension }`,
-		stdio: 'inherit'
-	});
-});
+interface ArrayConstructor {
+    isArray<T>(arg: any): arg is Array<T>;
+}

@@ -14,6 +14,9 @@
     },
     "exclude": [
         "node_modules",
-        "vs"
+        "vs",
+        "monaco-css/monaco.d.ts",
+        "monaco-json/monaco.d.ts",
+        "monaco-typescript/monaco.d.ts"
     ]
 }

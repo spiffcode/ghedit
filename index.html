@@ -1,5 +1,6 @@
 <!-- Copyright (C) Spiffcode, Inc. All rights reserved. -->
 <!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
+<!-- Forked from vs/workbench/electron-browser/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,8 +9,12 @@
 
 		<!-- Theming (do not remove, we want to early load it to avoid flashing background) -->
 		<style>
-			.monaco-shell.vs-dark { background-color: #1E1E1E; }
-			.ghcode-body-startup { margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback"; }
+			.monaco-shell.vs-dark {
+				background-color: #1E1E1E;
+			}
+			.ghcode-body-startup {
+				margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback";
+			}
 		</style>
 
 		<script>
@@ -176,7 +181,12 @@
 			var mainStarted = false;
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
 
-			document.write('<progress id="loading_percent" value="0" max="100" style="width: 100%"></progress>');
+			// Don't show progress for min or opt builds until that is working
+			var showProgress = (window.location.pathname !== '/ghcode/' && !args.b);
+			if (showProgress) {
+				document.write('<progress id="loading_percent" value="0" max="100" style="width: 100%"></progress>');
+			}
+
 			if (args.code) {
 				// Ask our auth server to get a GitHub access token.
 				var xhr = new XMLHttpRequest();
@@ -377,11 +387,28 @@
 					}
 					if (!nlsConfig) {
 						nlsConfig = { availableLanguages: {} };
+					} else {
+						var locale = nlsConfig.availableLanguages['*'] || 'en';
+						if (locale === 'zh-tw') {
+							locale = 'zh-Hant';
+						} else if (locale === 'zh-cn') {
+							locale = 'zh-Hans';
+						}
+						window.document.documentElement.setAttribute('lang', locale);
 					}
 					require.config({
 						baseUrl: rootPath,
 						'vs/nls': nlsConfig,
-						recordStats: configuration.enablePerformance
+						recordStats: configuration.enablePerformance,
+						ignoreDuplicateModules: [
+							'vs/workbench/parts/search/common/searchQuery'
+						],
+						paths: {
+							'vs/basic-languages': 'monaco-languages',
+							'vs/language/typescript': 'monaco-typescript',
+							'vs/language/json': 'monaco-json',
+							'vs/language/css': 'monaco-css'
+						}
 					});
 					if (nlsConfig.pseudo) {
 						require(['vs/nls'], function(nlsPlugin) {
@@ -391,12 +418,12 @@
 
 					var hasWorkspaceContext = configuration.workspacePath;
 
-					window.GlobalEnvironment = {
+					window.MonacoEnvironment = {
 						'enableTasks': hasWorkspaceContext,
 						'enableSendASmile' : !!configuration.sendASmile
 					};
 
-					var timers = window.GlobalEnvironment.timers = {
+					var timers = window.MonacoEnvironment.timers = {
 						start: new Date()
 					};
 
@@ -416,7 +443,7 @@
 					timers.beforeLoad = new Date();
 
 					// Simple progress indicator
-					{
+					if (showProgress) {
 						var elPercent = document.getElementById('loading_percent');
 						var idScriptLoaded = AMDLoader.LoaderEventType.EndLoadingScriptOK;
 						var percentComplete = 0;
@@ -446,7 +473,9 @@
 							// Remove the progress indicator and related startup styles
 							var elBody = document.getElementsByTagName("body")[0];
 							elBody.classList.remove('ghcode-body-startup');
-							elBody.removeChild(document.getElementById('loading_percent'));
+							if (showProgress) {
+								elBody.removeChild(document.getElementById('loading_percent'));
+							}
 						}, function(error) { onError(error, enableDeveloperTools) });
 					});
 				});
@@ -459,8 +488,11 @@
 			(function() {
 				try {
 					var theme = window.localStorage.getItem('storage://global/workbench.theme');
-					if (theme && theme.indexOf('vs-dark') < 0) {
-						window.document.body.className = 'monaco-shell'; // remove the dark theme class if we are on a light theme
+					if (theme) {
+						var baseTheme = theme.split(' ')[0];
+						if (baseTheme !== 'vs-dark') {
+							window.document.body.className = 'monaco-shell ' + baseTheme;
+						}
 					}
 				} catch (error) {
 					console.error(error);

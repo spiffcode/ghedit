@@ -73,7 +73,7 @@ declare namespace vscode {
 
 		/**
 		 * The offset of the first character which is not a whitespace character as defined
-		 * by `/\s/`.
+		 * by `/\s/`. **Note** that if a line is all whitespaces the length of the line is returned.
 		 *
 		 * @readonly
 		 */
@@ -81,7 +81,7 @@ declare namespace vscode {
 
 		/**
 		 * Whether this line is whitespace only, shorthand
-		 * for [TextLine.firstNonWhitespaceCharacterIndex](#TextLine.firstNonWhitespaceCharacterIndex]) === [TextLine.text.length](#TextLine.text.length).
+		 * for [TextLine.firstNonWhitespaceCharacterIndex](#TextLine.firstNonWhitespaceCharacterIndex) === [TextLine.text.length](#TextLine.text).
 		 *
 		 * @readonly
 		 */
@@ -105,7 +105,7 @@ declare namespace vscode {
 
 		/**
 		 * The file system path of the associated resource. Shorthand
-		 * notation for [TextDocument.uri.fsPath](#TextDocument.uri.fsPath). Independent of the uri scheme.
+		 * notation for [TextDocument.uri.fsPath](#TextDocument.uri). Independent of the uri scheme.
 		 *
 		 * @readonly
 		 */
@@ -329,6 +329,15 @@ declare namespace vscode {
 		translate(lineDelta?: number, characterDelta?: number): Position;
 
 		/**
+		 * Derived a new position relative to this position.
+		 *
+		 * @param change An object that describes a delta to this position.
+		 * @return A position that reflects the given delta. Will return `this` position if the change
+		 * is not changing anything.
+		 */
+		translate(change: { lineDelta?: number; characterDelta?: number; }): Position;
+
+		/**
 		 * Create a new position derived from this position.
 		 *
 		 * @param line Value that should be used as line value, default is the [existing value](#Position.line)
@@ -336,6 +345,15 @@ declare namespace vscode {
 		 * @return A position where line and character are replaced by the given values.
 		 */
 		with(line?: number, character?: number): Position;
+
+		/**
+		 * Derived a new position from this position.
+		 *
+		 * @param change An object that describes a change to this position.
+		 * @return A position that reflects the given change. Will return `this` position if the change
+		 * is not changing anything.
+		 */
+		with(change: { line?: number; character?: number; }): Position;
 	}
 
 	/**
@@ -427,14 +445,23 @@ declare namespace vscode {
 		union(other: Range): Range;
 
 		/**
-		 * Create a new range derived from this range.
+		 * Derived a new range from this range.
 		 *
 		 * @param start A position that should be used as start. The default value is the [current start](#Range.start).
 		 * @param end A position that should be used as end. The default value is the [current end](#Range.end).
 		 * @return A range derived from this range with the given start and end position.
-		 * If start and end are not different this range will be returned.
+		 * If start and end are not different `this` range will be returned.
 		 */
 		with(start?: Position, end?: Position): Range;
+
+		/**
+		 * Derived a new range from this range.
+		 *
+		 * @param change An object that describes a change to this range.
+		 * @return A range that reflects the given change. Will return `this` range if the change
+		 * is not changing anything.
+		 */
+		with (change: { start ?: Position, end ?: Position }): Range;
 	}
 
 	/**
@@ -547,6 +574,7 @@ declare namespace vscode {
 		 * The size in spaces a tab takes. This is used for two purposes:
 		 *  - the rendering width of a tab character;
 		 *  - the number of spaces to insert when [insertSpaces](#TextEditorOptions.insertSpaces) is true.
+		 *
 		 * When getting a text editor's options, this property will always be a number (resolved).
 		 * When setting a text editor's options, this property is optional and it can be a number or `"auto"`.
 		 */
@@ -630,40 +658,58 @@ declare namespace vscode {
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
 		 */
+		outline?: string;
+
+		/**
+		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'outline' for setting one or more of the individual outline properties.
+		 */
 		outlineColor?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'outline' for setting one or more of the individual outline properties.
 		 */
 		outlineStyle?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'outline' for setting one or more of the individual outline properties.
 		 */
 		outlineWidth?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
 		 */
+		border?: string;
+
+		/**
+		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'border' for setting one or more of the individual border properties.
+		 */
 		borderColor?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'border' for setting one or more of the individual border properties.
 		 */
 		borderRadius?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'border' for setting one or more of the individual border properties.
 		 */
 		borderSpacing?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'border' for setting one or more of the individual border properties.
 		 */
 		borderStyle?: string;
 
 		/**
 		 * CSS styling property that will be applied to text enclosed by a decoration.
+		 * Better use 'border' for setting one or more of the individual border properties.
 		 */
 		borderWidth?: string;
 
@@ -693,9 +739,65 @@ declare namespace vscode {
 		gutterIconPath?: string;
 
 		/**
+		 * Specifies the size of the gutter icon.
+		 * Available values are 'auto', 'contain', 'cover' and any percentage value.
+		 * For further information: https://msdn.microsoft.com/en-us/library/jj127316(v=vs.85).aspx
+		 */
+		gutterIconSize?: string;
+
+		/**
 		 * The color of the decoration in the overview ruler. Use rgba() and define transparent colors to play well with other decorations.
 		 */
 		overviewRulerColor?: string;
+
+		/**
+		 * Defines the rendering options of the attachment that is inserted before the decorated text
+		 */
+		before?: ThemableDecorationAttachmentRenderOptions;
+
+		/**
+		 * Defines the rendering options of the attachment that is inserted after the decorated text
+		 */
+		after?: ThemableDecorationAttachmentRenderOptions;
+	}
+
+	export interface ThemableDecorationAttachmentRenderOptions {
+		/**
+		 * Defines a text content that is shown in the attachment. Either an icon or a text can be shown, but not both.
+		 */
+		contentText?: string;
+		/**
+		 * An **absolute path** to an image to be rendered in the attachment. Either an icon or a text can be shown, but not both.
+		 */
+		contentIconPath?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		border?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		textDecoration?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		color?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		backgroundColor?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		margin?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		width?: string;
+		/**
+		 * CSS styling property that will be applied to the decoration attachment.
+		 */
+		height?: string;
 	}
 
 	/**
@@ -737,7 +839,37 @@ declare namespace vscode {
 		/**
 		 * A message that should be rendered when hovering over the decoration.
 		 */
-		hoverMessage: MarkedString | MarkedString[];
+		hoverMessage?: MarkedString | MarkedString[];
+
+		/**
+		 * Render options applied to the current decoration. For performance reasons, keep the
+		 * number of decoration specific options small, and use decoration types whereever possible.
+		 */
+		renderOptions?: DecorationInstanceRenderOptions;
+	}
+
+	export interface ThemableDecorationInstanceRenderOptions {
+		/**
+		 * Defines the rendering options of the attachment that is inserted before the decorated text
+		 */
+		before?: ThemableDecorationAttachmentRenderOptions;
+
+		/**
+		 * Defines the rendering options of the attachment that is inserted after the decorated text
+		 */
+		after?: ThemableDecorationAttachmentRenderOptions;
+	}
+
+	export interface DecorationInstanceRenderOptions extends ThemableDecorationInstanceRenderOptions {
+		/**
+		 * Overwrite options for light themes.
+		 */
+		light?: ThemableDecorationInstanceRenderOptions;
+
+		/**
+		 * Overwrite options for dark themes.
+		 */
+		dark?: ThemableDecorationInstanceRenderOptions
 	}
 
 	/**
@@ -822,7 +954,7 @@ declare namespace vscode {
 	}
 
 	/**
-	 * Represents an end of line character sequence in a [document](#Document).
+	 * Represents an end of line character sequence in a [document](#TextDocument).
 	 */
 	export enum EndOfLine {
 		/**
@@ -838,13 +970,13 @@ declare namespace vscode {
 	/**
 	 * A complex edit that will be applied in one transaction on a TextEditor.
 	 * This holds a description of the edits and if the edits are valid (i.e. no overlapping regions, document was not changed in the meantime, etc.)
-	 * they can be applied on a [document](#Document) associated with a [text editor](#TextEditor).
+	 * they can be applied on a [document](#TextDocument) associated with a [text editor](#TextEditor).
 	 *
 	 */
 	export interface TextEditorEdit {
 		/**
 		 * Replace a certain text region with a new value.
-		 * You can use \r\n or \n in `value` and they will be normalized to the current [document](#Document).
+		 * You can use \r\n or \n in `value` and they will be normalized to the current [document](#TextDocument).
 		 *
 		 * @param location The range this operation should remove.
 		 * @param value The new text this operation should insert after removing `location`.
@@ -853,7 +985,7 @@ declare namespace vscode {
 
 		/**
 		 * Insert text at a location.
-		 * You can use \r\n or \n in `value` and they will be normalized to the current [document](#Document).
+		 * You can use \r\n or \n in `value` and they will be normalized to the current [document](#TextDocument).
 		 * Although the equivalent text edit can be made with [replace](#TextEditorEdit.replace), `insert` will produce a different resulting selection (it will get moved).
 		 *
 		 * @param location The position where the new text should be inserted.
@@ -871,7 +1003,7 @@ declare namespace vscode {
 		/**
 		 * Set the end of line sequence.
 		 *
-		 * @param endOfLine The new end of line for the [document](#Document).
+		 * @param endOfLine The new end of line for the [document](#TextDocument).
 		 */
 		setEndOfLine(endOfLine: EndOfLine): void;
 	}
@@ -935,6 +1067,21 @@ declare namespace vscode {
 		 * invalid characters and semantics. Will *not* look at the scheme of this Uri.
 		 */
 		fsPath: string;
+
+		/**
+		 * Derive a new Uri from this Uri.
+		 *
+		 * @param change An object that describes a change to this Uri. To unset components use `null` or
+		 *  the empty string.
+		 * @return A new Uri that reflects the given change. Will return `this` Uri if the change
+		 *  is not changing anything.
+		 * @sample ```
+			let file = Uri.parse('before:some/file/path');
+			let other = file.with({ scheme: 'after' });
+			assert.ok(other.toString() === 'after:some/file/path');
+		 * ```
+		 */
+		with(change: { scheme?: string; authority?: string; path?: string; query?: string; fragment?: string }): Uri;
 
 		/**
 		 * Returns a string representation of this Uri. The representation and normalization
@@ -1125,9 +1272,9 @@ declare namespace vscode {
 	 * A text document content provider allows to add readonly documents
 	 * to the editor, such as source from a dll or generated html from md.
 	 *
-	 * Content providers are [registered](#workbench.registerTextDocumentContentProvider)
+	 * Content providers are [registered](#workspace.registerTextDocumentContentProvider)
 	 * for a [uri-scheme](#Uri.scheme). When a uri with that scheme is to
-	 * be [loaded](#workbench.openTextDocument) the content provider is
+	 * be [loaded](#workspace.openTextDocument) the content provider is
 	 * asked.
 	 */
 	export interface TextDocumentContentProvider {
@@ -1142,7 +1289,7 @@ declare namespace vscode {
 		 *
 		 * The editor will use the returned string-content to create a readonly
 		 * [document](TextDocument). Resources allocated should be released when
-		 * the corresponding document has been [closed](#workbench.onDidCloseTextDocument).
+		 * the corresponding document has been [closed](#workspace.onDidCloseTextDocument).
 		 *
 		 * @param uri An uri which scheme matches the scheme this provider was [registered](#workspace.registerTextDocumentContentProvider) for.
 		 * @param token A cancellation token.
@@ -1212,6 +1359,12 @@ declare namespace vscode {
 		 * A short title like 'Retry', 'Open Log' etc.
 		 */
 		title: string;
+
+		/**
+		 * Indicates that this item replaces the default
+		 * 'Close' action.
+		 */
+		isCloseAffordance?: boolean;
 	}
 
 	/**
@@ -1278,7 +1431,7 @@ declare namespace vscode {
 
 	/**
 	 * A language selector is the combination of one or many language identifiers
-	 * and [language filters](#LanguageFilter).
+	 * and [language filters](#DocumentFilter).
 	 *
 	 * @sample `let sel:DocumentSelector = 'typescript'`;
 	 * @sample `let sel:DocumentSelector = ['typescript', { language: 'json', pattern: '**∕tsconfig.json' }]`;
@@ -2090,8 +2243,9 @@ declare namespace vscode {
 		 * will be used as insert text as well as for sorting and filtering.
 		 *
 		 * @param label The label of the completion.
+		 * @param kind The [kind](#CompletionItemKind) of the completion.
 		 */
-		constructor(label: string);
+		constructor(label: string, kind?: CompletionItemKind);
 	}
 
 	/**
@@ -2156,6 +2310,47 @@ declare namespace vscode {
 		 * `item`. When no result is returned, the given `item` will be used.
 		 */
 		resolveCompletionItem?(item: CompletionItem, token: CancellationToken): CompletionItem | Thenable<CompletionItem>;
+	}
+
+
+	/**
+	 * A document link is a range in a text document that links to an internal or external resource, like another
+	 * text document or a web site.
+	 */
+	export class DocumentLink {
+
+		/**
+		 * The range this link applies to.
+		 */
+		range: Range;
+
+		/**
+		 * The uri this link points to.
+		 */
+		target: Uri;
+
+		/**
+		 * Creates a new document link.
+		 *
+		 * @param range The range the document link applies to. Must not be empty.
+		 * @param target The uri the document link points to.
+		 */
+		constructor(range: Range, target: Uri);
+	}
+
+	/**
+	 * The document link provider defines the contract between extensions and feature of showing
+	 * links in the editor.
+	 */
+	export interface DocumentLinkProvider {
+
+		/**
+		 * @param document The document in which the command was invoked.
+		 * @param token A cancellation token.
+		 * @return An array of [document links](#DocumentLink) or a thenable that resolves to such. The lack of a result
+		 *  can be signaled by returning `undefined`, `null`, or an empty array.
+		 */
+		provideDocumentLinks(document: TextDocument, token: CancellationToken): DocumentLink[] | Thenable<DocumentLink[]>;
 	}
 
 	/**
@@ -2305,6 +2500,12 @@ declare namespace vscode {
 			 * @deprecated
 			 */
 			brackets?: any;
+			/**
+			 * This property is deprecated and not fully supported anymore by
+			 * the editor (scope and lineStart are ignored).
+			 * Use the the autoClosingPairs property in the language configuration file instead.
+			 * @deprecated
+			 */
 			docComment?: {
 				scope: string;
 				open: string;
@@ -2316,7 +2517,7 @@ declare namespace vscode {
 		/**
 		 * **Deprecated** Do not use.
 		 *
-		 * @deprecated Will be replaced by a better API soon.
+		 * @deprecated * Use the the autoClosingPairs property in the language configuration file instead.
 		 */
 		__characterPairSupport?: {
 			autoClosingPairs: {
@@ -2457,7 +2658,7 @@ declare namespace vscode {
 	/**
 	 * A diagnostics collection is a container that manages a set of
 	 * [diagnostics](#Diagnostic). Diagnostics are always scopes to a
-	 * a diagnostics collection and a resource.
+	 * diagnostics collection and a resource.
 	 *
 	 * To get an instance of a `DiagnosticCollection` use
 	 * [createDiagnosticCollection](#languages.createDiagnosticCollection).
@@ -2481,19 +2682,24 @@ declare namespace vscode {
 		set(uri: Uri, diagnostics: Diagnostic[]): void;
 
 		/**
+		 * Replace all entries in this collection.
+		 *
+		 * Diagnostics of multiple tuples of the same uri will be merged, e.g
+		 * `[[file1, [d1]], [file1, [d2]]]` is equivalent to `[[file1, [d1, d2]]]`.
+		 * If a diagnostics item is `undefined` as in `[file1, undefined]`
+		 * all previous but not subsequent diagnostics are removed.
+		 *
+		 * @param entries An array of tuples, like `[[file1, [d1, d2]], [file2, [d3, d4, d5]]]`, or `undefined`.
+		 */
+		set(entries: [Uri, Diagnostic[]][]): void;
+
+		/**
 		 * Remove all diagnostics from this collection that belong
 		 * to the provided `uri`. The same as `#set(uri, undefined)`.
 		 *
 		 * @param uri A resource identifier.
 		 */
 		delete(uri: Uri): void;
-
-		/**
-		 * Replace all entries in this collection.
-		 *
-		 * @param entries An array of tuples, like `[[file1, [d1, d2]], [file2, [d3, d4, d5]]]`, or `undefined`.
-		 */
-		set(entries: [Uri, Diagnostic[]][]): void;
 
 		/**
 		 * Remove all diagnostics from this collection. The same
@@ -2755,13 +2961,13 @@ declare namespace vscode {
 
 		/**
 		 * A memento object that stores state in the context
-		 * of the currently opened [workspace](#workspace.path).
+		 * of the currently opened [workspace](#workspace.rootPath).
 		 */
 		workspaceState: Memento;
 
 		/**
 		 * A memento object that stores state independent
-		 * of the current opened [workspace](#workspace.path).
+		 * of the current opened [workspace](#workspace.rootPath).
 		 */
 		globalState: Memento;
 
@@ -2777,6 +2983,16 @@ declare namespace vscode {
 		 * @return The absolute path of the resource.
 		 */
 		asAbsolutePath(relativePath: string): string;
+
+		/**
+		 * An absolute file path of a workspace specific directory in which the extension
+		 * can store private state. The directory might not exist on disk and creation is
+		 * up to the extension. However, the parent directory is guaranteed to be existent.
+		 *
+		 * Use [`workspaceState`](ExtensionContext#workspaceState) or
+		 * [`globalState`](ExtensionContext#globalState) to store key value data.
+		 */
+		storagePath: string;
 	}
 
 	/**
@@ -2808,6 +3024,13 @@ declare namespace vscode {
 	 * Namespace describing the environment the editor runs in.
 	 */
 	export namespace env {
+
+		/**
+		 * The application name of the editor, like 'VS Code'.
+		 *
+		 * @readonly
+		 */
+		export let appName: string;
 
 		/**
 		 * Represents the preferred user-language, like `de-CH`, `fr`, or `en-US`.
@@ -3167,7 +3390,7 @@ declare namespace vscode {
 	 * folder has been opened.
 	 *
 	 * The workspace offers support for [listening](#workspace.createFileSystemWatcher) to fs
-	 * events and for [finding](#workspace#findFiles) files. Both perform well and run _outside_
+	 * events and for [finding](#workspace.findFiles) files. Both perform well and run _outside_
 	 * the editor-process so that they should be always used instead of nodejs-equivalents.
 	 */
 	export namespace workspace {
@@ -3367,12 +3590,12 @@ declare namespace vscode {
 		 * 	(2.1) When both are equal score is `10`,
 		 * 	(2.2) When the selector is `*` score is `5`,
 		 * 	(2.3) Else score is `0`.
-		 * (3) When selector is a [filter](#DocumentFilter) every property must score higher `0`. Iff the score is the sum of the following:
+		 * (3) When selector is a [filter](#DocumentFilter) return the maximum individual score given that each score is `>0`.
 		 *	(3.1) When [language](#DocumentFilter.language) is set apply rules from #2, when `0` the total score is `0`.
-		 *	(3.2) When [scheme](#Document.scheme) is set and equals the [uri](#TextDocument.uri)-scheme add `10` to the score, else the total score is `0`.
-		 *	(3.3) When [pattern](#Document.pattern) is set
-		 * 		(3.3.1) pattern eqauls the [uri](#TextDocument.uri)-fsPath add `10` to the score,
-		 *		(3.3.1) if the pattern matches as glob-pattern add `5` to the score,
+		 *	(3.2) When [scheme](#DocumentFilter.scheme) is set and equals the [uri](#TextDocument.uri)-scheme score with `10`, else the total score is `0`.
+		 *	(3.3) When [pattern](#DocumentFilter.pattern) is set
+		 * 		(3.3.1) pattern equals the [uri](#TextDocument.uri)-fsPath score with `10`,
+		 *		(3.3.1) if the pattern matches as glob-pattern score with `5`,
 		 *		(3.3.1) the total score is `0`
 		 * ```
 		 *
@@ -3576,6 +3799,19 @@ declare namespace vscode {
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		 */
 		export function registerSignatureHelpProvider(selector: DocumentSelector, provider: SignatureHelpProvider, ...triggerCharacters: string[]): Disposable;
+
+		/**
+		 * Register a document link provider.
+		 *
+		 * Multiple providers can be registered for a language. In that case providers are asked in
+		 * parallel and the results are merged. A failing provider (rejected promise or exception) will
+		 * not cause a failure of the whole operation.
+		 *
+		 * @param selector A selector that defines the documents this provider is applicable to.
+		 * @param provider A document link provider.
+		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
+		 */
+		export function registerDocumentLinkProvider(selector: DocumentSelector, provider: DocumentLinkProvider): Disposable;
 
 		/**
 		 * Set a [language configuration](#LanguageConfiguration) for a language.

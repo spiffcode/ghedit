@@ -57,7 +57,7 @@ export class WelcomePart extends Part {
 			this.openButton = new Button(el);
 			// TODO: localization
 			this.openButton.label = 'Sign In';
-			this.openButton.on('click', () => {
+			this.openButton.addListener2('click', () => {
 				let checkbox = <HTMLInputElement>document.getElementById('privateRepos');
 				this.githubService.authenticate(checkbox.checked);
 			});
