@@ -171,6 +171,9 @@ gulp.task('push', shell.task([
 	'GIT_DEPLOY_DIR=out-build bin/push'
 ]));
 
-gulp.task('push-min', ['build-min'], shell.task([
+gulp.task('push-min-nobuild', shell.task([
 	'GIT_DEPLOY_DIR=out-build-min bin/push'
+]));
+
+gulp.task('push-min', ['build-min', 'push-min-nobuild'], shell.task([
 ]));
