@@ -1,7 +1,1 @@
-define(["require", "exports", 'fs', 'vs/base/common/platform'], function (require, exports, fs, env) {
-    "use strict";
-    // If the system is not debian but is on gnome, use gnome-terminal
-    exports.DEFAULT_TERMINAL_LINUX = (env.isLinux && !fs.existsSync('/etc/debian_version') && process.env.DESKTOP_SESSION === 'gnome') ? 'gnome-terminal' : 'x-terminal-emulator';
-    exports.DEFAULT_TERMINAL_WINDOWS = 'cmd';
-});
-//# sourceMappingURL=terminal.js.map
+define(["require","exports","fs","vs/base/common/platform"],function(e,s,n,r){"use strict";var o="xterm";r.isLinux&&(n.existsSync("/etc/debian_version")?o="x-terminal-emulator":"gnome"===process.env.DESKTOP_SESSION||"gnome-classic"===process.env.DESKTOP_SESSION?o="gnome-terminal":process.env.COLORTERM?o=process.env.COLORTERM:process.env.TERM&&(o=process.env.TERM)),s.DEFAULT_TERMINAL_LINUX=o,s.DEFAULT_TERMINAL_OSX="Terminal.app",s.DEFAULT_TERMINAL_WINDOWS="%COMSPEC%"});

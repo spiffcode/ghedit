@@ -1,14 +1,5 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/editor/common/editorCommonExtensions', './gotoLine'], function (require, exports, nls, keyCodes_1, editorCommonExtensions_1, gotoLine_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/nls","vs/base/common/keyCodes","vs/editor/common/editorCommonExtensions","./gotoLine"],function(o,e,t,i,n,r){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    // Contribute Ctrl+G to "Go to line" using quick open
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(gotoLine_1.GotoLineAction, gotoLine_1.GotoLineAction.ID, nls.localize('label', "Go to Line..."), {
-        context: editorCommonExtensions_1.ContextKey.EditorFocus,
-        primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_G,
-        mac: { primary: keyCodes_1.KeyMod.WinCtrl | keyCodes_1.KeyCode.KEY_G }
-    }, 'Go to Line...'));
-});
-//# sourceMappingURL=gotoLine.contribution.js.map
+"use strict";n.CommonEditorRegistry.registerEditorAction(new n.EditorActionDescriptor(r.GotoLineAction,r.GotoLineAction.ID,t.localize("label","Go to Line..."),{context:n.ContextKey.EditorFocus,primary:i.KeyMod.CtrlCmd|i.KeyCode.KEY_G,mac:{primary:i.KeyMod.WinCtrl|i.KeyCode.KEY_G}},"Go to Line..."))});

@@ -1,10 +1,5 @@
-define(["require", "exports", 'vs/platform/instantiation/common/instantiation'], function (require, exports, instantiation_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/platform/instantiation/common/instantiation"],function(e,r,t){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.ID_EDITOR_WORKER_SERVICE = 'editorWorkerService';
-    exports.IEditorWorkerService = instantiation_1.createDecorator(exports.ID_EDITOR_WORKER_SERVICE);
-});
-//# sourceMappingURL=editorWorkerService.js.map
+"use strict";r.ID_EDITOR_WORKER_SERVICE="editorWorkerService",r.IEditorWorkerService=t.createDecorator(r.ID_EDITOR_WORKER_SERVICE)});

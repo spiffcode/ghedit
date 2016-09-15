@@ -1,0 +1,5 @@
+var __extends=this&&this.__extends||function(r,t){function e(){this.constructor=r}for(var o in t)t.hasOwnProperty(o)&&(r[o]=t[o]);r.prototype=null===t?Object.create(t):(e.prototype=t.prototype,new e)};define(["require","exports","vs/base/common/errors","./extHost.protocol"],function(r,t,e,o){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";var n=function(r){function t(){r.apply(this,arguments)}return __extends(t,r),t.prototype.onUnexpectedExtHostError=function(r){e.onUnexpectedError(r)},t}(o.MainThreadErrorsShape);t.MainThreadErrors=n});

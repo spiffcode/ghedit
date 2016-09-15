@@ -1,0 +1,94 @@
+import 'vs/css!./media/editor';
+import 'vs/css!./media/tokens';
+import { IEventEmitter } from 'vs/base/common/eventEmitter';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { CommonCodeEditor } from 'vs/editor/common/commonCodeEditor';
+import { CommonEditorConfiguration } from 'vs/editor/common/config/commonEditorConfig';
+import { Range } from 'vs/editor/common/core/range';
+import { Selection } from 'vs/editor/common/core/selection';
+import * as editorCommon from 'vs/editor/common/editorCommon';
+import { ICodeEditorService } from 'vs/editor/common/services/codeEditorService';
+import { Configuration } from 'vs/editor/browser/config/configuration';
+import * as editorBrowser from 'vs/editor/browser/editorBrowser';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+export declare class CodeEditorWidget extends CommonCodeEditor implements editorBrowser.ICodeEditor {
+    onMouseUp(listener: (e: editorBrowser.IEditorMouseEvent) => void): IDisposable;
+    onMouseDown(listener: (e: editorBrowser.IEditorMouseEvent) => void): IDisposable;
+    onContextMenu(listener: (e: editorBrowser.IEditorMouseEvent) => void): IDisposable;
+    onMouseMove(listener: (e: editorBrowser.IEditorMouseEvent) => void): IDisposable;
+    onMouseLeave(listener: (e: editorBrowser.IEditorMouseEvent) => void): IDisposable;
+    onKeyUp(listener: (e: IKeyboardEvent) => void): IDisposable;
+    onKeyDown(listener: (e: IKeyboardEvent) => void): IDisposable;
+    onDidLayoutChange(listener: (e: editorCommon.EditorLayoutInfo) => void): IDisposable;
+    onDidScrollChange(listener: (e: editorCommon.IScrollEvent) => void): IDisposable;
+    protected domElement: HTMLElement;
+    private _focusTracker;
+    _configuration: Configuration;
+    private contentWidgets;
+    private overlayWidgets;
+    _view: editorBrowser.IView;
+    constructor(domElement: HTMLElement, options: editorCommon.IEditorOptions, instantiationService: IInstantiationService, codeEditorService: ICodeEditorService, commandService: ICommandService, keybindingService: IKeybindingService, telemetryService: ITelemetryService);
+    protected _createConfiguration(options: editorCommon.ICodeEditorWidgetCreationOptions): CommonEditorConfiguration;
+    dispose(): void;
+    updateOptions(newOptions: editorCommon.IEditorOptions): void;
+    colorizeModelLine(lineNumber: number, model?: editorCommon.IModel): string;
+    getView(): editorBrowser.IView;
+    getDomNode(): HTMLElement;
+    getCenteredRangeInViewport(): Range;
+    getVisibleRangeInViewport(): Range;
+    getScrollWidth(): number;
+    getScrollLeft(): number;
+    getScrollHeight(): number;
+    getScrollTop(): number;
+    setScrollLeft(newScrollLeft: number): void;
+    setScrollTop(newScrollTop: number): void;
+    setScrollPosition(position: editorCommon.INewScrollPosition): void;
+    delegateVerticalScrollbarMouseDown(browserEvent: MouseEvent): void;
+    saveViewState(): editorCommon.ICodeEditorViewState;
+    restoreViewState(state: editorCommon.IEditorViewState): void;
+    layout(dimension?: editorCommon.IDimension): void;
+    focus(): void;
+    beginForcedWidgetFocus(): void;
+    endForcedWidgetFocus(): void;
+    isFocused(): boolean;
+    hasWidgetFocus(): boolean;
+    addContentWidget(widget: editorBrowser.IContentWidget): void;
+    layoutContentWidget(widget: editorBrowser.IContentWidget): void;
+    removeContentWidget(widget: editorBrowser.IContentWidget): void;
+    addOverlayWidget(widget: editorBrowser.IOverlayWidget): void;
+    layoutOverlayWidget(widget: editorBrowser.IOverlayWidget): void;
+    removeOverlayWidget(widget: editorBrowser.IOverlayWidget): void;
+    changeViewZones(callback: (accessor: editorBrowser.IViewZoneChangeAccessor) => void): void;
+    getWhitespaces(): editorCommon.IEditorWhitespace[];
+    getTopForLineNumber(lineNumber: number): number;
+    getTopForPosition(lineNumber: number, column: number): number;
+    getScrolledVisiblePosition(rawPosition: editorCommon.IPosition): {
+        top: number;
+        left: number;
+        height: number;
+    };
+    getOffsetForColumn(lineNumber: number, column: number): number;
+    render(): void;
+    setHiddenAreas(ranges: editorCommon.IRange[]): void;
+    setAriaActiveDescendant(id: string): void;
+    applyFontInfo(target: HTMLElement): void;
+    _attachModel(model: editorCommon.IModel): void;
+    protected _enableEmptySelectionClipboard(): boolean;
+    protected _createView(): void;
+    protected _getViewInternalEventBus(): IEventEmitter;
+    protected _detachModel(): editorCommon.IModel;
+}
+export declare enum EditCursorState {
+    EndOfLastEditOperation = 0,
+}
+export declare class CommandRunner implements editorCommon.ICommand {
+    private _ops;
+    private _editCursorState;
+    constructor(ops: editorCommon.ISingleEditOperation[], editCursorState: EditCursorState);
+    getEditOperations(model: editorCommon.ITokenizedModel, builder: editorCommon.IEditOperationBuilder): void;
+    computeCursorState(model: editorCommon.ITokenizedModel, helper: editorCommon.ICursorStateComputerData): Selection;
+}

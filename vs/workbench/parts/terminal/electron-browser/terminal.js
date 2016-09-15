@@ -1,0 +1,5 @@
+define(["require","exports","vs/base/common/platform","vs/base/node/processes","vs/platform/instantiation/common/instantiation"],function(e,s,n,E,L){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";s.TERMINAL_PANEL_ID="workbench.panel.terminal",s.TERMINAL_SERVICE_ID="terminalService",s.TERMINAL_DEFAULT_SHELL_LINUX=n.isWindows?"sh":process.env.SHELL||"sh",s.TERMINAL_DEFAULT_SHELL_OSX=n.isWindows?"sh":process.env.SHELL||"sh",s.TERMINAL_DEFAULT_SHELL_WINDOWS=E.getWindowsShell(),s.KEYBINDING_CONTEXT_TERMINAL_FOCUS="terminalFocus",s.ITerminalService=L.createDecorator(s.TERMINAL_SERVICE_ID)});

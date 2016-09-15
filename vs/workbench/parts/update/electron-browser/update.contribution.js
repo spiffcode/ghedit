@@ -2,60 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/nls', 'vs/platform/platform', 'vs/base/common/winjs.base', 'vs/workbench/common/contributions', 'vs/platform/storage/common/storage', 'vs/platform/workspace/common/workspace', 'vs/platform/message/common/message', 'vs/base/common/severity', 'vs/workbench/electron-browser/update', 'vs/base/common/actions', 'electron', 'semver'], function (require, exports, nls, platform_1, winjs_base_1, contributions_1, storage_1, workspace_1, message_1, severity_1, update_1, actions_1, electron_1, semver) {
-    'use strict';
-    var CloseAction = new actions_1.Action('close', nls.localize('close', "Close"), '', true, function () { return null; });
-    var ShowLicenseAction = function (licenseUrl) { return new actions_1.Action('update.showLicense', nls.localize('license', "Read License"), null, true, function () { electron_1.shell.openExternal(licenseUrl); return winjs_base_1.TPromise.as(null); }); };
-    var UpdateContribution = (function () {
-        function UpdateContribution(storageService, contextService, messageService) {
-            var env = contextService.getConfiguration().env;
-            var lastVersion = storageService.get(UpdateContribution.KEY, storage_1.StorageScope.GLOBAL, '');
-            // was there an update?
-            if (env.releaseNotesUrl && lastVersion && env.version !== lastVersion) {
-                setTimeout(function () {
-                    messageService.show(severity_1.default.Info, {
-                        message: nls.localize('releaseNotes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", env.appName, env.version),
-                        actions: [
-                            CloseAction,
-                            update_1.ShowReleaseNotesAction(env.releaseNotesUrl, true)
-                        ]
-                    });
-                }, 0);
-            }
-            // should we show the new license?
-            if (env.licenseUrl && lastVersion && semver.satisfies(lastVersion, '<1.0.0') && semver.satisfies(env.version, '>=1.0.0')) {
-                setTimeout(function () {
-                    messageService.show(severity_1.default.Info, {
-                        message: nls.localize('licenseChanged', "Our license terms have changed, please go through them.", env.appName, env.version),
-                        actions: [
-                            CloseAction,
-                            ShowLicenseAction(env.licenseUrl)
-                        ]
-                    });
-                }, 0);
-            }
-            storageService.store(UpdateContribution.KEY, env.version, storage_1.StorageScope.GLOBAL);
-        }
-        UpdateContribution.prototype.getId = function () { return 'vs.update'; };
-        UpdateContribution.KEY = 'releaseNotes/lastVersion';
-        UpdateContribution = __decorate([
-            __param(0, storage_1.IStorageService),
-            __param(1, workspace_1.IWorkspaceContextService),
-            __param(2, message_1.IMessageService)
-        ], UpdateContribution);
-        return UpdateContribution;
-    }());
-    exports.UpdateContribution = UpdateContribution;
-    platform_1.Registry.as(contributions_1.Extensions.Workbench)
-        .registerWorkbenchContribution(UpdateContribution);
-});
-//# sourceMappingURL=update.contribution.js.map
+var __decorate=this&&this.__decorate||function(e,o,t,n){var s,r=arguments.length,a=r<3?o:null===n?n=Object.getOwnPropertyDescriptor(o,t):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)a=Reflect.decorate(e,o,t,n);else for(var i=e.length-1;i>=0;i--)(s=e[i])&&(a=(r<3?s(a):r>3?s(o,t,a):s(o,t))||a);return r>3&&a&&Object.defineProperty(o,t,a),a},__param=this&&this.__param||function(e,o){return function(t,n){o(t,n,e)}};define(["require","exports","vs/nls","vs/platform/platform","vs/base/common/winjs.base","vs/workbench/common/contributions","vs/platform/storage/common/storage","vs/platform/workspace/common/workspace","vs/platform/message/common/message","vs/base/common/severity","vs/workbench/electron-browser/update","vs/base/common/actions","electron","semver"],function(e,o,t,n,s,r,a,i,c,l,u,m,p,f){"use strict";var d=new m.Action("close",t.localize("close","Close"),"",(!0),function(){return null}),v=function(e,o,t){return new m.Action(e,o,null,(!0),function(){return p.shell.openExternal(t),s.TPromise.as(null)})},g=function(){function e(o,n,r){var i=n.getConfiguration().env,c=o.get(e.KEY,a.StorageScope.GLOBAL,"");i.releaseNotesUrl&&c&&i.version!==c&&setTimeout(function(){r.show(l["default"].Info,{message:t.localize("releaseNotes","Welcome to {0} v{1}! Would you like to read the Release Notes?",i.appName,i.version),actions:[d,u.ShowReleaseNotesAction(i.releaseNotesUrl,!0)]})},0),
+// should we show the new license?
+i.licenseUrl&&c&&f.satisfies(c,"<1.0.0")&&f.satisfies(i.version,">=1.0.0")&&setTimeout(function(){r.show(l["default"].Info,{message:t.localize("licenseChanged","Our license terms have changed, please go through them.",i.appName,i.version),actions:[d,v("update.showLicense",t.localize("license","Read License"),i.licenseUrl)]})},0);var g=o.getBoolean(e.INSIDER_KEY,a.StorageScope.GLOBAL,!0);g&&/-alpha$|-insider$/.test(i.version)&&setTimeout(function(){r.show(l["default"].Info,{message:t.localize("insiderBuilds","Insider builds are becoming daily builds!",i.appName,i.version),actions:[d,new m.Action("update.neverAgain",t.localize("neverShowAgain","Never Show Again"),"",(!0),function(){return o.store(e.INSIDER_KEY,!1,a.StorageScope.GLOBAL),s.TPromise.as(null)}),new m.Action("update.insiderBuilds",t.localize("readmore","Read More"),"",(!0),function(){return p.shell.openExternal("http://go.microsoft.com/fwlink/?LinkID=798816"),o.store(e.INSIDER_KEY,!1,a.StorageScope.GLOBAL),s.TPromise.as(null)})]})},0),o.store(e.KEY,i.version,a.StorageScope.GLOBAL)}return e.prototype.getId=function(){return"vs.update"},e.KEY="releaseNotes/lastVersion",e.INSIDER_KEY="releaseNotes/shouldShowInsiderDisclaimer",e=__decorate([__param(0,a.IStorageService),__param(1,i.IWorkspaceContextService),__param(2,c.IMessageService)],e)}();o.UpdateContribution=g,n.Registry.as(r.Extensions.Workbench).registerWorkbenchContribution(g)});

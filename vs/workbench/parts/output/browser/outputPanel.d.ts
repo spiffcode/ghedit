@@ -1,0 +1,32 @@
+import { TPromise } from 'vs/base/common/winjs.base';
+import { Action, IAction } from 'vs/base/common/actions';
+import { Builder } from 'vs/base/browser/builder';
+import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IEditorOptions } from 'vs/editor/common/editorCommon';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IEventService } from 'vs/platform/event/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
+import { StringEditor } from 'vs/workbench/browser/parts/editor/stringEditor';
+import { IOutputService } from 'vs/workbench/parts/output/common/output';
+import { IWorkspaceContextService } from 'vs/workbench/services/workspace/common/contextService';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IThemeService } from 'vs/workbench/services/themes/common/themeService';
+export declare class OutputPanel extends StringEditor {
+    private outputService;
+    private toDispose;
+    private actions;
+    constructor(telemetryService: ITelemetryService, instantiationService: IInstantiationService, contextService: IWorkspaceContextService, storageService: IStorageService, messageService: IMessageService, configurationService: IConfigurationService, eventService: IEventService, editorService: IWorkbenchEditorService, modeService: IModeService, themeService: IThemeService, outputService: IOutputService);
+    getId(): string;
+    getActions(): IAction[];
+    getActionItem(action: Action): IActionItem;
+    protected getCodeEditorOptions(): IEditorOptions;
+    setInput(input: EditorInput, options: EditorOptions): TPromise<void>;
+    createEditor(parent: Builder): void;
+    focus(): void;
+    dispose(): void;
+}

@@ -1,28 +1,5 @@
-define(["require", "exports", 'vs/editor/common/modes/languageFeatureRegistry'], function (require, exports, languageFeatureRegistry_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/editor/common/modes/languageFeatureRegistry"],function(e,r,t){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    (function (IndentAction) {
-        IndentAction[IndentAction["None"] = 0] = "None";
-        IndentAction[IndentAction["Indent"] = 1] = "Indent";
-        IndentAction[IndentAction["IndentOutdent"] = 2] = "IndentOutdent";
-        IndentAction[IndentAction["Outdent"] = 3] = "Outdent";
-    })(exports.IndentAction || (exports.IndentAction = {}));
-    var IndentAction = exports.IndentAction;
-    // --- feature registries ------
-    exports.ReferenceSearchRegistry = new languageFeatureRegistry_1.default('referenceSupport');
-    exports.RenameRegistry = new languageFeatureRegistry_1.default('renameSupport');
-    exports.SuggestRegistry = new languageFeatureRegistry_1.default('suggestSupport');
-    exports.ParameterHintsRegistry = new languageFeatureRegistry_1.default('parameterHintsSupport');
-    exports.ExtraInfoRegistry = new languageFeatureRegistry_1.default('extraInfoSupport');
-    exports.OutlineRegistry = new languageFeatureRegistry_1.default('outlineSupport');
-    exports.OccurrencesRegistry = new languageFeatureRegistry_1.default('occurrencesSupport');
-    exports.DeclarationRegistry = new languageFeatureRegistry_1.default('declarationSupport');
-    exports.CodeLensRegistry = new languageFeatureRegistry_1.default('codeLensSupport');
-    exports.QuickFixRegistry = new languageFeatureRegistry_1.default('quickFixSupport');
-    exports.FormatRegistry = new languageFeatureRegistry_1.default('formattingSupport');
-    exports.FormatOnTypeRegistry = new languageFeatureRegistry_1.default('formattingSupport');
-});
-//# sourceMappingURL=modes.js.map
+"use strict";!function(e){e[e.Text=0]="Text",e[e.Read=1]="Read",e[e.Write=2]="Write"}(r.DocumentHighlightKind||(r.DocumentHighlightKind={}));r.DocumentHighlightKind;!function(e){e[e.File=0]="File",e[e.Module=1]="Module",e[e.Namespace=2]="Namespace",e[e.Package=3]="Package",e[e.Class=4]="Class",e[e.Method=5]="Method",e[e.Property=6]="Property",e[e.Field=7]="Field",e[e.Constructor=8]="Constructor",e[e.Enum=9]="Enum",e[e.Interface=10]="Interface",e[e.Function=11]="Function",e[e.Variable=12]="Variable",e[e.Constant=13]="Constant",e[e.String=14]="String",e[e.Number=15]="Number",e[e.Boolean=16]="Boolean",e[e.Array=17]="Array",e[e.Object=18]="Object",e[e.Key=19]="Key",e[e.Null=20]="Null"}(r.SymbolKind||(r.SymbolKind={}));var n,n=r.SymbolKind;!function(e){function r(r){switch(r){case e.Method:return"method";case e.Function:return"function";case e.Constructor:return"constructor";case e.Variable:return"variable";case e.Class:return"class";case e.Interface:return"interface";case e.Namespace:return"namespace";case e.Package:return"package";case e.Module:return"module";case e.Property:return"property";case e.Enum:return"enum";case e.String:return"string";case e.File:return"file";case e.Array:return"array";case e.Number:return"number";case e.Boolean:return"boolean";case e.Object:return"object";case e.Key:return"key";case e.Null:return"null"}return"property"}function t(r){switch(r){case"method":return e.Method;case"function":return e.Function;case"constructor":return e.Constructor;case"variable":return e.Variable;case"class":return e.Class;case"interface":return e.Interface;case"namespace":return e.Namespace;case"package":return e.Package;case"module":return e.Module;case"property":return e.Property;case"enum":return e.Enum;case"string":return e.String;case"file":return e.File;case"array":return e.Array;case"number":return e.Number;case"boolean":return e.Boolean;case"object":return e.Object;case"key":return e.Key;case"null":return e.Null}return e.Property}e.from=r,e.to=t}(n=r.SymbolKind||(r.SymbolKind={})),function(e){e[e.None=0]="None",e[e.Indent=1]="Indent",e[e.IndentOutdent=2]="IndentOutdent",e[e.Outdent=3]="Outdent"}(r.IndentAction||(r.IndentAction={}));r.IndentAction;r.ReferenceProviderRegistry=new t["default"],r.RenameProviderRegistry=new t["default"],r.SuggestRegistry=new t["default"],r.SignatureHelpProviderRegistry=new t["default"],r.HoverProviderRegistry=new t["default"],r.DocumentSymbolProviderRegistry=new t["default"],r.DocumentHighlightProviderRegistry=new t["default"],r.DefinitionProviderRegistry=new t["default"],r.CodeLensProviderRegistry=new t["default"],r.CodeActionProviderRegistry=new t["default"],r.DocumentFormattingEditProviderRegistry=new t["default"],r.DocumentRangeFormattingEditProviderRegistry=new t["default"],r.OnTypeFormattingEditProviderRegistry=new t["default"],r.LinkProviderRegistry=new t["default"]});

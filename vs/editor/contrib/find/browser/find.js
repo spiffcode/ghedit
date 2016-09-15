@@ -1,45 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/platform/contextview/browser/contextView', 'vs/platform/keybinding/common/keybindingService', 'vs/editor/browser/editorBrowserExtensions', 'vs/editor/contrib/find/browser/findWidget', 'vs/editor/contrib/find/common/findController'], function (require, exports, contextView_1, keybindingService_1, editorBrowserExtensions_1, findWidget_1, findController_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(t,e){function r(){this.constructor=t}for(var o in e)e.hasOwnProperty(o)&&(t[o]=e[o]);t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)},__decorate=this&&this.__decorate||function(t,e,r,o){var i,n=arguments.length,s=n<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,r):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(t,e,r,o);else for(var c=t.length-1;c>=0;c--)(i=t[c])&&(s=(n<3?i(s):n>3?i(e,r,s):i(e,r))||s);return n>3&&s&&Object.defineProperty(e,r,s),s},__param=this&&this.__param||function(t,e){return function(r,o){e(r,o,t)}};define(["require","exports","vs/platform/contextview/browser/contextView","vs/platform/keybinding/common/keybinding","vs/editor/browser/editorBrowserExtensions","vs/editor/contrib/find/browser/findWidget","vs/editor/contrib/find/common/findController"],function(t,e,r,o,i,n,s){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var FindController = (function (_super) {
-        __extends(FindController, _super);
-        function FindController(editor, contextViewService, keybindingService) {
-            _super.call(this, editor, keybindingService);
-            this._widget = this._register(new findWidget_1.FindWidget(editor, this, this._state, contextViewService, keybindingService));
-        }
-        FindController.prototype._start = function (opts) {
-            _super.prototype._start.call(this, opts);
-            if (opts.shouldFocus === findController_1.FindStartFocusAction.FocusReplaceInput) {
-                this._widget.focusReplaceInput();
-            }
-            else if (opts.shouldFocus === findController_1.FindStartFocusAction.FocusFindInput) {
-                this._widget.focusFindInput();
-            }
-        };
-        FindController = __decorate([
-            __param(1, contextView_1.IContextViewService),
-            __param(2, keybindingService_1.IKeybindingService)
-        ], FindController);
-        return FindController;
-    }(findController_1.CommonFindController));
-    editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(FindController);
-    editorBrowserExtensions_1.EditorBrowserRegistry.registerEditorContribution(findController_1.SelectionHighlighter);
-});
-//# sourceMappingURL=find.js.map
+"use strict";var c=function(t){function e(e,r,o){t.call(this,e,o),this._widget=this._register(new n.FindWidget(e,this,this._state,r,o))}return __extends(e,t),e.prototype._start=function(e){t.prototype._start.call(this,e),e.shouldFocus===s.FindStartFocusAction.FocusReplaceInput?this._widget.focusReplaceInput():e.shouldFocus===s.FindStartFocusAction.FocusFindInput&&this._widget.focusFindInput()},e=__decorate([__param(1,r.IContextViewService),__param(2,o.IKeybindingService)],e)}(s.CommonFindController);i.EditorBrowserRegistry.registerEditorContribution(c),i.EditorBrowserRegistry.registerEditorContribution(s.SelectionHighlighter)});

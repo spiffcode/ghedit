@@ -2,10 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
-    // Based on material from:
-    /*!
+define(["require","exports"],function(r,e){"use strict";function n(r,e,n){if(!r||!e)return 0;var o=r+e,f=n&&n[o];if("number"==typeof f)return f;for(var i=e.length,a=r.toLowerCase(),c=e.toLowerCase(),s=0,v=0,d=0,b=function(){var n=a.indexOf(c[s],v);return n<0?(d=0,"break"):(d+=1,v===n&&(d+=5),r[n]===e[n]&&(d+=1),0===n?d+=8:u.some(function(e){return e===r[n-1]})?d+=7:t(r.charCodeAt(n))&&(d+=1),v=n+1,void s++)};s<i;){var h=b();if("break"===h)break}return n&&(n[o]=d),d}function t(r){return 65<=r&&r<=90}function o(r,e){if(!r||!e)return!1;for(var n=e.length,t=r.toLowerCase(),o=0,u=-1;o<n;){var f=t.indexOf(e[o],u+1);if(f<0)return!1;u=f,o++}return!0}/*!
+    BEGIN THIRD PARTY
+    */
+/*!
     * string_score.js: String Scoring Algorithm 0.1.22
     *
     * http://joshaven.com/string_score
@@ -18,96 +18,4 @@ define(["require", "exports"], function (require, exports) {
     * Date: Tue Mar 1 2011
     * Updated: Tue Mar 10 2015
     */
-    /**
-     * Compute a score for the given string and the given query.
-     *
-     * Rules:
-     * Character score: 1
-     * Same case bonus: 1
-     * Upper case bonus: 1
-     * Consecutive match bonus: 5
-     * Start of word/path bonus: 7
-     * Start of string bonus: 8
-     */
-    var wordPathBoundary = ['-', '_', ' ', '/', '\\', '.'];
-    function score(target, query, cache) {
-        if (!target || !query) {
-            return 0; // return early if target or query are undefined
-        }
-        var hash = target + query;
-        var cached = cache && cache[hash];
-        if (typeof cached === 'number') {
-            return cached;
-        }
-        var queryLen = query.length;
-        var targetLower = target.toLowerCase();
-        var queryLower = query.toLowerCase();
-        var index = 0;
-        var startAt = 0;
-        var score = 0;
-        var _loop_1 = function() {
-            var indexOf = targetLower.indexOf(queryLower[index], startAt);
-            if (indexOf < 0) {
-                score = 0; // This makes sure that the query is contained in the target
-                return "break";
-            }
-            // Character match bonus
-            score += 1;
-            // Consecutive match bonus
-            if (startAt === indexOf) {
-                score += 5;
-            }
-            // Same case bonus
-            if (target[indexOf] === query[indexOf]) {
-                score += 1;
-            }
-            // Start of word bonus
-            if (indexOf === 0) {
-                score += 8;
-            }
-            else if (wordPathBoundary.some(function (w) { return w === target[indexOf - 1]; })) {
-                score += 7;
-            }
-            else if (isUpper(target.charCodeAt(indexOf))) {
-                score += 1;
-            }
-            startAt = indexOf + 1;
-            index++;
-        };
-        while (index < queryLen) {
-            var state_1 = _loop_1();
-            if (state_1 === "break") break;
-        }
-        if (cache) {
-            cache[hash] = score;
-        }
-        return score;
-    }
-    exports.score = score;
-    function isUpper(code) {
-        return 65 <= code && code <= 90;
-    }
-    /**
-     * A fast method to check if a given string would produce a score > 0 for the given query.
-     */
-    function matches(target, queryLower) {
-        if (!target || !queryLower) {
-            return false; // return early if target or query are undefined
-        }
-        var queryLen = queryLower.length;
-        var targetLower = target.toLowerCase();
-        var index = 0;
-        var lastIndexOf = -1;
-        while (index < queryLen) {
-            var indexOf = targetLower.indexOf(queryLower[index], lastIndexOf + 1);
-            if (indexOf < 0) {
-                return false;
-            }
-            lastIndexOf = indexOf;
-            index++;
-        }
-        return true;
-    }
-    exports.matches = matches;
-});
-//# sourceMappingURL=scorer.js.map
+var u=["-","_"," ","/","\\","."];e.score=n,e.matches=o});

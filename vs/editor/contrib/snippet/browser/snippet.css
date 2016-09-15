@@ -1,13 +1,1 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-.monaco-editor .new-snippet {
-	background-color: rgba(10, 50, 150, 0.1);
-}
-.monaco-editor .snippet-placeholder {
-	background-color: rgba(10, 50, 100, 0.1);
-}
-.monaco-editor .finish-snippet-placeholder {
-	outline: rgba(10, 50, 100, 0.5) solid 1px;
-}
+.monaco-editor.vs .new-snippet{background-color:rgba(10,50,150,.1)}.monaco-editor.hc-black .new-snippet,.monaco-editor.vs-dark .new-snippet{background-color:hsla(210,5%,41%,.1)}.monaco-editor.vs .snippet-placeholder{background-color:rgba(10,50,100,.1)}.monaco-editor.hc-black .snippet-placeholder,.monaco-editor.vs-dark .snippet-placeholder{background-color:hsla(0,0%,49%,.1)}.monaco-editor.vs .finish-snippet-placeholder{outline:1px solid rgba(10,50,100,.5)}.monaco-editor.hc-black .finish-snippet-placeholder,.monaco-editor.vs-dark .finish-snippet-placeholder{outline:1px solid #525252}

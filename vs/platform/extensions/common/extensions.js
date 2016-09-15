@@ -1,9 +1,5 @@
-define(["require", "exports", 'vs/platform/instantiation/common/instantiation'], function (require, exports, instantiation_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/platform/instantiation/common/instantiation"],function(e,t,i){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.IExtensionService = instantiation_1.createDecorator('extensionService');
-});
-//# sourceMappingURL=extensions.js.map
+"use strict";t.IExtensionService=i.createDecorator("extensionService")});

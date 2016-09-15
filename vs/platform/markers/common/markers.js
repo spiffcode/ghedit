@@ -1,14 +1,5 @@
-define(["require", "exports", 'vs/platform/instantiation/common/instantiation'], function (require, exports, instantiation_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/platform/instantiation/common/instantiation"],function(e,r,n){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.IMarkerService = instantiation_1.createDecorator('markerService');
-    (function (MarkerType) {
-        MarkerType[MarkerType["transient"] = 1] = "transient";
-        MarkerType[MarkerType["permanent"] = 2] = "permanent";
-    })(exports.MarkerType || (exports.MarkerType = {}));
-    var MarkerType = exports.MarkerType;
-});
-//# sourceMappingURL=markers.js.map
+"use strict";r.IMarkerService=n.createDecorator("markerService"),function(e){e[e["transient"]=1]="transient",e[e.permanent=2]="permanent"}(r.MarkerType||(r.MarkerType={}));r.MarkerType});

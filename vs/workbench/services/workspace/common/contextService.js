@@ -1,30 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/workbench/common/events', 'vs/platform/instantiation/common/instantiation', 'vs/platform/workspace/common/baseWorkspaceContextService'], function (require, exports, events_1, instantiation_1, baseWorkspaceContextService_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(e,t){function o(){this.constructor=e}for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);e.prototype=null===t?Object.create(t):(o.prototype=t.prototype,new o)};define(["require","exports","vs/workbench/common/events","vs/platform/instantiation/common/instantiation","vs/platform/workspace/common/baseWorkspaceContextService"],function(e,t,o,n,r){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.IWorkspaceContextService = instantiation_1.createDecorator('contextService');
-    var WorkspaceContextService = (function (_super) {
-        __extends(WorkspaceContextService, _super);
-        function WorkspaceContextService(eventService, workspace, configuration, options) {
-            if (options === void 0) { options = {}; }
-            _super.call(this, workspace, configuration, options);
-            this.eventService = eventService;
-            this.serviceId = exports.IWorkspaceContextService;
-        }
-        WorkspaceContextService.prototype.updateOptions = function (key, value) {
-            var oldValue = this.options[key];
-            this.options[key] = value;
-            this.eventService.emit(events_1.EventType.WORKBENCH_OPTIONS_CHANGED, new events_1.OptionsChangeEvent(key, oldValue, value));
-        };
-        return WorkspaceContextService;
-    }(baseWorkspaceContextService_1.BaseWorkspaceContextService));
-    exports.WorkspaceContextService = WorkspaceContextService;
-});
-//# sourceMappingURL=contextService.js.map
+"use strict";t.IWorkspaceContextService=n.createDecorator("contextService");var i=function(e){function t(t,o,n,r){void 0===r&&(r={}),e.call(this,o,n,r),this.eventService=t}return __extends(t,e),t.prototype.updateOptions=function(e,t){var n=this.options[e];this.options[e]=t,this.eventService.emit(o.EventType.WORKBENCH_OPTIONS_CHANGED,new o.OptionsChangeEvent(e,n,t))},t}(r.BaseWorkspaceContextService);t.WorkspaceContextService=i});

@@ -1,1 +1,0 @@
-{"version":3,"file":"statusbarService.js","sourceRoot":"","sources":["../../../../../../src/vs/workbench/services/statusbar/common/statusbarService.ts"],"names":[],"mappings":"AAAA;;;gGAGgG;;IAEhG,YAAY,CAAC;IAKF,yBAAiB,GAAG,+BAAe,CAAoB,kBAAkB,CAAC,CAAC;IAEtF,WAAY,kBAAkB;QAC7B,2DAAI,CAAA;QAAE,6DAAK,CAAA;IACZ,CAAC,EAFW,0BAAkB,KAAlB,0BAAkB,QAE7B;IAFD,IAAY,kBAAkB,GAAlB,0BAEX,CAAA"}

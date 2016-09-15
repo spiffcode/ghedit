@@ -2,36 +2,4 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/base/common/mime', 'vs/workbench/common/editor/stringEditorInput', 'vs/platform/instantiation/common/instantiation'], function (require, exports, mime, strinput, instantiation_1) {
-    "use strict";
-    var DebugStringEditorInput = (function (_super) {
-        __extends(DebugStringEditorInput, _super);
-        function DebugStringEditorInput(name, resourceUrl, description, value, mimeType, singleton, instantiationService) {
-            _super.call(this, name, description, value, mimeType || mime.MIME_TEXT, singleton, instantiationService);
-            this.resourceUrl = resourceUrl;
-        }
-        DebugStringEditorInput.prototype.getResource = function () {
-            return this.resourceUrl;
-        };
-        DebugStringEditorInput = __decorate([
-            __param(6, instantiation_1.IInstantiationService)
-        ], DebugStringEditorInput);
-        return DebugStringEditorInput;
-    }(strinput.StringEditorInput));
-    exports.DebugStringEditorInput = DebugStringEditorInput;
-});
-//# sourceMappingURL=debugEditorInputs.js.map
+var __extends=this&&this.__extends||function(t,e){function r(){this.constructor=t}for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n]);t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)},__decorate=this&&this.__decorate||function(t,e,r,n){var o,i=arguments.length,c=i<3?e:null===n?n=Object.getOwnPropertyDescriptor(e,r):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(t,e,r,n);else for(var s=t.length-1;s>=0;s--)(o=t[s])&&(c=(i<3?o(c):i>3?o(e,r,c):o(e,r))||c);return i>3&&c&&Object.defineProperty(e,r,c),c},__param=this&&this.__param||function(t,e){return function(r,n){e(r,n,t)}};define(["require","exports","vs/base/common/mime","vs/workbench/common/editor/stringEditorInput","vs/platform/instantiation/common/instantiation"],function(t,e,r,n,o){"use strict";var i=function(t){function e(e,n,o,i,c,s,a){t.call(this,e,o,i,c||r.MIME_TEXT,s,a),this.resourceUrl=n}return __extends(e,t),e.prototype.getResource=function(){return this.resourceUrl},e=__decorate([__param(6,o.IInstantiationService)],e)}(n.StringEditorInput);e.DebugStringEditorInput=i});

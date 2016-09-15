@@ -1,5 +1,6 @@
 <!-- Copyright (C) Spiffcode, Inc. All rights reserved. -->
 <!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
+<!-- Forked from vs/workbench/electron-browser/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -8,8 +9,12 @@
 
 		<!-- Theming (do not remove, we want to early load it to avoid flashing background) -->
 		<style>
-			.monaco-shell.vs-dark { background-color: #1E1E1E; }
-			.ghcode-body-startup { margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback"; }
+			.monaco-shell.vs-dark {
+				background-color: #1E1E1E;
+			}
+			.ghcode-body-startup {
+				margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback";
+			}
 		</style>
 
 		<script>
@@ -235,6 +240,25 @@
 				configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 				configuration.workspacePath = args.workspacePath;
 
+				// If we're running on gh-pages the root is '/ghcode'
+				if (window.location.pathname === '/ghcode/') {
+					configuration.rootPath = '/ghcode';
+				} else {
+					// If we're running locally then we're running out of one of the 'out-*' directories
+					configuration.buildType = args.b;
+					switch (configuration.buildType) {
+					case 'opt':
+						configuration.rootPath = '/out-build-opt';
+						break;
+					case 'min':
+						configuration.rootPath = '/out-build-min';
+						break;
+					default:
+						configuration.rootPath = '/out-build'
+						break;
+					}
+				}
+
 				// If there's no repo in the URL, look in sessionStorage, then localStorage
 				if (!args.repo) {
 					args.repo = window.sessionStorage.getItem('githubRepo');
@@ -256,6 +280,9 @@
 					} else if (args.tag) {
 						urlReplace += '&tag=' + args.tag;
 					}
+				}
+				if (args.b) {
+					urlReplace += '&b=' + args.b;
 				}
 				window.history.replaceState(null, '', urlReplace);
 
@@ -340,10 +367,10 @@
 
 				// Load the loader and start loading the workbench
 	// TODO:			var rootUrl = uriFromPath(configuration.appRoot) + '/out';
-				var rootUrl = window.location.pathname == '/ghcode/' ? '/ghcode' : '/out-build';
+				var rootPath = configuration.rootPath;
 				// In the bundled version the nls plugin is packaged with the loader so the NLS Plugins
 				// loads as soon as the loader loads. To be able to have pseudo translation
-				createScript(rootUrl + '/vs/loader.js', function() {
+				createScript(rootPath + '/vs/loader.js', function() {
 					var nlsConfig;
 					try {
 						// TODO: var config = process.env['VSCODE_NLS_CONFIG'];
@@ -355,11 +382,28 @@
 					}
 					if (!nlsConfig) {
 						nlsConfig = { availableLanguages: {} };
+					} else {
+						var locale = nlsConfig.availableLanguages['*'] || 'en';
+						if (locale === 'zh-tw') {
+							locale = 'zh-Hant';
+						} else if (locale === 'zh-cn') {
+							locale = 'zh-Hans';
+						}
+						window.document.documentElement.setAttribute('lang', locale);
 					}
 					require.config({
-						baseUrl: rootUrl,
+						baseUrl: rootPath,
 						'vs/nls': nlsConfig,
-						recordStats: configuration.enablePerformance
+						recordStats: configuration.enablePerformance,
+						ignoreDuplicateModules: [
+							'vs/workbench/parts/search/common/searchQuery'
+						],
+						paths: {
+							'vs/basic-languages': 'monaco-languages',
+							'vs/language/typescript': 'monaco-typescript',
+							'vs/language/json': 'monaco-json',
+							'vs/language/css': 'monaco-css'
+						}
 					});
 					if (nlsConfig.pseudo) {
 						require(['vs/nls'], function(nlsPlugin) {
@@ -369,12 +413,12 @@
 
 					var hasWorkspaceContext = configuration.workspacePath;
 
-					window.GlobalEnvironment = {
+					window.MonacoEnvironment = {
 						'enableTasks': hasWorkspaceContext,
 						'enableSendASmile' : !!configuration.sendASmile
 					};
 
-					var timers = window.GlobalEnvironment.timers = {
+					var timers = window.MonacoEnvironment.timers = {
 						start: new Date()
 					};
 
@@ -414,12 +458,7 @@
 						require.config(loaderConfig, false);
 					}
 
-					require([
-						'forked/workbench.main',
-						'lib/github',
-						'vs/nls!vs/workbench/workbench.main',
-						'vs/css!vs/workbench/workbench.main'
-					], function() {
+					require(['forked/workbench.main'], function() {
 						timers.afterLoad = new Date();
 
 						var main = require('forked/main');
@@ -442,8 +481,11 @@
 			(function() {
 				try {
 					var theme = window.localStorage.getItem('storage://global/workbench.theme');
-					if (theme && theme.indexOf('vs-dark') < 0) {
-						window.document.body.className = 'monaco-shell'; // remove the dark theme class if we are on a light theme
+					if (theme) {
+						var baseTheme = theme.split(' ')[0];
+						if (baseTheme !== 'vs-dark') {
+							window.document.body.className = 'monaco-shell ' + baseTheme;
+						}
 					}
 				} catch (error) {
 					console.error(error);

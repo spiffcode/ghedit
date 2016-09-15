@@ -1,0 +1,38 @@
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IAutoFocus } from 'vs/base/parts/quickopen/common/quickOpen';
+import { QuickOpenModel } from 'vs/base/parts/quickopen/browser/quickOpenModel';
+import { QuickOpenHandler } from 'vs/workbench/browser/quickopen';
+import * as openSymbolHandler from 'vs/workbench/parts/search/browser/openSymbolHandler';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IWorkspaceContextService } from 'vs/workbench/services/workspace/common/contextService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+export import OpenSymbolHandler = openSymbolHandler.OpenSymbolHandler;
+export declare class OpenAnythingHandler extends QuickOpenHandler {
+    private messageService;
+    private contextService;
+    private configurationService;
+    private telemetryService;
+    private static LINE_COLON_PATTERN;
+    private static SYMBOL_SEARCH_INITIAL_TIMEOUT;
+    private static SYMBOL_SEARCH_SUBSEQUENT_TIMEOUT;
+    private static SEARCH_DELAY;
+    private static MAX_DISPLAYED_RESULTS;
+    private openSymbolHandler;
+    private openFileHandler;
+    private resultsToSearchCache;
+    private delayer;
+    private pendingSearch;
+    private isClosed;
+    private scorerCache;
+    constructor(messageService: IMessageService, contextService: IWorkspaceContextService, instantiationService: IInstantiationService, configurationService: IConfigurationService, telemetryService: ITelemetryService);
+    getResults(searchValue: string): TPromise<QuickOpenModel>;
+    private extractRange(value);
+    private getResultsFromCache(searchValue, range?);
+    getGroupLabel(): string;
+    getAutoFocus(searchValue: string): IAutoFocus;
+    onClose(canceled: boolean): void;
+    private cancelPendingSearch();
+    private createTimerEventData(startTime, telemetry);
+}

@@ -1,50 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/base/common/objects', 'vs/platform/instantiation/common/instantiation', 'vs/platform/keybinding/common/keybindingService', 'vs/platform/telemetry/common/telemetry', 'vs/editor/common/editorCommon', 'vs/editor/common/services/codeEditorService', 'vs/editor/browser/widget/codeEditorWidget'], function (require, exports, objects, instantiation_1, keybindingService_1, telemetry_1, editorCommon_1, codeEditorService_1, codeEditorWidget_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(t,e){function o(){this.constructor=t}for(var i in e)e.hasOwnProperty(i)&&(t[i]=e[i]);t.prototype=null===e?Object.create(e):(o.prototype=e.prototype,new o)},__decorate=this&&this.__decorate||function(t,e,o,i){var r,n=arguments.length,a=n<3?e:null===i?i=Object.getOwnPropertyDescriptor(e,o):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)a=Reflect.decorate(t,e,o,i);else for(var s=t.length-1;s>=0;s--)(r=t[s])&&(a=(n<3?r(a):n>3?r(e,o,a):r(e,o))||a);return n>3&&a&&Object.defineProperty(e,o,a),a},__param=this&&this.__param||function(t,e){return function(o,i){e(o,i,t)}};define(["require","exports","vs/base/common/objects","vs/platform/instantiation/common/instantiation","vs/platform/commands/common/commands","vs/platform/keybinding/common/keybinding","vs/platform/telemetry/common/telemetry","vs/editor/common/services/codeEditorService","vs/editor/browser/widget/codeEditorWidget"],function(t,e,o,i,r,n,a,s,p){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var EmbeddedCodeEditorWidget = (function (_super) {
-        __extends(EmbeddedCodeEditorWidget, _super);
-        function EmbeddedCodeEditorWidget(domElement, options, parentEditor, instantiationService, codeEditorService, keybindingService, telemetryService) {
-            var _this = this;
-            _super.call(this, domElement, parentEditor.getRawConfiguration(), instantiationService, codeEditorService, keybindingService, telemetryService);
-            this._parentEditor = parentEditor;
-            this._overwriteOptions = options;
-            // Overwrite parent's options
-            _super.prototype.updateOptions.call(this, this._overwriteOptions);
-            this._lifetimeDispose.push(parentEditor.addListener2(editorCommon_1.EventType.ConfigurationChanged, function (e) { return _this._onParentConfigurationChanged(e); }));
-        }
-        EmbeddedCodeEditorWidget.prototype._onParentConfigurationChanged = function (e) {
-            _super.prototype.updateOptions.call(this, this._parentEditor.getRawConfiguration());
-            _super.prototype.updateOptions.call(this, this._overwriteOptions);
-        };
-        EmbeddedCodeEditorWidget.prototype.updateOptions = function (newOptions) {
-            objects.mixin(this._overwriteOptions, newOptions, true);
-            _super.prototype.updateOptions.call(this, this._overwriteOptions);
-        };
-        EmbeddedCodeEditorWidget = __decorate([
-            __param(3, instantiation_1.IInstantiationService),
-            __param(4, codeEditorService_1.ICodeEditorService),
-            __param(5, keybindingService_1.IKeybindingService),
-            __param(6, telemetry_1.ITelemetryService)
-        ], EmbeddedCodeEditorWidget);
-        return EmbeddedCodeEditorWidget;
-    }(codeEditorWidget_1.CodeEditorWidget));
-    exports.EmbeddedCodeEditorWidget = EmbeddedCodeEditorWidget;
-});
-//# sourceMappingURL=embeddedCodeEditorWidget.js.map
+"use strict";var c=function(t){function e(e,o,i,r,n,a,s,p){var c=this;t.call(this,e,i.getRawConfiguration(),r,n,a,s.createScoped(e),p),this._parentEditor=i,this._overwriteOptions=o,t.prototype.updateOptions.call(this,this._overwriteOptions),this._lifetimeDispose.push(i.onDidChangeConfiguration(function(t){return c._onParentConfigurationChanged(t)}))}return __extends(e,t),e.prototype.getParentEditor=function(){return this._parentEditor},e.prototype._onParentConfigurationChanged=function(e){t.prototype.updateOptions.call(this,this._parentEditor.getRawConfiguration()),t.prototype.updateOptions.call(this,this._overwriteOptions)},e.prototype.updateOptions=function(e){o.mixin(this._overwriteOptions,e,!0),t.prototype.updateOptions.call(this,this._overwriteOptions)},e=__decorate([__param(3,i.IInstantiationService),__param(4,s.ICodeEditorService),__param(5,r.ICommandService),__param(6,n.IKeybindingService),__param(7,a.ITelemetryService)],e)}(p.CodeEditorWidget);e.EmbeddedCodeEditorWidget=c});

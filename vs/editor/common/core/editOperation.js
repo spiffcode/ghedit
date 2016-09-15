@@ -1,46 +1,5 @@
-define(["require", "exports", 'vs/editor/common/core/range'], function (require, exports, range_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/editor/common/core/range"],function(e,r,n){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var EditOperation = (function () {
-        function EditOperation() {
-        }
-        EditOperation.insert = function (position, text) {
-            return {
-                identifier: null,
-                range: new range_1.Range(position.lineNumber, position.column, position.lineNumber, position.column),
-                text: text,
-                forceMoveMarkers: true
-            };
-        };
-        EditOperation.delete = function (range) {
-            return {
-                identifier: null,
-                range: range,
-                text: null,
-                forceMoveMarkers: true
-            };
-        };
-        EditOperation.replace = function (range, text) {
-            return {
-                identifier: null,
-                range: range,
-                text: text,
-                forceMoveMarkers: false
-            };
-        };
-        EditOperation.replaceMove = function (range, text) {
-            return {
-                identifier: null,
-                range: range,
-                text: text,
-                forceMoveMarkers: true
-            };
-        };
-        return EditOperation;
-    }());
-    exports.EditOperation = EditOperation;
-});
-//# sourceMappingURL=editOperation.js.map
+"use strict";var t=function(){function e(){}return e.insert=function(e,r){return{identifier:null,range:new n.Range(e.lineNumber,e.column,e.lineNumber,e.column),text:r,forceMoveMarkers:!0}},e["delete"]=function(e){return{identifier:null,range:e,text:null,forceMoveMarkers:!0}},e.replace=function(e,r){return{identifier:null,range:e,text:r,forceMoveMarkers:!1}},e.replaceMove=function(e,r){return{identifier:null,range:e,text:r,forceMoveMarkers:!0}},e}();r.EditOperation=t});

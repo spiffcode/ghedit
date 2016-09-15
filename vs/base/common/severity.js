@@ -1,53 +1,5 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/strings'], function (require, exports, nls, strings) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/nls","vs/base/common/strings"],function(r,n,e,o){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var Severity;
-    (function (Severity) {
-        Severity[Severity["Ignore"] = 0] = "Ignore";
-        Severity[Severity["Info"] = 1] = "Info";
-        Severity[Severity["Warning"] = 2] = "Warning";
-        Severity[Severity["Error"] = 3] = "Error";
-    })(Severity || (Severity = {}));
-    var Severity;
-    (function (Severity) {
-        var _error = 'error', _warning = 'warning', _warn = 'warn', _info = 'info';
-        var _displayStrings = Object.create(null);
-        _displayStrings[Severity.Error] = nls.localize('sev.error', "Error");
-        _displayStrings[Severity.Warning] = nls.localize('sev.warning', "Warning");
-        _displayStrings[Severity.Info] = nls.localize('sev.info', "Info");
-        /**
-         * Parses 'error', 'warning', 'warn', 'info' in call casings
-         * and falls back to ignore.
-         */
-        function fromValue(value) {
-            if (!value) {
-                return Severity.Ignore;
-            }
-            if (strings.equalsIgnoreCase(_error, value)) {
-                return Severity.Error;
-            }
-            if (strings.equalsIgnoreCase(_warning, value) || strings.equalsIgnoreCase(_warn, value)) {
-                return Severity.Warning;
-            }
-            if (strings.equalsIgnoreCase(_info, value)) {
-                return Severity.Info;
-            }
-            return Severity.Ignore;
-        }
-        Severity.fromValue = fromValue;
-        function toString(value) {
-            return _displayStrings[value] || strings.empty;
-        }
-        Severity.toString = toString;
-        function compare(a, b) {
-            return b - a;
-        }
-        Severity.compare = compare;
-    })(Severity || (Severity = {}));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Severity;
-});
-//# sourceMappingURL=severity.js.map
+"use strict";var a;!function(r){r[r.Ignore=0]="Ignore",r[r.Info=1]="Info",r[r.Warning=2]="Warning",r[r.Error=3]="Error"}(a||(a={}));var a;!function(r){function n(n){return n?o.equalsIgnoreCase(s,n)?r.Error:o.equalsIgnoreCase(t,n)||o.equalsIgnoreCase(u,n)?r.Warning:o.equalsIgnoreCase(f,n)?r.Info:r.Ignore:r.Ignore}function a(r){return g[r]||o.empty}function i(r,n){return n-r}var s="error",t="warning",u="warn",f="info",g=Object.create(null);g[r.Error]=e.localize("sev.error","Error"),g[r.Warning]=e.localize("sev.warning","Warning"),g[r.Info]=e.localize("sev.info","Info"),r.fromValue=n,r.toString=a,r.compare=i}(a||(a={})),Object.defineProperty(n,"__esModule",{value:!0}),n["default"]=a});

@@ -1,31 +1,5 @@
-define(["require", "exports", 'vs/base/common/strings', 'vs/css!./octicons/octicons'], function (require, exports, strings_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/base/common/strings","vs/css!./octicons/octicons"],function(n,e,t){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    function expand(text) {
-        return text.replace(/\$\(([^)]+)\)/g, function (match, g1) {
-            return "<span class=\"octicon octicon-" + g1 + "\"></span>";
-        });
-    }
-    exports.expand = expand;
-    var OcticonLabel = (function () {
-        function OcticonLabel(container) {
-            this._container = container;
-        }
-        Object.defineProperty(OcticonLabel.prototype, "text", {
-            set: function (text) {
-                var innerHTML = text || '';
-                innerHTML = strings_1.escape(innerHTML);
-                innerHTML = expand(innerHTML);
-                this._container.innerHTML = innerHTML;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return OcticonLabel;
-    }());
-    exports.OcticonLabel = OcticonLabel;
-});
-//# sourceMappingURL=octiconLabel.js.map
+"use strict";function c(n){return n.replace(/\$\(([^)]+)\)/g,function(n,e){return'<span class="octicon octicon-'+e+'"></span>'})}e.expand=c;var o=function(){function n(n){this._container=n}return Object.defineProperty(n.prototype,"text",{set:function(n){var e=n||"";e=t.escape(e),e=c(e),this._container.innerHTML=e},enumerable:!0,configurable:!0}),n}();e.OcticonLabel=o});

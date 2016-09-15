@@ -1,48 +1,5 @@
-define(["require", "exports", 'vs/editor/common/core/range', 'vs/editor/common/core/selection'], function (require, exports, range_1, selection_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/editor/common/core/range","vs/editor/common/core/selection"],function(e,n,t,r){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var DeleteLinesCommand = (function () {
-        function DeleteLinesCommand(startLineNumber, endLineNumber, restoreCursorToColumn) {
-            this.startLineNumber = startLineNumber;
-            this.endLineNumber = endLineNumber;
-            this.restoreCursorToColumn = restoreCursorToColumn;
-        }
-        DeleteLinesCommand.createFromSelection = function (selection) {
-            var endLineNumber = selection.endLineNumber;
-            if (selection.startLineNumber < selection.endLineNumber && selection.endColumn === 1) {
-                endLineNumber -= 1;
-            }
-            return new DeleteLinesCommand(selection.startLineNumber, endLineNumber, selection.positionColumn);
-        };
-        DeleteLinesCommand.prototype.getEditOperations = function (model, builder) {
-            if (model.getLineCount() === 1 && model.getLineMaxColumn(1) === 1) {
-                // Model is empty
-                return;
-            }
-            var startLineNumber = this.startLineNumber;
-            var endLineNumber = this.endLineNumber;
-            var startColumn = 1;
-            var endColumn = model.getLineMaxColumn(endLineNumber);
-            if (endLineNumber < model.getLineCount()) {
-                endLineNumber += 1;
-                endColumn = 1;
-            }
-            else if (startLineNumber > 1) {
-                startLineNumber -= 1;
-                startColumn = model.getLineMaxColumn(startLineNumber);
-            }
-            builder.addEditOperation(new range_1.Range(startLineNumber, startColumn, endLineNumber, endColumn), null);
-        };
-        DeleteLinesCommand.prototype.computeCursorState = function (model, helper) {
-            var inverseEditOperations = helper.getInverseEditOperations();
-            var srcRange = inverseEditOperations[0].range;
-            return selection_1.Selection.createSelection(srcRange.endLineNumber, this.restoreCursorToColumn, srcRange.endLineNumber, this.restoreCursorToColumn);
-        };
-        return DeleteLinesCommand;
-    }());
-    exports.DeleteLinesCommand = DeleteLinesCommand;
-});
-//# sourceMappingURL=deleteLinesCommand.js.map
+"use strict";var o=function(){function e(e,n,t){this.startLineNumber=e,this.endLineNumber=n,this.restoreCursorToColumn=t}return e.createFromSelection=function(n){var t=n.endLineNumber;return n.startLineNumber<n.endLineNumber&&1===n.endColumn&&(t-=1),new e(n.startLineNumber,t,n.positionColumn)},e.prototype.getEditOperations=function(e,n){if(1!==e.getLineCount()||1!==e.getLineMaxColumn(1)){var r=this.startLineNumber,o=this.endLineNumber,i=1,u=e.getLineMaxColumn(o);o<e.getLineCount()?(o+=1,u=1):r>1&&(r-=1,i=e.getLineMaxColumn(r)),n.addEditOperation(new t.Range(r,i,o,u),null)}},e.prototype.computeCursorState=function(e,n){var t=n.getInverseEditOperations(),o=t[0].range;return new r.Selection(o.endLineNumber,this.restoreCursorToColumn,o.endLineNumber,this.restoreCursorToColumn)},e}();n.DeleteLinesCommand=o});

@@ -1,0 +1,5 @@
+define(["require","exports"],function(e,i){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";var t=function(){function e(e,i,t){this.viewportTop=0|e.viewportTop,this.viewportHeight=0|e.viewportHeight,this.bigNumbersDelta=0|e.bigNumbersDelta,this.visibleRangesDeltaTop=0|e.visibleRangesDeltaTop,this.startLineNumber=0|e.startLineNumber,this.endLineNumber=0|e.endLineNumber,this.relativeVerticalOffset=e.relativeVerticalOffset,this.visibleRange=i,this._decorations=t.decorations,this._inlineDecorations=t.inlineDecorations}return e.prototype.getDecorationsInViewport=function(){return this._decorations},e.prototype.getInlineDecorationsForLineInViewport=function(e){return e=0|e,this._inlineDecorations[e-this.startLineNumber]},e}();i.ViewLinesViewportData=t});

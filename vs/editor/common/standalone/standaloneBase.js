@@ -1,0 +1,5 @@
+define(["require","exports","vs/base/common/event","vs/base/common/keyCodes","vs/editor/common/core/position","vs/editor/common/core/range","vs/editor/common/core/selection","vs/base/common/winjs.base","vs/base/common/cancellation","vs/base/common/severity","vs/base/common/uri"],function(e,o,n,i,t,c,s,r,a,m,d){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";function l(){return{editor:void 0,languages:void 0,CancellationTokenSource:a.CancellationTokenSource,Emitter:n.Emitter,KeyCode:i.KeyCode,KeyMod:i.KeyMod,Position:t.Position,Range:c.Range,Selection:s.Selection,SelectionDirection:s.SelectionDirection,Severity:m["default"],Promise:r.TPromise,Uri:d["default"]}}o.createMonacoBaseAPI=l});

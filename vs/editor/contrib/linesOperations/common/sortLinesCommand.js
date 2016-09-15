@@ -1,54 +1,5 @@
-define(["require", "exports", 'vs/editor/common/core/editOperation', 'vs/editor/common/core/range'], function (require, exports, editOperation_1, range_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/editor/common/core/editOperation","vs/editor/common/core/range"],function(e,n,t,r){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var SortLinesCommand = (function () {
-        function SortLinesCommand(selection, descending) {
-            this.selection = selection;
-            this.descending = descending;
-        }
-        SortLinesCommand.prototype.getEditOperations = function (model, builder) {
-            var op = sortLines(model, this.selection, this.descending);
-            if (op) {
-                builder.addEditOperation(op.range, op.text);
-            }
-            this.selectionId = builder.trackSelection(this.selection);
-        };
-        SortLinesCommand.prototype.computeCursorState = function (model, helper) {
-            return helper.getTrackedSelection(this.selectionId);
-        };
-        return SortLinesCommand;
-    }());
-    exports.SortLinesCommand = SortLinesCommand;
-    /**
-     * Generate commands for sorting lines on a model.
-     */
-    function sortLines(model, selection, descending) {
-        var startLineNumber = selection.startLineNumber;
-        var endLineNumber = selection.endLineNumber;
-        if (selection.endColumn === 1) {
-            endLineNumber--;
-        }
-        // Nothing to sort if user didn't select anything.
-        if (startLineNumber >= endLineNumber) {
-            return null;
-        }
-        var linesToSort = [];
-        // Get the contents of the selection to be sorted.
-        for (var lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
-            linesToSort.push(model.getLineContent(lineNumber));
-        }
-        var sorted = linesToSort.sort(function (a, b) {
-            return a.toLowerCase().localeCompare(b.toLowerCase());
-        });
-        // If descending, reverse the order.
-        if (descending === true) {
-            sorted = sorted.reverse();
-        }
-        return editOperation_1.EditOperation.replace(new range_1.Range(startLineNumber, 1, endLineNumber, model.getLineMaxColumn(endLineNumber)), sorted.join('\n'));
-    }
-    exports.sortLines = sortLines;
-});
-//# sourceMappingURL=sortLinesCommand.js.map
+"use strict";function i(e,n,t){var r=n.startLineNumber,i=n.endLineNumber;if(1===n.endColumn&&i--,r>=i)return null;for(var o=[],u=r;u<=i;u++)o.push(e.getLineContent(u));var a=o.slice(0);return a.sort(function(e,n){return e.toLowerCase().localeCompare(n.toLowerCase())}),t===!0&&(a=a.reverse()),{startLineNumber:r,endLineNumber:i,before:o,after:a}}function o(e,n,o){var u=i(e,n,o);return u?t.EditOperation.replace(new r.Range(u.startLineNumber,1,u.endLineNumber,e.getLineMaxColumn(u.endLineNumber)),u.after.join("\n")):null}var u=function(){function e(e,n){this.selection=e,this.descending=n}return e.prototype.getEditOperations=function(e,n){var t=o(e,this.selection,this.descending);t&&n.addEditOperation(t.range,t.text),this.selectionId=n.trackSelection(this.selection)},e.prototype.computeCursorState=function(e,n){return n.getTrackedSelection(this.selectionId)},e.canRun=function(e,n,t){var r=i(e,n,t);if(!r)return!1;for(var o=0,u=r.before.length;o<u;o++)if(r.before[o]!==r.after[o])return!0;return!1},e}();n.SortLinesCommand=u});

@@ -1,44 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/nls', 'vs/workbench/browser/parts/editor/binaryEditor', 'vs/workbench/parts/files/common/files', 'vs/platform/telemetry/common/telemetry', 'vs/workbench/services/editor/common/editorService'], function (require, exports, nls, binaryEditor_1, files_1, telemetry_1, editorService_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(e,t){function r(){this.constructor=e}for(var o in t)t.hasOwnProperty(o)&&(e[o]=t[o]);e.prototype=null===t?Object.create(t):(r.prototype=t.prototype,new r)},__decorate=this&&this.__decorate||function(e,t,r,o){var n,i=arguments.length,c=i<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,r):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,r,o);else for(var s=e.length-1;s>=0;s--)(n=e[s])&&(c=(i<3?n(c):i>3?n(t,r,c):n(t,r))||c);return i>3&&c&&Object.defineProperty(t,r,c),c},__param=this&&this.__param||function(e,t){return function(r,o){t(r,o,e)}};define(["require","exports","vs/nls","vs/workbench/browser/parts/editor/binaryEditor","vs/workbench/parts/files/common/files","vs/platform/telemetry/common/telemetry","vs/workbench/services/editor/common/editorService"],function(e,t,r,o,n,i,c){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    /**
-     * An implementation of editor for binary files like images or videos leveraging the FileEditorInput.
-     */
-    var BinaryFileEditor = (function (_super) {
-        __extends(BinaryFileEditor, _super);
-        function BinaryFileEditor(telemetryService, editorService) {
-            _super.call(this, BinaryFileEditor.ID, telemetryService, editorService);
-        }
-        BinaryFileEditor.prototype.getTitle = function () {
-            return this.getInput() ? this.getInput().getName() : nls.localize('binaryFileEditor', "Binary File Viewer");
-        };
-        BinaryFileEditor.prototype.supportsSplitEditor = function () {
-            return true; // yes, we can!
-        };
-        BinaryFileEditor.ID = files_1.BINARY_FILE_EDITOR_ID;
-        BinaryFileEditor = __decorate([
-            __param(0, telemetry_1.ITelemetryService),
-            __param(1, editorService_1.IWorkbenchEditorService)
-        ], BinaryFileEditor);
-        return BinaryFileEditor;
-    }(binaryEditor_1.BaseBinaryResourceEditor));
-    exports.BinaryFileEditor = BinaryFileEditor;
-});
-//# sourceMappingURL=binaryFileEditor.js.map
+"use strict";var s=function(e){function t(r,o){e.call(this,t.ID,r,o)}return __extends(t,e),t.prototype.getTitle=function(){return this.getInput()?this.getInput().getName():r.localize("binaryFileEditor","Binary File Viewer")},t.ID=n.BINARY_FILE_EDITOR_ID,t=__decorate([__param(0,i.ITelemetryService),__param(1,c.IWorkbenchEditorService)],t)}(o.BaseBinaryResourceEditor);t.BinaryFileEditor=s});

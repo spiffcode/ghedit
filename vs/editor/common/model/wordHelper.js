@@ -1,0 +1,5 @@
+define(["require","exports"],function(e,n){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";function r(e){void 0===e&&(e="");for(var r=n.USUAL_WORD_SEPARATORS,t="(-?\\d*\\.\\d\\w*)|([^",i=0;i<r.length;i++)e.indexOf(r[i])>=0||(t+="\\"+r[i]);return t+="\\s]+)",new RegExp(t,"g")}function t(e){var r=n.DEFAULT_WORD_REGEXP;if(e&&e instanceof RegExp)if(e.global)r=e;else{var t="g";e.ignoreCase&&(t+="i"),e.multiline&&(t+="m"),r=new RegExp(e.source,t)}return r.lastIndex=0,r}function i(e,n,r,t){var i,o,u,f,l,R,d=r.match(n);if(d)for(i=0;i<d.length;i++)if(R=d[i].trim(),R.length>0&&(o=r.indexOf(R,u),u=o+R.length,f=t+o+1,l=t+u+1,f<=e&&e<=l))return{word:R,startColumn:f,endColumn:l};return null}n.USUAL_WORD_SEPARATORS="`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",n.createWordRegExp=r,n.DEFAULT_WORD_REGEXP=r(),n.ensureValidWordDefinition=t,n.getWordAtText=i});

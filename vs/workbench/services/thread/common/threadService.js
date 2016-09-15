@@ -1,0 +1,5 @@
+define(["require","exports","vs/platform/instantiation/common/instantiation"],function(t,e,n){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";function i(t,e){return new o((!0),"m"+t,e)}function r(t,e){return new o((!1),"e"+t,e)}e.IThreadService=n.createDecorator("threadService");var o=function(){function t(t,e,n){this.isMain=t,this.id=e,this.methodNames=[];for(var i in n.prototype)"function"==typeof n.prototype[i]&&this.methodNames.push(i)}return t}();e.ProxyIdentifier=o,e.createMainContextProxyIdentifier=i,e.createExtHostContextProxyIdentifier=r});

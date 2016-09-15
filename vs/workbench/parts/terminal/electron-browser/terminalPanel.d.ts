@@ -1,0 +1,60 @@
+import { Action, IAction } from 'vs/base/common/actions';
+import { Builder, Dimension } from 'vs/base/browser/builder';
+import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IKeybindingService, IKeybindingContextKey } from 'vs/platform/keybinding/common/keybinding';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ITerminalProcess, ITerminalService } from 'vs/workbench/parts/terminal/electron-browser/terminal';
+import { IThemeService } from 'vs/workbench/services/themes/common/themeService';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { Panel } from 'vs/workbench/browser/panel';
+import { TPromise } from 'vs/base/common/winjs.base';
+export declare class TerminalPanel extends Panel {
+    private configurationService;
+    private contextMenuService;
+    private instantiationService;
+    private keybindingService;
+    private contextService;
+    private terminalService;
+    private themeService;
+    private messageService;
+    private toDispose;
+    private terminalInstances;
+    private actions;
+    private contextMenuActions;
+    private parentDomElement;
+    private terminalContainer;
+    private currentBaseThemeId;
+    private themeStyleElement;
+    private fontStyleElement;
+    private font;
+    private configurationHelper;
+    constructor(telemetryService: ITelemetryService, configurationService: IConfigurationService, contextMenuService: IContextMenuService, instantiationService: IInstantiationService, keybindingService: IKeybindingService, contextService: IWorkspaceContextService, terminalService: ITerminalService, themeService: IThemeService, messageService: IMessageService);
+    layout(dimension?: Dimension): void;
+    getActions(): IAction[];
+    private getContextMenuActions();
+    getActionItem(action: Action): IActionItem;
+    create(parent: Builder): TPromise<void>;
+    private attachEventListeners();
+    createNewTerminalInstance(terminalProcess: ITerminalProcess, terminalFocusContextKey: IKeybindingContextKey<boolean>): TPromise<void>;
+    closeActiveTerminal(): TPromise<void>;
+    closeTerminal(index: number): TPromise<void>;
+    setVisible(visible: boolean): TPromise<void>;
+    private createTerminal(terminalProcess, terminalFocusContextKey);
+    setActiveTerminal(newActiveIndex: number): void;
+    private onTerminalInstanceExit(terminalInstance);
+    private updateTheme(themeId?);
+    /**
+     * Converts a CSS hex color (#rrggbb) to a CSS rgba color (rgba(r, g, b, a)).
+     */
+    private convertHexCssColorToRgba(hex, alpha);
+    private updateConfig();
+    private updateFont();
+    private fontsDiffer(a, b);
+    private updateCursorBlink();
+    focus(): void;
+    dispose(): void;
+}

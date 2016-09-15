@@ -1,0 +1,1 @@
+define(["require","exports","vs/workbench/parts/markers/browser/markersWorkbenchContributions"],function(r,e,s){"use strict";s.registerContributions()});

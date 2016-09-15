@@ -1,0 +1,1 @@
+define(["require","exports","vs/platform/instantiation/common/extensions","vs/workbench/parts/search/common/replace","vs/workbench/parts/search/browser/replaceService"],function(e,r,n,i,s){"use strict";function t(){n.registerSingleton(i.IReplaceService,s.ReplaceService)}r.registerContributions=t});

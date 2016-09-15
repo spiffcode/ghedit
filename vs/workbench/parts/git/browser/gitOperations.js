@@ -1,39 +1,5 @@
-define(["require", "exports", 'vs/workbench/parts/git/common/git', 'vs/base/common/winjs.base'], function (require, exports, git, winjs) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/workbench/parts/git/common/git","vs/base/common/winjs.base"],function(n,t,i,o){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var GitOperation = (function () {
-        function GitOperation(id, fn) {
-            this.id = id;
-            this.fn = fn;
-            // noop
-        }
-        GitOperation.prototype.run = function () {
-            return this.fn();
-        };
-        GitOperation.prototype.dispose = function () {
-            // noop
-        };
-        return GitOperation;
-    }());
-    exports.GitOperation = GitOperation;
-    var CommandOperation = (function () {
-        function CommandOperation(input) {
-            this.input = input;
-            this.id = git.ServiceOperations.COMMAND;
-            // noop
-        }
-        CommandOperation.prototype.run = function () {
-            return winjs.TPromise.as(null);
-        };
-        CommandOperation.prototype.dispose = function () {
-            this.id = null;
-            this.input = null;
-        };
-        return CommandOperation;
-    }());
-    exports.CommandOperation = CommandOperation;
-});
-//# sourceMappingURL=gitOperations.js.map
+"use strict";var r=function(){function n(n,t){this.id=n,this.fn=t}return n.prototype.run=function(){return this.fn()},n.prototype.dispose=function(){},n}();t.GitOperation=r;var e=function(){function n(n){this.input=n,this.id=i.ServiceOperations.COMMAND}return n.prototype.run=function(){return o.TPromise.as(null)},n.prototype.dispose=function(){this.id=null,this.input=null},n}();t.CommandOperation=e});

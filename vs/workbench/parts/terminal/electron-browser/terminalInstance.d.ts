@@ -1,0 +1,36 @@
+import { Dimension } from 'vs/base/browser/builder';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IKeybindingService, IKeybindingContextKey } from 'vs/platform/keybinding/common/keybinding';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { ITerminalFont } from 'vs/workbench/parts/terminal/electron-browser/terminalConfigHelper';
+import { ITerminalProcess, ITerminalService } from 'vs/workbench/parts/terminal/electron-browser/terminal';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+export declare class TerminalInstance {
+    private terminalProcess;
+    private parentDomElement;
+    private contextMenuService;
+    private contextService;
+    private instantiationService;
+    private keybindingService;
+    private terminalService;
+    private messageService;
+    private terminalFocusContextKey;
+    private onExitCallback;
+    private static eolRegex;
+    private isExiting;
+    private toDispose;
+    private xterm;
+    private terminalDomElement;
+    private wrapperElement;
+    private font;
+    private toggleTabFocusModeKeybindings;
+    constructor(terminalProcess: ITerminalProcess, parentDomElement: HTMLElement, contextMenuService: IContextMenuService, contextService: IWorkspaceContextService, instantiationService: IInstantiationService, keybindingService: IKeybindingService, terminalService: ITerminalService, messageService: IMessageService, terminalFocusContextKey: IKeybindingContextKey<boolean>, onExitCallback: (TerminalInstance) => void);
+    private sanitizeInput(data);
+    layout(dimension: Dimension): void;
+    toggleVisibility(visible: boolean): void;
+    setFont(font: ITerminalFont): void;
+    setCursorBlink(blink: boolean): void;
+    focus(force?: boolean): void;
+    dispose(): void;
+}

@@ -1,48 +1,5 @@
-define(["require", "exports", 'vs/base/common/event', 'vs/editor/common/services/codeEditorService'], function (require, exports, event_1, codeEditorService_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/base/common/event"],function(e,t,o){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var AbstractCodeEditorService = (function () {
-        function AbstractCodeEditorService() {
-            this.serviceId = codeEditorService_1.ICodeEditorService;
-            this._codeEditors = Object.create(null);
-            this._onCodeEditorAdd = new event_1.Emitter();
-            this._onCodeEditorRemove = new event_1.Emitter();
-        }
-        AbstractCodeEditorService.prototype.addCodeEditor = function (editor) {
-            this._codeEditors[editor.getId()] = editor;
-            this._onCodeEditorAdd.fire(editor);
-        };
-        Object.defineProperty(AbstractCodeEditorService.prototype, "onCodeEditorAdd", {
-            get: function () {
-                return this._onCodeEditorAdd.event;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        AbstractCodeEditorService.prototype.removeCodeEditor = function (editor) {
-            if (delete this._codeEditors[editor.getId()]) {
-                this._onCodeEditorRemove.fire(editor);
-            }
-        };
-        Object.defineProperty(AbstractCodeEditorService.prototype, "onCodeEditorRemove", {
-            get: function () {
-                return this._onCodeEditorRemove.event;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        AbstractCodeEditorService.prototype.getCodeEditor = function (editorId) {
-            return this._codeEditors[editorId] || null;
-        };
-        AbstractCodeEditorService.prototype.listCodeEditors = function () {
-            var _this = this;
-            return Object.keys(this._codeEditors).map(function (id) { return _this._codeEditors[id]; });
-        };
-        return AbstractCodeEditorService;
-    }());
-    exports.AbstractCodeEditorService = AbstractCodeEditorService;
-});
-//# sourceMappingURL=abstractCodeEditorService.js.map
+"use strict";var r=function(){function e(){this._codeEditors=Object.create(null),this._onCodeEditorAdd=new o.Emitter,this._onCodeEditorRemove=new o.Emitter}return e.prototype.addCodeEditor=function(e){this._codeEditors[e.getId()]=e,this._onCodeEditorAdd.fire(e)},Object.defineProperty(e.prototype,"onCodeEditorAdd",{get:function(){return this._onCodeEditorAdd.event},enumerable:!0,configurable:!0}),e.prototype.removeCodeEditor=function(e){delete this._codeEditors[e.getId()]&&this._onCodeEditorRemove.fire(e)},Object.defineProperty(e.prototype,"onCodeEditorRemove",{get:function(){return this._onCodeEditorRemove.event},enumerable:!0,configurable:!0}),e.prototype.getCodeEditor=function(e){return this._codeEditors[e]||null},e.prototype.listCodeEditors=function(){var e=this;return Object.keys(this._codeEditors).map(function(t){return e._codeEditors[t]})},e.prototype.getFocusedCodeEditor=function(){for(var e=null,t=this.listCodeEditors(),o=0;o<t.length;o++){var r=t[o];if(r.isFocused())return r;r.hasWidgetFocus()&&(e=r)}return e},e}();t.AbstractCodeEditorService=r});

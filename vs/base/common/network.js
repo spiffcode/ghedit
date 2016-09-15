@@ -1,19 +1,5 @@
-define(["require", "exports"], function (require, exports) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/base/common/winjs.base"],function(e,t,s){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var Schemas;
-    (function (Schemas) {
-        /**
-         * A schema that is used for models that exist in memory
-         * only and that have no correspondence on a server or such.
-         */
-        Schemas.inMemory = 'inmemory';
-        Schemas.http = 'http';
-        Schemas.https = 'https';
-        Schemas.file = 'file';
-    })(Schemas = exports.Schemas || (exports.Schemas = {}));
-});
-//# sourceMappingURL=network.js.map
+"use strict";function n(e){var t=null,n=!1;return new s.TPromise(function(s,a,r){t=new XMLHttpRequest,t.onreadystatechange=function(){n||(4===t.readyState?(t.status>=200&&t.status<300||1223===t.status?s(t):a(t),t.onreadystatechange=function(){}):r(t))},t.open(e.type||"GET",e.url,!0,e.user,e.password),t.responseType=e.responseType||"",Object.keys(e.headers||{}).forEach(function(s){t.setRequestHeader(s,e.headers[s])}),e.customRequestInitializer&&e.customRequestInitializer(t),t.send(e.data)},function(){n=!0,t.abort()})}var a;!function(e){e.inMemory="inmemory",e.vscode="vscode",e.internal="private",e.http="http",e.https="https",e.file="file"}(a=t.Schemas||(t.Schemas={})),t.xhr=n});

@@ -1,0 +1,34 @@
+import 'vs/css!./media/activitybarpart';
+import { Builder } from 'vs/base/browser/builder';
+import { Part } from 'vs/workbench/browser/part';
+import { IViewletService } from 'vs/workbench/services/viewlet/common/viewletService';
+import { IActivityService, IBadge } from 'vs/workbench/services/activity/common/activityService';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IEventService } from 'vs/platform/event/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+export declare class ActivitybarPart extends Part implements IActivityService {
+    private viewletService;
+    private messageService;
+    private telemetryService;
+    private eventService;
+    private contextMenuService;
+    private keybindingService;
+    private instantiationService;
+    _serviceBrand: any;
+    private viewletSwitcherBar;
+    private globalToolBar;
+    private activityActionItems;
+    private viewletIdToActions;
+    constructor(id: string, viewletService: IViewletService, messageService: IMessageService, telemetryService: ITelemetryService, eventService: IEventService, contextMenuService: IContextMenuService, keybindingService: IKeybindingService, instantiationService: IInstantiationService);
+    private registerListeners();
+    private onCompositeOpening(e);
+    private onCompositeClosed(e);
+    showActivity(viewletId: string, badge: IBadge, clazz?: string): void;
+    clearActivity(viewletId: string): void;
+    createContentArea(parent: Builder): Builder;
+    private createViewletSwitcher(div);
+    dispose(): void;
+}

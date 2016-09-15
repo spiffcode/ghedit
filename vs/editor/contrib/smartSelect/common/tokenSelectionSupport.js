@@ -1,56 +1,5 @@
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/editor/common/core/range', 'vs/editor/common/services/modelService', './tokenTree'], function (require, exports, winjs_base_1, range_1, modelService_1, tokenTree_1) {
-    /*---------------------------------------------------------------------------------------------
+var __decorate=this&&this.__decorate||function(e,t,o,n){var r,i=arguments.length,c=i<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,o,n);else for(var s=e.length-1;s>=0;s--)(r=e[s])&&(c=(i<3?r(c):i>3?r(t,o,c):r(t,o))||c);return i>3&&c&&Object.defineProperty(t,o,c),c},__param=this&&this.__param||function(e,t){return function(o,n){t(o,n,e)}};define(["require","exports","vs/base/common/winjs.base","vs/editor/common/core/range","vs/editor/common/services/modelService","./tokenTree"],function(e,t,o,n,r,i){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var TokenSelectionSupport = (function () {
-        function TokenSelectionSupport(modelService) {
-            this._modelService = modelService;
-        }
-        TokenSelectionSupport.prototype.getRangesToPosition = function (resource, position) {
-            return winjs_base_1.TPromise.as(this.getRangesToPositionSync(resource, position));
-        };
-        TokenSelectionSupport.prototype.getRangesToPositionSync = function (resource, position) {
-            var model = this._modelService.getModel(resource), entries = [];
-            if (model) {
-                this._doGetRangesToPosition(model, position).forEach(function (range) {
-                    entries.push({
-                        type: void 0,
-                        range: range
-                    });
-                });
-            }
-            return entries;
-        };
-        TokenSelectionSupport.prototype._doGetRangesToPosition = function (model, position) {
-            var tree = tokenTree_1.build(model), node, lastRange;
-            node = tokenTree_1.find(tree, position);
-            var ranges = [];
-            while (node) {
-                if (!lastRange || !range_1.Range.equalsRange(lastRange, node.range)) {
-                    ranges.push(node.range);
-                }
-                lastRange = node.range;
-                node = node.parent;
-            }
-            ranges = ranges.reverse();
-            return ranges;
-        };
-        TokenSelectionSupport = __decorate([
-            __param(0, modelService_1.IModelService)
-        ], TokenSelectionSupport);
-        return TokenSelectionSupport;
-    }());
-    exports.TokenSelectionSupport = TokenSelectionSupport;
-});
-//# sourceMappingURL=tokenSelectionSupport.js.map
+"use strict";var c=function(){function e(e){this._modelService=e}return e.prototype.getRangesToPosition=function(e,t){return o.TPromise.as(this.getRangesToPositionSync(e,t))},e.prototype.getRangesToPositionSync=function(e,t){var o=this._modelService.getModel(e),n=[];return o&&this._doGetRangesToPosition(o,t).forEach(function(e){n.push({type:void 0,range:e})}),n},e.prototype._doGetRangesToPosition=function(e,t){var o,r,c=i.build(e);o=i.find(c,t);for(var s=[];o;)r&&n.Range.equalsRange(r,o.range)||s.push(o.range),r=o.range,o=o.parent;return s=s.reverse()},e=__decorate([__param(0,r.IModelService)],e)}();t.TokenSelectionSupport=c});

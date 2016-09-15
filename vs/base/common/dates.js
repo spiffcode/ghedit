@@ -2,33 +2,4 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports", 'vs/nls'], function (require, exports, nls) {
-    "use strict";
-    function since(date) {
-        var seconds = (new Date().getTime() - date.getTime()) / 1000;
-        if (seconds < 60) {
-            return nls.localize('diff.seconds.verbose', "just now");
-        }
-        var minutes = seconds / 60;
-        if (minutes < 60) {
-            return Math.floor(minutes) === 1 ? nls.localize('diff.minute.verbose', "1 minute ago") : nls.localize('diff.minutes.verbose', "{0} minutes ago", Math.floor(minutes));
-        }
-        var hours = minutes / 60;
-        if (hours < 24) {
-            return Math.floor(hours) === 1 ? nls.localize('diff.hour.verbose', "1 hour ago") : nls.localize('diff.hours.verbose', "{0} hours ago", Math.floor(hours));
-        }
-        var days = hours / 24;
-        if (Math.floor(days) === 1) {
-            return nls.localize('diff.days.yesterday', "yesterday");
-        }
-        if (days > 6 && days < 8) {
-            return nls.localize('diff.days.week', "a week ago");
-        }
-        if (days > 30 && days < 40) {
-            return nls.localize('diff.days.month', "a month ago");
-        }
-        return nls.localize('diff.days.verbose', "{0} days ago", Math.floor(days));
-    }
-    exports.since = since;
-});
-//# sourceMappingURL=dates.js.map
+define(["require","exports","vs/nls"],function(e,o,a){"use strict";function r(e){var o=((new Date).getTime()-e.getTime())/1e3;if(o<60)return a.localize("diff.seconds.verbose","just now");var r=o/60;if(r<60)return 1===Math.floor(r)?a.localize("diff.minute.verbose","1 minute ago"):a.localize("diff.minutes.verbose","{0} minutes ago",Math.floor(r));var i=r/60;if(i<24)return 1===Math.floor(i)?a.localize("diff.hour.verbose","1 hour ago"):a.localize("diff.hours.verbose","{0} hours ago",Math.floor(i));var f=i/24;return 1===Math.floor(f)?a.localize("diff.days.yesterday","yesterday"):f>6&&f<8?a.localize("diff.days.week","a week ago"):f>30&&f<40?a.localize("diff.days.month","a month ago"):a.localize("diff.days.verbose","{0} days ago",Math.floor(f))}o.since=r});

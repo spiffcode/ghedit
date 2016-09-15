@@ -1,0 +1,5 @@
+define(["require","exports","vs/platform/instantiation/common/instantiation"],function(r,t,o){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";function e(r,t){for(var o in r)if(r[o]===t)return o;throw new Error("Member not found in prototype")}function n(r,t){var o=e(r.prototype,t);r.prototype[o]=function(){for(var r=[],e=0;e<arguments.length;e++)r[e-0]=arguments[e];var n=this;return n.compatWorkerService.CompatWorker(n,o,t,r)}}t.ICompatWorkerService=o.createDecorator("compatWorkerService"),t.CompatWorkerAttr=n});

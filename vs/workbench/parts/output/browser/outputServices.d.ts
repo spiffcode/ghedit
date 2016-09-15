@@ -1,0 +1,30 @@
+import Event from 'vs/base/common/event';
+import { IEventService } from 'vs/platform/event/common/event';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IOutputEvent, IOutputChannel, IOutputService } from 'vs/workbench/parts/output/common/output';
+import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+export declare class OutputService implements IOutputService {
+    private storageService;
+    private instantiationService;
+    private eventService;
+    private lifecycleService;
+    private panelService;
+    _serviceBrand: any;
+    private receivedOutput;
+    private activeChannelId;
+    private _onOutput;
+    private _onOutputChannel;
+    private _onActiveOutputChannel;
+    constructor(storageService: IStorageService, instantiationService: IInstantiationService, eventService: IEventService, lifecycleService: ILifecycleService, panelService: IPanelService);
+    onOutput: Event<IOutputEvent>;
+    onOutputChannel: Event<string>;
+    onActiveOutputChannel: Event<string>;
+    getChannel(id: string): IOutputChannel;
+    private append(channelId, output);
+    getActiveChannel(): IOutputChannel;
+    private getOutput(channelId);
+    private clearOutput(channelId);
+    private showOutput(channelId, preserveFocus?);
+}

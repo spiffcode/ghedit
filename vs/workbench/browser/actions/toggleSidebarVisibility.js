@@ -1,44 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-define(["require", "exports", 'vs/base/common/winjs.base', 'vs/nls', 'vs/platform/platform', 'vs/base/common/actions', 'vs/platform/actions/common/actions', 'vs/workbench/common/actionRegistry', 'vs/workbench/services/part/common/partService', 'vs/base/common/keyCodes'], function (require, exports, winjs_base_1, nls, platform_1, actions_1, actions_2, actionRegistry_1, partService_1, keyCodes_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(e,t){function i(){this.constructor=e}for(var r in t)t.hasOwnProperty(r)&&(e[r]=t[r]);e.prototype=null===t?Object.create(t):(i.prototype=t.prototype,new i)},__decorate=this&&this.__decorate||function(e,t,i,r){var o,n=arguments.length,c=n<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,i):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,i,r);else for(var s=e.length-1;s>=0;s--)(o=e[s])&&(c=(n<3?o(c):n>3?o(t,i,c):o(t,i))||c);return n>3&&c&&Object.defineProperty(t,i,c),c},__param=this&&this.__param||function(e,t){return function(i,r){t(i,r,e)}};define(["require","exports","vs/base/common/winjs.base","vs/nls","vs/platform/platform","vs/base/common/actions","vs/platform/actions/common/actions","vs/workbench/common/actionRegistry","vs/workbench/services/part/common/partService","vs/base/common/keyCodes"],function(e,t,i,r,o,n,c,s,a,l){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var ID = 'workbench.action.toggleSidebarVisibility';
-    var LABEL = nls.localize('toggleSidebar', "Toggle Side Bar Visibility");
-    var ToggleSidebarVisibilityAction = (function (_super) {
-        __extends(ToggleSidebarVisibilityAction, _super);
-        function ToggleSidebarVisibilityAction(id, label, partService) {
-            _super.call(this, id, label);
-            this.partService = partService;
-            this.enabled = !!this.partService;
-        }
-        ToggleSidebarVisibilityAction.prototype.run = function () {
-            var hideSidebar = !this.partService.isSideBarHidden();
-            this.partService.setSideBarHidden(hideSidebar);
-            return winjs_base_1.TPromise.as(null);
-        };
-        ToggleSidebarVisibilityAction = __decorate([
-            __param(2, partService_1.IPartService)
-        ], ToggleSidebarVisibilityAction);
-        return ToggleSidebarVisibilityAction;
-    }(actions_1.Action));
-    exports.ToggleSidebarVisibilityAction = ToggleSidebarVisibilityAction;
-    var registry = platform_1.Registry.as(actionRegistry_1.Extensions.WorkbenchActions);
-    registry.registerWorkbenchAction(new actions_2.SyncActionDescriptor(ToggleSidebarVisibilityAction, ID, LABEL, { primary: keyCodes_1.KeyMod.CtrlCmd | keyCodes_1.KeyCode.KEY_B }), 'View: Toggle Side Bar Visibility', nls.localize('view', "View"));
-});
-//# sourceMappingURL=toggleSidebarVisibility.js.map
+"use strict";var p=function(e){function t(t,i,r){e.call(this,t,i),this.partService=r,this.enabled=!!this.partService}return __extends(t,e),t.prototype.run=function(){var e=!this.partService.isSideBarHidden();return this.partService.setSideBarHidden(e),i.TPromise.as(null)},t.ID="workbench.action.toggleSidebarVisibility",t.LABEL=r.localize("toggleSidebar","Toggle Side Bar Visibility"),t=__decorate([__param(2,a.IPartService)],t)}(n.Action);t.ToggleSidebarVisibilityAction=p;var d=o.Registry.as(s.Extensions.WorkbenchActions);d.registerWorkbenchAction(new c.SyncActionDescriptor(p,p.ID,p.LABEL,{primary:l.KeyMod.CtrlCmd|l.KeyCode.KEY_B}),"View: Toggle Side Bar Visibility",r.localize("view","View"))});

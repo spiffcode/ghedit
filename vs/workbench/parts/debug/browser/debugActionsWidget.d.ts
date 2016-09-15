@@ -1,0 +1,34 @@
+import wbext = require('vs/workbench/common/contributions');
+import debug = require('vs/workbench/parts/debug/common/debug');
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IMessageService } from 'vs/platform/message/common/message';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import IDebugService = debug.IDebugService;
+export declare class DebugActionsWidget implements wbext.IWorkbenchContribution {
+    private messageService;
+    private telemetryService;
+    private debugService;
+    private instantiationService;
+    private storageService;
+    private static ID;
+    private $el;
+    private dragArea;
+    private toDispose;
+    private actionBar;
+    private actions;
+    private pauseAction;
+    private continueAction;
+    private stepBackAction;
+    private isVisible;
+    private isBuilt;
+    constructor(messageService: IMessageService, telemetryService: ITelemetryService, debugService: IDebugService, instantiationService: IInstantiationService, storageService: IStorageService);
+    private registerListeners();
+    private setXCoordinate(x?);
+    getId(): string;
+    private onDebugStateChange(state);
+    private show();
+    private hide();
+    private getActions(instantiationService, state);
+    dispose(): void;
+}

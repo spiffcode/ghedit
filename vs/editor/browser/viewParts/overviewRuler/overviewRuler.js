@@ -1,57 +1,5 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", 'vs/editor/common/viewModel/viewEventHandler', 'vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl'], function (require, exports, viewEventHandler_1, overviewRulerImpl_1) {
-    /*---------------------------------------------------------------------------------------------
+var __extends=this&&this.__extends||function(e,t){function o(){this.constructor=e}for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);e.prototype=null===t?Object.create(t):(o.prototype=t.prototype,new o)};define(["require","exports","vs/editor/common/viewModel/viewEventHandler","vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl"],function(e,t,o,n){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var OverviewRuler = (function (_super) {
-        __extends(OverviewRuler, _super);
-        function OverviewRuler(context, cssClassName, scrollHeight, minimumHeight, maximumHeight, getVerticalOffsetForLine) {
-            _super.call(this);
-            this._context = context;
-            this._overviewRuler = new overviewRulerImpl_1.OverviewRulerImpl(0, cssClassName, scrollHeight, this._context.configuration.editor.lineHeight, minimumHeight, maximumHeight, getVerticalOffsetForLine);
-            this._context.addEventHandler(this);
-        }
-        OverviewRuler.prototype.destroy = function () {
-            this.dispose();
-        };
-        OverviewRuler.prototype.dispose = function () {
-            this._context.removeEventHandler(this);
-            this._overviewRuler.dispose();
-        };
-        OverviewRuler.prototype.onConfigurationChanged = function (e) {
-            if (e.lineHeight) {
-                this._overviewRuler.setLineHeight(this._context.configuration.editor.lineHeight, true);
-                return true;
-            }
-            return false;
-        };
-        OverviewRuler.prototype.onZonesChanged = function () {
-            return true;
-        };
-        OverviewRuler.prototype.onModelFlushed = function () {
-            return true;
-        };
-        OverviewRuler.prototype.onScrollChanged = function (e) {
-            this._overviewRuler.setScrollHeight(e.scrollHeight, true);
-            return _super.prototype.onScrollChanged.call(this, e) || e.scrollHeightChanged;
-        };
-        OverviewRuler.prototype.getDomNode = function () {
-            return this._overviewRuler.getDomNode();
-        };
-        OverviewRuler.prototype.setLayout = function (position) {
-            this._overviewRuler.setLayout(position, true);
-        };
-        OverviewRuler.prototype.setZones = function (zones) {
-            this._overviewRuler.setZones(zones, true);
-        };
-        return OverviewRuler;
-    }(viewEventHandler_1.ViewEventHandler));
-    exports.OverviewRuler = OverviewRuler;
-});
-//# sourceMappingURL=overviewRuler.js.map
+"use strict";var r=function(e){function t(t,o,r,i,s,l){e.call(this),this._context=t,this._overviewRuler=new n.OverviewRulerImpl(0,o,r,this._context.configuration.editor.lineHeight,this._context.configuration.editor.viewInfo.canUseTranslate3d,i,s,l),this._context.addEventHandler(this)}return __extends(t,e),t.prototype.destroy=function(){this.dispose()},t.prototype.dispose=function(){this._context.removeEventHandler(this),this._overviewRuler.dispose()},t.prototype.onConfigurationChanged=function(e){return e.lineHeight?(this._overviewRuler.setLineHeight(this._context.configuration.editor.lineHeight,!0),!0):!!e.viewInfo.canUseTranslate3d&&(this._overviewRuler.setCanUseTranslate3d(this._context.configuration.editor.viewInfo.canUseTranslate3d,!0),!0)},t.prototype.onZonesChanged=function(){return!0},t.prototype.onModelFlushed=function(){return!0},t.prototype.onScrollChanged=function(t){return this._overviewRuler.setScrollHeight(t.scrollHeight,!0),e.prototype.onScrollChanged.call(this,t)||t.scrollHeightChanged},t.prototype.getDomNode=function(){return this._overviewRuler.getDomNode()},t.prototype.setLayout=function(e){this._overviewRuler.setLayout(e,!0)},t.prototype.setZones=function(e){this._overviewRuler.setZones(e,!0)},t}(o.ViewEventHandler);t.OverviewRuler=r});

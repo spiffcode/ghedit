@@ -1,38 +1,5 @@
-define(["require", "exports", 'vs/platform/platform', 'vs/workbench/services/statusbar/common/statusbarService', 'vs/platform/instantiation/common/descriptors'], function (require, exports, platform_1, statusbarService, descriptors_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/platform/platform","vs/platform/statusbar/common/statusbar","vs/platform/instantiation/common/descriptors"],function(t,r,n,s,e){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.StatusbarAlignment = statusbarService.StatusbarAlignment;
-    var StatusbarItemDescriptor = (function () {
-        function StatusbarItemDescriptor(ctor, alignment, priority) {
-            this.syncDescriptor = descriptors_1.createSyncDescriptor(ctor);
-            this.alignment = alignment || exports.StatusbarAlignment.LEFT;
-            this.priority = priority || 0;
-        }
-        return StatusbarItemDescriptor;
-    }());
-    exports.StatusbarItemDescriptor = StatusbarItemDescriptor;
-    var StatusbarRegistry = (function () {
-        function StatusbarRegistry() {
-            this._items = [];
-        }
-        Object.defineProperty(StatusbarRegistry.prototype, "items", {
-            get: function () {
-                return this._items;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        StatusbarRegistry.prototype.registerStatusbarItem = function (descriptor) {
-            this._items.push(descriptor);
-        };
-        return StatusbarRegistry;
-    }());
-    exports.Extensions = {
-        Statusbar: 'workbench.contributions.statusbar'
-    };
-    platform_1.Registry.add(exports.Extensions.Statusbar, new StatusbarRegistry());
-});
-//# sourceMappingURL=statusbar.js.map
+"use strict";r.StatusbarAlignment=s.StatusbarAlignment;var i=function(){function t(t,n,s){this.syncDescriptor=e.createSyncDescriptor(t),this.alignment=n||r.StatusbarAlignment.LEFT,this.priority=s||0}return t}();r.StatusbarItemDescriptor=i;var a=function(){function t(){this._items=[]}return Object.defineProperty(t.prototype,"items",{get:function(){return this._items},enumerable:!0,configurable:!0}),t.prototype.registerStatusbarItem=function(t){this._items.push(t)},t}();r.Extensions={Statusbar:"workbench.contributions.statusbar"},n.Registry.add(r.Extensions.Statusbar,new a)});

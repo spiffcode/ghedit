@@ -1,0 +1,5 @@
+define(["require","exports","vs/editor/common/core/arrays"],function(r,n,t){/*---------------------------------------------------------------------------------------------
+     *  Copyright (c) Microsoft Corporation. All rights reserved.
+     *  Licensed under the MIT License. See License.txt in the project root for license information.
+     *--------------------------------------------------------------------------------------------*/
+"use strict";var e=function(){function r(r,n){this.startIndex=0|r,this.type=n}return r.prototype.equals=function(r){return this.startIndex===r.startIndex&&this.type===r.type},r.findIndexInSegmentsArray=function(r,n){return t.Arrays.findIndexInSegmentsArray(r,n)},r.equalsArray=function(r,n){var t=r.length,e=n.length;if(t!==e)return!1;for(var i=0;i<t;i++)if(!r[i].equals(n[i]))return!1;return!0},r}();n.LineToken=e});

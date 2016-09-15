@@ -1,13 +1,5 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/keyCodes', 'vs/base/browser/browser', 'vs/editor/common/editorCommonExtensions', './quickCommand'], function (require, exports, nls, keyCodes_1, browser, editorCommonExtensions_1, quickCommand_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/nls","vs/base/common/keyCodes","vs/base/browser/browser","vs/platform/keybinding/common/keybinding","vs/editor/common/editorCommon","vs/editor/common/editorCommonExtensions","./quickCommand"],function(o,e,i,t,n,m,r,s,d){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    // Contribute "Quick Command" to context menu
-    editorCommonExtensions_1.CommonEditorRegistry.registerEditorAction(new editorCommonExtensions_1.EditorActionDescriptor(quickCommand_1.QuickCommandAction, quickCommand_1.QuickCommandAction.ID, nls.localize('label', "Command Palette"), {
-        context: editorCommonExtensions_1.ContextKey.EditorFocus,
-        primary: (browser.isIE11orEarlier ? keyCodes_1.KeyMod.Alt | keyCodes_1.KeyCode.F1 : keyCodes_1.KeyCode.F1)
-    }, 'Command Palette'));
-});
-//# sourceMappingURL=quickCommand.contribution.js.map
+"use strict";s.CommonEditorRegistry.registerEditorAction({ctor:d.QuickCommandAction,id:d.QuickCommandAction.ID,label:i.localize("label","Command Palette"),alias:"Command Palette",kbOpts:{context:s.ContextKey.EditorFocus,primary:n.isIE11orEarlier?t.KeyMod.Alt|t.KeyCode.F1:t.KeyCode.F1},menuOpts:{kbExpr:m.KbExpr.has(r.KEYBINDING_CONTEXT_EDITOR_FOCUS)}})});

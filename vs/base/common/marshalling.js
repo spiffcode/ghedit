@@ -1,42 +1,5 @@
-define(["require", "exports", 'vs/base/common/uri'], function (require, exports, uri_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/base/common/uri"],function(e,n,r){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    function stringify(obj) {
-        return JSON.stringify(obj, replacer);
-    }
-    exports.stringify = stringify;
-    function parse(text) {
-        return JSON.parse(text, reviver);
-    }
-    exports.parse = parse;
-    function replacer(key, value) {
-        // URI is done via toJSON-member
-        if (value instanceof RegExp) {
-            return {
-                $mid: 2,
-                source: value.source,
-                flags: (value.global ? 'g' : '') + (value.ignoreCase ? 'i' : '') + (value.multiline ? 'm' : ''),
-            };
-        }
-        return value;
-    }
-    function reviver(key, value) {
-        var marshallingConst;
-        if (value !== void 0 && value !== null) {
-            marshallingConst = value.$mid;
-        }
-        if (marshallingConst === 1) {
-            return uri_1.default.revive(value);
-        }
-        else if (marshallingConst === 2) {
-            return new RegExp(value.source, value.flags);
-        }
-        else {
-            return value;
-        }
-    }
-});
-//# sourceMappingURL=marshalling.js.map
+"use strict";function i(e){return JSON.stringify(e,t)}function u(e){return JSON.parse(e,s)}function t(e,n){return n instanceof RegExp?{$mid:2,source:n.source,flags:(n.global?"g":"")+(n.ignoreCase?"i":"")+(n.multiline?"m":"")}:n}function s(e,n){var i;return void 0!==n&&null!==n&&(i=n.$mid),1===i?r["default"].revive(n):2===i?new RegExp(n.source,n.flags):n}n.stringify=i,n.parse=u});

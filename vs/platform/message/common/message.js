@@ -1,12 +1,5 @@
-define(["require", "exports", 'vs/nls', 'vs/base/common/winjs.base', 'vs/base/common/severity', 'vs/platform/instantiation/common/instantiation', 'vs/base/common/actions'], function (require, exports, nls, winjs_base_1, severity_1, instantiation_1, actions_1) {
-    /*---------------------------------------------------------------------------------------------
+define(["require","exports","vs/nls","vs/base/common/winjs.base","vs/base/common/severity","vs/platform/instantiation/common/instantiation","vs/base/common/actions"],function(e,n,s,o,t,a,c){/*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    exports.CloseAction = new actions_1.Action('close.message', nls.localize('close', "Close"), null, true, function () { return winjs_base_1.TPromise.as(true); });
-    exports.CancelAction = new actions_1.Action('close.message', nls.localize('cancel', "Cancel"), null, true, function () { return winjs_base_1.TPromise.as(true); });
-    exports.IMessageService = instantiation_1.createDecorator('messageService');
-    exports.Severity = severity_1.default;
-});
-//# sourceMappingURL=message.js.map
+"use strict";n.CloseAction=new c.Action("close.message",s.localize("close","Close"),null,(!0),function(){return o.TPromise.as(!0)}),n.LaterAction=new c.Action("later.message",s.localize("later","Later"),null,(!0),function(){return o.TPromise.as(!0)}),n.CancelAction=new c.Action("cancel.message",s.localize("cancel","Cancel"),null,(!0),function(){return o.TPromise.as(!0)}),n.IMessageService=a.createDecorator("messageService"),n.Severity=t["default"]});
