@@ -244,9 +244,23 @@ export class TextFileService extends AbstractTextFileService {
 			opts.defaultId = 2;
 		}
 
+/*
 		const choice = this.windowService.getWindow().showMessageBox(opts);
 
 		return buttons[choice].result;
+*/
+
+		// Need blocking modal behavior because this method returns a result
+		// synchronously.
+		if (window.confirm(nls.localize('saveFileOK', 'OK to save file?'))) {
+			return ConfirmResult.SAVE;
+		} else {
+			if (window.confirm(nls.localize('performActionOK', 'OK to continue action without saving?'))) {
+				return ConfirmResult.DONT_SAVE;
+			} else {
+				return ConfirmResult.CANCEL;
+			}
+		}
 	}
 
 	private mnemonicLabel(label: string): string {
