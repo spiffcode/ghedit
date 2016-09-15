@@ -168,5 +168,9 @@ gulp.task('watch', ['pre-build'], shell.task([
 ]));
 
 gulp.task('push', shell.task([
-	'bin/push'
+	'GIT_DEPLOY_DIR=out-build bin/push'
+]));
+
+gulp.task('push-min', ['build-min'], shell.task([
+	'GIT_DEPLOY_DIR=out-build-min bin/push'
 ]));
