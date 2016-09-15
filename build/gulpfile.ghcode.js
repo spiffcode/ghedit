@@ -78,6 +78,8 @@ function ghcodeLoaderConfig() {
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
 	result.paths.userNavbarItem = 'out-build/userNavbarItem';
 	result.paths.welcomePart = 'out-build/welcomePart';
+	result.paths.menusNavbarItem = 'out-build/menusNavbarItem';
+	result.paths.fakeElectron = 'out-build/fakeElectron';
 
 	// TODO: Is this what we want?
 	// never ship marked in ghcode
