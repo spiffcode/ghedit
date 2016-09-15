@@ -136,11 +136,10 @@ export class MainProcessExtensionService extends AbstractExtensionService<Activa
 
 	// -- called by extension host
 
-	public $onExtensionHostReady(extensionDescriptions: IExtensionDescription[], messages: IMessage[]): TPromise<void> {
+	public $onExtensionHostReady(extensionDescriptions: IExtensionDescription[], messages: IMessage[]): void {
 		ExtensionsRegistry.registerExtensions(extensionDescriptions);
 		messages.forEach((entry) => this._handleMessage(entry));
 		this._triggerOnReady();
-		return;
 	}
 
 	public $onExtensionActivated(extensionId: string): void {
@@ -252,7 +251,7 @@ export class ExtHostExtensionService extends AbstractExtensionService<ExtHostExt
 	 * This class is constructed manually because it is a service, so it doesn't use any ctor injection
 	 */
 	constructor(threadService: IThreadService, telemetryService: ITelemetryService) {
-		super(false);
+		super(true);
 		threadService.registerRemotableInstance(ExtHostExtensionService, this);
 		this._threadService = threadService;
 		this._storage = new ExtHostStorage(threadService);
@@ -304,11 +303,8 @@ export class ExtHostExtensionService extends AbstractExtensionService<ExtHostExt
 	}
 
 	public registrationDone(messages: IMessage[]): void {
-		this._proxy.$onExtensionHostReady(ExtensionsRegistry.getAllExtensionDescriptions(), messages).then(() => {
-			// Wait for the main process to acknowledge its receival of the extensions descriptions
-			// before allowing extensions to be activated
-			this._triggerOnReady();
-		});
+		this._triggerOnReady();
+		this._proxy.$onExtensionHostReady(ExtensionsRegistry.getAllExtensionDescriptions(), messages);
 	}
 
 	// -- overwriting AbstractExtensionService
