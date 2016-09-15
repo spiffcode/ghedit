@@ -62,7 +62,7 @@
     "build-min": "gulp build-min",
     "watch": "gulp watch",
     "push": "gulp push",
-    "push-min": "gulp push-min"
+    "push-min": "gulp push-min",
     "push-min-nobuild": "gulp push-min-nobuild"
   }
 }
