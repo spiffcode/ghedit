@@ -5,13 +5,13 @@
 
 'use strict';
 
-import 'vs/css!./rename';
+import 'vs/css!./renameInputField';
 import {localize} from 'vs/nls';
 import {canceled} from 'vs/base/common/errors';
 import {IDisposable, dispose} from 'vs/base/common/lifecycle';
 import {TPromise} from 'vs/base/common/winjs.base';
 import {Range} from 'vs/editor/common/core/range';
-import {EventType, IPosition, IRange} from 'vs/editor/common/editorCommon';
+import {IPosition, IRange} from 'vs/editor/common/editorCommon';
 import {ContentWidgetPositionPreference, ICodeEditor, IContentWidget, IContentWidgetPosition} from 'vs/editor/browser/editorBrowser';
 
 export default class RenameInputField implements IContentWidget, IDisposable {
@@ -21,6 +21,7 @@ export default class RenameInputField implements IContentWidget, IDisposable {
 	private _domNode: HTMLElement;
 	private _inputField: HTMLInputElement;
 	private _visible: boolean;
+	private _disposables: IDisposable[] = [];
 
 	// Editor.IContentWidget.allowEditorOverflow
 	public allowEditorOverflow: boolean = true;
@@ -28,9 +29,16 @@ export default class RenameInputField implements IContentWidget, IDisposable {
 	constructor(editor: ICodeEditor) {
 		this._editor = editor;
 		this._editor.addContentWidget(this);
+
+		this._disposables.push(editor.onDidChangeConfiguration(e => {
+			if (e.fontInfo) {
+				this.updateFont();
+			}
+		}));
 	}
 
 	public dispose(): void {
+		this._disposables = dispose(this._disposables);
 		this._editor.removeContentWidget(this);
 	}
 
@@ -48,8 +56,20 @@ export default class RenameInputField implements IContentWidget, IDisposable {
 			this._domNode.style.height = `${this._editor.getConfiguration().lineHeight}px`;
 			this._domNode.className = 'monaco-editor rename-box';
 			this._domNode.appendChild(this._inputField);
+
+			this.updateFont();
 		}
 		return this._domNode;
+	}
+
+	private updateFont(): void {
+		if (!this._inputField) {
+			return;
+		}
+
+		const fontInfo = this._editor.getConfiguration().fontInfo;
+		this._inputField.style.fontFamily = fontInfo.fontFamily;
+		this._inputField.style.fontSize = `${ fontInfo.fontSize }px`;
 	}
 
 	public getPosition(): IContentWidgetPosition {
@@ -116,8 +136,8 @@ export default class RenameInputField implements IContentWidget, IDisposable {
 				}
 			};
 
-			disposeOnDone.push(this._editor.addListener2(EventType.CursorSelectionChanged, onCursorChanged));
-			disposeOnDone.push(this._editor.addListener2(EventType.EditorBlur, this._currentCancelInput));
+			disposeOnDone.push(this._editor.onDidChangeCursorSelection(onCursorChanged));
+			disposeOnDone.push(this._editor.onDidBlurEditor(this._currentCancelInput));
 
 			this._show();
 

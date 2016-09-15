@@ -15,7 +15,8 @@ function testGuessIndentation(defaultInsertSpaces:boolean, defaultTabSize:number
 		tabSize: defaultTabSize,
 		insertSpaces: defaultInsertSpaces,
 		detectIndentation: true,
-		defaultEOL: DefaultEndOfLine.LF
+		defaultEOL: DefaultEndOfLine.LF,
+		trimAutoWhitespace: true
 	}));
 	var r = m.getOptions();
 	m.dispose();
@@ -434,12 +435,36 @@ suite('Editor Model - TextModel', () => {
 		], 'mixed whitespace 2');
 	});
 
+	test('validatePosition', () => {
+
+		var m = new TextModel([], TextModel.toRawText('line one\nline two', TextModel.DEFAULT_CREATION_OPTIONS));
+
+		assert.deepEqual(m.validatePosition(new Position(0, 0)), new Position(1, 1));
+		assert.deepEqual(m.validatePosition(new Position(0, 1)), new Position(1, 1));
+
+		assert.deepEqual(m.validatePosition(new Position(1, 1)), new Position(1, 1));
+		assert.deepEqual(m.validatePosition(new Position(1, 2)), new Position(1, 2));
+		assert.deepEqual(m.validatePosition(new Position(1, 30)), new Position(1, 9));
+
+		assert.deepEqual(m.validatePosition(new Position(2, 0)), new Position(2, 1));
+		assert.deepEqual(m.validatePosition(new Position(2, 1)), new Position(2, 1));
+		assert.deepEqual(m.validatePosition(new Position(2, 2)), new Position(2, 2));
+		assert.deepEqual(m.validatePosition(new Position(2, 30)), new Position(2, 9));
+
+		assert.deepEqual(m.validatePosition(new Position(3, 0)), new Position(2, 9));
+		assert.deepEqual(m.validatePosition(new Position(3, 1)), new Position(2, 9));
+		assert.deepEqual(m.validatePosition(new Position(3, 30)), new Position(2, 9));
+
+		assert.deepEqual(m.validatePosition(new Position(30, 30)), new Position(2, 9));
+
+	});
+
 	test('modifyPosition', () => {
 
 		var m = new TextModel([], TextModel.toRawText('line one\nline two', TextModel.DEFAULT_CREATION_OPTIONS));
 		assert.deepEqual(m.modifyPosition(new Position(1,1), 0), new Position(1, 1));
 		assert.deepEqual(m.modifyPosition(new Position(0,0), 0), new Position(1, 1));
-		assert.deepEqual(m.modifyPosition(new Position(30, 1), 0), new Position(2, 1));
+		assert.deepEqual(m.modifyPosition(new Position(30, 1), 0), new Position(2, 9));
 
 		assert.deepEqual(m.modifyPosition(new Position(1,1), 17), new Position(2, 9));
 		assert.deepEqual(m.modifyPosition(new Position(1,1), 1), new Position(1, 2));
@@ -455,13 +480,13 @@ suite('Editor Model - TextModel', () => {
 		assert.deepEqual(m.modifyPosition(new Position(2, 9), -13), new Position(1, 5));
 		assert.deepEqual(m.modifyPosition(new Position(2, 9), -16), new Position(1, 2));
 
-		assert.throws(() => m.modifyPosition(new Position(1, 2), 17));
-		assert.throws(() => m.modifyPosition(new Position(1, 2), 100));
+		assert.deepEqual(m.modifyPosition(new Position(1, 2), 17), new Position(2, 9));
+		assert.deepEqual(m.modifyPosition(new Position(1, 2), 100), new Position(2, 9));
 
-		assert.throws(() => m.modifyPosition(new Position(1, 2), -2));
-		assert.throws(() => m.modifyPosition(new Position(1, 2), -100));
-		assert.throws(() => m.modifyPosition(new Position(2, 2), -100));
-		assert.throws(() => m.modifyPosition(new Position(2, 9), -18));
+		assert.deepEqual(m.modifyPosition(new Position(1, 2), -2), new Position(1, 1));
+		assert.deepEqual(m.modifyPosition(new Position(1, 2), -100), new Position(1, 1));
+		assert.deepEqual(m.modifyPosition(new Position(2, 2), -100), new Position(1, 1));
+		assert.deepEqual(m.modifyPosition(new Position(2, 9), -18), new Position(1, 1));
 	});
 
 	test('normalizeIndentation 1', () => {
@@ -473,6 +498,7 @@ suite('Editor Model - TextModel', () => {
 			options: {
 				tabSize: 4,
 				insertSpaces: false,
+				trimAutoWhitespace: true,
 				defaultEOL: DefaultEndOfLine.LF
 			}
 		});
@@ -511,6 +537,7 @@ suite('Editor Model - TextModel', () => {
 			options: {
 				tabSize: 4,
 				insertSpaces: true,
+				trimAutoWhitespace: true,
 				defaultEOL: DefaultEndOfLine.LF
 			}
 		});
@@ -527,5 +554,158 @@ suite('Editor Model - TextModel', () => {
 		assert.equal(model.normalizeIndentation(' \ta'), '     a');
 
 		model.dispose();
+	});
+});
+
+suite('TextModel.getLineIndentGuide', () => {
+	function assertIndentGuides(lines:[number,string][]): void {
+		let text = lines.map(l => l[1]).join('\n');
+		let model = new TextModel([], TextModel.toRawText(text, TextModel.DEFAULT_CREATION_OPTIONS));
+
+		let actual: [number,string][] = [];
+		for (let line = 1; line <= model.getLineCount(); line++) {
+			actual[line - 1] = [model.getLineIndentGuide(line), model.getLineContent(line)];
+		}
+
+		// let expected = lines.map(l => l[0]);
+
+		assert.deepEqual(actual, lines);
+
+		model.dispose();
+	}
+
+	test('getLineIndentGuide one level', () => {
+		assertIndentGuides([
+			[0, 'A'],
+			[1, '  A'],
+			[1, '  A'],
+			[1, '  A'],
+		]);
+	});
+
+	test('getLineIndentGuide two levels', () => {
+		assertIndentGuides([
+			[0, 'A'],
+			[1, '  A'],
+			[1, '  A'],
+			[1, '    A'],
+			[1, '    A'],
+		]);
+	});
+
+	test('getLineIndentGuide three levels', () => {
+		assertIndentGuides([
+			[0, 'A'],
+			[1, '  A'],
+			[1, '    A'],
+			[2, '      A'],
+			[0, 'A'],
+		]);
+	});
+
+	test('getLineIndentGuide decreasing indent', () => {
+		assertIndentGuides([
+			[0, '    A'],
+			[0, '  A'],
+			[0, 'A'],
+		]);
+	});
+
+	test('getLineIndentGuide Java', () => {
+		assertIndentGuides([
+			/* 1*/[0, 'class A {'],
+			/* 2*/[1, '  void foo() {'],
+			/* 3*/[1, '    console.log(1);'],
+			/* 4*/[1, '    console.log(2);'],
+			/* 5*/[1, '  }'],
+			/* 6*/[1, ''],
+			/* 7*/[1, '  void bar() {'],
+			/* 8*/[1, '    console.log(3);'],
+			/* 9*/[1, '  }'],
+			/*10*/[0, '}'],
+			/*11*/[0, 'interface B {'],
+			/*12*/[1, '  void bar();'],
+			/*13*/[0, '}'],
+		]);
+	});
+
+	test('getLineIndentGuide Javadoc', () => {
+		assertIndentGuides([
+			[0, '/**'],
+			[1, ' * Comment'],
+			[1, ' */'],
+			[0, 'class A {'],
+			[1, '  void foo() {'],
+			[1, '  }'],
+			[0, '}'],
+		]);
+	});
+
+	test('getLineIndentGuide Whitespace', () => {
+		assertIndentGuides([
+			[0, 'class A {'],
+			[1, ''],
+			[1, '  void foo() {'],
+			[1, '     '],
+			[1, '     return 1;'],
+			[1, '  }'],
+			[1, '      '],
+			[0, '}'],
+		]);
+	});
+
+	test('getLineIndentGuide Tabs', () => {
+		assertIndentGuides([
+			[0, 'class A {'],
+			[1, '\t\t'],
+			[1, '\tvoid foo() {'],
+			[2, '\t \t//hello'],
+			[2, '\t    return 2;'],
+			[1, '  \t}'],
+			[1, '      '],
+			[0, '}'],
+		]);
+	});
+
+	test('getLineIndentGuide checker.ts', () => {
+		assertIndentGuides([
+			/* 1*/[ 0, '/// <reference path="binder.ts"/>'],
+			/* 2*/[ 0, ''],
+			/* 3*/[ 0, '/* @internal */'],
+			/* 4*/[ 0, 'namespace ts {'],
+			/* 5*/[ 1, '    let nextSymbolId = 1;'],
+			/* 6*/[ 1, '    let nextNodeId = 1;'],
+			/* 7*/[ 1, '    let nextMergeId = 1;'],
+			/* 8*/[ 1, '    let nextFlowId = 1;'],
+			/* 9*/[ 1, ''],
+			/*10*/[ 1, '    export function getNodeId(node: Node): number {'],
+			/*11*/[ 2, '        if (!node.id) {'],
+			/*12*/[ 3, '            node.id = nextNodeId;'],
+			/*13*/[ 3, '            nextNodeId++;'],
+			/*14*/[ 2, '        }'],
+			/*15*/[ 2, '        return node.id;'],
+			/*16*/[ 1, '    }'],
+			/*17*/[ 0, '}'],
+		]);
+	});
+
+	test('issue #8425 - Missing indentation lines for first level indentation', () => {
+		assertIndentGuides([
+			[1, '\tindent1'],
+			[2, '\t\tindent2'],
+			[2, '\t\tindent2'],
+			[1, '\tindent1'],
+		]);
+	});
+
+	test('issue #8952 - Indentation guide lines going through text on .yml file', () => {
+		assertIndentGuides([
+			[0, 'properties:'],
+			[1, '    emailAddress:'],
+			[2, '        - bla'],
+			[2, '        - length:'],
+			[3, '            max: 255'],
+			[0, 'getters:'],
+		]);
 	});
 });

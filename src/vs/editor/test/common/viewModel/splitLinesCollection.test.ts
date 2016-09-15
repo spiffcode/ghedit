@@ -11,7 +11,6 @@ import {PrefixSumComputer} from 'vs/editor/common/viewModel/prefixSumComputer';
 import {ILineMapping, IModel, SplitLine, SplitLinesCollection} from 'vs/editor/common/viewModel/splitLinesCollection';
 import {MockConfiguration} from 'vs/editor/test/common/mocks/mockConfiguration';
 import {Model} from 'vs/editor/common/model/model';
-import * as editorCommon from 'vs/editor/common/editorCommon';
 
 suite('Editor ViewModel - SplitLinesCollection', () => {
 	test('SplitLine', () => {
@@ -84,27 +83,27 @@ suite('Editor ViewModel - SplitLinesCollection', () => {
 		let config = new MockConfiguration({});
 
 		let hardWrappingLineMapperFactory = new CharacterHardWrappingLineMapperFactory(
-			config.editor.wordWrapBreakBeforeCharacters,
-			config.editor.wordWrapBreakAfterCharacters,
-			config.editor.wordWrapBreakObtrusiveCharacters
+			config.editor.wrappingInfo.wordWrapBreakBeforeCharacters,
+			config.editor.wrappingInfo.wordWrapBreakAfterCharacters,
+			config.editor.wrappingInfo.wordWrapBreakObtrusiveCharacters
 		);
 
-		let model = new Model([
+		let model = Model.createFromString([
 			'int main() {',
 			'\tprintf("Hello world!");',
 			'}',
 			'int main() {',
 			'\tprintf("Hello world!");',
 			'}',
-		].join('\n'), Model.DEFAULT_CREATION_OPTIONS, null);
+		].join('\n'));
 
 		let linesCollection = new SplitLinesCollection(
 			model,
 			hardWrappingLineMapperFactory,
 			model.getOptions().tabSize,
 			config.editor.wrappingInfo.wrappingColumn,
-			config.editor.typicalFullwidthCharacterWidth / config.editor.typicalHalfwidthCharacterWidth,
-			editorCommon.wrappingIndentFromString(config.editor.wrappingIndent)
+			config.editor.fontInfo.typicalFullwidthCharacterWidth / config.editor.fontInfo.typicalHalfwidthCharacterWidth,
+			config.editor.wrappingInfo.wrappingIndent
 		);
 
 		linesCollection.setHiddenAreas([{

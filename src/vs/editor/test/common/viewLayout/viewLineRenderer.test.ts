@@ -5,8 +5,8 @@
 'use strict';
 
 import * as assert from 'assert';
-import {ViewLineToken} from 'vs/editor/common/editorCommon';
 import {renderLine, RenderLineInput} from 'vs/editor/common/viewLayout/viewLineRenderer';
+import {ViewLineToken} from 'vs/editor/common/core/viewLineToken';
 
 suite('viewLineRenderer.renderLine', () => {
 
@@ -20,6 +20,7 @@ suite('viewLineRenderer.renderLine', () => {
 			tabSize,
 			0,
 			-1,
+			false,
 			false,
 			[createPart(0, '')]
 		));
@@ -62,6 +63,7 @@ suite('viewLineRenderer.renderLine', () => {
 			0,
 			-1,
 			false,
+			false,
 			parts
 		));
 
@@ -92,6 +94,7 @@ suite('viewLineRenderer.renderLine', () => {
 			10,
 			6,
 			true,
+			false,
 			[
 				createPart( 0,  '0'),
 				createPart( 1,  '1'),
@@ -180,6 +183,7 @@ suite('viewLineRenderer.renderLine', () => {
 			10,
 			-1,
 			true,
+			false,
 			lineParts
 		));
 
@@ -234,6 +238,7 @@ suite('viewLineRenderer.renderLine', () => {
 			10,
 			-1,
 			false,
+			false,
 			lineParts
 		));
 
@@ -287,6 +292,7 @@ suite('viewLineRenderer.renderLine', () => {
 			4,
 			10,
 			-1,
+			false,
 			false,
 			lineParts
 		));

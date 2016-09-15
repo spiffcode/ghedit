@@ -12,19 +12,21 @@ import {ILineTokens, IMode, ITokenizationSupport} from 'vs/editor/common/modes';
 import {TMState} from 'vs/editor/common/modes/TMState';
 import {LineTokens, Token} from 'vs/editor/common/modes/supports';
 import {IModeService} from 'vs/editor/common/services/modeService';
-import {IGrammar, Registry} from 'vscode-textmate';
+import {IGrammar, Registry, StackElement} from 'vscode-textmate';
 import {ModeTransition} from 'vs/editor/common/core/modeTransition';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 
 export interface ITMSyntaxExtensionPoint {
 	language: string;
 	scopeName: string;
 	path: string;
+	injectTo: string[];
 }
 
 let grammarsExtPoint = ExtensionsRegistry.registerExtensionPoint<ITMSyntaxExtensionPoint[]>('grammars', {
 	description: nls.localize('vscode.extension.contributes.grammars', 'Contributes textmate tokenizers.'),
 	type: 'array',
-	defaultSnippets: [ { body: [{ id: '', extensions: [] }] }],
+	defaultSnippets: [ { body: [{ language: '{{id}}', scopeName: 'source.{{id}}', path: './syntaxes/{{id}}.tmLanguage.'}] }],
 	items: {
 		type: 'object',
 		defaultSnippets: [ { body: { language: '{{id}}', scopeName: 'source.{{id}}', path: './syntaxes/{{id}}.tmLanguage.'} }],
@@ -40,26 +42,53 @@ let grammarsExtPoint = ExtensionsRegistry.registerExtensionPoint<ITMSyntaxExtens
 			path: {
 				description: nls.localize('vscode.extension.contributes.grammars.path', 'Path of the tmLanguage file. The path is relative to the extension folder and typically starts with \'./syntaxes/\'.'),
 				type: 'string'
+			},
+			injectTo: {
+				description: nls.localize('vscode.extension.contributes.grammars.injectTo', 'List of language scope names to which this grammar is injected to.'),
+				type: 'array',
+				items: {
+					type: 'string'
+				}
 			}
-		}
+		},
+		require: ['scopeName', 'path']
 	}
 });
+
+interface MyEditorConfig {
+	useExperimentalParser: boolean;
+}
 
 export class MainProcessTextMateSyntax {
 	private _grammarRegistry: Registry;
 	private _modeService: IModeService;
 	private _scopeNameToFilePath: { [scopeName:string]: string; };
+	private _injections: { [scopeName:string]: string[]; };
 
 	constructor(
-		@IModeService modeService: IModeService
+		@IModeService modeService: IModeService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		this._modeService = modeService;
+		this._scopeNameToFilePath = {};
+		this._injections = {};
+
+		let editorConfig = configurationService.getConfiguration<MyEditorConfig>('editor');
+		let useExperimentalParser = true;
+		if (typeof editorConfig.useExperimentalParser !== 'undefined') {
+			if (Boolean(editorConfig.useExperimentalParser) === false) {
+				useExperimentalParser = false;
+			}
+		}
+
 		this._grammarRegistry = new Registry({
 			getFilePath: (scopeName:string) => {
 				return this._scopeNameToFilePath[scopeName];
+			},
+			getInjections: (scopeName:string) => {
+				return this._injections[scopeName];
 			}
-		});
-		this._scopeNameToFilePath = {};
+		}, useExperimentalParser);
 
 		grammarsExtPoint.setHandler((extensions) => {
 			for (let i = 0; i < extensions.length; i++) {
@@ -84,6 +113,10 @@ export class MainProcessTextMateSyntax {
 			collector.error(nls.localize('invalid.path.0', "Expected string in `contributes.{0}.path`. Provided value: {1}", grammarsExtPoint.name, String(syntax.path)));
 			return;
 		}
+		if (syntax.injectTo && (!Array.isArray(syntax.injectTo) || syntax.injectTo.some(scope => typeof scope !== 'string'))) {
+			collector.error(nls.localize('invalid.injectTo', "Invalid value in `contributes.{0}.injectTo`. Must be an array of language scope names. Provided value: {1}", grammarsExtPoint.name, JSON.stringify(syntax.injectTo)));
+			return;
+		}
 		let normalizedAbsolutePath = paths.normalize(paths.join(extensionFolderPath, syntax.path));
 
 		if (normalizedAbsolutePath.indexOf(extensionFolderPath) !== 0) {
@@ -91,6 +124,16 @@ export class MainProcessTextMateSyntax {
 		}
 
 		this._scopeNameToFilePath[syntax.scopeName] = normalizedAbsolutePath;
+
+		if (syntax.injectTo) {
+			for (let injectScope of syntax.injectTo) {
+				let injections = this._injections[injectScope];
+				if (!injections) {
+					this._injections[injectScope] = injections = [];
+				}
+				injections.push(syntax.scopeName);
+			}
+		}
 
 		let modeId = syntax.language;
 		if (modeId) {
@@ -121,14 +164,13 @@ export class MainProcessTextMateSyntax {
 function createTokenizationSupport(mode: IMode, grammar: IGrammar): ITokenizationSupport {
 	var tokenizer = new Tokenizer(mode.getId(), grammar);
 	return {
-		shouldGenerateEmbeddedModels: false,
 		getInitialState: () => new TMState(mode, null, null),
 		tokenize: (line, state, offsetDelta?, stopAtOffset?) => tokenizer.tokenize(line, <TMState> state, offsetDelta, stopAtOffset)
 	};
 }
 
 export class DecodeMap {
-	_decodeMapTrait: void;
+	_decodeMapBrand: void;
 
 	lastAssignedId: number;
 	scopeToTokenIds: { [scope:string]:number[]; };
@@ -186,7 +228,7 @@ export class DecodeMap {
 }
 
 export class TMTokenDecodeData {
-	_tmTokenDecodeDataTrait: void;
+	_tmTokenDecodeDataBrand: void;
 
 	public scopes: string[];
 	public scopeTokensMaps: boolean[][];
@@ -195,6 +237,15 @@ export class TMTokenDecodeData {
 		this.scopes = scopes;
 		this.scopeTokensMaps = scopeTokensMaps;
 	}
+}
+
+function depth(stackElement: StackElement): number {
+	let result = 0;
+	while (stackElement) {
+		result++;
+		stackElement = stackElement._parent;
+	}
+	return result;
 }
 
 class Tokenizer {
@@ -209,7 +260,9 @@ class Tokenizer {
 	}
 
 	public tokenize(line: string, state: TMState, offsetDelta: number = 0, stopAtOffset?: number): ILineTokens {
-		if (line.length >= 20000) {
+		// Do not attempt to tokenize if a line has over 20k
+		// or if the rule stack contains more than 30 rules (indicator of broken grammar that forgets to pop rules)
+		if (line.length >= 20000 || depth(state.getRuleStack()) > 30) {
 			return new LineTokens(
 				[new Token(offsetDelta, '')],
 				[new ModeTransition(offsetDelta, state.getMode())],

@@ -6,11 +6,12 @@
 
 import {IDisposable} from 'vs/base/common/lifecycle';
 import * as dom from 'vs/base/browser/dom';
-import {StandardMouseEvent} from 'vs/base/browser/mouseEvent';
 import {EventType, Gesture, GestureEvent} from 'vs/base/browser/touch';
 import {IScrollEvent} from 'vs/editor/common/editorCommon';
-import {MouseHandler} from 'vs/editor/browser/controller/mouseHandler';
-import {IPointerHandlerHelper, IViewContext, IViewController} from 'vs/editor/browser/editorBrowser';
+import {MouseHandler, IPointerHandlerHelper} from 'vs/editor/browser/controller/mouseHandler';
+import {IViewController} from 'vs/editor/browser/editorBrowser';
+import {ViewContext} from 'vs/editor/common/view/viewContext';
+import {EditorMouseEvent} from 'vs/editor/browser/editorDom';
 
 interface IThrottledGestureEvent {
 	translationX: number;
@@ -37,7 +38,7 @@ class MsPointerHandler extends MouseHandler implements IDisposable {
 	private _lastPointerType: string;
 	private _installGestureHandlerTimeout: number;
 
-	constructor(context:IViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
+	constructor(context:ViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
 		super(context, viewController, viewHelper);
 
 		this.viewHelper.linesContentDomNode.style.msTouchAction = 'none';
@@ -73,15 +74,15 @@ class MsPointerHandler extends MouseHandler implements IDisposable {
 		this._lastPointerType = 'mouse';
 	}
 
-	public _onMouseDown(e:MouseEvent): void {
+	public _onMouseDown(e:EditorMouseEvent): void {
 		if (this._lastPointerType === 'mouse') {
 			super._onMouseDown(e);
 		}
 	}
 
 	private _onCaptureGestureTap(rawEvent: MSGestureEvent): void {
-		var e = new StandardMouseEvent(<MouseEvent><any>rawEvent);
-		var t = this._createMouseTarget(e, false);
+		let e = new EditorMouseEvent(<MouseEvent><any>rawEvent, this.viewHelper.viewDomNode);
+		let t = this._createMouseTarget(e, false);
 		if (t.position) {
 			this.viewController.moveTo('mouse', t.position);
 		}
@@ -98,8 +99,10 @@ class MsPointerHandler extends MouseHandler implements IDisposable {
 	}
 
 	private _onGestureChange(e:IThrottledGestureEvent): void {
-		this.viewHelper.setScrollTop(this.viewHelper.getScrollTop() - e.translationY);
-		this.viewHelper.setScrollLeft(this.viewHelper.getScrollLeft() - e.translationX);
+		this.viewHelper.setScrollPosition({
+			scrollLeft: this.viewHelper.getScrollLeft() - e.translationX,
+			scrollTop: this.viewHelper.getScrollTop() - e.translationY,
+		});
 	}
 
 	public dispose(): void {
@@ -116,7 +119,7 @@ class StandardPointerHandler extends MouseHandler implements IDisposable {
 	private _lastPointerType: string;
 	private _installGestureHandlerTimeout: number;
 
-	constructor(context:IViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
+	constructor(context:ViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
 		super(context, viewController, viewHelper);
 
 		this.viewHelper.linesContentDomNode.style.touchAction = 'none';
@@ -152,15 +155,15 @@ class StandardPointerHandler extends MouseHandler implements IDisposable {
 		this._lastPointerType = 'mouse';
 	}
 
-	public _onMouseDown(e:MouseEvent): void {
+	public _onMouseDown(e:EditorMouseEvent): void {
 		if (this._lastPointerType === 'mouse') {
 			super._onMouseDown(e);
 		}
 	}
 
 	private _onCaptureGestureTap(rawEvent: MSGestureEvent): void {
-		var e = new StandardMouseEvent(<MouseEvent><any>rawEvent);
-		var t = this._createMouseTarget(e, false);
+		let e = new EditorMouseEvent(<MouseEvent><any>rawEvent, this.viewHelper.viewDomNode);
+		let t = this._createMouseTarget(e, false);
 		if (t.position) {
 			this.viewController.moveTo('mouse', t.position);
 		}
@@ -177,8 +180,10 @@ class StandardPointerHandler extends MouseHandler implements IDisposable {
 	}
 
 	private _onGestureChange(e:IThrottledGestureEvent): void {
-		this.viewHelper.setScrollTop(this.viewHelper.getScrollTop() - e.translationY);
-		this.viewHelper.setScrollLeft(this.viewHelper.getScrollLeft() - e.translationX);
+		this.viewHelper.setScrollPosition({
+			scrollLeft: this.viewHelper.getScrollLeft() - e.translationX,
+			scrollTop: this.viewHelper.getScrollTop() - e.translationY,
+		});
 	}
 
 	public dispose(): void {
@@ -191,14 +196,14 @@ class TouchHandler extends MouseHandler {
 
 	private gesture:Gesture;
 
-	constructor(context:IViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
+	constructor(context:ViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
 		super(context, viewController, viewHelper);
 
 		this.gesture = new Gesture(this.viewHelper.linesContentDomNode);
 
 		this.listenersToRemove.push(dom.addDisposableListener(this.viewHelper.linesContentDomNode, EventType.Tap, (e) => this.onTap(e)));
 		this.listenersToRemove.push(dom.addDisposableListener(this.viewHelper.linesContentDomNode, EventType.Change, (e) => this.onChange(e)));
-		this.listenersToRemove.push(dom.addDisposableListener(this.viewHelper.linesContentDomNode, EventType.Contextmenu, (e: MouseEvent) => this._onContextMenu(e, false)));
+		this.listenersToRemove.push(dom.addDisposableListener(this.viewHelper.linesContentDomNode, EventType.Contextmenu, (e: MouseEvent) => this._onContextMenu(new EditorMouseEvent(e, this.viewHelper.viewDomNode), false)));
 
 	}
 
@@ -212,24 +217,25 @@ class TouchHandler extends MouseHandler {
 
 		this.viewHelper.focusTextArea();
 
-		var mouseEvent = new StandardMouseEvent(event);
-		var target = this._createMouseTarget(mouseEvent, false);
+		let target = this._createMouseTarget(new EditorMouseEvent(event, this.viewHelper.viewDomNode), false);
 
 		if (target.position) {
 			this.viewController.moveTo('mouse', target.position);
 		}
 	}
 
-	private onChange(event:GestureEvent): void {
-		this.viewHelper.setScrollTop(this.viewHelper.getScrollTop() - event.translationY);
-		this.viewHelper.setScrollLeft(this.viewHelper.getScrollLeft() - event.translationX);
+	private onChange(e:GestureEvent): void {
+		this.viewHelper.setScrollPosition({
+			scrollLeft: this.viewHelper.getScrollLeft() - e.translationX,
+			scrollTop: this.viewHelper.getScrollTop() - e.translationY,
+		});
 	}
 }
 
 export class PointerHandler implements IDisposable {
 	private handler:MouseHandler;
 
-	constructor(context:IViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
+	constructor(context:ViewContext, viewController:IViewController, viewHelper:IPointerHandlerHelper) {
 		if (window.navigator.msPointerEnabled) {
 			this.handler = new MsPointerHandler(context, viewController, viewHelper);
 		} else if((<any> window).TouchEvent) {

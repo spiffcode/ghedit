@@ -6,17 +6,12 @@
 
 import {IEventEmitter} from 'vs/base/common/eventEmitter';
 import {IDisposable} from 'vs/base/common/lifecycle';
-import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 
 export const IEventService = createDecorator<IEventService>('eventService');
 
 export interface IEventService {
-	serviceId: ServiceIdentifier<any>;
-
-	/**
-	 * Allows to add a listener to the platform event bus for all emitters that are known to the platform.
-	 */
-	addListener(eventType: string, listener: (event: any) => void): () => void;
+	_serviceBrand: any;
 
 	/**
 	 * Allows to add a listener to the platform event bus for all emitters that are known to the platform.
@@ -24,15 +19,10 @@ export interface IEventService {
 	addListener2(eventType: string, listener: (event: any) => void): IDisposable;
 
 	/**
-	 * Allows to add a listener to an emitter on the platform event bus with the given type identifier.
-	 */
-	addEmitterTypeListener(eventType: string, emitterType: string, listener: (event: any) => void): () => void;
-
-	/**
 	 * Allows to add an event emitter to the platform bus such as Events from the emitter
 	 * can be received from all listeners on the bus.
 	 */
-	addEmitter(eventEmitter: IEventEmitter, emitterType?: string): () => void;
+	addEmitter2(eventEmitter: IEventEmitter, emitterType?: string): IDisposable;
 
 	/**
 	 * Emits an event of the given type into the platform event bus.

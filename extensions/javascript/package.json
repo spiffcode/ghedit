@@ -10,7 +10,7 @@
 	"dependencies": {
 		"vscode-nls": "^1.0.4",
 		"request-light": "^0.1.0",
-		"jsonc-parser": "^0.2.0"
+		"jsonc-parser": "^0.2.2"
 	},
 	"scripts": {
 		"compile": "gulp compile-extension:javascript",
@@ -27,7 +27,7 @@
 				"extensions": [
 					".jsx"
 				],
-				"configuration": "./javascript.configuration.json"
+				"configuration": "./language-configuration.json"
 			},
 			{
 				"id": "javascript",
@@ -46,7 +46,8 @@
 				"firstLine": "^#!.*\\bnode",
 				"mimetypes": [
 					"text/javascript"
-				]
+				],
+				"configuration": "./language-configuration.json"
 			}
 		],
 		"grammars": [
@@ -95,6 +96,10 @@
 			{
 				"fileMatch": "jsconfig.json",
 				"url": "./schemas/jsconfig.schema.json"
+			},
+			{
+				"fileMatch": "jsconfig.json",
+				"url": "http://json.schemastore.org/jsconfig"
 			}
 		]
 	}

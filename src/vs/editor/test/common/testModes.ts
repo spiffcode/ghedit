@@ -6,7 +6,7 @@
 
 import * as modes from 'vs/editor/common/modes';
 import {AbstractState} from 'vs/editor/common/modes/abstractState';
-import {RichEditSupport} from 'vs/editor/common/modes/supports/richEditSupport';
+import {LanguageConfigurationRegistry, CommentRule} from 'vs/editor/common/modes/languageConfigurationRegistry';
 import {TokenizationSupport} from 'vs/editor/common/modes/supports/tokenizationSupport';
 import {MockMode} from 'vs/editor/test/common/mocks/mockMode';
 
@@ -33,17 +33,16 @@ export class CommentState extends AbstractState {
 export class CommentMode extends MockMode {
 
 	public tokenizationSupport: modes.ITokenizationSupport;
-	public richEditSupport: modes.IRichEditSupport;
 
-	constructor(commentsConfig:modes.ICommentsConfiguration) {
+	constructor(commentsConfig:CommentRule) {
 		super();
 		this.tokenizationSupport = new TokenizationSupport(this, {
 			getInitialState: () => new CommentState(this, 0)
-		}, false, false);
+		}, false);
 
-		this.richEditSupport = {
-			comments:commentsConfig
-		};
+		LanguageConfigurationRegistry.register(this.getId(), {
+			comments: commentsConfig
+		});
 	}
 }
 
@@ -57,7 +56,7 @@ export abstract class AbstractIndentingMode extends MockMode {
 		return null;
 	}
 
-	public onEnter(context:modes.ILineContext, offset:number):modes.IEnterAction {
+	public onEnter(context:modes.ILineContext, offset:number):modes.EnterAction {
 		return null;
 	}
 
@@ -94,7 +93,7 @@ export class ModelMode1 extends MockMode {
 		this.calledFor = [];
 		this.tokenizationSupport = new TokenizationSupport(this, {
 			getInitialState: () => new ModelState1(this)
-		}, false, false);
+		}, false);
 	}
 }
 
@@ -135,17 +134,15 @@ export class ModelMode2 extends MockMode {
 		this.calledFor = null;
 		this.tokenizationSupport = new TokenizationSupport(this, {
 			getInitialState: () => new ModelState2(this, '')
-		}, false, false);
+		}, false);
 	}
 }
 
 export class BracketMode extends MockMode {
 
-	public richEditSupport: modes.IRichEditSupport;
-
 	constructor() {
 		super();
-		this.richEditSupport = new RichEditSupport(this.getId(), null, {
+		LanguageConfigurationRegistry.register(this.getId(), {
 			brackets: [
 				['{', '}'],
 				['[', ']'],
@@ -196,6 +193,6 @@ export class NMode extends MockMode {
 		this.n = n;
 		this.tokenizationSupport = new TokenizationSupport(this, {
 			getInitialState: () => new NState(this, this.n)
-		}, false, false);
+		}, false);
 	}
 }

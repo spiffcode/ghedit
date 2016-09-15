@@ -17,13 +17,14 @@ import {IMessageService} from 'vs/platform/message/common/message';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IContextMenuService} from 'vs/platform/contextview/browser/contextView';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {ICommandService} from 'vs/platform/commands/common/commands';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 import {IWorkspaceContextService}from 'vs/workbench/services/workspace/common/contextService';
-import {IWindowService}from 'vs/workbench/services/window/electron-browser/windowService';
+import {IWindowService} from 'vs/workbench/services/window/electron-browser/windowService';
 import {IWindowConfiguration} from 'vs/workbench/electron-browser/window';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
-
-import win = require('vs/workbench/electron-browser/window');
+import {ElectronWindow} from 'vs/workbench/electron-browser/window';
+import * as browser from 'vs/base/browser/browser';
 
 import {ipcRenderer as ipc, webFrame, remote} from 'electron';
 
@@ -49,6 +50,7 @@ export class ElectronIntegration {
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IConfigurationService private configurationService: IConfigurationService,
+		@ICommandService private commandService: ICommandService,
 		@IKeybindingService private keybindingService: IKeybindingService,
 		@IMessageService private messageService: IMessageService,
 		@IContextMenuService private contextMenuService: IContextMenuService
@@ -58,12 +60,12 @@ export class ElectronIntegration {
 	public integrate(shellContainer: HTMLElement): void {
 
 		// Register the active window
-		let activeWindow = this.instantiationService.createInstance(win.ElectronWindow, currentWindow, shellContainer);
+		let activeWindow = this.instantiationService.createInstance(ElectronWindow, currentWindow, shellContainer);
 		this.windowService.registerWindow(activeWindow);
 
 		// Support runAction event
 		ipc.on('vscode:runAction', (event, actionId: string) => {
-			this.keybindingService.executeCommand(actionId, { from: 'menu' }).done(undefined, err => this.messageService.show(Severity.Error, err));
+			this.commandService.executeCommand(actionId, { from: 'menu' }).done(undefined, err => this.messageService.show(Severity.Error, err));
 		});
 
 		// Support options change
@@ -116,6 +118,9 @@ export class ElectronIntegration {
 			this.messageService.show(Severity.Info, message);
 		});
 
+		// Ensure others can listen to zoom level changes
+		browser.setZoomLevel(webFrame.getZoomLevel());
+
 		// Configuration changes
 		let previousConfiguredZoomLevel: number;
 		this.configurationService.onDidUpdateConfiguration(e => {
@@ -135,6 +140,7 @@ export class ElectronIntegration {
 
 			if (webFrame.getZoomLevel() !== newZoomLevel) {
 				webFrame.setZoomLevel(newZoomLevel);
+				browser.setZoomLevel(webFrame.getZoomLevel()); // Ensure others can listen to zoom level changes
 			}
 		});
 
@@ -150,7 +156,7 @@ export class ElectronIntegration {
 						getAnchor: () => target,
 						getActions: () => TPromise.as(TextInputActions),
 						getKeyBinding: (action) => {
-							var opts = this.keybindingService.lookupKeybindings(action.id);
+							const opts = this.keybindingService.lookupKeybindings(action.id);
 							if (opts.length > 0) {
 								return opts[0]; // only take the first one
 							}

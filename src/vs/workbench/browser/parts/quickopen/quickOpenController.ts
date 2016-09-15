@@ -11,38 +11,38 @@ import nls = require('vs/nls');
 import {Dimension, withElementById} from 'vs/base/browser/builder';
 import strings = require('vs/base/common/strings');
 import filters = require('vs/base/common/filters');
+import URI from 'vs/base/common/uri';
 import uuid = require('vs/base/common/uuid');
 import types = require('vs/base/common/types');
-import {Mode, IContext, IAutoFocus, IQuickNavigateConfiguration, IModel} from 'vs/base/parts/quickopen/common/quickOpen';
+import {Mode, IEntryRunContext, IAutoFocus, IQuickNavigateConfiguration, IModel} from 'vs/base/parts/quickopen/common/quickOpen';
 import {QuickOpenEntryItem, QuickOpenEntry, QuickOpenModel, QuickOpenEntryGroup} from 'vs/base/parts/quickopen/browser/quickOpenModel';
 import {QuickOpenWidget} from 'vs/base/parts/quickopen/browser/quickOpenWidget';
 import {ContributableActionProvider} from 'vs/workbench/browser/actionBarRegistry';
 import {ITree, IElementCallback} from 'vs/base/parts/tree/browser/tree';
+import labels = require('vs/base/common/labels');
+import paths = require('vs/base/common/paths');
 import {Registry} from 'vs/platform/platform';
+import {EditorInput, getUntitledOrFileResource, IWorkbenchEditorConfiguration} from 'vs/workbench/common/editor';
 import {WorkbenchComponent} from 'vs/workbench/common/component';
-import {EditorEvent, EventType} from 'vs/workbench/common/events';
 import Event, {Emitter} from 'vs/base/common/event';
 import {Identifiers} from 'vs/workbench/common/constants';
-import {Scope} from 'vs/workbench/common/memento';
-import {QuickOpenHandler, QuickOpenHandlerDescriptor, IQuickOpenRegistry, Extensions} from 'vs/workbench/browser/quickopen';
-import {EditorHistoryModel} from 'vs/workbench/browser/parts/quickopen/editorHistoryModel';
-import {EditorInput} from 'vs/workbench/common/editor';
+import {KeyMod} from 'vs/base/common/keyCodes';
+import {QuickOpenHandler, QuickOpenHandlerDescriptor, IQuickOpenRegistry, Extensions, EditorQuickOpenEntry} from 'vs/workbench/browser/quickopen';
 import errors = require('vs/base/common/errors');
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
-import {IPickOpenEntry, IInputOptions, IQuickOpenService, IPickOptions} from 'vs/workbench/services/quickopen/common/quickOpenService';
+import {IPickOpenEntry, IInputOptions, IQuickOpenService, IPickOptions, IShowOptions} from 'vs/workbench/services/quickopen/common/quickOpenService';
 import {IViewletService} from 'vs/workbench/services/viewlet/common/viewletService';
 import {IStorageService} from 'vs/platform/storage/common/storage';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
-import {IKeybindingService, IKeybindingContextKey} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingService, IKeybindingContextKey} from 'vs/platform/keybinding/common/keybinding';
+import {IHistoryService} from 'vs/workbench/services/history/common/history';
 
-const ID = 'workbench.component.quickopen';
-const EDITOR_HISTORY_STORAGE_KEY = 'quickopen.editorhistory';
 const HELP_PREFIX = '?';
-const AUTO_SAVE_HISTORY_THRESHOLD = 5;
 const QUICK_OPEN_MODE = 'inQuickOpen';
 
 interface IPickOpenEntryItem extends IPickOpenEntry {
@@ -52,6 +52,7 @@ interface IPickOpenEntryItem extends IPickOpenEntry {
 
 interface IInternalPickOptions {
 	value?: string;
+	valueSelect?: boolean;
 	placeHolder?: string;
 	inputDecoration?: Severity;
 	password?: boolean;
@@ -64,7 +65,9 @@ interface IInternalPickOptions {
 
 export class QuickOpenController extends WorkbenchComponent implements IQuickOpenService {
 
-	public serviceId = IQuickOpenService;
+	public _serviceBrand: any;
+
+	private static ID = 'workbench.component.quickopen';
 
 	private _onShow: Emitter<void>;
 	private _onHide: Emitter<void>;
@@ -72,12 +75,9 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 	private quickOpenWidget: QuickOpenWidget;
 	private pickOpenWidget: QuickOpenWidget;
 	private layoutDimensions: Dimension;
-	private editorHistoryModel: EditorHistoryModel;
-	private memento: any;
 	private mapResolvedHandlersToPrefix: { [prefix: string]: QuickOpenHandler; };
 	private currentResultToken: string;
 	private currentPickerToken: string;
-	private autoSaveHistoryCounter: number;
 	private inQuickOpenMode: IKeybindingContextKey<boolean>;
 	private promisesToCompleteOnHide: ValueCallback[];
 	private previousActiveHandlerDescriptor: QuickOpenHandlerDescriptor;
@@ -94,12 +94,12 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@IKeybindingService keybindingService: IKeybindingService,
+		@IHistoryService private historyService: IHistoryService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
-		super(ID);
+		super(QuickOpenController.ID);
 
 		this.mapResolvedHandlersToPrefix = {};
-		this.autoSaveHistoryCounter = 0;
 
 		this.promisesToCompleteOnHide = [];
 
@@ -117,84 +117,33 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		return this._onHide.event;
 	}
 
-	public getEditorHistoryModel(): EditorHistoryModel {
-		return this.editorHistoryModel;
-	}
-
-	public create(): void {
-
-		// Listen on Editor Input Changes to show in MRU List
-		this.toUnbind.push(this.eventService.addListener(EventType.EDITOR_INPUT_CHANGING, (e: EditorEvent) => this.onEditorInputChanging(e)));
-		this.toUnbind.push(this.eventService.addListener(EventType.EDITOR_SET_INPUT_ERROR, (e: EditorEvent) => this.onEditorInputSetError(e)));
-
-		// Editor History Model
-		this.editorHistoryModel = new EditorHistoryModel(this.editorService, this.instantiationService, this.contextService);
-		this.memento = this.getMemento(this.storageService, Scope.WORKSPACE);
-		if (this.memento[EDITOR_HISTORY_STORAGE_KEY]) {
-			this.editorHistoryModel.loadFrom(this.memento[EDITOR_HISTORY_STORAGE_KEY]);
-		}
-	}
-
-	private onEditorInputChanging(e: EditorEvent): void {
-		if (e.editorInput) {
-
-			// If an active editor is set, but is different from the one from the event, return early
-			let activeEditor = this.editorService.getActiveEditor();
-			if (activeEditor && e.editor && activeEditor !== e.editor) {
-				return;
-			}
-
-			// Add to History
-			this.editorHistoryModel.add(e.editorInput);
-
-			// Save to Local Storage periodically
-			if (this.autoSaveHistoryCounter++ >= AUTO_SAVE_HISTORY_THRESHOLD) {
-				this.saveEditorHistory(true);
-				this.autoSaveHistoryCounter = 0;
-			}
-		}
-	}
-
-	private onEditorInputSetError(e: EditorEvent): void {
-		if (e.editorInput) {
-			this.removeEditorHistoryEntry(e.editorInput); // make sure this input does not show up in history if it failed to open
-		}
-	}
-
-	public getEditorHistory(): EditorInput[] {
-		return this.editorHistoryModel ? this.editorHistoryModel.getEntries().map((entry) => entry.getInput()) : [];
-	}
-
-	public removeEditorHistoryEntry(input: EditorInput): void {
-		this.editorHistoryModel.remove(input);
-	}
-
 	public quickNavigate(configuration: IQuickNavigateConfiguration, next: boolean): void {
 		if (this.quickOpenWidget) {
 			this.quickOpenWidget.quickNavigate(configuration, next);
 		}
 	}
 
-	public input(options?: IInputOptions): TPromise<string> {
-		const defaultMessage = options && options.prompt
+	public input(options: IInputOptions = {}): TPromise<string> {
+		const defaultMessage = options.prompt
 			? nls.localize('inputModeEntryDescription', "{0} (Press 'Enter' to confirm or 'Escape' to cancel)", options.prompt)
 			: nls.localize('inputModeEntry', "Press 'Enter' to confirm your input or 'Escape' to cancel");
 
 		let currentPick = defaultMessage;
 		let currentValidation = TPromise.as(true);
 		let currentDecoration: Severity;
-		let lastValue = options && options.value || '';
+		let lastValue = options.value || '';
 
 		const init = (resolve: (value: IPickOpenEntry | TPromise<IPickOpenEntry>) => any, reject: (value: any) => any) => {
 
-			// open quick pick with just one choise. we will recurse whenever
+			// open quick pick with just one choice. we will recurse whenever
 			// the validation/success message changes
 			this.doPick(TPromise.as([{ label: currentPick }]), {
-				ignoreFocusLost: true,
+				ignoreFocusLost: false,
 				autoFocus: { autoFocusFirstEntry: true },
 				password: options.password,
 				placeHolder: options.placeHolder,
-				value: options.value,
+				value: lastValue || options.value,
+				valueSelect: !lastValue || lastValue === options.value,
 				inputDecoration: currentDecoration,
 				onDidType: (value) => {
 					lastValue = value;
@@ -266,9 +215,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 				return item && isAboutStrings ? item.label : item;
 			}
 
-			this.doPick(entryPromise, options).then(item => resolve(onItem(item)),
-				err => reject(err),
-				item => progress(onItem(item)));
+			this.doPick(entryPromise, options).then(item => resolve(onItem(item)), err => reject(err), item => progress(onItem(item)));
 		});
 	}
 
@@ -288,8 +235,10 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 					onCancel: () => { /* ignore, handle later */ },
 					onType: (value: string) => { /* ignore, handle later */ },
 					onShow: () => this.emitQuickOpenVisibilityChange(true),
-					onHide: () => {
-						this.restoreFocus(); // focus back to editor or viewlet
+					onHide: (focusLost?: boolean) => {
+						if (!focusLost) {
+							this.restoreFocus(); // focus back to editor unless user clicked somewhere else
+						}
 						this.emitQuickOpenVisibilityChange(false); // event
 					}
 				}, {
@@ -308,7 +257,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 		// Respect input value
 		if (options.value) {
-			this.pickOpenWidget.setValue(options.value);
+			this.pickOpenWidget.setValue(options.value, options.valueSelect);
 		}
 
 		// Respect password
@@ -330,7 +279,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 			let picksPromiseDone = false;
 
 			// Resolve picks
-			picksPromise.then((picks) => {
+			picksPromise.then(picks => {
 				if (this.currentPickerToken !== currentPickerToken) {
 					return; // Return if another request came after
 				}
@@ -342,17 +291,17 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 				// Model
 				let model = new QuickOpenModel();
-				let entries = picks.map((e) => {
+				let entries = picks.map(e => {
 					let entry = (<IPickOpenEntryItem>e);
 					if (entry.height && entry.render) {
-						return new PickOpenItem(entry.label, entry.description, entry.height, entry.render.bind(entry), () => progress(e));
+						return new PickOpenItem(entry, () => progress(e));
 					}
 
-					return new PickOpenEntry(entry.label, entry.description, entry.detail, () => progress(e), entry.separator && entry.separator.border, entry.separator && entry.separator.label);
+					return new PickOpenEntry(entry, () => progress(e));
 				});
 
 				if (picks.length === 0) {
-					entries.push(new PickOpenEntry(nls.localize('emptyPicks', "There are no entries to pick from")));
+					entries.push(new PickOpenEntry({ label: nls.localize('emptyPicks', "There are no entries to pick from") }));
 				}
 
 				model.setEntries(entries);
@@ -360,19 +309,26 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 				// Handlers
 				this.pickOpenWidget.setCallbacks({
 					onOk: () => {
-
 						if (picks.length === 0) {
 							return complete(null);
 						}
 
 						let index = -1;
+						let context: IEntryRunContext;
 						entries.forEach((entry, i) => {
-							if (entry.selected) {
+							if (entry.shouldRunWithContext) {
 								index = i;
+								context = entry.shouldRunWithContext;
 							}
 						});
 
-						complete(picks[index] || null);
+						const selectedPick = picks[index];
+
+						if (selectedPick && typeof selectedPick.run === 'function') {
+							selectedPick.run(context);
+						}
+
+						complete(selectedPick || null);
 					},
 					onCancel: () => complete(void 0),
 					onFocusLost: () => options.ignoreFocusLost,
@@ -392,7 +348,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 						// Reset filtering
 						if (!value) {
-							entries.forEach((e) => {
+							entries.forEach(e => {
 								e.setHighlights(null);
 								e.setHidden(false);
 							});
@@ -400,15 +356,12 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 						// Filter by value
 						else {
-							entries.forEach((entry) => {
+							entries.forEach(entry => {
 								let labelHighlights = filters.matchesFuzzy(value, entry.getLabel());
-								let descriptionHighlights = options.matchOnDescription
-									&& filters.matchesFuzzy(value, entry.getDescription());
+								let descriptionHighlights = options.matchOnDescription && filters.matchesFuzzy(value, entry.getDescription());
+								let detailHighlights = options.matchOnDetail && entry.getDetail() && filters.matchesFuzzy(value, entry.getDetail());
 
-								let detailHighlights = options.matchOnDetail && entry.getDetail()
-									&& filters.matchesFuzzy(value, entry.getDetail());
-
-								if (labelHighlights || descriptionHighlights || detailHighlights) {
+								if (entry.shouldAlwaysShow() || labelHighlights || descriptionHighlights || detailHighlights) {
 									entry.setHighlights(labelHighlights, descriptionHighlights, detailHighlights);
 									entry.setHidden(false);
 								} else {
@@ -423,15 +376,17 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 					onShow: () => {
 						this.emitQuickOpenVisibilityChange(true); // event
 					},
-					onHide: () => {
-						this.restoreFocus(); // focus back to editor or viewlet
+					onHide: (focusLost?: boolean) => {
+						if (!focusLost) {
+							this.restoreFocus(); // focus back to editor unless user clicked somewhere else
+						}
 						this.emitQuickOpenVisibilityChange(false); // event
 					}
 				});
 
 				// Set input
 				if (!this.pickOpenWidget.isVisible()) {
-					this.pickOpenWidget.show(model, autoFocus);
+					this.pickOpenWidget.show(model, { autoFocus });
 				} else {
 					this.pickOpenWidget.setInput(model, autoFocus);
 				}
@@ -483,10 +438,12 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		return this.show(this.previousValue);
 	}
 
-	public show(prefix?: string, quickNavigateConfiguration?: IQuickNavigateConfiguration): TPromise<void> {
+	public show(prefix?: string, options?: IShowOptions): TPromise<void> {
+		let quickNavigateConfiguration = options ? options.quickNavigateConfiguration : void 0;
+
 		this.previousValue = prefix;
 
-		let promiseCompletedOnHide = new TPromise<void>((c) => {
+		let promiseCompletedOnHide = new TPromise<void>(c => {
 			this.promisesToCompleteOnHide.push(c);
 		});
 
@@ -501,7 +458,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		}
 
 		if (handlerDescriptor) {
-			this.telemetryService.publicLog('quickOpenWidgetShown', { mode: handlerDescriptor.getId(), quickNavigate: !!quickNavigateConfiguration });
+			this.telemetryService.publicLog('quickOpenWidgetShown', { mode: handlerDescriptor.getId(), quickNavigate: quickNavigateConfiguration });
 		}
 
 		// Create upon first open
@@ -516,7 +473,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 						this.inQuickOpenMode.set(true);
 						this.emitQuickOpenVisibilityChange(true);
 					},
-					onHide: () => {
+					onHide: (focusLost?: boolean) => {
 						this.inQuickOpenMode.reset();
 
 						// Complete promises that are waiting
@@ -524,7 +481,9 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 							this.promisesToCompleteOnHide.pop()(true);
 						}
 
-						this.restoreFocus(); // focus back to editor or viewlet
+						if (!focusLost) {
+							this.restoreFocus(); // focus back to editor unless user clicked somewhere else
+						}
 						this.emitQuickOpenVisibilityChange(false);
 					}
 				}, {
@@ -544,9 +503,9 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		// Show quick open with prefix or editor history
 		if (!this.quickOpenWidget.isVisible() || quickNavigateConfiguration) {
 			if (prefix) {
-				this.quickOpenWidget.show(prefix);
+				this.quickOpenWidget.show(prefix, { quickNavigateConfiguration });
 			} else {
-				let editorHistory = this.getEditorHistoryModelWithGroupLabel();
+				let editorHistory = this.getEditorHistoryWithGroupLabel();
 				if (editorHistory.getEntries().length < 2) {
 					quickNavigateConfiguration = null; // If no entries can be shown, default to normal quick open mode
 				}
@@ -559,7 +518,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 					autoFocus = { autoFocusFirstEntry: visibleEditorCount === 0, autoFocusSecondEntry: visibleEditorCount !== 0 };
 				}
 
-				this.quickOpenWidget.show(editorHistory, autoFocus, quickNavigateConfiguration);
+				this.quickOpenWidget.show(editorHistory, { quickNavigateConfiguration, autoFocus });
 			}
 		}
 
@@ -575,8 +534,8 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 		return !!(<IQuickOpenRegistry>Registry.as(Extensions.Quickopen)).getQuickOpenHandler(prefix);
 	}
 
-	private getEditorHistoryModelWithGroupLabel(): QuickOpenModel {
-		let entries: QuickOpenEntry[] = this.editorHistoryModel.getEntries();
+	private getEditorHistoryWithGroupLabel(): QuickOpenModel {
+		let entries: QuickOpenEntry[] = this.getEditorHistoryEntries();
 
 		// Apply label to first entry
 		if (entries.length > 0) {
@@ -642,7 +601,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 		// If no value provided, default to editor history
 		if (!trimmedValue) {
-			this.quickOpenWidget.setInput(this.getEditorHistoryModelWithGroupLabel(), { autoFocusFirstEntry: true });
+			this.quickOpenWidget.setInput(this.getEditorHistoryWithGroupLabel(), { autoFocusFirstEntry: true });
 			return;
 		}
 
@@ -686,7 +645,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 	private handleDefaultHandlers(defaultHandlers: QuickOpenHandlerDescriptor[], value: string, currentResultToken: string): TPromise<void> {
 
 		// Fill in history results if matching
-		let matchingHistoryEntries = this.editorHistoryModel.getResults(value);
+		let matchingHistoryEntries = this.getEditorHistoryEntries(value);
 		if (matchingHistoryEntries.length > 0) {
 			matchingHistoryEntries[0] = new QuickOpenEntryGroup(matchingHistoryEntries[0], nls.localize('historyMatches', "recently opened"), false);
 		}
@@ -703,13 +662,13 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 		// Resolve all default handlers
 		let resolvePromises: TPromise<QuickOpenHandler>[] = [];
-		defaultHandlers.forEach((defaultHandler) => {
+		defaultHandlers.forEach(defaultHandler => {
 			resolvePromises.push(this.resolveHandler(defaultHandler));
 		});
 
 		return TPromise.join(resolvePromises).then((resolvedHandlers: QuickOpenHandler[]) => {
 			let resultPromises: TPromise<void>[] = [];
-			resolvedHandlers.forEach((resolvedHandler) => {
+			resolvedHandlers.forEach(resolvedHandler => {
 
 				// Return early if the handler can not run in the current environment
 				let canRun = resolvedHandler.canRun();
@@ -718,7 +677,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 				}
 
 				// Receive Results from Handler and apply
-				resultPromises.push(resolvedHandler.getResults(value).then((result) => {
+				resultPromises.push(resolvedHandler.getResults(value).then(result => {
 					if (this.currentResultToken === currentResultToken) {
 						let handlerResults = result && result.entries;
 
@@ -733,6 +692,44 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 			return TPromise.join(resultPromises).then(() => void 0);
 		});
+	}
+
+	private getEditorHistoryEntries(searchValue?: string): QuickOpenEntry[] {
+		if (searchValue) {
+			searchValue = searchValue.replace(/ /g, ''); // get rid of all whitespace
+		}
+
+		// Just return all if we are not searching
+		const history = this.historyService.getHistory();
+		if (!searchValue) {
+			return history.map(input => this.instantiationService.createInstance(EditorHistoryEntry, input));
+		}
+
+		const searchInPath = searchValue.indexOf(paths.nativeSep) >= 0;
+
+		let results: QuickOpenEntry[] = [];
+		history.forEach(input => {
+			const resource = getUntitledOrFileResource(input);
+			if (!resource) {
+				return; //For now, only support to match on inputs that provide resource information
+			}
+
+			// Check if this entry is a match for the search value
+			let targetToMatch = searchInPath ? labels.getPathLabel(resource, this.contextService) : input.getName();
+			if (!filters.matchesFuzzy(searchValue, targetToMatch)) {
+				return;
+			}
+
+			let entry = this.instantiationService.createInstance(EditorHistoryEntry, input);
+
+			const {labelHighlights, descriptionHighlights} = QuickOpenEntry.highlight(entry, searchValue);
+			entry.setHighlights(labelHighlights, descriptionHighlights);
+
+			results.push(entry);
+		});
+
+		// Sort
+		return results.sort((elementA: EditorHistoryEntry, elementB: EditorHistoryEntry) => QuickOpenEntry.compare(elementA, elementB, searchValue));
 	}
 
 	private mergeResults(quickOpenModel: QuickOpenModel, handlerResults: QuickOpenEntry[], groupLabel: string): void {
@@ -776,7 +773,7 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 				let placeHolderLabel = (typeof canRun === 'string') ? canRun : nls.localize('canNotRunPlaceholder', "This quick open handler can not be used in the current context");
 
 				const model = new QuickOpenModel([new PlaceholderQuickOpenEntry(placeHolderLabel)], this.actionProvider);
-				this.showModel(model, resolvedHandler.getAutoFocus(value), resolvedHandler.getAriaLabel());
+				this.showModel(model, resolvedHandler.getAutoFocus(value, this.quickOpenWidget.getQuickNavigateConfiguration()), resolvedHandler.getAriaLabel());
 
 				return TPromise.as(null);
 			}
@@ -793,13 +790,13 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 			}
 
 			// Receive Results from Handler and apply
-			return resolvedHandler.getResults(value).then((result) => {
+			return resolvedHandler.getResults(value).then(result => {
 				if (this.currentResultToken === currentResultToken) {
 					if (!result || !result.entries.length) {
 						const model = new QuickOpenModel([new PlaceholderQuickOpenEntry(resolvedHandler.getEmptyLabel(value))]);
-						this.showModel(model, resolvedHandler.getAutoFocus(value), resolvedHandler.getAriaLabel());
+						this.showModel(model, resolvedHandler.getAutoFocus(value, this.quickOpenWidget.getQuickNavigateConfiguration()), resolvedHandler.getAriaLabel());
 					} else {
-						this.showModel(result, resolvedHandler.getAutoFocus(value), resolvedHandler.getAriaLabel());
+						this.showModel(result, resolvedHandler.getAutoFocus(value, this.quickOpenWidget.getQuickNavigateConfiguration()), resolvedHandler.getAriaLabel());
 					}
 				}
 			});
@@ -849,28 +846,8 @@ export class QuickOpenController extends WorkbenchComponent implements IQuickOpe
 
 			return resolvedHandler;
 		}, (error) => {
-			return TPromise.wrapError('Unable to instanciate quick open handler ' + handler.moduleName + ' - ' + handler.ctorName + ': ' + JSON.stringify(error));
+			return TPromise.wrapError('Unable to instantiate quick open handler ' + handler.moduleName + ' - ' + handler.ctorName + ': ' + JSON.stringify(error));
 		});
-	}
-
-	public shutdown(): void {
-
-		// Save Editor Input History
-		this.saveEditorHistory(false);
-
-		// Call Super
-		super.shutdown();
-	}
-
-	private saveEditorHistory(toLocalStorage: boolean): void {
-		if (!this.memento[EDITOR_HISTORY_STORAGE_KEY]) {
-			this.memento[EDITOR_HISTORY_STORAGE_KEY] = {};
-		}
-		this.editorHistoryModel.saveTo(this.memento[EDITOR_HISTORY_STORAGE_KEY]);
-
-		if (toLocalStorage) {
-			this.saveMemento();
-		}
 	}
 
 	public layout(dimension: Dimension): void {
@@ -912,19 +889,28 @@ class PlaceholderQuickOpenEntry extends QuickOpenEntryGroup {
 }
 
 class PickOpenEntry extends PlaceholderQuickOpenEntry {
-	private _selected: boolean;
+	private _shouldRunWithContext: IEntryRunContext;
 	private description: string;
 	private detail: string;
+	private hasSeparator: boolean;
+	private separatorLabel: string;
+	private alwaysShow: boolean;
 
-	constructor(label: string, description?: string, detail?: string, private onPreview?: () => void, private hasSeparator?: boolean, private separatorLabel?: string) {
-		super(label);
+	constructor(
+		item: IPickOpenEntry,
+		private onPreview?: () => void
+	) {
+		super(item.label);
 
-		this.description = description;
-		this.detail = detail;
+		this.description = item.description;
+		this.detail = item.detail;
+		this.hasSeparator = item.separator && item.separator.border;
+		this.separatorLabel = item.separator && item.separator.label;
+		this.alwaysShow = item.alwaysShow;
 	}
 
-	public get selected(): boolean {
-		return this._selected;
+	public get shouldRunWithContext(): IEntryRunContext {
+		return this._shouldRunWithContext;
 	}
 
 	public getDescription(): string {
@@ -943,9 +929,13 @@ class PickOpenEntry extends PlaceholderQuickOpenEntry {
 		return this.separatorLabel;
 	}
 
-	public run(mode: Mode, context: IContext): boolean {
+	public shouldAlwaysShow(): boolean {
+		return this.alwaysShow;
+	}
+
+	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
-			this._selected = true;
+			this._shouldRunWithContext = context;
 
 			return true;
 		}
@@ -959,10 +949,24 @@ class PickOpenEntry extends PlaceholderQuickOpenEntry {
 }
 
 class PickOpenItem extends QuickOpenEntryItem {
-	private _selected: boolean;
+	private _shouldRunWithContext: IEntryRunContext;
+	private label: string;
+	private description: string;
+	private height: number;
+	private renderFn: (tree: ITree, container: HTMLElement, previousCleanupFn: IElementCallback) => IElementCallback;
+	private alwaysShow: boolean;
 
-	constructor(private label: string, private description: string, private height: number, private renderFn: (tree: ITree, container: HTMLElement, previousCleanupFn: IElementCallback) => IElementCallback, private onPreview?: () => void) {
+	constructor(
+		item: IPickOpenEntryItem,
+		private onPreview?: () => void
+	) {
 		super();
+
+		this.label = item.label;
+		this.description = item.description;
+		this.height = item.height;
+		this.renderFn = item.render.bind(item);
+		this.alwaysShow = item.alwaysShow;
 	}
 
 	public getHeight(): number {
@@ -973,8 +977,8 @@ class PickOpenItem extends QuickOpenEntryItem {
 		return this.renderFn(tree, container, previousCleanupFn);
 	}
 
-	public get selected(): boolean {
-		return this._selected;
+	public get shouldRunWithContext(): IEntryRunContext {
+		return this._shouldRunWithContext;
 	}
 
 	public getLabel(): string {
@@ -985,15 +989,78 @@ class PickOpenItem extends QuickOpenEntryItem {
 		return this.description;
 	}
 
-	public run(mode: Mode, context: IContext): boolean {
+	public shouldAlwaysShow(): boolean {
+		return this.alwaysShow;
+	}
+
+	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
-			this._selected = true;
+			this._shouldRunWithContext = context;
 
 			return true;
 		}
 
 		if (mode === Mode.PREVIEW && this.onPreview) {
 			this.onPreview();
+		}
+
+		return false;
+	}
+}
+
+export class EditorHistoryEntry extends EditorQuickOpenEntry {
+	private input: EditorInput;
+	private resource: URI;
+
+	constructor(
+		input: EditorInput,
+		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IWorkspaceContextService private contextService: IWorkspaceContextService
+	) {
+		super(editorService);
+
+		this.input = input;
+		this.resource = getUntitledOrFileResource(input);
+	}
+
+	public getIcon(): string {
+		return this.input.isDirty() ? 'dirty' : '';
+	}
+
+	public getLabel(): string {
+		return this.input.getName();
+	}
+
+	public getAriaLabel(): string {
+		return nls.localize('entryAriaLabel', "{0}, recently opened", this.getLabel());
+	}
+
+	public getDescription(): string {
+		return this.input.getDescription();
+	}
+
+	public getResource(): URI {
+		return this.resource;
+	}
+
+	public getInput(): EditorInput {
+		return this.input;
+	}
+
+	public matches(input: EditorInput): boolean {
+		return this.input.matches(input);
+	}
+
+	public run(mode: Mode, context: IEntryRunContext): boolean {
+		if (mode === Mode.OPEN) {
+			const sideBySide = !context.quickNavigateConfiguration && context.keymods.indexOf(KeyMod.CtrlCmd) >= 0;
+			const pinned = !this.configurationService.getConfiguration<IWorkbenchEditorConfiguration>().workbench.editor.enablePreviewFromQuickOpen;
+
+			this.editorService.openEditor(this.input, { pinned }, sideBySide).done(null, errors.onUnexpectedError);
+
+			return true;
 		}
 
 		return false;

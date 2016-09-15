@@ -9,8 +9,11 @@ import 'vs/css!./contentWidgets';
 import * as dom from 'vs/base/browser/dom';
 import {StyleMutator} from 'vs/base/browser/styleMutator';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-import {ClassNames, ContentWidgetPositionPreference, IContentWidget, IRenderingContext, IRestrictedRenderingContext, IViewContext} from 'vs/editor/browser/editorBrowser';
+import {ClassNames, ContentWidgetPositionPreference, IContentWidget} from 'vs/editor/browser/editorBrowser';
 import {ViewPart} from 'vs/editor/browser/view/viewPart';
+import {ViewContext} from 'vs/editor/common/view/viewContext';
+import {IRenderingContext, IRestrictedRenderingContext} from 'vs/editor/common/view/renderingContext';
+import {Position} from 'vs/editor/common/core/position';
 
 interface IWidgetData {
 	allowEditorOverflow: boolean;
@@ -53,7 +56,7 @@ export class ViewContentWidgets extends ViewPart {
 	public overflowingContentWidgetsDomNode:HTMLElement;
 	private _viewDomNode: HTMLElement;
 
-	constructor(context:IViewContext, viewDomNode:HTMLElement) {
+	constructor(context:ViewContext, viewDomNode:HTMLElement) {
 		super(context);
 		this._viewDomNode = viewDomNode;
 
@@ -109,7 +112,7 @@ export class ViewContentWidgets extends ViewPart {
 		}
 		return true;
 	}
-	public onLayoutChanged(layoutInfo:editorCommon.IEditorLayoutInfo): boolean {
+	public onLayoutChanged(layoutInfo:editorCommon.EditorLayoutInfo): boolean {
 		this._contentLeft = layoutInfo.contentLeft;
 
 		if (this._contentWidth !== layoutInfo.contentWidth) {
@@ -182,7 +185,7 @@ export class ViewContentWidgets extends ViewPart {
 		}
 	}
 
-	private _layoutBoxInViewport(position:editorCommon.IEditorPosition, domNode:HTMLElement, ctx:IRenderingContext): IBoxLayoutResult {
+	private _layoutBoxInViewport(position:Position, domNode:HTMLElement, ctx:IRenderingContext): IBoxLayoutResult {
 
 		let visibleRange = ctx.visibleRangeForPosition(position);
 
@@ -226,7 +229,7 @@ export class ViewContentWidgets extends ViewPart {
 		};
 	}
 
-	private _layoutBoxInPage(position: editorCommon.IEditorPosition, domNode: HTMLElement, ctx: IRenderingContext): IBoxLayoutResult {
+	private _layoutBoxInPage(position: Position, domNode: HTMLElement, ctx: IRenderingContext): IBoxLayoutResult {
 		let visibleRange = ctx.visibleRangeForPosition(position);
 
 		if (!visibleRange) {
@@ -242,17 +245,17 @@ export class ViewContentWidgets extends ViewPart {
 			return null;
 		}
 
-		let aboveTop = visibleRange.top - height,
-			belowTop = visibleRange.top + this._lineHeight,
-			left = left0 + this._contentLeft;
+		let aboveTop = visibleRange.top - height;
+		let belowTop = visibleRange.top + this._lineHeight;
+		let left = left0 + this._contentLeft;
 
-		let domNodePosition = dom.getDomNodePosition(this._viewDomNode);
-		let absoluteAboveTop = domNodePosition.top + aboveTop - document.body.scrollTop - document.documentElement.scrollTop,
-			absoluteBelowTop = domNodePosition.top + belowTop - document.body.scrollTop - document.documentElement.scrollTop,
-			absoluteLeft = domNodePosition.left + left - document.body.scrollLeft - document.documentElement.scrollLeft;
+		let domNodePosition = dom.getDomNodePagePosition(this._viewDomNode);
+		let absoluteAboveTop = domNodePosition.top + aboveTop - dom.StandardWindow.scrollY;
+		let absoluteBelowTop = domNodePosition.top + belowTop - dom.StandardWindow.scrollY;
+		let absoluteLeft = domNodePosition.left + left - dom.StandardWindow.scrollX;
 
-		let INNER_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-			INNER_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		let INNER_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+		let INNER_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 		// Leave some clearance to the bottom
 		let BOTTOM_PADDING = 22;
@@ -280,7 +283,7 @@ export class ViewContentWidgets extends ViewPart {
 		};
 	}
 
-	private _prepareRenderWidgetAtExactPosition(position:editorCommon.IEditorPosition, ctx:IRenderingContext): IMyWidgetRenderData {
+	private _prepareRenderWidgetAtExactPosition(position:Position, ctx:IRenderingContext): IMyWidgetRenderData {
 		let visibleRange = ctx.visibleRangeForPosition(position);
 
 		if (!visibleRange) {

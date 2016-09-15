@@ -5,13 +5,12 @@
 
 import uri from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IActionRunner } from 'vs/base/common/actions';
 import Event from 'vs/base/common/event';
 import severity from 'vs/base/common/severity';
-import { IViewletView } from 'vs/workbench/browser/viewlet';
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import editor = require('vs/editor/common/editorCommon');
 import { Source } from 'vs/workbench/parts/debug/common/debugSource';
+import { Range } from 'vs/editor/common/core/range';
 
 export const VIEWLET_ID = 'workbench.view.debug';
 export const REPL_ID = 'workbench.panel.repl';
@@ -34,6 +33,7 @@ export interface IRawStoppedDetails {
 	threadId?: number;
 	text?: string;
 	totalFrames?: number;
+	framesErrorMessage?: string;
 }
 
 // model
@@ -51,6 +51,7 @@ export interface IExpression extends ITreeElement, IExpressionContainer {
 	name: string;
 	value: string;
 	valueChanged: boolean;
+	type?: string;
 }
 
 export interface IThread extends ITreeElement {
@@ -192,25 +193,27 @@ export interface IGlobalConfig {
 	configurations: IConfig[];
 }
 
-export interface IConfig {
+export interface IEnvConfig {
 	name?: string;
 	type: string;
 	request: string;
-	program?: string;
-	stopOnEntry?: boolean;
-	args?: string[];
-	cwd?: string;
-	runtimeExecutable?: string;
-	runtimeArgs?: string[];
-	env?: { [key: string]: string; };
-	sourceMaps?: boolean;
-	outDir?: string;
-	address?: string;
-	port?: number;
+	internalConsoleOptions?: string;
 	preLaunchTask?: string;
-	externalConsole?: boolean;
 	debugServer?: number;
 	noDebug?: boolean;
+	silentlyAbort?: boolean;
+}
+
+export interface IExtHostConfig extends IEnvConfig {
+	port?: number;
+	sourceMaps?: boolean;
+	outDir?: string;
+}
+
+export interface IConfig extends IEnvConfig {
+	windows?: IEnvConfig;
+	osx?: IEnvConfig;
+	linux?: IEnvConfig;
 }
 
 export interface IRawEnvAdapter {
@@ -226,6 +229,7 @@ export interface IRawAdapter extends IRawEnvAdapter {
 	enableBreakpointsFor?: { languageIds: string[] };
 	configurationAttributes?: any;
 	initialConfigurations?: any[];
+	variables: { [key: string]: string };
 	aiKey?: string;
 	win?: IRawEnvAdapter;
 	winx86?: IRawEnvAdapter;
@@ -234,16 +238,14 @@ export interface IRawAdapter extends IRawEnvAdapter {
 	linux?: IRawEnvAdapter;
 }
 
+export interface IRawBreakpointContribution {
+	language: string;
+}
+
 export interface IRawDebugSession {
 	configuration: { type: string, isAttach: boolean, capabilities: DebugProtocol.Capabilites };
 
 	disconnect(restart?: boolean, force?: boolean): TPromise<DebugProtocol.DisconnectResponse>;
-
-	next(args: DebugProtocol.NextArguments): TPromise<DebugProtocol.NextResponse>;
-	stepIn(args: DebugProtocol.StepInArguments): TPromise<DebugProtocol.StepInResponse>;
-	stepOut(args: DebugProtocol.StepOutArguments): TPromise<DebugProtocol.StepOutResponse>;
-	continue(args: DebugProtocol.ContinueArguments): TPromise<DebugProtocol.ContinueResponse>;
-	pause(args: DebugProtocol.PauseArguments): TPromise<DebugProtocol.PauseResponse>;
 
 	stackTrace(args: DebugProtocol.StackTraceArguments): TPromise<DebugProtocol.StackTraceResponse>;
 	scopes(args: DebugProtocol.ScopesArguments): TPromise<DebugProtocol.ScopesResponse>;
@@ -251,11 +253,6 @@ export interface IRawDebugSession {
 	evaluate(args: DebugProtocol.EvaluateArguments): TPromise<DebugProtocol.EvaluateResponse>;
 
 	custom(request: string, args: any): TPromise<DebugProtocol.Response>;
-
-	/**
-	 * Allows to register on each debug session stop event.
-	 */
-	onDidStop: Event<DebugProtocol.StoppedEvent>;
 
 	onDidEvent: Event<DebugProtocol.Event>;
 }
@@ -273,10 +270,10 @@ export interface IConfigurationManager {
 	onDidConfigurationChange: Event<string>;
 }
 
-export var IDebugService = createDecorator<IDebugService>(DEBUG_SERVICE_ID);
+export const IDebugService = createDecorator<IDebugService>(DEBUG_SERVICE_ID);
 
 export interface IDebugService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
 
 	/**
 	 * Gets the current debug state.
@@ -359,6 +356,11 @@ export interface IDebugService {
 	appendReplOutput(value: string, severity?: severity): void;
 
 	/**
+	 * Sets the value for the variable against the debug adapter.
+	 */
+	setVariable(variable: IExpression, value: string): TPromise<void>;
+
+	/**
 	 * Adds a new watch expression and evaluates it against the debug adapter.
 	 */
 	addWatchExpression(name?: string): TPromise<void>;
@@ -376,7 +378,7 @@ export interface IDebugService {
 	/**
 	 * Creates a new debug session. Depending on the configuration will either 'launch' or 'attach'.
 	 */
-	createSession(noDebug: boolean): TPromise<any>;
+	createSession(noDebug: boolean, configuration?: IConfig): TPromise<any>;
 
 	/**
 	 * Restarts an active debug session or creates a new one if there is no active session.
@@ -402,49 +404,27 @@ export interface IDebugService {
 	 * Opens a new or reveals an already visible editor showing the source.
 	 */
 	openOrRevealSource(source: Source, lineNumber: number, preserveFocus: boolean, sideBySide: boolean): TPromise<any>;
+
+	next(threadId: number): TPromise<void>;
+	stepIn(threadId: number): TPromise<void>;
+	stepOut(threadId: number): TPromise<void>;
+	stepBack(threadId: number): TPromise<void>;
+	continue(threadId: number): TPromise<void>;
+	pause(threadId: number): TPromise<any>;
+	restartFrame(frameId: number): TPromise<any>;
 }
 
 // Editor interfaces
 export interface IDebugEditorContribution extends editor.IEditorContribution {
-	showHover(range: editor.IEditorRange, hoveringOver: string, focus: boolean): TPromise<void>;
+	showHover(range: Range, hoveringOver: string, focus: boolean): TPromise<void>;
 }
-
-// Debug view registration
-
-export interface IDebugViewConstructorSignature {
-	new (actionRunner: IActionRunner, viewletSetings: any, ...services: { serviceId: ServiceIdentifier<any>; }[]): IViewletView;
-}
-
-export interface IDebugViewRegistry {
-	registerDebugView(view: IDebugViewConstructorSignature, order: number): void;
-	getDebugViews(): IDebugViewConstructorSignature[];
-}
-
-class DebugViewRegistryImpl implements IDebugViewRegistry {
-	private debugViews: { view: IDebugViewConstructorSignature, order: number }[];
-
-	constructor() {
-		this.debugViews = [];
-	}
-
-	public registerDebugView(view: IDebugViewConstructorSignature, order: number): void {
-		this.debugViews.push({ view, order });
-	}
-
-	public getDebugViews(): IDebugViewConstructorSignature[] {
-		return this.debugViews.sort((first, second) => first.order - second.order)
-			.map(viewWithOrder => viewWithOrder.view);
-	}
-}
-
-export var DebugViewRegistry = <IDebugViewRegistry>new DebugViewRegistryImpl();
 
 // utils
 
 const _formatPIIRegexp = /{([^}]+)}/g;
 
-export function formatPII(value:string, excludePII: boolean, args: {[key: string]: string}): string {
-	return value.replace(_formatPIIRegexp, function(match, group) {
+export function formatPII(value: string, excludePII: boolean, args: { [key: string]: string }): string {
+	return value.replace(_formatPIIRegexp, function (match, group) {
 		if (excludePII && group.length > 0 && group[0] !== '_') {
 			return match;
 		}

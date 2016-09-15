@@ -10,7 +10,7 @@ import {Registry} from 'vs/platform/platform';
 import {IAction} from 'vs/base/common/actions';
 import {KeybindingsRegistry, ICommandDescriptor} from 'vs/platform/keybinding/common/keybindingsRegistry';
 import {IPartService} from 'vs/workbench/services/part/common/partService';
-import {ICommandHandler} from 'vs/platform/keybinding/common/keybindingService';
+import {ICommandHandler} from 'vs/platform/commands/common/commands';
 import {SyncActionDescriptor} from 'vs/platform/actions/common/actions';
 import {IMessageService} from 'vs/platform/message/common/message';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
@@ -125,7 +125,7 @@ class WorkbenchActionRegistry implements IWorkbenchActionRegistry {
 Registry.add(Extensions.WorkbenchActions, new WorkbenchActionRegistry());
 
 function registerWorkbenchCommandFromAction(descriptor: SyncActionDescriptor): void {
-	let context = descriptor.keybindingContext;
+	let when = descriptor.keybindingContext;
 	let weight = (typeof descriptor.keybindingWeight === 'undefined' ? KeybindingsRegistry.WEIGHT.workbenchContrib() : descriptor.keybindingWeight);
 	let keybindings = descriptor.keybindings;
 
@@ -133,7 +133,7 @@ function registerWorkbenchCommandFromAction(descriptor: SyncActionDescriptor): v
 		id: descriptor.id,
 		handler: createCommandHandler(descriptor),
 		weight: weight,
-		context: context,
+		when: when,
 		primary: keybindings && keybindings.primary,
 		secondary: keybindings && keybindings.secondary,
 		win: keybindings && keybindings.win,
@@ -169,7 +169,7 @@ export function triggerAndDisposeAction(instantitationService: IInstantiationSer
 	}
 
 	if (telemetryService) {
-		telemetryService.publicLog('workbenchActionExecuted', { id: actionInstance.id, from: args.from || 'keybinding' });
+		telemetryService.publicLog('workbenchActionExecuted', { id: actionInstance.id, from: args && args.from || 'keybinding' });
 	}
 
 	// run action when workbench is created

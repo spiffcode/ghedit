@@ -5,7 +5,7 @@
 
 'use strict';
 
-import 'vs/css!./media/statusbarPart';
+import 'vs/css!./media/statusbarpart';
 import dom = require('vs/base/browser/dom');
 import types = require('vs/base/common/types');
 import nls = require('vs/nls');
@@ -15,7 +15,7 @@ import {dispose, IDisposable} from 'vs/base/common/lifecycle';
 import {Builder, $} from 'vs/base/browser/builder';
 import {OcticonLabel} from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 import {Registry} from 'vs/platform/platform';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {ICommandService} from 'vs/platform/commands/common/commands';
 import {IAction} from 'vs/base/common/actions';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {Part} from 'vs/workbench/browser/part';
@@ -24,17 +24,18 @@ import {StatusbarAlignment, IStatusbarRegistry, Extensions, IStatusbarItem} from
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
-import {IStatusbarService, IStatusbarEntry} from 'vs/workbench/services/statusbar/common/statusbarService';
+import {IStatusbarService, IStatusbarEntry} from 'vs/platform/statusbar/common/statusbar';
 
 export class StatusbarPart extends Part implements IStatusbarService {
 
-	public serviceId = IStatusbarService;
+	public _serviceBrand: any;
 
 	private static PRIORITY_PROP = 'priority';
 	private static ALIGNMENT_PROP = 'alignment';
 
 	private toDispose: IDisposable[];
 	private statusItemsContainer: Builder;
+	private statusMsgDispose: IDisposable;
 
 	constructor(
 		id: string,
@@ -139,6 +140,44 @@ export class StatusbarPart extends Part implements IStatusbarService {
 		return el;
 	}
 
+	public setStatusMessage(message: string, autoDisposeAfter: number = -1, delayBy: number = 0): IDisposable {
+		if (this.statusMsgDispose) {
+			this.statusMsgDispose.dispose(); // dismiss any previous
+		}
+
+		// Create new
+		let statusDispose: IDisposable;
+		let showHandle = setTimeout(() => {
+			statusDispose = this.addEntry({ text: message }, StatusbarAlignment.LEFT, Number.MIN_VALUE);
+			showHandle = null;
+		}, delayBy);
+		let hideHandle: number;
+
+		// Dispose function takes care of timeouts and actual entry
+		const dispose = {
+			dispose: () => {
+				if (showHandle) {
+					clearTimeout(showHandle);
+				}
+
+				if (hideHandle) {
+					clearTimeout(hideHandle);
+				}
+
+				if (statusDispose) {
+					statusDispose.dispose();
+				}
+			}
+		};
+		this.statusMsgDispose = dispose;
+
+		if (typeof autoDisposeAfter === 'number' && autoDisposeAfter > 0) {
+			hideHandle = setTimeout(() => dispose.dispose(), autoDisposeAfter);
+		}
+
+		return dispose;
+	}
+
 	public dispose(): void {
 		this.toDispose = dispose(this.toDispose);
 
@@ -151,7 +190,7 @@ class StatusBarEntryItem implements IStatusbarItem {
 
 	constructor(
 		entry: IStatusbarEntry,
-		@IKeybindingService private keybindingService: IKeybindingService,
+		@ICommandService private commandService: ICommandService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IMessageService private messageService: IMessageService,
 		@ITelemetryService private telemetryService: ITelemetryService,
@@ -233,7 +272,7 @@ class StatusBarEntryItem implements IStatusbarItem {
 
 		// Fallback to the keybinding service for any other case
 		else {
-			this.keybindingService.executeCommand(id).done(undefined, err => this.messageService.show(Severity.Error, toErrorMessage(err)));
+			this.commandService.executeCommand(id).done(undefined, err => this.messageService.show(Severity.Error, toErrorMessage(err)));
 		}
 	}
 }

@@ -7,9 +7,13 @@
 import * as assert from 'assert';
 import {EditOperation} from 'vs/editor/common/core/editOperation';
 import {Position} from 'vs/editor/common/core/position';
+import {Selection} from 'vs/editor/common/core/selection';
 import {Range} from 'vs/editor/common/core/range';
 import {IRange} from 'vs/editor/common/editorCommon';
-import {CommonFindController, FindStartFocusAction, IFindStartOptions, NextMatchFindAction, StartFindAction} from 'vs/editor/contrib/find/common/findController';
+import {
+	CommonFindController, FindStartFocusAction, IFindStartOptions,
+	NextMatchFindAction, StartFindAction, SelectHighlightsAction
+} from 'vs/editor/contrib/find/common/findController';
 import {withMockCodeEditor} from 'vs/editor/test/common/mocks/mockCodeEditor';
 
 class TestFindController extends CommonFindController {
@@ -64,8 +68,10 @@ suite('FindController', () => {
 			assert.deepEqual(fromRange(editor.getSelection()), [1, 1, 1, 4]);
 
 			// I hit delete to remove it and change the text to XYZ.
+			editor.pushUndoStop();
 			editor.executeEdits('test', [EditOperation.delete(new Range(1, 1, 1, 4))]);
 			editor.executeEdits('test', [EditOperation.insert(new Position(1, 1), 'XYZ')]);
+			editor.pushUndoStop();
 
 			// At this point the text editor looks like this:
 			//   XYZ
@@ -94,7 +100,6 @@ suite('FindController', () => {
 			'import nls = require(\'vs/nls\');'
 		], {}, (editor, cursor) => {
 
-			// The cursor is at the very top, of the file, at the first ABC
 			let findController = editor.registerAndInstantiateContribution<TestFindController>(TestFindController);
 			let nextMatchFindAction = new NextMatchFindAction({id:'',label:''}, editor);
 
@@ -111,6 +116,90 @@ suite('FindController', () => {
 
 			findController.dispose();
 			nextMatchFindAction.dispose();
+		});
+	});
+
+	test('issue #6149: Auto-escape highlighted text for search and replace regex mode', () => {
+		withMockCodeEditor([
+			'var x = (3 * 5)',
+			'var y = (3 * 5)',
+			'var z = (3  * 5)',
+		], {}, (editor, cursor) => {
+
+			let findController = editor.registerAndInstantiateContribution<TestFindController>(TestFindController);
+			let startFindAction = new StartFindAction({id:'',label:''}, editor);
+			let nextMatchFindAction = new NextMatchFindAction({id:'',label:''}, editor);
+
+			editor.setSelection(new Selection(1, 9, 1, 13));
+
+			findController.toggleRegex();
+			startFindAction.run();
+
+			nextMatchFindAction.run();
+			assert.deepEqual(fromRange(editor.getSelection()), [2, 9, 2, 13]);
+
+			nextMatchFindAction.run();
+			assert.deepEqual(fromRange(editor.getSelection()), [1, 9, 1, 13]);
+
+			findController.dispose();
+			startFindAction.dispose();
+			nextMatchFindAction.dispose();
+		});
+	});
+
+	test('issue #8817: Cursor position changes when you cancel multicursor', () => {
+		withMockCodeEditor([
+			'var x = (3 * 5)',
+			'var y = (3 * 5)',
+			'var z = (3 * 5)',
+		], {}, (editor, cursor) => {
+
+			let findController = editor.registerAndInstantiateContribution<TestFindController>(TestFindController);
+			let selectHighlightsAction = new SelectHighlightsAction({id:'',label:''}, editor);
+
+			editor.setSelection(new Selection(2, 9, 2, 16));
+
+			selectHighlightsAction.run();
+			assert.deepEqual(editor.getSelections().map(fromRange), [
+				[2, 9, 2, 16],
+				[1, 9, 1, 16],
+				[3, 9, 3, 16],
+			]);
+
+			editor.trigger('test', 'removeSecondaryCursors', null);
+
+			assert.deepEqual(fromRange(editor.getSelection()), [2, 9, 2, 16]);
+
+			findController.dispose();
+			selectHighlightsAction.dispose();
+		});
+	});
+
+	test('issue #9043: Clear search scope when find widget is hidden', () => {
+		withMockCodeEditor([
+			'var x = (3 * 5)',
+			'var y = (3 * 5)',
+			'var z = (3 * 5)',
+		], {}, (editor, cursor) => {
+
+			let findController = editor.registerAndInstantiateContribution<TestFindController>(TestFindController);
+			findController.start({
+				forceRevealReplace: false,
+				seedSearchStringFromSelection: false,
+				shouldFocus: FindStartFocusAction.NoFocusChange,
+				shouldAnimate: false
+			});
+
+			assert.equal(findController.getState().searchScope, null);
+
+			findController.getState().change({
+				searchScope: new Range(1, 1, 1, 5)
+			}, false);
+
+			assert.deepEqual(findController.getState().searchScope, new Range(1, 1, 1, 5));
+
+			findController.closeFindWidget();
+			assert.equal(findController.getState().searchScope, null);
 		});
 	});
 });

@@ -10,16 +10,12 @@
 }
 
 .monaco-workbench > .activitybar > .content .monaco-action-bar .action-label {
-	display: inline-block; /* this is for IE9 which will ignore the flex rules */
-	display: -ms-flexbox;
 	display: flex;
 	overflow: hidden;
 	height: 40px;
 	line-height: 40px;
 	margin-right: 0;
 	padding: 0 0 0 50px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	background-position: 9px center;
 	background-repeat: no-repeat;
@@ -29,7 +25,6 @@
 	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 
-.monaco-workbench > .activitybar > .content .monaco-action-bar .badge:active:before,
 .monaco-workbench > .activitybar > .content .monaco-action-bar .action-item .action-label:focus:before {
 	content: "";
 	position: absolute;
@@ -39,30 +34,25 @@
 	border-left: 2px solid;
 }
 
-.vs .monaco-workbench > .activitybar > .content .monaco-action-bar .badge:active:before,
-.vs-dark .monaco-workbench > .activitybar > .content .monaco-action-bar .badge:active:before,
 .vs .monaco-workbench > .activitybar > .content .monaco-action-bar .action-item .action-label:focus:before,
 .vs-dark .monaco-workbench > .activitybar > .content .monaco-action-bar .action-item .action-label:focus:before {
 	border-left-color: #007ACC;
 }
 
-.hc-black .monaco-workbench > .activitybar > .content .monaco-action-bar .badge:active:before,
 .hc-black .monaco-workbench > .activitybar > .content .monaco-action-bar .action-item .action-label:focus:before {
 	border-left-color: #f38518;
 }
 
-.monaco-workbench > .activitybar.left > .content .monaco-action-bar .badge:active:before,
 .monaco-workbench > .activitybar.left > .content .monaco-action-bar .action-item .action-label:focus:before {
 	left: 1px;
 }
 
-.monaco-workbench > .activitybar.right > .content .monaco-action-bar .badge:active:before,
 .monaco-workbench > .activitybar.right > .content .monaco-action-bar .action-item .action-label:focus:before {
 	right: 1px;
 }
 
 .monaco-workbench > .activitybar > .content .monaco-action-bar .action-label > .label {
-	-ms-flex: 1 1 auto;
+	flex: 1 1 auto;
 	flex: 1 1 auto;
 	overflow: hidden;
 }
@@ -70,7 +60,7 @@
 .monaco-workbench > .activitybar > .content .monaco-action-bar .action-label > .keybinding {
 	overflow: hidden;
 	text-overflow: hidden;
-	-ms-flex: 2 1 auto;
+	flex: 2 1 auto;
 	flex: 2 1 auto;
 	text-align: right;
 	opacity: 0.5;
@@ -139,6 +129,7 @@
 }
 
 .hc-black .monaco-workbench > .activitybar > .content .monaco-action-bar .action-label:before {
+	content: "";
 	opacity: 0.6;
 	position: absolute;
 	top: 4px;

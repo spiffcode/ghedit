@@ -6,19 +6,23 @@
 
 import {IDisposable} from 'vs/base/common/lifecycle';
 import * as editorCommon from 'vs/editor/common/editorCommon';
+import {Position} from 'vs/editor/common/core/position';
+import {Range} from 'vs/editor/common/core/range';
 
 export class FindDecorations implements IDisposable {
 
 	private _editor:editorCommon.ICommonCodeEditor;
 	private _decorations:string[];
 	private _findScopeDecorationId:string;
+	private _lineHighlightDecorationId:string;
 	private _highlightedDecorationId:string;
-	private _startPosition:editorCommon.IEditorPosition;
+	private _startPosition:Position;
 
 	constructor(editor:editorCommon.ICommonCodeEditor) {
 		this._editor = editor;
 		this._decorations = [];
 		this._findScopeDecorationId = null;
+		this._lineHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 		this._startPosition = this._editor.getPosition();
 	}
@@ -29,6 +33,7 @@ export class FindDecorations implements IDisposable {
 		this._editor = null;
 		this._decorations = [];
 		this._findScopeDecorationId = null;
+		this._lineHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 		this._startPosition = null;
 	}
@@ -36,6 +41,7 @@ export class FindDecorations implements IDisposable {
 	public reset(): void {
 		this._decorations = [];
 		this._findScopeDecorationId = null;
+		this._lineHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 	}
 
@@ -43,23 +49,23 @@ export class FindDecorations implements IDisposable {
 		return this._decorations.length;
 	}
 
-	public getFindScope(): editorCommon.IEditorRange {
+	public getFindScope(): Range {
 		if (this._findScopeDecorationId) {
 			return this._editor.getModel().getDecorationRange(this._findScopeDecorationId);
 		}
 		return null;
 	}
 
-	public getStartPosition(): editorCommon.IEditorPosition {
+	public getStartPosition(): Position {
 		return this._startPosition;
 	}
 
-	public setStartPosition(newStartPosition:editorCommon.IEditorPosition): void {
+	public setStartPosition(newStartPosition:Position): void {
 		this._startPosition = newStartPosition;
 		this.setCurrentFindMatch(null);
 	}
 
-	public getCurrentMatchesPosition(desiredRange:editorCommon.IEditorRange): number {
+	public getCurrentMatchesPosition(desiredRange:Range): number {
 		for (let i = 0, len = this._decorations.length; i < len; i++) {
 			let range = this._editor.getModel().getDecorationRange(this._decorations[i]);
 			if (desiredRange.equalsRange(range)) {
@@ -69,7 +75,7 @@ export class FindDecorations implements IDisposable {
 		return 1;
 	}
 
-	public setCurrentFindMatch(nextMatch:editorCommon.IEditorRange): number {
+	public setCurrentFindMatch(nextMatch:Range): number {
 		let newCurrentDecorationId: string = null;
 		let matchPosition = 0;
 		if (nextMatch) {
@@ -93,13 +99,21 @@ export class FindDecorations implements IDisposable {
 					this._highlightedDecorationId = newCurrentDecorationId;
 					changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations.createFindMatchDecorationOptions(true));
 				}
+				if (this._lineHighlightDecorationId !== null) {
+					changeAccessor.removeDecoration(this._lineHighlightDecorationId);
+					this._lineHighlightDecorationId = null;
+				}
+				if (newCurrentDecorationId !== null) {
+					let rng = this._editor.getModel().getDecorationRange(newCurrentDecorationId);
+					this._lineHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations.createLineHighlightDecoration());
+				}
 			});
 		}
 
 		return matchPosition;
 	}
 
-	public set(matches:editorCommon.IEditorRange[], findScope:editorCommon.IEditorRange): void {
+	public set(matches:Range[], findScope:Range): void {
 		let newDecorations: editorCommon.IModelDeltaDecoration[] = matches.map((match) => {
 			return {
 				range: match,
@@ -120,6 +134,7 @@ export class FindDecorations implements IDisposable {
 			this._findScopeDecorationId = null;
 		}
 		this._decorations = tmpDecorations;
+		this._lineHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 	}
 
@@ -128,6 +143,9 @@ export class FindDecorations implements IDisposable {
 		result = result.concat(this._decorations);
 		if (this._findScopeDecorationId) {
 			result.push(this._findScopeDecorationId);
+		}
+		if (this._lineHighlightDecorationId) {
+			result.push(this._lineHighlightDecorationId);
 		}
 		return result;
 	}
@@ -141,6 +159,14 @@ export class FindDecorations implements IDisposable {
 				darkColor: 'rgba(246, 185, 77, 0.7)',
 				position: editorCommon.OverviewRulerLane.Center
 			}
+		};
+	}
+
+	private static createLineHighlightDecoration(): editorCommon.IModelDecorationOptions {
+		return {
+			stickiness: editorCommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+			className: 'lineHighlight',
+			isWholeLine: true
 		};
 	}
 

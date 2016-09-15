@@ -26,7 +26,7 @@ export function forEach<T>(array: T[], callback: (element: T, remove: Function) 
 	}
 }
 
-export function equals<T>(one: T[], other: T[], itemEquals: (a: T, b: T) => boolean): boolean {
+export function equals<T>(one: T[], other: T[], itemEquals: (a: T, b: T) => boolean = (a, b) => a === b): boolean {
 	if (one.length !== other.length) {
 		return false;
 	}
@@ -77,6 +77,29 @@ export function findFirst<T>(array: T[], p: (x: T) => boolean): number {
 		}
 	}
 	return low;
+}
+
+/**
+ * Returns the top N elements from the array.
+ *
+ * Faster than sorting the entire array when the array is a lot larger than N.
+ *
+ * @param array The unsorted array.
+ * @param compare A sort function for the elements.
+ * @param n The number of elements to return.
+ * @return The first n elemnts from array when sorted with compare.
+ */
+export function top<T>(array: T[], compare: (a: T, b: T) => number, n: number) {
+	const result = array.slice(0, n).sort(compare);
+	for (let i = n, m = array.length; i < m; i++) {
+		const element = array[i];
+		if (compare(element, result[n - 1]) < 0) {
+			result.pop();
+			const j = findFirst(result, e => compare(element, e) < 0);
+			result.splice(j, 0, element);
+		}
+	}
+	return result;
 }
 
 export function merge<T>(arrays: T[][], hashFn?: (element: T) => string): T[] {
@@ -170,6 +193,21 @@ export function distinct<T>(array: T[], keyFn?: (t: T) => string): T[] {
 	});
 }
 
+export function uniqueFilter<T>(keyFn: (t: T) => string): (t: T) => boolean {
+	const seen: { [key: string]: boolean; } = Object.create(null);
+
+	return element => {
+		const key = keyFn(element);
+
+		if (seen[key]) {
+			return false;
+		}
+
+		seen[key] = true;
+		return true;
+	};
+}
+
 export function firstIndex<T>(array: T[], fn: (item: T) => boolean): number {
 	for (let i = 0; i < array.length; i++) {
 		const element = array[i];
@@ -199,4 +237,32 @@ export function commonPrefixLength<T>(one: T[], other: T[], equals: (a: T, b: T)
 
 export function flatten<T>(arr: T[][]): T[] {
 	return arr.reduce((r, v) => r.concat(v), []);
+}
+
+export function range(to: number, from = 0): number[] {
+	const result = [];
+
+	for (let i = from; i < to; i++) {
+		result.push(i);
+	}
+
+	return result;
+}
+
+export function fill<T>(num: number, valueFn: () => T, arr: T[] = []): T[] {
+	for (let i = 0; i < num; i++) {
+		arr[i] = valueFn();
+	}
+
+	return arr;
+}
+
+export function index<T>(array: T[], indexer: (t: T) => string): { [key: string]: T; };
+export function index<T,R>(array: T[], indexer: (t: T) => string, merger?: (t: T, r: R) => R): { [key: string]: R; };
+export function index<T,R>(array: T[], indexer: (t: T) => string, merger: (t: T, r: R) => R = t => t as any): { [key: string]: R; } {
+	return array.reduce((r, t) => {
+		const key = indexer(t);
+		r[key] = merger(t, r[key]);
+		return r;
+	}, Object.create(null));
 }

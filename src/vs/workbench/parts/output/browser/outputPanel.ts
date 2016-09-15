@@ -20,7 +20,7 @@ import {IMessageService} from 'vs/platform/message/common/message';
 import {EditorInput, EditorOptions} from 'vs/workbench/common/editor';
 import {StringEditor} from 'vs/workbench/browser/parts/editor/stringEditor';
 import {OUTPUT_PANEL_ID, IOutputService} from 'vs/workbench/parts/output/common/output';
-import {OutputEditorInput} from 'vs/workbench/parts/output/common/outputEditorInput';
+import {OutputEditorInput} from 'vs/workbench/parts/output/browser/outputEditorInput';
 import {SwitchOutputAction, SwitchOutputActionItem, ClearOutputAction} from 'vs/workbench/parts/output/browser/outputActions';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
@@ -84,6 +84,7 @@ export class OutputPanel extends StringEditor {
 		options.lineDecorationsWidth = 20;
 		options.rulers = [];
 		options.folding = false;
+		options.scrollBeyondLastLine = false;
 
 		const channel = this.outputService.getActiveChannel();
 		options.ariaLabel = channel ? nls.localize('outputPanelWithInputAriaLabel', "{0}, Output panel", channel.label) : nls.localize('outputPanelAriaLabel', "Output panel");
@@ -95,9 +96,10 @@ export class OutputPanel extends StringEditor {
 		return super.setInput(input, options).then(() => this.revealLastLine());
 	}
 
-	public create(parent: Builder): TPromise<void> {
-		return super.create(parent)
-			.then(() => this.setInput(OutputEditorInput.getInstance(this.instantiationService, this.outputService.getActiveChannel()), null));
+	public createEditor(parent: Builder): void {
+		super.createEditor(parent);
+
+		this.setInput(OutputEditorInput.getInstance(this.instantiationService, this.outputService.getActiveChannel()), null);
 	}
 
 	public focus(): void {

@@ -6,7 +6,6 @@
 
 import {toErrorMessage} from 'vs/base/common/errors';
 import {EventEmitter} from 'vs/base/common/eventEmitter';
-import {IDisposable} from 'vs/base/common/lifecycle';
 import {Schemas} from 'vs/base/common/network';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
@@ -16,15 +15,16 @@ import {ConfigurationService, IContent, IStat} from 'vs/platform/configuration/c
 import {IEditor, IEditorInput, IEditorOptions, IEditorService, IResourceInput, ITextEditorModel, Position} from 'vs/platform/editor/common/editor';
 import {AbstractExtensionService, ActivatedExtension} from 'vs/platform/extensions/common/abstractExtensionService';
 import {IExtensionDescription} from 'vs/platform/extensions/common/extensions';
+import {ICommandService, ICommandHandler} from 'vs/platform/commands/common/commands';
 import {KeybindingService} from 'vs/platform/keybinding/browser/keybindingServiceImpl';
 import {IOSupport} from 'vs/platform/keybinding/common/keybindingResolver';
-import {ICommandHandler, ICommandsMap, IKeybindingItem} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingItem} from 'vs/platform/keybinding/common/keybinding';
 import {IConfirmation, IMessageService} from 'vs/platform/message/common/message';
-import {BaseRequestService} from 'vs/platform/request/common/baseRequestService';
-import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import {ICodeEditor, IDiffEditor} from 'vs/editor/browser/editorBrowser';
+import {Selection} from 'vs/editor/common/core/selection';
+import {IEventService} from 'vs/platform/event/common/event';
 
 export class SimpleEditor implements IEditor {
 
@@ -40,7 +40,7 @@ export class SimpleEditor implements IEditor {
 
 	public getId():string { return 'editor'; }
 	public getControl():editorCommon.IEditor { return this._widget; }
-	public getSelection():editorCommon.IEditorSelection { return this._widget.getSelection(); }
+	public getSelection():Selection { return this._widget.getSelection(); }
 	public focus():void { this._widget.focus(); }
 
 	public withTypedEditor<T>(codeEditorCallback:(editor:ICodeEditor)=>T, diffEditorCallback:(editor:IDiffEditor)=>T): T {
@@ -73,7 +73,7 @@ export interface IOpenEditorDelegate {
 }
 
 export class SimpleEditorService implements IEditorService {
-	public serviceId = IEditorService;
+	public _serviceBrand: any;
 
 	private editor:SimpleEditor;
 	private openEditorDelegate:IOpenEditorDelegate;
@@ -140,7 +140,7 @@ export class SimpleEditorService implements IEditorService {
 
 	private findModel(editor:editorCommon.ICommonCodeEditor, data:IResourceInput): editorCommon.IModel {
 		var model = editor.getModel();
-		if(model.getAssociatedResource().toString() !== data.resource.toString()) {
+		if(model.uri.toString() !== data.resource.toString()) {
 			return null;
 		}
 
@@ -164,7 +164,7 @@ export class SimpleEditorService implements IEditorService {
 }
 
 export class SimpleMessageService implements IMessageService {
-	public serviceId = IMessageService;
+	public _serviceBrand: any;
 
 	private static Empty = function() { /* nothing */};
 
@@ -197,29 +197,16 @@ export class SimpleMessageService implements IMessageService {
 
 		return window.confirm(messageText);
 	}
-
-	public setStatusMessage(message: string, autoDisposeAfter:number = -1): IDisposable {
-		return {
-			dispose: () => { /* Nothing to do here */ }
-		};
-	}
-}
-
-export class SimpleEditorRequestService extends BaseRequestService {
-
-	constructor(contextService: IWorkspaceContextService, telemetryService?: ITelemetryService) {
-		super(contextService, telemetryService);
-	}
 }
 
 export class StandaloneKeybindingService extends KeybindingService {
 	private static LAST_GENERATED_ID = 0;
 
 	private _dynamicKeybindings: IKeybindingItem[];
-	private _dynamicCommands: ICommandsMap;
+	private _dynamicCommands: { [id: string]: ICommandHandler };
 
-	constructor(configurationService: IConfigurationService, messageService: IMessageService, domNode: HTMLElement) {
-		super(configurationService, messageService);
+	constructor(commandService: ICommandService, configurationService: IConfigurationService, messageService: IMessageService, domNode: HTMLElement) {
+		super(commandService, configurationService, messageService);
 
 		this._dynamicKeybindings = [];
 		this._dynamicCommands = Object.create(null);
@@ -227,15 +214,15 @@ export class StandaloneKeybindingService extends KeybindingService {
 		this._beginListening(domNode);
 	}
 
-	public addDynamicKeybinding(keybinding: number, handler:ICommandHandler, context:string, commandId:string = null): string {
+	public addDynamicKeybinding(keybinding: number, handler:ICommandHandler, when:string, commandId:string = null): string {
 		if (commandId === null) {
 			commandId = 'DYNAMIC_' + (++StandaloneKeybindingService.LAST_GENERATED_ID);
 		}
-		var parsedContext = IOSupport.readKeybindingContexts(context);
+		var parsedContext = IOSupport.readKeybindingWhen(when);
 		this._dynamicKeybindings.push({
 			keybinding: keybinding,
 			command: commandId,
-			context: parsedContext,
+			when: parsedContext,
 			weight1: 1000,
 			weight2: 0
 		});
@@ -287,6 +274,11 @@ export class SimpleExtensionService extends AbstractExtensionService<ActivatedEx
 
 export class SimpleConfigurationService extends ConfigurationService {
 
+	constructor(contextService: IWorkspaceContextService, eventService: IEventService) {
+		super(contextService, eventService);
+		this.initialize();
+	}
+
 	protected resolveContents(resources: URI[]): TPromise<IContent[]> {
 		return TPromise.as(resources.map((resource) => {
 			return {
@@ -308,6 +300,10 @@ export class SimpleConfigurationService extends ConfigurationService {
 			resource: resource,
 			isDirectory: false
 		});
+	}
+
+	setUserConfiguration(key: any, value: any) : Thenable<void> {
+		return TPromise.as(null);
 	}
 
 }

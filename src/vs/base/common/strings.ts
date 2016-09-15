@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import {LinkedMap} from 'vs/base/common/map';
+
 /**
  * The empty string.
  */
@@ -198,34 +200,6 @@ export function createRegExp(searchString: string, isRegex: boolean, matchCase: 
 	return new RegExp(searchString, modifiers);
 }
 
-/**
- * Create a regular expression only if it is valid and it doesn't lead to endless loop.
- */
-export function createSafeRegExp(searchString:string, isRegex:boolean, matchCase:boolean, wholeWord:boolean): RegExp {
-		if (searchString === '') {
-			return null;
-		}
-
-		// Try to create a RegExp out of the params
-		var regex:RegExp = null;
-		try {
-			regex = createRegExp(searchString, isRegex, matchCase, wholeWord, true);
-		} catch (err) {
-			return null;
-		}
-
-		// Guard against endless loop RegExps & wrap around try-catch as very long regexes produce an exception when executed the first time
-		try {
-			if (regExpLeadsToEndlessLoop(regex)) {
-				return null;
-			}
-		} catch (err) {
-			return null;
-		}
-
-		return regex;
-	}
-
 export function regExpLeadsToEndlessLoop(regexp: RegExp): boolean {
 	// Exit early if it's one of these special cases which are meant to match
 	// against an empty string
@@ -247,14 +221,13 @@ export function regExpLeadsToEndlessLoop(regexp: RegExp): boolean {
  */
 export let canNormalize = typeof ((<any>'').normalize) === 'function';
 const nonAsciiCharactersPattern = /[^\u0000-\u0080]/;
-const normalizedCache = Object.create(null);
-let cacheCounter = 0;
+const normalizedCache = new LinkedMap<string>(10000); // bounded to 10000 elements
 export function normalizeNFC(str: string): string {
 	if (!canNormalize || !str) {
 		return str;
 	}
 
-	const cached = normalizedCache[str];
+	const cached = normalizedCache.get(str);
 	if (cached) {
 		return cached;
 	}
@@ -266,11 +239,8 @@ export function normalizeNFC(str: string): string {
 		res = str;
 	}
 
-	// Use the cache for fast lookup but do not let it grow unbounded
-	if (cacheCounter < 10000) {
-		normalizedCache[str] = res;
-		cacheCounter++;
-	}
+	// Use the cache for fast lookup
+	normalizedCache.set(str, res);
 
 	return res;
 }
@@ -305,8 +275,8 @@ export function getLeadingWhitespace(str: string): string {
  * Returns last index of the string that is not whitespace.
  * If string is empty or contains only whitespaces, returns -1
  */
-export function lastNonWhitespaceIndex(str: string): number {
-	for (let i = str.length - 1; i >= 0; i--) {
+export function lastNonWhitespaceIndex(str: string, startIndex: number = str.length - 1): number {
+	for (let i = startIndex; i >= 0; i--) {
 		if (str.charAt(i) !== ' ' && str.charAt(i) !== '\t') {
 			return i;
 		}
@@ -314,8 +284,14 @@ export function lastNonWhitespaceIndex(str: string): number {
 	return -1;
 }
 
-export function localeCompare(strA: string, strB: string): number {
-	return strA.localeCompare(strB);
+export function compare(a: string, b: string): number {
+	if (a < b) {
+		return -1;
+	} else if(a > b) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 function isAsciiChar(code: number): boolean {

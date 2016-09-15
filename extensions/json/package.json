@@ -27,12 +27,15 @@
 					".bowerrc",
 					".jshintrc",
 					".jscsrc",
-					".eslintrc"
+					".eslintrc",
+					".babelrc",
+					".webmanifest"
 				],
 				"mimetypes": [
-					"application/json"
+					"application/json",
+					"application/manifest+json"
 				],
-				"configuration": "./json.configuration.json"
+				"configuration": "./language-configuration.json"
 			}
 		],
 		"grammars": [
@@ -50,6 +53,10 @@
 			{
 				"fileMatch": "package.json",
 				"url": "vscode://schemas/vscode-extensions"
+			},
+			{
+				"fileMatch": "*language-configuration.json",
+				"url": "vscode://schemas/language-configuration"
 			},
 			{
 				"fileMatch": "vscode://defaultsettings/keybindings.json",
@@ -92,7 +99,7 @@
 			"id": "json",
 			"order": 20,
 			"type": "object",
-			"title": "JSON configuration",
+			"title": "JSON",
 			"properties" : {
 				"json.schemas" : {
 					"type": "array",
@@ -127,7 +134,7 @@
 		}
 	},
 	"dependencies": {
-		"vscode-languageclient": "^1.3.1",
+		"vscode-languageclient": "^2.2.1",
 		"vscode-extension-telemetry": "^0.0.5"
 	}
 }

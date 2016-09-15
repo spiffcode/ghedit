@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/compositePart';
+import 'vs/css!./media/compositepart';
 import nls = require('vs/nls');
 import timer = require('vs/base/common/timer');
 import uuid = require('vs/base/common/uuid');
 import {TPromise} from 'vs/base/common/winjs.base';
 import {Registry} from 'vs/platform/platform';
-import {IDisposable} from 'vs/base/common/lifecycle';
+import {IDisposable, dispose} from 'vs/base/common/lifecycle';
 import {Dimension, Builder, $} from 'vs/base/browser/builder';
 import events = require('vs/base/common/events');
 import strings = require('vs/base/common/strings');
@@ -35,11 +35,11 @@ import {ServiceCollection} from 'vs/platform/instantiation/common/serviceCollect
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 import {IProgressService} from 'vs/platform/progress/common/progress';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 
 export abstract class CompositePart<T extends Composite> extends Part {
-	private activeCompositeListeners: { (): void; }[];
-	private instantiatedCompositeListeners: { (): void; }[];
+	private activeCompositeListeners: IDisposable[];
+	private instantiatedCompositeListeners: IDisposable[];
 	private mapCompositeToCompositeContainer: { [compositeId: string]: Builder; };
 	private mapActionsBindingToComposite: { [compositeId: string]: () => void; };
 	private mapProgressServiceToComposite: { [compositeId: string]: IProgressService; };
@@ -66,7 +66,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		private registry: CompositeRegistry<T>,
 		private activeCompositeSettingsKey: string,
 		private nameForTelemetry: string,
-		private compositeCssClass: string,
+		private compositeCSSClass: string,
 		private actionContributionScope: string,
 		id: string
 	) {
@@ -181,7 +181,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 					this.instantiatedComposits.push(composite);
 
 					// Register to title area update events from the composite
-					this.instantiatedCompositeListeners.push(composite.addListener(CompositeEventType.INTERNAL_COMPOSITE_TITLE_AREA_UPDATE, (e) => { this.onTitleAreaUpdate(e); }));
+					this.instantiatedCompositeListeners.push(composite.addListener2(CompositeEventType.INTERNAL_COMPOSITE_TITLE_AREA_UPDATE, (e) => { this.onTitleAreaUpdate(e); }));
 
 					// Remove from Promises Cache since Loaded
 					delete this.compositeLoaderPromises[id];
@@ -214,7 +214,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 		this.lastActiveCompositeId = this.activeComposite.getId();
 
 		// Register as Emitter to Workbench Bus
-		this.activeCompositeListeners.push(this.eventService.addEmitter(this.activeComposite, this.activeComposite.getId()));
+		this.activeCompositeListeners.push(this.eventService.addEmitter2(this.activeComposite, this.activeComposite.getId()));
 
 		let createCompositePromise: TPromise<void>;
 
@@ -224,7 +224,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 
 			// Build Container off-DOM
 			compositeContainer = $().div({
-				'class': ['composite', this.compositeCssClass],
+				'class': ['composite', this.compositeCSSClass],
 				id: composite.getId()
 			}, (div: Builder) => {
 				createCompositePromise = composite.create(div);
@@ -357,8 +357,8 @@ export abstract class CompositePart<T extends Composite> extends Part {
 	private collectCompositeActions(composite: Composite): () => void {
 
 		// From Composite
-		let primaryActions: IAction[] = composite.getActions();
-		let secondaryActions: IAction[] = composite.getSecondaryActions();
+		let primaryActions: IAction[] = composite.getActions().slice(0);
+		let secondaryActions: IAction[] = composite.getSecondaryActions().slice(0);
 
 		// From Part
 		primaryActions.push(...this.getActions());
@@ -405,9 +405,7 @@ export abstract class CompositePart<T extends Composite> extends Part {
 			this.toolBar.setActions([])();
 
 			// Clear Listeners
-			while (this.activeCompositeListeners.length) {
-				this.activeCompositeListeners.pop()();
-			}
+			this.activeCompositeListeners = dispose(this.activeCompositeListeners);
 
 			// Emit Composite Closed Event
 			this.emit(WorkbenchEventType.COMPOSITE_CLOSED, new CompositeEvent(composite.getId()));
@@ -436,7 +434,15 @@ export abstract class CompositePart<T extends Composite> extends Part {
 			// Toolbar
 			this.toolBar = new ToolBar(div.getHTMLElement(), this.contextMenuService, {
 				actionItemProvider: (action: Action) => this.actionItemProvider(action),
-				orientation: ActionsOrientation.HORIZONTAL
+				orientation: ActionsOrientation.HORIZONTAL,
+				getKeyBinding: (action) => {
+					const opts = this.keybindingService.lookupKeybindings(action.id);
+					if (opts.length > 0) {
+						return opts[0]; // only take the first one
+					}
+
+					return null;
+				}
 			});
 		});
 
@@ -512,13 +518,9 @@ export abstract class CompositePart<T extends Composite> extends Part {
 
 		this.instantiatedComposits = [];
 
-		while (this.activeCompositeListeners.length) {
-			this.activeCompositeListeners.pop()();
-		}
+		this.activeCompositeListeners = dispose(this.activeCompositeListeners);
 
-		while (this.instantiatedCompositeListeners.length) {
-			this.instantiatedCompositeListeners.pop()();
-		}
+		this.instantiatedCompositeListeners = dispose(this.instantiatedCompositeListeners);
 
 		this.progressBar.dispose();
 		this.toolBar.dispose();

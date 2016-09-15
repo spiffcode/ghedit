@@ -55,13 +55,15 @@ export function create(client: ITypescriptServiceClient, isOpen:(path:string)=>P
 	}));
 
 	function onEditor(editor: vscode.TextEditor): void {
-		if (!editor || !vscode.languages.match(selector, editor.document)) {
+		if (!editor
+			|| !vscode.languages.match(selector, editor.document)
+			|| !client.asAbsolutePath(editor.document.uri)) {
+
 			item.hide();
 			return;
 		}
 
 		const file = client.asAbsolutePath(editor.document.uri);
-
 		isOpen(file).then(value => {
 			if (!value) {
 				return;
@@ -100,7 +102,7 @@ export function create(client: ITypescriptServiceClient, isOpen:(path:string)=>P
 									projectHinted[configFileName] = true;
 									item.hide();
 
-									return vscode.workspace.openTextDocument(vscode.Uri.parse('untitled:' + join(vscode.workspace.rootPath, 'jsconfig.json')))
+									return vscode.workspace.openTextDocument(vscode.Uri.parse('untitled:' + encodeURIComponent(join(vscode.workspace.rootPath, 'jsconfig.json'))))
 										.then(doc => vscode.window.showTextDocument(doc, vscode.ViewColumn.Three))
 										.then(editor => editor.edit(builder => builder.insert(new vscode.Position(0, 0), defaultConfig)));
 								}

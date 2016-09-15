@@ -5,7 +5,7 @@
 
 .monaco-editor .peekview-widget .head {
 	background-color: #fff;
-	border-top: 1px solid #007ACC;
+	border-top: 1px solid;
 	-webkit-box-sizing:	border-box;
 	-o-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -19,12 +19,6 @@
 	margin-left: 20px;
 	cursor: pointer;
 }
-
-.monaco-editor .peekview-widget .head .peekview-title { font-family: "Segoe UI", "SFUIText-Regular", "HelveticaNeue", sans-serif, "Droid Sans Fallback"; }
-.monaco-editor:lang(zh-Hans) .peekview-widget .head .peekview-title { font-family: "Segoe UI", "SFUIText-Regular", "HelveticaNeue", "Noto Sans", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Source Han Sans CN", "Source Han Sans", sans-serif; }
-.monaco-editor:lang(zh-Hant) .peekview-widget .head .peekview-title { font-family: "Segoe UI", "SFUIText-Regular", "HelveticaNeue", "Noto Sans", "Microsoft Jhenghei", "PingFang TC", "Source Han Sans TC", "Source Han Sans", "Source Han Sans TW", sans-serif; }
-.monaco-editor:lang(ja) .peekview-widget .head .peekview-title { font-family: "Segoe UI", "SFUIText-Regular", "HelveticaNeue", "Noto Sans", "Meiryo", "Hiragino Kaku Gothic Pro", "Source Han Sans J", "Source Han Sans JP", "Source Han Sans", "Sazanami Gothic", "IPA Gothic", sans-serif; }
-.monaco-editor:lang(ko) .peekview-widget .head .peekview-title { font-family: "Segoe UI", "SFUIText-Regular", "HelveticaNeue", "Noto Sans", "Malgun Gothic", "Nanum Gothic", "Dotom", "Apple SD Gothic Neo", "AppleGothic", "Source Han Sans K", "Source Han Sans JR", "Source Han Sans", "UnDotum", "FBaekmuk Gulim", sans-serif; }
 
 .monaco-editor .peekview-widget .head .peekview-title .filename {
 	color: #333333;
@@ -40,6 +34,7 @@
 	display: inline-block;
 	position: absolute;
 	right: 2px;
+	top: 2px;
 }
 
 .monaco-editor .peekview-widget .head .peekview-actions .action-label {
@@ -53,8 +48,9 @@
 }
 
 .monaco-editor .peekview-widget > .body {
-	border-top: 1px solid #007ACC;
-	border-bottom: 1px solid #007ACC;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	position: relative;
 }
 
 /* Dark Theme */
@@ -62,6 +58,7 @@
 	background-color: #1E1E1E;
 }
 
+.monaco-editor.hc-black .peekview-widget .head .peekview-actions .action-label.icon.close-peekview-action,
 .monaco-editor.vs-dark .peekview-widget .head .peekview-actions .action-label.icon.close-peekview-action {
 	background: url('media/close-inverse.svg') center center no-repeat;
 }
@@ -87,17 +84,6 @@
 .monaco-editor.hc-black .peekview-widget .head .peekview-title .dirname {
 	color: #fff;
 	opacity: 0.6;
-}
-
-.monaco-editor.hc-black .peekview-widget .head .peekview-actions .action-label.icon.close-peekview-action {
-	background: none;
-}
-
-.monaco-editor.hc-black .peekview-widget .head .peekview-actions .action-label.icon.close-peekview-action:before {
-	content: url('media/close-inverse.svg');
-	display: inline-block;
-	height: 16px;
-	width: 16px;
 }
 
 .monaco-editor.hc-black .peekview-widget > .body {

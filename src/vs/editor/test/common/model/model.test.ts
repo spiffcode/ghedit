@@ -8,35 +8,28 @@ import * as assert from 'assert';
 import {EditOperation} from 'vs/editor/common/core/editOperation';
 import {Position} from 'vs/editor/common/core/position';
 import {Range} from 'vs/editor/common/core/range';
-import {EventType, IModelContentChangedEvent, IModelContentChangedFlushEvent} from 'vs/editor/common/editorCommon';
+import {
+	EventType, IModelContentChangedEvent, IModelContentChangedFlushEvent, IModelContentChangedLineChangedEvent,
+	IModelContentChangedLinesDeletedEvent, IModelContentChangedLinesInsertedEvent
+} from 'vs/editor/common/editorCommon';
 import {Model} from 'vs/editor/common/model/model';
 import {BracketMode} from 'vs/editor/test/common/testModes';
+import {TextModel, IParsedSearchRequest} from 'vs/editor/common/model/textModel';
 
 // --------- utils
 
-function isNotABracket(model, lineNumber, column) {
+function isNotABracket(model:Model, lineNumber:number, column:number) {
 	var match = model.matchBracket(new Position(lineNumber, column));
-	assert.equal(match.isAccurate, true, 'is not matching brackets at ' + lineNumber + ', ' + column);
-	assert.equal(match.brackets, null, 'is not matching brackets at ' + lineNumber + ', ' + column);
+	assert.equal(match, null, 'is not matching brackets at ' + lineNumber + ', ' + column);
 }
 
-function isBracket(model, lineNumber1, column11, column12, lineNumber2, column21, column22) {
+function isBracket(model:Model, lineNumber1:number, column11:number, column12:number, lineNumber2:number, column21:number, column22:number) {
 	var match = model.matchBracket(new Position(lineNumber1, column11));
-	assert.deepEqual(match, {
-		brackets: [
-			new Range(lineNumber1, column11, lineNumber1, column12),
-			new Range(lineNumber2, column21, lineNumber2, column22)
-		],
-		isAccurate: true
-	}, 'is matching brackets at ' + lineNumber1 + ', ' + column11);
+	assert.deepEqual(match, [
+		new Range(lineNumber1, column11, lineNumber1, column12),
+		new Range(lineNumber2, column21, lineNumber2, column22)
+	], 'is matching brackets at ' + lineNumber1 + ', ' + column11);
 }
-
-
-
-function rangeEqual(range, startLineNumber, startColumn, endLineNumber, endColumn) {
-	assert.deepEqual(range, new Range(startLineNumber, startColumn, endLineNumber, endColumn));
-}
-
 
 var LINE1 = 'My First Line';
 var LINE2 = '\t\tMy Second Line';
@@ -55,7 +48,7 @@ suite('Editor Model - Model', () => {
 			LINE3 + '\n' +
 			LINE4 + '\r\n' +
 			LINE5;
-		thisModel = new Model(text, Model.DEFAULT_CREATION_OPTIONS, null);
+		thisModel = Model.createFromString(text);
 	});
 
 	teardown(() => {
@@ -115,7 +108,7 @@ suite('Editor Model - Model', () => {
 	// --------- insert text eventing
 
 	test('model insert empty text does not trigger eventing', () => {
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			assert.ok(false, 'was not expecting event');
 		});
 		thisModel.applyEdits([EditOperation.insert(new Position(1, 1), '')]);
@@ -123,10 +116,10 @@ suite('Editor Model - Model', () => {
 
 	test('model insert text without newline eventing', () => {
 		var listenerCalls = 0;
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
-			assert.equal(e.changeType, EventType.ModelContentChangedLineChanged);
-			assert.equal(e.lineNumber, 1);
+			assert.equal(e.changeType, EventType.ModelRawContentChangedLineChanged);
+			assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 		});
 		thisModel.applyEdits([EditOperation.insert(new Position(1, 1), 'foo ')]);
 		assert.equal(listenerCalls, 1, 'listener calls');
@@ -136,21 +129,21 @@ suite('Editor Model - Model', () => {
 		var listenerCalls = 0;
 		var order = 0;
 
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
 
-			if (e.changeType === EventType.ModelContentChangedLineChanged) {
+			if (e.changeType === EventType.ModelRawContentChangedLineChanged) {
 				if (order === 0) {
 					assert.equal(++order, 1, 'ModelContentChangedLineChanged first');
-					assert.equal(e.lineNumber, 1, 'ModelContentChangedLineChanged line number 1');
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1, 'ModelContentChangedLineChanged line number 1');
 				} else {
 					assert.equal(++order, 2, 'ModelContentChangedLineChanged first');
-					assert.equal(e.lineNumber, 1, 'ModelContentChangedLineChanged line number 1');
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1, 'ModelContentChangedLineChanged line number 1');
 				}
-			} else if (e.changeType === EventType.ModelContentChangedLinesInserted) {
+			} else if (e.changeType === EventType.ModelRawContentChangedLinesInserted) {
 				assert.equal(++order, 3, 'ModelContentChangedLinesInserted second');
-				assert.equal(e.fromLineNumber, 2, 'ModelContentChangedLinesInserted fromLineNumber');
-				assert.equal(e.toLineNumber, 2, 'ModelContentChangedLinesInserted toLineNumber');
+				assert.equal((<IModelContentChangedLinesInsertedEvent>e).fromLineNumber, 2, 'ModelContentChangedLinesInserted fromLineNumber');
+				assert.equal((<IModelContentChangedLinesInsertedEvent>e).toLineNumber, 2, 'ModelContentChangedLinesInserted toLineNumber');
 			} else {
 				assert.ok (false);
 			}
@@ -212,7 +205,7 @@ suite('Editor Model - Model', () => {
 	// --------- delete text eventing
 
 	test('model delete empty text does not trigger eventing', () => {
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			assert.ok(false, 'was not expecting event');
 		});
 		thisModel.applyEdits([EditOperation.delete(new Range(1, 1, 1, 1))]);
@@ -220,10 +213,10 @@ suite('Editor Model - Model', () => {
 
 	test('model delete text from one line eventing', () => {
 		var listenerCalls = 0;
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
-			assert.equal(e.changeType, EventType.ModelContentChangedLineChanged);
-			assert.equal(e.lineNumber, 1);
+			assert.equal(e.changeType, EventType.ModelRawContentChangedLineChanged);
+			assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 		});
 		thisModel.applyEdits([EditOperation.delete(new Range(1, 1, 1, 2))]);
 		assert.equal(listenerCalls, 1, 'listener calls');
@@ -231,10 +224,10 @@ suite('Editor Model - Model', () => {
 
 	test('model delete all text from a line eventing', () => {
 		var listenerCalls = 0;
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
-			assert.equal(e.changeType, EventType.ModelContentChangedLineChanged);
-			assert.equal(e.lineNumber, 1);
+			assert.equal(e.changeType, EventType.ModelRawContentChangedLineChanged);
+			assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 		});
 		thisModel.applyEdits([EditOperation.delete(new Range(1, 1, 1, 14))]);
 		assert.equal(listenerCalls, 1, 'listener calls');
@@ -243,21 +236,21 @@ suite('Editor Model - Model', () => {
 	test('model delete text from two lines eventing', () => {
 		var listenerCalls = 0;
 		var order = 0;
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
 
-			if (e.changeType === EventType.ModelContentChangedLineChanged) {
+			if (e.changeType === EventType.ModelRawContentChangedLineChanged) {
 				if (order === 0) {
 					assert.equal(++order, 1);
-					assert.equal(e.lineNumber, 1);
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 				} else {
 					assert.equal(++order, 2);
-					assert.equal(e.lineNumber, 1);
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 				}
-			} else if (e.changeType === EventType.ModelContentChangedLinesDeleted) {
+			} else if (e.changeType === EventType.ModelRawContentChangedLinesDeleted) {
 				assert.equal(++order, 3);
-				assert.equal(e.fromLineNumber, 2);
-				assert.equal(e.toLineNumber, 2);
+				assert.equal((<IModelContentChangedLinesDeletedEvent>e).fromLineNumber, 2);
+				assert.equal((<IModelContentChangedLinesDeletedEvent>e).toLineNumber, 2);
 			} else {
 				assert.ok (false);
 			}
@@ -271,21 +264,21 @@ suite('Editor Model - Model', () => {
 		var listenerCalls = 0;
 		var order = 0;
 
-		thisModel.addListener(EventType.ModelContentChanged, (e) => {
+		thisModel.onDidChangeRawContent((e) => {
 			listenerCalls++;
 
-			if (e.changeType === EventType.ModelContentChangedLineChanged) {
+			if (e.changeType === EventType.ModelRawContentChangedLineChanged) {
 				if (order === 0) {
 					assert.equal(++order, 1);
-					assert.equal(e.lineNumber, 1);
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 				} else {
 					assert.equal(++order, 2);
-					assert.equal(e.lineNumber, 1);
+					assert.equal((<IModelContentChangedLineChangedEvent>e).lineNumber, 1);
 				}
-			} else if (e.changeType === EventType.ModelContentChangedLinesDeleted) {
+			} else if (e.changeType === EventType.ModelRawContentChangedLinesDeleted) {
 				assert.equal(++order, 3);
-				assert.equal(e.fromLineNumber, 2);
-				assert.equal(e.toLineNumber, 3);
+				assert.equal((<IModelContentChangedLinesDeletedEvent>e).fromLineNumber, 2);
+				assert.equal((<IModelContentChangedLinesDeletedEvent>e).toLineNumber, 3);
 			} else {
 				assert.ok (false);
 			}
@@ -330,10 +323,10 @@ suite('Editor Model - Model', () => {
 	// --------- setValue
 	test('setValue eventing', () => {
 		var listenerCalls = 0;
-		thisModel.addOneTimeListener(EventType.ModelContentChanged, (e:IModelContentChangedEvent) => {
+		thisModel.onDidChangeRawContent((e:IModelContentChangedEvent) => {
 			listenerCalls++;
 
-			assert.equal(e.changeType, EventType.ModelContentChangedFlush);
+			assert.equal(e.changeType, EventType.ModelRawContentChangedFlush);
 
 			assert.deepEqual((<IModelContentChangedFlushEvent>e).detail.lines, [ 'new value' ]);
 		});
@@ -361,7 +354,7 @@ suite('Editor Model - Model Line Separators', () => {
 			LINE3 + '\u2028' +
 			LINE4 + '\r\n' +
 			LINE5;
-		thisModel = new Model(text, Model.DEFAULT_CREATION_OPTIONS, null);
+		thisModel = Model.createFromString(text);
 	});
 
 	teardown(() => {
@@ -377,7 +370,7 @@ suite('Editor Model - Model Line Separators', () => {
 	});
 
 	test('Bug 13333:Model should line break on lonely CR too', () => {
-		var model = new Model('Hello\rWorld!\r\nAnother line', Model.DEFAULT_CREATION_OPTIONS, null);
+		var model = Model.createFromString('Hello\rWorld!\r\nAnother line');
 		assert.equal(model.getLineCount(), 3);
 		assert.equal(model.getValue(), 'Hello\r\nWorld!\r\nAnother line');
 		model.dispose();
@@ -399,7 +392,7 @@ suite('Editor Model - bracket Matching', () => {
 			'}, bar: {hallo: [{' + '\n' +
 			'}, {' + '\n' +
 			'}]}}';
-		thisModel = new Model(text, Model.DEFAULT_CREATION_OPTIONS, bracketMode);
+		thisModel = Model.createFromString(text, undefined, bracketMode);
 	});
 
 	teardown(() => {
@@ -464,7 +457,7 @@ suite('Editor Model - bracket Matching 2', () => {
 		var text =
 			')]}{[(' + '\n' +
 			')]}{[(';
-		thisModel = new Model(text, Model.DEFAULT_CREATION_OPTIONS, bracketMode);
+		thisModel = Model.createFromString(text, undefined, bracketMode);
 	});
 
 	teardown(() => {
@@ -499,28 +492,11 @@ suite('Editor Model - Words', () => {
 
 	setup(() => {
 		var text = [ 'This text has some  words. ' ];
-		thisModel = new Model(text.join('\n'), Model.DEFAULT_CREATION_OPTIONS, null);
+		thisModel = Model.createFromString(text.join('\n'));
 	});
 
 	teardown(() => {
 		thisModel.destroy();
-	});
-
-	test('Get all words', () => {
-		var words = [
-			{ start: 0,		end: 4 },
-			{ start: 5,		end: 9 },
-			{ start: 10,	end: 13 },
-			{ start: 14,	end: 18 },
-			{ start: 20,	end: 25 },
-			{ start: 25,	end: 26 }
-		];
-
-		var modelWords = thisModel.getWords(1);
-
-		for (var i = 0; i < modelWords.length; i++) {
-			assert.deepEqual(modelWords[i], words[i]);
-		}
 	});
 
 	test('Get word at position', () => {
@@ -542,114 +518,257 @@ suite('Editor Model - Words', () => {
 // --------- Find
 suite('Editor Model - Find', () => {
 
-	var thisModel: Model;
+	function toArrRange(r:Range): [number,number,number,number] {
+		return [r.startLineNumber, r.startColumn, r.endLineNumber, r.endColumn];
+	}
 
-	setup(() => {
-		var text = [
-			'This is some foo - bar text which contains foo and bar - as in Barcelona.',
-			'Now it begins a word fooBar and now it is caps Foo-isn\'t this great?',
-			'And here\'s a dull line with nothing interesting in it',
-			'It is also interesting if it\'s part of a word like amazingFooBar',
-			'Again nothing interesting here'
-		];
-		thisModel = new Model(text.join('\n'), Model.DEFAULT_CREATION_OPTIONS, null);
-	});
+	function assertFindMatches(text:string, searchString:string, isRegex:boolean, matchCase:boolean, wholeWord:boolean, expected:[number,number,number,number][]): void {
+		let model = Model.createFromString(text);
 
-	teardown(() => {
-		thisModel.dispose();
-	});
+		let actualRanges = model.findMatches(searchString, false, isRegex, matchCase, wholeWord);
+		let actual = actualRanges.map(toArrRange);
 
-	test('Simple find', () => {
-		var ranges = [
-			[1, 14, 1, 17],
-			[1, 44, 1, 47],
-			[2, 22, 2, 25],
-			[2, 48, 2, 51],
-			[4, 59, 4, 62]
-		];
-		var matches = thisModel.findMatches('foo', false, false, false, false);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
+		assert.deepEqual(actual, expected, 'findMatches OK');
+
+		// test `findNextMatch`
+		let startPos = new Position(1, 1);
+		let match = model.findNextMatch(searchString, startPos, isRegex, matchCase, wholeWord);
+		assert.deepEqual(toArrRange(match), expected[0], `findNextMatch ${startPos}`);
+		for (let i = 0; i < expected.length; i++) {
+			startPos = new Position(expected[i][0], expected[i][1]);
+			match = model.findNextMatch(searchString, startPos, isRegex, matchCase, wholeWord);
+			assert.deepEqual(toArrRange(match), expected[i], `findNextMatch ${startPos}`);
 		}
-	});
 
-	test('Case sensitive find', () => {
-		var ranges = [
-			[1, 14, 1, 17],
-			[1, 44, 1, 47],
-			[2, 22, 2, 25]
-		];
-		var matches = thisModel.findMatches('foo', false, false, true, false);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
-		}
-	});
-
-	test('Whole words find', () => {
-		var ranges = [
-			[1, 14, 1, 17],
-			[1, 44, 1, 47],
-			[2, 48, 2, 51]
-		];
-		var matches = thisModel.findMatches('foo', false, false, false, true);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
-		}
-	});
-
-	test('/^/ find', () => {
-		var ranges = [
-			[1, 1, 1, 1],
-			[2, 1, 2, 1],
-			[3, 1, 3, 1],
-			[4, 1, 4, 1],
-			[5, 1, 5, 1]
-		];
-		var matches = thisModel.findMatches('^', false, true, false, false);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
-		}
-	});
-
-	test('/$/ find', () => {
-		var ranges = [
-			[1, 74, 1, 74],
-			[2, 69, 2, 69],
-			[3, 54, 3, 54],
-			[4, 65, 4, 65],
-			[5, 31, 5, 31]
-		];
-		var matches = thisModel.findMatches('$', false, true, false, false);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
-		}
-	});
-
-	test('/^$/ find', () => {
-		var text = [
-			'This is some foo - bar text which contains foo and bar - as in Barcelona.',
-			'',
-			'And here\'s a dull line with nothing interesting in it',
-			'',
-			'Again nothing interesting here'
-		];
-		var model = new Model(text.join('\n'), Model.DEFAULT_CREATION_OPTIONS, null);
-
-		var ranges = [
-			[2, 1, 2, 1],
-			[4, 1, 4, 1]
-		];
-		var matches = model.findMatches('^$', false, true, false, false);
-		assert.equal(matches.length, ranges.length);
-		for (var i = 0; i < matches.length; i++) {
-			rangeEqual(matches[i], ranges[i][0], ranges[i][1], ranges[i][2], ranges[i][3]);
+		// test `findPrevMatch`
+		startPos = new Position(model.getLineCount(), model.getLineMaxColumn(model.getLineCount()));
+		match = model.findPreviousMatch(searchString, startPos, isRegex, matchCase, wholeWord);
+		assert.deepEqual(toArrRange(match), expected[expected.length-1], `findPrevMatch ${startPos}`);
+		for (let i = 0; i < expected.length; i++) {
+			startPos = new Position(expected[i][2], expected[i][3]);
+			match = model.findPreviousMatch(searchString, startPos, isRegex, matchCase, wholeWord);
+			assert.deepEqual(toArrRange(match), expected[i], `findPrevMatch ${startPos}`);
 		}
 
 		model.dispose();
+	}
+
+	let regularText = [
+		'This is some foo - bar text which contains foo and bar - as in Barcelona.',
+		'Now it begins a word fooBar and now it is caps Foo-isn\'t this great?',
+		'And here\'s a dull line with nothing interesting in it',
+		'It is also interesting if it\'s part of a word like amazingFooBar',
+		'Again nothing interesting here'
+	];
+
+	test('Simple find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'foo', false, false, false,
+			[
+				[1, 14, 1, 17],
+				[1, 44, 1, 47],
+				[2, 22, 2, 25],
+				[2, 48, 2, 51],
+				[4, 59, 4, 62]
+			]
+		);
+	});
+
+	test('Case sensitive find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'foo', false, true, false,
+			[
+				[1, 14, 1, 17],
+				[1, 44, 1, 47],
+				[2, 22, 2, 25]
+			]
+		);
+	});
+
+	test('Whole words find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'foo', false, false, true,
+			[
+				[1, 14, 1, 17],
+				[1, 44, 1, 47],
+				[2, 48, 2, 51]
+			]
+		);
+	});
+
+	test('/^/ find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'^', true, false, false,
+			[
+				[1, 1, 1, 1],
+				[2, 1, 2, 1],
+				[3, 1, 3, 1],
+				[4, 1, 4, 1],
+				[5, 1, 5, 1]
+			]
+		);
+	});
+
+	test('/$/ find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'$', true, false, false,
+			[
+				[1, 74, 1, 74],
+				[2, 69, 2, 69],
+				[3, 54, 3, 54],
+				[4, 65, 4, 65],
+				[5, 31, 5, 31]
+			]
+		);
+	});
+
+	test('/.*/ find', () => {
+		assertFindMatches(
+			regularText.join('\n'),
+			'.*', true, false, false,
+			[
+				[1, 1, 1, 74],
+				[2, 1, 2, 69],
+				[3, 1, 3, 54],
+				[4, 1, 4, 65],
+				[5, 1, 5, 31]
+			]
+		);
+	});
+
+	test('/^$/ find', () => {
+		assertFindMatches(
+			[
+				'This is some foo - bar text which contains foo and bar - as in Barcelona.',
+				'',
+				'And here\'s a dull line with nothing interesting in it',
+				'',
+				'Again nothing interesting here'
+			].join('\n'),
+			'^$', true, false, false,
+			[
+				[2, 1, 2, 1],
+				[4, 1, 4, 1]
+			]
+		);
+	});
+
+	test('multiline find 1', () => {
+		assertFindMatches(
+			[
+				'Just some text text',
+				'Just some text text',
+				'some text again',
+				'again some text'
+			].join('\n'),
+			'text\\n', true, false, false,
+			[
+				[1, 16, 2, 1],
+				[2, 16, 3, 1],
+			]
+		);
+	});
+
+	test('multiline find 2', () => {
+		assertFindMatches(
+			[
+				'Just some text text',
+				'Just some text text',
+				'some text again',
+				'again some text'
+			].join('\n'),
+			'text\\nJust', true, false, false,
+			[
+				[1, 16, 2, 5]
+			]
+		);
+	});
+
+	test('multiline find 3', () => {
+		assertFindMatches(
+			[
+				'Just some text text',
+				'Just some text text',
+				'some text again',
+				'again some text'
+			].join('\n'),
+			'\\nagain', true, false, false,
+			[
+				[3, 16, 4, 6]
+			]
+		);
+	});
+
+	test('multiline find 4', () => {
+		assertFindMatches(
+			[
+				'Just some text text',
+				'Just some text text',
+				'some text again',
+				'again some text'
+			].join('\n'),
+			'.*\\nJust.*\\n', true, false, false,
+			[
+				[1, 1, 3, 1]
+			]
+		);
+	});
+
+	test('issue #4836 - ^.*$', () => {
+		assertFindMatches(
+			[
+				'Just some text text',
+				'',
+				'some text again',
+				'',
+				'again some text'
+			].join('\n'),
+			'^.*$', true, false, false,
+			[
+				[1, 1, 1, 20],
+				[2, 1, 2, 1],
+				[3, 1, 3, 16],
+				[4, 1, 4, 1],
+				[5, 1, 5, 16],
+			]
+		);
+	});
+
+	function assertParseSearchResult(searchString:string, isRegex:boolean, matchCase:boolean, wholeWord:boolean, expected:IParsedSearchRequest): void {
+		let actual = TextModel.parseSearchRequest(searchString, isRegex, matchCase, wholeWord);
+		assert.deepEqual(actual, expected);
+	}
+
+	test('parseSearchRequest invalid', () => {
+		assertParseSearchResult('', true, true, true, null);
+		assertParseSearchResult(null, true, true, true, null);
+		assertParseSearchResult('(', true, false, false, null);
+	});
+
+	test('parseSearchRequest non regex', () => {
+		assertParseSearchResult('foo', false, false, false, { regex: /foo/gi, isMultiline: false });
+		assertParseSearchResult('foo', false, false, true, { regex: /\bfoo\b/gi, isMultiline: false });
+		assertParseSearchResult('foo', false, true, false, { regex: /foo/g, isMultiline: false });
+		assertParseSearchResult('foo', false, true, true, { regex: /\bfoo\b/g, isMultiline: false });
+		assertParseSearchResult('foo\\n', false, false, false, { regex: /foo\\n/gi, isMultiline: false });
+		assertParseSearchResult('foo\\\\n', false, false, false, { regex: /foo\\\\n/gi, isMultiline: false });
+		assertParseSearchResult('foo\\r', false, false, false, { regex: /foo\\r/gi, isMultiline: false });
+		assertParseSearchResult('foo\\\\r', false, false, false, { regex: /foo\\\\r/gi, isMultiline: false });
+	});
+
+	test('parseSearchRequest regex', () => {
+		assertParseSearchResult('foo', true, false, false, { regex: /foo/gi, isMultiline: false });
+		assertParseSearchResult('foo', true, false, true, { regex: /\bfoo\b/gi, isMultiline: false });
+		assertParseSearchResult('foo', true, true, false, { regex: /foo/g, isMultiline: false });
+		assertParseSearchResult('foo', true, true, true, { regex: /\bfoo\b/g, isMultiline: false });
+		assertParseSearchResult('foo\\n', true, false, false, { regex: /foo\n/gi, isMultiline: true });
+		assertParseSearchResult('foo\\\\n', true, false, false, { regex: /foo\\n/gi, isMultiline: false });
+		assertParseSearchResult('foo\\r', true, false, false, { regex: /foo\r/gi, isMultiline: true });
+		assertParseSearchResult('foo\\\\r', true, false, false, { regex: /foo\\r/gi, isMultiline: false });
 	});
 });

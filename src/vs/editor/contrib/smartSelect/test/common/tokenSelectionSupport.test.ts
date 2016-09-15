@@ -5,22 +5,21 @@
 'use strict';
 
 import * as assert from 'assert';
+import { TestInstantiationService } from 'vs/test/utils/instantiationTestUtils';
 import URI from 'vs/base/common/uri';
 import {Range} from 'vs/editor/common/core/range';
-import {IMode, IRichEditSupport, IndentAction} from 'vs/editor/common/modes';
+import {IMode, IndentAction} from 'vs/editor/common/modes';
 import {TokenSelectionSupport} from 'vs/editor/contrib/smartSelect/common/tokenSelectionSupport';
-import {createMockModelService} from 'vs/editor/test/common/servicesTestUtils';
+import {createMockModelService} from 'vs/test/utils/servicesTestUtils';
 import {MockTokenizingMode} from 'vs/editor/test/common/mocks/mockMode';
-import {RichEditSupport} from 'vs/editor/common/modes/supports/richEditSupport';
+import {LanguageConfigurationRegistry} from 'vs/editor/common/modes/languageConfigurationRegistry';
 
 class MockJSMode extends MockTokenizingMode {
 
-	public richEditSupport: IRichEditSupport;
-
 	constructor() {
-		super('js', 'mock-js');
+		super('js-tokenSelectionSupport', 'mock-js');
 
-		this.richEditSupport = new RichEditSupport(this.getId(), null, {
+		LanguageConfigurationRegistry.register(this.getId(), {
 			brackets: [
 				['(', ')'],
 				['{', '}'],
@@ -48,6 +47,11 @@ class MockJSMode extends MockTokenizingMode {
 					// e.g.  */|
 					beforeText: /^(\t|(\ \ ))*\ \*\/\s*$/,
 					action: { indentAction: IndentAction.None, removeText: 1 }
+				},
+				{
+					// e.g.  *-----*/|
+					beforeText: /^(\t|(\ \ ))*\ \*[^/]*\*\/\s*$/,
+					action: { indentAction: IndentAction.None, removeText: 1 }
 				}
 			]
 		});
@@ -56,9 +60,14 @@ class MockJSMode extends MockTokenizingMode {
 
 suite('TokenSelectionSupport', () => {
 
-	let modelService = createMockModelService();
-	let tokenSelectionSupport = new TokenSelectionSupport(modelService);
+	let modelService;
+	let tokenSelectionSupport;
 	let _mode: IMode = new MockJSMode();
+
+	setup(() => {
+		modelService= createMockModelService(new TestInstantiationService());
+		tokenSelectionSupport = new TokenSelectionSupport(modelService);
+	});
 
 	function assertGetRangesToPosition(text:string[], lineNumber:number, column:number, ranges:Range[]): void {
 		let uri = URI.file('test.js');

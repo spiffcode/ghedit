@@ -15,15 +15,22 @@ suite('workspace-namespace', () => {
 
 	teardown(cleanUp);
 
-	test('default configuration', () => {
+	test('configuration, defaults', () => {
 		const config = workspace.getConfiguration('farboo');
 
 		assert.ok(config.has('config0'));
 		assert.equal(config.get('config0'), true);
+		assert.equal(config.get('config4'), '');
+
 		assert.ok(config.has('nested.config1'));
 		assert.equal(config.get('nested.config1'), 42);
 		assert.ok(config.has('nested.config2'));
 		assert.equal(config.get('nested.config2'), 'Das Pferd frisst kein Reis.');
+	});
+
+	test('configuration, getConfig/value', () => {
+		const value = workspace.getConfiguration('farboo.config0');
+		assert.equal(Object.keys(value).length, 2);
 	});
 
 	test('textDocuments', () => {
@@ -64,7 +71,7 @@ suite('workspace-namespace', () => {
 		});
 	});
 
-	test('openTextDocument, untitled closes on save', function () {
+	test('openTextDocument, untitled closes on save', function (done) {
 		const path = join(workspace.rootPath, './newfile.txt');
 
 		return workspace.openTextDocument(Uri.parse('untitled:' + path)).then(doc => {
@@ -74,15 +81,18 @@ suite('workspace-namespace', () => {
 			let closed: TextDocument;
 			let d0 = workspace.onDidCloseTextDocument(e => closed = e);
 
-			return doc.save().then(() => {
-				assert.ok(closed === doc);
-				assert.ok(!doc.isDirty);
-				assert.ok(fs.existsSync(path));
+			return window.showTextDocument(doc).then(() => {
+				return doc.save().then(() => {
+					assert.ok(closed === doc);
+					assert.ok(!doc.isDirty);
+					assert.ok(fs.existsSync(path));
 
-				d0.dispose();
+					d0.dispose();
 
-				return deleteFile(Uri.file(join(workspace.rootPath, './newfile.txt')));
+					return deleteFile(Uri.file(join(workspace.rootPath, './newfile.txt'))).then(() => done(null));
+				});
 			});
+
 		});
 	});
 
@@ -290,6 +300,23 @@ suite('workspace-namespace', () => {
 			assert.ok(first === second);
 			assert.ok(workspace.textDocuments.some(doc => doc.uri.toString() === uri.toString()));
 			assert.equal(callCount, 1);
+			registration.dispose();
+		});
+	});
+
+	test('registerTextDocumentContentProvider, empty doc', function () {
+
+		let registration = workspace.registerTextDocumentContentProvider('foo', {
+			provideTextDocumentContent(uri) {
+				return '';
+			}
+		});
+
+		const uri = Uri.parse('foo:doc/empty');
+
+		return workspace.openTextDocument(uri).then(doc => {
+			assert.equal(doc.getText(), '');
+			assert.equal(doc.uri.toString(), uri.toString());
 			registration.dispose();
 		});
 	});

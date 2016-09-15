@@ -6,19 +6,18 @@
 'use strict';
 
 import 'vs/css!./codelens';
-import {RunOnceScheduler} from 'vs/base/common/async';
+import {RunOnceScheduler, asWinJsPromise} from 'vs/base/common/async';
 import {onUnexpectedError} from 'vs/base/common/errors';
 import {IDisposable, dispose} from 'vs/base/common/lifecycle';
 import Severity from 'vs/base/common/severity';
 import {format} from 'vs/base/common/strings';
 import {TPromise} from 'vs/base/common/winjs.base';
 import * as dom from 'vs/base/browser/dom';
-import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {ICommandService} from 'vs/platform/commands/common/commands';
 import {IMessageService} from 'vs/platform/message/common/message';
 import {Range} from 'vs/editor/common/core/range';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-import {CodeLensRegistry, ICodeLensSymbol, ICommand} from 'vs/editor/common/modes';
+import {CodeLensProviderRegistry, ICodeLensSymbol, Command} from 'vs/editor/common/modes';
 import {IModelService} from 'vs/editor/common/services/modelService';
 import * as editorBrowser from 'vs/editor/browser/editorBrowser';
 import {EditorBrowserRegistry} from 'vs/editor/browser/editorBrowserExtensions';
@@ -55,13 +54,13 @@ class CodeLensContentWidget implements editorBrowser.IContentWidget {
 
 	private _domNode: HTMLElement;
 	private _subscription: IDisposable;
-	private _symbolRange: editorCommon.IEditorRange;
+	private _symbolRange: Range;
 	private _widgetPosition: editorBrowser.IContentWidgetPosition;
 	private _editor: editorBrowser.ICodeEditor;
-	private _commands: { [id: string]: ICommand } = Object.create(null);
+	private _commands: { [id: string]: Command } = Object.create(null);
 
-	public constructor(editor: editorBrowser.ICodeEditor, symbolRange: editorCommon.IEditorRange,
-		keybindingService: IKeybindingService, messageService: IMessageService) {
+	public constructor(editor: editorBrowser.ICodeEditor, symbolRange: Range,
+		commandService: ICommandService, messageService: IMessageService) {
 
 		this._id = 'codeLensWidget' + (++CodeLensContentWidget.ID);
 		this._editor = editor;
@@ -79,7 +78,7 @@ class CodeLensContentWidget implements editorBrowser.IContentWidget {
 				let command = this._commands[element.id];
 				if (command) {
 					editor.focus();
-					keybindingService.executeCommand(command.id, command.arguments).done(undefined, err => {
+					commandService.executeCommand(command.id, ...command.arguments).done(undefined, err => {
 						messageService.show(Severity.Error, err);
 					});
 				}
@@ -133,7 +132,7 @@ class CodeLensContentWidget implements editorBrowser.IContentWidget {
 		return this._domNode;
 	}
 
-	public setSymbolRange(range: editorCommon.IEditorRange): void {
+	public setSymbolRange(range: Range): void {
 		this._symbolRange = range;
 
 		const lineNumber = range.startLineNumber;
@@ -159,7 +158,7 @@ function modelsVersionId(modelService: IModelService, modeId: string): number {
 		.filter(model => model.getMode().getId() === modeId)
 		.map((model) => {
 			return {
-				url: model.getAssociatedResource().toString(),
+				url: model.uri.toString(),
 				versionId: model.getVersionId()
 			};
 		})
@@ -227,7 +226,7 @@ class CodeLens {
 	public constructor(data: ICodeLensData[], editor: editorBrowser.ICodeEditor,
 		helper: CodeLensHelper,
 		viewZoneChangeAccessor: editorBrowser.IViewZoneChangeAccessor,
-		keybindingService: IKeybindingService, messageService: IMessageService) {
+		commandService: ICommandService, messageService: IMessageService) {
 
 		this._editor = editor;
 		this._data = data;
@@ -252,7 +251,7 @@ class CodeLens {
 		});
 
 		this._viewZone = new CodeLensViewZone(range.startLineNumber - 1);
-		this._contentWidget = new CodeLensContentWidget(editor, Range.lift(range), keybindingService, messageService);
+		this._contentWidget = new CodeLensContentWidget(editor, Range.lift(range), commandService, messageService);
 
 		this._viewZoneId = viewZoneChangeAccessor.addZone(this._viewZone);
 		this._editor.addContentWidget(this._contentWidget);
@@ -340,57 +339,39 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 
 	public static ID: string = 'css.editor.codeLens';
 
-	private static INSTANCE_COUNT: number = 0;
-
-	private _instanceCount: number;
-	private _editor: editorBrowser.ICodeEditor;
-	private _modelService: IModelService;
+	private _isEnabled: boolean;
 
 	private _globalToDispose: IDisposable[];
-
 	private _localToDispose: IDisposable[];
 	private _lenses: CodeLens[];
 	private _currentFindCodeLensSymbolsPromise: TPromise<ICodeLensData[]>;
 	private _modelChangeCounter: number;
-	private _configurationService: IConfigurationService;
-	private _keybindingService: IKeybindingService;
-	private _messageService: IMessageService;
-	private _codeLenseDisabledByMode: boolean;
-
 	private _currentFindOccPromise: TPromise<any>;
 
-	constructor(editor: editorBrowser.ICodeEditor, @IModelService modelService: IModelService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IMessageService messageService: IMessageService) {
-
-		this._instanceCount = (++CodeLensContribution.INSTANCE_COUNT);
-		this._editor = editor;
-		this._modelService = modelService;
-		this._configurationService = configurationService;
-		this._keybindingService = keybindingService;
-		this._messageService = messageService;
+	constructor(
+		private _editor: editorBrowser.ICodeEditor,
+		@IModelService private _modelService: IModelService,
+		@ICommandService private _commandService: ICommandService,
+		@IMessageService private _messageService: IMessageService
+	) {
+		this._isEnabled = this._editor.getConfiguration().contribInfo.referenceInfos;
 
 		this._globalToDispose = [];
 		this._localToDispose = [];
 		this._lenses = [];
 		this._currentFindCodeLensSymbolsPromise = null;
 		this._modelChangeCounter = 0;
-		this._codeLenseDisabledByMode = true;
 
-		this._globalToDispose.push(this._editor.addListener2(editorCommon.EventType.ModelChanged, () => this.onModelChange()));
-		this._globalToDispose.push(this._editor.addListener2(editorCommon.EventType.ModelModeChanged, () => this.onModelChange()));
-		this._globalToDispose.push(this._editor.addListener2(editorCommon.EventType.ModelModeSupportChanged, (e: editorCommon.IModeSupportChangedEvent) => {
-			if (e.codeLensSupport) {
+		this._globalToDispose.push(this._editor.onDidChangeModel(() => this.onModelChange()));
+		this._globalToDispose.push(this._editor.onDidChangeModelMode(() => this.onModelChange()));
+		this._globalToDispose.push(this._editor.onDidChangeConfiguration((e: editorCommon.IConfigurationChangedEvent) => {
+			let prevIsEnabled = this._isEnabled;
+			this._isEnabled = this._editor.getConfiguration().contribInfo.referenceInfos;
+			if (prevIsEnabled !== this._isEnabled) {
 				this.onModelChange();
 			}
 		}));
-		this._globalToDispose.push(this._editor.addListener2(editorCommon.EventType.ConfigurationChanged, (e: editorCommon.IConfigurationChangedEvent) => {
-			if (e.referenceInfos) {
-				this.onModelChange();
-			}
-		}));
-		this._globalToDispose.push(CodeLensRegistry.onDidChange(this.onModelChange, this));
+		this._globalToDispose.push(CodeLensProviderRegistry.onDidChange(this.onModelChange, this));
 		this.onModelChange();
 	}
 
@@ -425,11 +406,11 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 			return;
 		}
 
-		if (!this._editor.getConfiguration().referenceInfos) {
+		if (!this._isEnabled) {
 			return;
 		}
 
-		if (!CodeLensRegistry.has(model)) {
+		if (!CodeLensProviderRegistry.has(model)) {
 			return;
 		}
 
@@ -455,11 +436,11 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 		}, 250);
 		this._localToDispose.push(scheduler);
 		this._localToDispose.push(detectVisible);
-		this._localToDispose.push(model.addBulkListener2((events) => {
+		this._localToDispose.push(model.addBulkListener((events) => {
 			let hadChange = false;
 			for (let i = 0; i < events.length; i++) {
 				const eventType = events[i].getType();
-				if (eventType === editorCommon.EventType.ModelContentChanged) {
+				if (eventType === editorCommon.EventType.ModelRawContentChanged) {
 					hadChange = true;
 					break;
 				}
@@ -491,8 +472,10 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 				scheduler.schedule();
 			}
 		}));
-		this._localToDispose.push(this._editor.addListener2('scroll', (e) => {
-			detectVisible.schedule();
+		this._localToDispose.push(this._editor.onDidScrollChange((e) => {
+			if (e.scrollTopChanged) {
+				detectVisible.schedule();
+			}
 		}));
 		this._localToDispose.push({
 			dispose: () => {
@@ -570,7 +553,7 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 						groupsIndex++;
 						codeLensIndex++;
 					} else {
-						this._lenses.splice(codeLensIndex, 0, new CodeLens(groups[groupsIndex], this._editor, helper, accessor, this._keybindingService, this._messageService));
+						this._lenses.splice(codeLensIndex, 0, new CodeLens(groups[groupsIndex], this._editor, helper, accessor, this._commandService, this._messageService));
 						codeLensIndex++;
 						groupsIndex++;
 					}
@@ -584,7 +567,7 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 
 				// Create extra symbols
 				while (groupsIndex < groups.length) {
-					this._lenses.push(new CodeLens(groups[groupsIndex], this._editor, helper, accessor, this._keybindingService, this._messageService));
+					this._lenses.push(new CodeLens(groups[groupsIndex], this._editor, helper, accessor, this._commandService, this._messageService));
 					groupsIndex++;
 				}
 
@@ -623,12 +606,13 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 			return;
 		}
 
-		const resource = model.getAssociatedResource();
 		const promises = toResolve.map((request, i) => {
 
 			const resolvedSymbols = new Array<ICodeLensSymbol>(request.length);
 			const promises = request.map((request, i) => {
-				return request.support.resolveCodeLensSymbol(resource, request.symbol).then(symbol => {
+				return asWinJsPromise((token) => {
+					return request.support.resolveCodeLens(model, request.symbol, token);
+				}).then(symbol => {
 					resolvedSymbols[i] = symbol;
 				});
 			});

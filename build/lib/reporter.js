@@ -3,18 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-var es = require('event-stream');
-var _ = require('underscore');
+'use strict';
 
-var allErrors = [];
-var count = 0;
+const es = require('event-stream');
+const _ = require('underscore');
+const util = require('gulp-util');
+
+const allErrors = [];
+let startTime = null;
+let count = 0;
 
 function onStart() {
 	if (count++ > 0) {
 		return;
 	}
 
-	console.log('*** Starting...');
+	startTime = new Date().getTime();
+	util.log(`Starting ${ util.colors.green('compilation') }...`);
 }
 
 function onEnd() {
@@ -22,22 +27,23 @@ function onEnd() {
 		return ;
 	}
 
-	var errors = _.flatten(allErrors);
-	errors.map(function (err) { console.error('*** Error:', err); });
-	console.log('*** Finished with', errors.length, 'errors.');
+	const errors = _.flatten(allErrors);
+	errors.map(err => util.log(`${ util.colors.red('Error') }: ${ err }`));
+
+	util.log(`Finished ${ util.colors.green('compilation') } with ${ errors.length } errors after ${ util.colors.magenta((new Date().getTime() - startTime) + ' ms') }`);
 }
 
-module.exports = function () {
-	var errors = [];
+module.exports = () => {
+	const errors = [];
 	allErrors.push(errors);
 
-	var result = function (err) {
-		errors.push(err);
-	};
+	const result = err => errors.push(err);
+	result.hasErrors = () => errors.length > 0;
 
-	result.end = function (emitError) {
+	result.end = emitError => {
 		errors.length = 0;
 		onStart();
+
 		return es.through(null, function () {
 			onEnd();
 

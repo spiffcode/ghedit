@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import editorbrowser = require('vs/editor/browser/editorBrowser');
-import editorcommon = require('vs/editor/common/editorCommon');
+import {IChange, IModel} from 'vs/editor/common/editorCommon';
 import {Range} from 'vs/editor/common/core/range';
+import {Selection} from 'vs/editor/common/core/selection';
 
-function sortChanges(changes:editorcommon.IChange[]):void {
+function sortChanges(changes:IChange[]):void {
 	changes.sort((left, right)=>{
 		if (left.originalStartLineNumber < right.originalStartLineNumber) {
 			return -1;
@@ -21,7 +21,7 @@ function sortChanges(changes:editorcommon.IChange[]):void {
 	});
 }
 
-function sortSelections(selections:editorcommon.IEditorSelection[]):void {
+function sortSelections(selections:Selection[]):void {
 	selections.sort((left, right)=>{
 		if (left.getStartPosition().lineNumber < right.getStartPosition().lineNumber) {
 			return -1;
@@ -30,29 +30,21 @@ function sortSelections(selections:editorcommon.IEditorSelection[]):void {
 	});
 }
 
-function isInsertion(change:editorcommon.IChange):boolean {
+function isInsertion(change:IChange):boolean {
 	return change.originalEndLineNumber <= 0;
 }
 
-function isDeletion(change:editorcommon.IChange):boolean {
+function isDeletion(change:IChange):boolean {
 	return change.modifiedEndLineNumber <= 0;
 }
 
-/**
- * Returns a new IModel that has all the selected changes from modified IModel applied to the original IModel.
- */
-export function stageRanges(diff:editorbrowser.IDiffEditor): string {
-	var selections = diff.getSelections();
-	var changes = getSelectedChanges(diff.getLineChanges(), selections);
-	return applyChangesToModel(diff.getModel().original, diff.getModel().modified, changes);
-}
 
 /**
  * Returns an intersection between a change and a selection.
  * Returns null if intersection does not exist.
  */
-export function intersectChangeAndSelection(change:editorcommon.IChange, selection:editorcommon.IEditorSelection):editorcommon.IChange {
-	var result:editorcommon.IChange = {
+export function intersectChangeAndSelection(change:IChange, selection:Selection):IChange {
+	var result:IChange = {
 		modifiedStartLineNumber : Math.max(change.modifiedStartLineNumber, selection.startLineNumber),
 		modifiedEndLineNumber : Math.min(change.modifiedEndLineNumber, selection.endLineNumber),
 		originalStartLineNumber : change.originalStartLineNumber,
@@ -72,10 +64,10 @@ export function intersectChangeAndSelection(change:editorcommon.IChange, selecti
  * Returns all selected changes (there can be multiple selections due to multiple cursors).
  * If a change is partially selected, the selected part of the change will be returned.
  */
-export function getSelectedChanges(changes:editorcommon.IChange[], selections:editorcommon.IEditorSelection[]):editorcommon.IChange[] {
+export function getSelectedChanges(changes:IChange[], selections:Selection[]):IChange[] {
 	sortChanges(changes);
 	sortSelections(selections);
-	var result: editorcommon.IChange[] = [];
+	var result: IChange[] = [];
 	var currentSelection = 0;
 	var lastLineAdded = -1;
 
@@ -106,7 +98,7 @@ export function getSelectedChanges(changes:editorcommon.IChange[], selections:ed
 	return result;
 }
 
-export function appendValueFromRange(base:string, model:editorcommon.IModel, range:editorcommon.IEditorRange):string {
+function appendValueFromRange(base:string, model:IModel, range:Range):string {
 	var result = base;
 	if (result !== '') {
 		result += model.getEOL();
@@ -118,7 +110,7 @@ export function appendValueFromRange(base:string, model:editorcommon.IModel, ran
  * Applies a list of changes to the original model and returns the new IModel.
  * First sorts changes by line number.
  */
-export function applyChangesToModel(original:editorcommon.IModel, modified:editorcommon.IModel, changes:editorcommon.IChange[]): string {
+export function applyChangesToModel(original:IModel, modified:IModel, changes:IChange[]): string {
 	sortChanges(changes);
 	var result = '';
 	var positionInOriginal = 1;

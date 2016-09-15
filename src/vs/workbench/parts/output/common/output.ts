@@ -7,13 +7,13 @@
 import {TPromise} from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
 import {Registry} from 'vs/platform/platform';
-import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 import {IEditor} from 'vs/platform/editor/common/editor';
 
 /**
  * Mime type used by the output editor.
  */
-export const OUTPUT_MIME = 'text/x-monaco-output';
+export const OUTPUT_MIME = 'text/x-code-output';
 
 /**
  * Id used by the output editor.
@@ -46,13 +46,13 @@ export interface IOutputEvent {
 	channelId?: string;
 }
 
-export var IOutputService = createDecorator<IOutputService>(OUTPUT_SERVICE_ID);
+export const IOutputService = createDecorator<IOutputService>(OUTPUT_SERVICE_ID);
 
 /**
  * The output service to manage output from the various processes running.
  */
 export interface IOutputService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
 
 	/**
 	 * Given the channel id returns the output channel instance.

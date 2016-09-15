@@ -8,10 +8,11 @@
 import 'vs/css!./glyphMargin';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import {DynamicViewOverlay} from 'vs/editor/browser/view/dynamicViewOverlay';
-import {IRenderingContext, IViewContext} from 'vs/editor/browser/editorBrowser';
+import {ViewContext} from 'vs/editor/common/view/viewContext';
+import {IRenderingContext} from 'vs/editor/common/view/renderingContext';
 
 export class DecorationToRender {
-	public _decorationToRenderTrait:void;
+	_decorationToRenderBrand:void;
 
 	public startLineNumber:number;
 	public endLineNumber:number;
@@ -26,12 +27,12 @@ export class DecorationToRender {
 
 export abstract class DedupOverlay extends DynamicViewOverlay {
 
-	protected _render(visibleStartLineNumber:number, visibleEndLineNumber:number, decorations:DecorationToRender[]): string[] {
+	protected _render(visibleStartLineNumber:number, visibleEndLineNumber:number, decorations:DecorationToRender[]): string[][] {
 
-		let output: string[] = [];
+		let output: string[][] = [];
 		for (let lineNumber = visibleStartLineNumber; lineNumber <= visibleEndLineNumber; lineNumber++) {
 			let lineIndex = lineNumber - visibleStartLineNumber;
-			output[lineIndex] = '';
+			output[lineIndex] = [];
 		}
 
 		if (decorations.length === 0) {
@@ -65,7 +66,7 @@ export abstract class DedupOverlay extends DynamicViewOverlay {
 			}
 
 			for (let i = startLineIndex; i <= prevEndLineIndex; i++) {
-				output[i] += ' ' + prevClassName;
+				output[i].push(prevClassName);
 			}
 		}
 
@@ -75,18 +76,18 @@ export abstract class DedupOverlay extends DynamicViewOverlay {
 
 export class GlyphMarginOverlay extends DedupOverlay {
 
-	private _context:IViewContext;
+	private _context:ViewContext;
 	private _lineHeight:number;
 	private _glyphMargin:boolean;
 	private _glyphMarginLeft:number;
 	private _glyphMarginWidth:number;
 	private _renderResult: string[];
 
-	constructor(context:IViewContext) {
+	constructor(context:ViewContext) {
 		super();
 		this._context = context;
 		this._lineHeight = this._context.configuration.editor.lineHeight;
-		this._glyphMargin = this._context.configuration.editor.glyphMargin;
+		this._glyphMargin = this._context.configuration.editor.viewInfo.glyphMargin;
 		this._glyphMarginLeft = 0;
 		this._glyphMarginWidth = 0;
 		this._renderResult = null;
@@ -129,12 +130,12 @@ export class GlyphMarginOverlay extends DedupOverlay {
 		if (e.lineHeight) {
 			this._lineHeight = this._context.configuration.editor.lineHeight;
 		}
-		if (e.glyphMargin) {
-			this._glyphMargin = this._context.configuration.editor.glyphMargin;
+		if (e.viewInfo.glyphMargin) {
+			this._glyphMargin = this._context.configuration.editor.viewInfo.glyphMargin;
 		}
 		return true;
 	}
-	public onLayoutChanged(layoutInfo:editorCommon.IEditorLayoutInfo): boolean {
+	public onLayoutChanged(layoutInfo:editorCommon.EditorLayoutInfo): boolean {
 		this._glyphMarginLeft = layoutInfo.glyphMarginLeft;
 		this._glyphMarginWidth = layoutInfo.glyphMarginWidth;
 		return true;
@@ -188,8 +189,8 @@ export class GlyphMarginOverlay extends DedupOverlay {
 				output[lineIndex] = '';
 			} else {
 				output[lineIndex] = (
-					'<div class="cgmr'
-					+ classNames
+					'<div class="cgmr '
+					+ classNames.join(' ')
 					+ common
 				);
 			}

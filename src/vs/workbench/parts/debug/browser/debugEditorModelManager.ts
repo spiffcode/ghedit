@@ -91,14 +91,13 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 	}
 
 	private onModelAdded(model: editorcommon.IModel): void {
-		const modelUrlStr = model.getAssociatedResource().toString();
+		const modelUrlStr = model.uri.toString();
 		const breakpoints = this.debugService.getModel().getBreakpoints().filter(bp => bp.source.uri.toString() === modelUrlStr);
 
 		const currentStackDecorations = model.deltaDecorations([], this.createCallStackDecorations(modelUrlStr));
 		const breakPointDecorations = model.deltaDecorations([], this.createBreakpointDecorations(breakpoints));
 
-		const toDispose: lifecycle.IDisposable[] = [model.addListener2(editorcommon.EventType.ModelDecorationsChanged, (e: editorcommon.IModelDecorationsChangedEvent) =>
-			this.onModelDecorationsChanged(modelUrlStr, e))];
+		const toDispose: lifecycle.IDisposable[] = [model.onDidChangeDecorations((e) => this.onModelDecorationsChanged(modelUrlStr, e))];
 
 		this.modelData[modelUrlStr] = {
 			model: model,
@@ -113,7 +112,7 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 	}
 
 	private onModelRemoved(model: editorcommon.IModel): void {
-		const modelUrlStr = model.getAssociatedResource().toString();
+		const modelUrlStr = model.uri.toString();
 		if (this.modelData.hasOwnProperty(modelUrlStr)) {
 			const modelData = this.modelData[modelUrlStr];
 			delete this.modelData[modelUrlStr];
@@ -134,13 +133,14 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 	private createCallStackDecorations(modelUrlStr: string): editorcommon.IModelDeltaDecoration[] {
 		const result: editorcommon.IModelDeltaDecoration[] = [];
 		const focusedStackFrame = this.debugService.getViewModel().getFocusedStackFrame();
+		const focusedThreadId = this.debugService.getViewModel().getFocusedThreadId();
 		const allThreads = this.debugService.getModel().getThreads();
-		if (!focusedStackFrame || !allThreads[focusedStackFrame.threadId] || !allThreads[focusedStackFrame.threadId].getCachedCallStack()) {
+		if (!focusedStackFrame || !allThreads[focusedThreadId] || !allThreads[focusedThreadId].getCachedCallStack()) {
 			return result;
 		}
 
 		// only show decorations for the currently focussed thread.
-		const thread = allThreads[focusedStackFrame.threadId];
+		const thread = allThreads[focusedThreadId];
 		thread.getCachedCallStack().filter(sf => sf.source.uri.toString() === modelUrlStr).forEach(sf => {
 			const wholeLineRange = createRange(sf.lineNumber, sf.column, sf.lineNumber, Number.MAX_VALUE);
 
@@ -208,7 +208,7 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 			};
 		});
 
-		const modelUrl = modelData.model.getAssociatedResource();
+		const modelUrl = modelData.model.uri;
 		for (let i = 0, len = modelData.breakpointDecorationIds.length; i < len; i++) {
 			const decorationRange = modelData.model.getDecorationRange(modelData.breakpointDecorationIds[i]);
 			// check if the line got deleted.
@@ -278,19 +278,19 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 		const session = this.debugService.getActiveSession();
 
 		let result = (!breakpoint.enabled || !activated) ? DebugEditorModelManager.BREAKPOINT_DISABLED_DECORATION :
-			debugActive && modelData && modelData.dirty ? DebugEditorModelManager.BREAKPOINT_DIRTY_DECORATION :
+			debugActive && modelData && modelData.dirty && !breakpoint.verified ? DebugEditorModelManager.BREAKPOINT_DIRTY_DECORATION :
 			debugActive && !breakpoint.verified ? DebugEditorModelManager.BREAKPOINT_UNVERIFIED_DECORATION :
 			!breakpoint.condition ? DebugEditorModelManager.BREAKPOINT_DECORATION : null;
 
 		if (result && breakpoint.message) {
 			result = objects.clone(result);
-			result.hoverMessage = breakpoint.message;
+			result.glyphMarginHoverMessage = breakpoint.message;
 		}
 
 		return result ? result :
 			!session || session.configuration.capabilities.supportsConditionalBreakpoints ? {
 				glyphMarginClassName: 'debug-breakpoint-conditional-glyph',
-				hoverMessage: breakpoint.condition,
+				glyphMarginHoverMessage: breakpoint.condition,
 				stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 			} : DebugEditorModelManager.BREAKPOINT_UNSUPPORTED_DECORATION;
 	}
@@ -299,31 +299,31 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 
 	private static BREAKPOINT_DECORATION: editorcommon.IModelDecorationOptions = {
 		glyphMarginClassName: 'debug-breakpoint-glyph',
-		hoverMessage: nls.localize('breakpointHover', "Breakpoint"),
+		glyphMarginHoverMessage: nls.localize('breakpointHover', "Breakpoint"),
 		stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 
 	private static BREAKPOINT_DISABLED_DECORATION: editorcommon.IModelDecorationOptions = {
 		glyphMarginClassName: 'debug-breakpoint-disabled-glyph',
-		hoverMessage: nls.localize('breakpointDisabledHover', "Disabled Breakpoint"),
+		glyphMarginHoverMessage: nls.localize('breakpointDisabledHover', "Disabled Breakpoint"),
 		stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 
 	private static BREAKPOINT_UNVERIFIED_DECORATION: editorcommon.IModelDecorationOptions = {
 		glyphMarginClassName: 'debug-breakpoint-unverified-glyph',
-		hoverMessage: nls.localize('breakpointUnverifieddHover', "Unverified Breakpoint"),
+		glyphMarginHoverMessage: nls.localize('breakpointUnverifieddHover', "Unverified Breakpoint"),
 		stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 
 	private static BREAKPOINT_DIRTY_DECORATION: editorcommon.IModelDecorationOptions = {
 		glyphMarginClassName: 'debug-breakpoint-unverified-glyph',
-		hoverMessage: nls.localize('breakpointDirtydHover', "Unverified breakpoint. File is modified, please restart debug session."),
+		glyphMarginHoverMessage: nls.localize('breakpointDirtydHover', "Unverified breakpoint. File is modified, please restart debug session."),
 		stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 
 	private static BREAKPOINT_UNSUPPORTED_DECORATION: editorcommon.IModelDecorationOptions = {
 		glyphMarginClassName: 'debug-breakpoint-unsupported-glyph',
-		hoverMessage: nls.localize('breakpointUnsupported', "Conditional breakpoints not supported by this debug type"),
+		glyphMarginHoverMessage: nls.localize('breakpointUnsupported', "Conditional breakpoints not supported by this debug type"),
 		stickiness: editorcommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 	};
 

@@ -11,25 +11,21 @@ import nls = require('vs/nls');
 import arrays = require('vs/base/common/arrays');
 import types = require('vs/base/common/types');
 import {language, LANGUAGE_DEFAULT} from 'vs/base/common/platform';
-import strings = require('vs/base/common/strings');
 import {IAction, Action} from 'vs/base/common/actions';
 import {toErrorMessage} from 'vs/base/common/errors';
-import {Mode, IContext, IAutoFocus} from 'vs/base/parts/quickopen/common/quickOpen';
+import {Mode, IEntryRunContext, IAutoFocus} from 'vs/base/parts/quickopen/common/quickOpen';
 import {QuickOpenEntryGroup, IHighlight, QuickOpenModel} from 'vs/base/parts/quickopen/browser/quickOpenModel';
-import {SyncActionDescriptor, IActionsService} from 'vs/platform/actions/common/actions';
+import {SyncActionDescriptor, ExecuteCommandAction, IMenuService} from 'vs/platform/actions/common/actions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {Registry} from 'vs/platform/platform';
-import {QuickOpenHandler} from 'vs/workbench/browser/quickopen';
-import {QuickOpenAction} from 'vs/workbench/browser/actions/quickOpenAction';
+import {QuickOpenHandler, QuickOpenAction} from 'vs/workbench/browser/quickopen';
 import {matchesWords, matchesPrefix, matchesContiguousSubString, or} from 'vs/base/common/filters';
-import {ICommonCodeEditor, IEditorActionDescriptorData} from 'vs/editor/common/editorCommon';
 import {EditorAction} from 'vs/editor/common/editorAction';
-import {Behaviour} from 'vs/editor/common/editorActionEnablement';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {IMessageService, Severity, IMessageWithAction} from 'vs/platform/message/common/message';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 
 export const ALL_COMMANDS_PREFIX = '>';
@@ -68,7 +64,13 @@ class BaseCommandEntry extends QuickOpenEntryGroup {
 		this.keyLabel = keyLabel;
 		this.keyAriaLabel = keyAriaLabel;
 		this.label = label;
-		this.alias = alias;
+
+		if (label !== alias) {
+			this.alias = alias;
+		} else {
+			aliasHighlights = null;
+		}
+
 		this.setHighlights(labelHighlights, null, aliasHighlights);
 	}
 
@@ -149,7 +151,7 @@ class CommandEntry extends BaseCommandEntry {
 		this.actionDescriptor = actionDescriptor;
 	}
 
-	public run(mode: Mode, context: IContext): boolean {
+	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
 			let action = <Action>this.instantiationService.createInstance(this.actionDescriptor.syncDescriptor);
 			this.runAction(action);
@@ -181,7 +183,7 @@ class EditorActionCommandEntry extends BaseCommandEntry {
 		this.action = action;
 	}
 
-	public run(mode: Mode, context: IContext): boolean {
+	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
 			this.runAction(this.action);
 
@@ -212,7 +214,7 @@ class ActionCommandEntry extends BaseCommandEntry {
 		this.action = action;
 	}
 
-	public run(mode: Mode, context: IContext): boolean {
+	public run(mode: Mode, context: IEntryRunContext): boolean {
 		if (mode === Mode.OPEN) {
 			this.runAction(this.action);
 
@@ -230,7 +232,7 @@ export class CommandsHandler extends QuickOpenHandler {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IMessageService private messageService: IMessageService,
 		@IKeybindingService private keybindingService: IKeybindingService,
-		@IActionsService private actionsService: IActionsService
+		@IMenuService private menuService: IMenuService
 	) {
 		super();
 	}
@@ -261,7 +263,10 @@ export class CommandsHandler extends QuickOpenHandler {
 		let editorEntries = this.editorActionsToEntries(editorActions, searchValue);
 
 		// Other Actions
-		let otherActions = this.actionsService.getActions();
+		let otherActions = this.menuService.getCommandActions().map(command => {
+			return this.instantiationService.createInstance(ExecuteCommandAction, command.id,
+				command.category ? nls.localize('', "{0}: {1}", command.category, command.title) : command.title);
+		});
 		let otherEntries = this.otherActionsToEntries(otherActions, searchValue);
 
 		// Concat
@@ -271,7 +276,7 @@ export class CommandsHandler extends QuickOpenHandler {
 		entries = arrays.distinct(entries, (entry) => entry.getLabel() + entry.getGroupLabel());
 
 		// Sort by name
-		entries = entries.sort((elementA, elementB) => strings.localeCompare(elementA.getLabel().toLowerCase(), elementB.getLabel().toLowerCase()));
+		entries = entries.sort((elementA, elementB) => elementA.getLabel().toLowerCase().localeCompare(elementB.getLabel().toLowerCase()));
 
 		return TPromise.as(new QuickOpenModel(entries));
 	}
@@ -375,35 +380,5 @@ export class EditorCommandsHandler extends CommandsHandler {
 
 	protected includeWorkbenchCommands(): boolean {
 		return false;
-	}
-}
-
-export class QuickCommandsEditorAction extends EditorAction {
-
-	public static ID = 'editor.action.quickCommand';
-
-	constructor(
-		descriptor: IEditorActionDescriptorData,
-		editor: ICommonCodeEditor,
-		@IQuickOpenService private quickOpenService: IQuickOpenService
-	) {
-		super(descriptor, editor, Behaviour.WidgetFocus | Behaviour.ShowInContextMenu);
-
-		this.label = nls.localize('QuickCommandsAction.label', "Show Editor Commands");
-	}
-
-	public getGroupId(): string {
-		return '4_tools/1_commands';
-	}
-
-	public run(): TPromise<any> {
-
-		// Pass focus to editor first before running quick open action
-		this.editor.focus();
-
-		// Show with prefix
-		this.quickOpenService.show('$');
-
-		return super.run();
 	}
 }

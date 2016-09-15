@@ -22,23 +22,30 @@ import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/edito
 import {asFileEditorInput} from 'vs/workbench/common/editor';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
 import {Extensions, IConfigurationRegistry} from 'vs/platform/configuration/common/configurationRegistry';
-import {DEFAULT_TERMINAL_WINDOWS, DEFAULT_TERMINAL_LINUX} from 'vs/workbench/parts/execution/electron-browser/terminal';
+import {KbExpr} from 'vs/platform/keybinding/common/keybinding';
+import {KEYBINDING_CONTEXT_TERMINAL_FOCUS} from 'vs/workbench/parts/terminal/electron-browser/terminal';
+import {DEFAULT_TERMINAL_WINDOWS, DEFAULT_TERMINAL_LINUX, DEFAULT_TERMINAL_OSX} from 'vs/workbench/parts/execution/electron-browser/terminal';
 
 let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'externalTerminal',
 	'order': 100,
-	'title': nls.localize('terminalConfigurationTitle', "External terminal configuration"),
+	'title': nls.localize('terminalConfigurationTitle', "External Terminal"),
 	'type': 'object',
 	'properties': {
-		'externalTerminal.windowsExec': {
+		'terminal.external.windowsExec': {
 			'type': 'string',
-			'description': nls.localize('externalTerminal.windowsExec', "Customizes which terminal to run on Windows."),
+			'description': nls.localize('terminal.external.windowsExec', "Customizes which terminal to run on Windows."),
 			'default': DEFAULT_TERMINAL_WINDOWS
 		},
-		'externalTerminal.linuxExec': {
+		'terminal.external.osxExec': {
 			'type': 'string',
-			'description': nls.localize('externalTerminal.linuxExec', "Customizes which terminal to run on Linux."),
+			'description': nls.localize('terminal.external.osxExec', "Customizes which terminal application to run on OS X."),
+			'default': DEFAULT_TERMINAL_OSX
+		},
+		'terminal.external.linuxExec': {
+			'type': 'string',
+			'description': nls.localize('terminal.external.linuxExec', "Customizes which terminal to run on Linux."),
 			'default': DEFAULT_TERMINAL_LINUX
 		}
 	}
@@ -86,9 +93,7 @@ export class OpenConsoleAction extends Action {
 			}
 		}
 
-		if (pathToOpen) {
-			this.terminalService.openTerminal(pathToOpen);
-		}
+		this.terminalService.openTerminal(pathToOpen);
 
 		return TPromise.as(null);
 	}
@@ -101,13 +106,15 @@ class FileViewerActionContributor extends ActionBarContributor {
 	}
 
 	public hasSecondaryActions(context: any): boolean {
-		return !!asFileResource(context.element);
+		const element = context.element;
+		return !!asFileResource(element) || (element && element.getResource && element.getResource());
 	}
 
 	public getSecondaryActions(context: any): IAction[] {
 		let fileResource = asFileResource(context.element);
-		let resource = fileResource.resource;
-		if (!fileResource.isDirectory) {
+		let resource = fileResource ? fileResource.resource : context.element.getResource();
+		// If there is no file resource, it is an open editor and not a directory.
+		if (!fileResource || !fileResource.isDirectory) {
 			resource = uri.file(paths.dirname(resource.fsPath));
 		}
 
@@ -127,7 +134,8 @@ actionBarRegistry.registerActionBarContributor(Scope.VIEWER, FileViewerActionCon
 		OpenConsoleAction,
 		OpenConsoleAction.ID,
 		OpenConsoleAction.Label,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_C }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_C },
+		KbExpr.and(KbExpr.not(KEYBINDING_CONTEXT_TERMINAL_FOCUS))
 	),
 	'Open New Command Prompt'
 );

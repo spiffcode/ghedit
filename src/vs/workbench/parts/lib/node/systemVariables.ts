@@ -18,13 +18,16 @@ export class SystemVariables extends AbstractSystemVariables {
 	private _execPath: string;
 
 	// Optional workspaceRoot there to be used in tests.
-	constructor(private editorService: IWorkbenchEditorService, contextService: IWorkspaceContextService, workspaceRoot: URI = null) {
+	constructor(private editorService: IWorkbenchEditorService, contextService: IWorkspaceContextService, workspaceRoot: URI = null, envVariables: { [key: string]: string } = process.env) {
 		super();
-		let fsPath = workspaceRoot ? workspaceRoot.fsPath : contextService.getWorkspace().resource.fsPath;
+		let fsPath = '';
+		if (workspaceRoot || (contextService && contextService.getWorkspace())) {
+			fsPath = workspaceRoot ? workspaceRoot.fsPath : contextService.getWorkspace().resource.fsPath;
+		}
 		this._workspaceRoot = Paths.normalize(fsPath, true);
 		this._execPath = contextService ? contextService.getConfiguration().env.execPath : null;
-		Object.keys(process.env).forEach(key => {
-			this[`env.${ key }`] = process.env[key];
+		Object.keys(envVariables).forEach(key => {
+			this[`env.${key}`] = envVariables[key];
 		});
 	}
 
@@ -46,6 +49,10 @@ export class SystemVariables extends AbstractSystemVariables {
 
 	public get file(): string {
 		return this.getFilePath();
+	}
+
+	public get relativeFile(): string {
+		return (this.workspaceRoot) ? Paths.relative(this.workspaceRoot, this.file) : this.file;
 	}
 
 	public get fileBasename(): string {

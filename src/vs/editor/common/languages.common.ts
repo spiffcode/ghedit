@@ -20,25 +20,20 @@ import 'vs/base/common/uri';
 // platform common
 import 'vs/platform/platform';
 import 'vs/platform/jsonschemas/common/jsonContributionRegistry';
-import 'vs/platform/files/common/files';
-import 'vs/platform/request/common/request';
 import 'vs/platform/workspace/common/workspace';
 import 'vs/platform/telemetry/common/telemetry';
-import 'vs/platform/thread/common/thread';
-import 'vs/platform/thread/common/threadService';
 
 // editor common
 import 'vs/editor/common/editorCommon';
 import 'vs/editor/common/modes';
 import 'vs/editor/common/modes/abstractMode';
 import 'vs/editor/common/modes/abstractState';
-import 'vs/editor/common/modes/monarch/monarch';
+import 'vs/editor/common/modes/monarch/monarchCommon';
+import 'vs/editor/common/modes/monarch/monarchLexer';
 import 'vs/editor/common/modes/monarch/monarchCompile';
-import 'vs/editor/common/modes/supports/declarationSupport';
-import 'vs/editor/common/modes/supports/parameterHintsSupport';
-import 'vs/editor/common/modes/supports/referenceSupport';
-import 'vs/editor/common/modes/supports/richEditSupport';
+import 'vs/editor/common/modes/languageConfigurationRegistry';
 import 'vs/editor/common/modes/supports/suggestSupport';
 import 'vs/editor/common/modes/supports/tokenizationSupport';
 import 'vs/editor/common/services/modelService';
 import 'vs/editor/common/services/modeService';
+import 'vs/editor/common/services/compatWorkerService';

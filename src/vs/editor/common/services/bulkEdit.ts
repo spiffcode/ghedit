@@ -15,8 +15,9 @@ import {EventType as FileEventType, FileChangesEvent, IFileChange} from 'vs/plat
 import {EditOperation} from 'vs/editor/common/core/editOperation';
 import {Range} from 'vs/editor/common/core/range';
 import {Selection} from 'vs/editor/common/core/selection';
-import {IEditorSelection, IIdentifiedSingleEditOperation, IModel, IRange, ISelection} from 'vs/editor/common/editorCommon';
+import {IIdentifiedSingleEditOperation, IModel, IRange, ISelection} from 'vs/editor/common/editorCommon';
 import {ICommonCodeEditor} from 'vs/editor/common/editorCommon';
+import {IProgressRunner} from 'vs/platform/progress/common/progress';
 
 export interface IResourceEdit {
 	resource: URI;
@@ -42,7 +43,7 @@ class ChangeRecorder {
 
 		var changes: IStringDictionary<IFileChange[]> = Object.create(null);
 
-		var stop = this._eventService.addListener(FileEventType.FILE_CHANGES,(event: FileChangesEvent) => {
+		var stop = this._eventService.addListener2(FileEventType.FILE_CHANGES,(event: FileChangesEvent) => {
 			event.changes.forEach(change => {
 
 				var key = String(change.resource),
@@ -57,7 +58,7 @@ class ChangeRecorder {
 		});
 
 		return {
-			stop,
+			stop: () => { stop.dispose(); },
 			hasChanged: (resource: URI) => !!changes[resource.toString()],
 			allChanges: () => merge(values(changes))
 		};
@@ -66,8 +67,8 @@ class ChangeRecorder {
 
 class EditTask {
 
-	private _initialSelections: IEditorSelection[];
-	private _endCursorSelection: IEditorSelection;
+	private _initialSelections: Selection[];
+	private _endCursorSelection: Selection;
 	private _model: IModel;
 	private _edits: IIdentifiedSingleEditOperation[];
 
@@ -97,9 +98,9 @@ class EditTask {
 		this._model.pushEditOperations(this._initialSelections, this._edits, (edits) => this._getEndCursorSelections(edits));
 	}
 
-	protected _getInitialSelections(): IEditorSelection[] {
+	protected _getInitialSelections(): Selection[] {
 		var firstRange = this._edits[0].range;
-		var initialSelection = Selection.createSelection(
+		var initialSelection = new Selection(
 			firstRange.startLineNumber,
 			firstRange.startColumn,
 			firstRange.endLineNumber,
@@ -108,7 +109,7 @@ class EditTask {
 		return [initialSelection];
 	}
 
-	private _getEndCursorSelections(inverseEditOperations:IIdentifiedSingleEditOperation[]): IEditorSelection[] {
+	private _getEndCursorSelections(inverseEditOperations:IIdentifiedSingleEditOperation[]): Selection[] {
 		var relevantEditIndex = 0;
 		for (var i = 0; i < inverseEditOperations.length; i++) {
 			var editRange = inverseEditOperations[i].range;
@@ -122,7 +123,7 @@ class EditTask {
 		}
 
 		var srcRange = inverseEditOperations[relevantEditIndex].range;
-		this._endCursorSelection = Selection.createSelection(
+		this._endCursorSelection = new Selection(
 			srcRange.endLineNumber,
 			srcRange.endColumn,
 			srcRange.endLineNumber,
@@ -131,7 +132,7 @@ class EditTask {
 		return [this._endCursorSelection];
 	}
 
-	public getEndCursorSelection(): IEditorSelection {
+	public getEndCursorSelection(): Selection {
 		return this._endCursorSelection;
 	}
 
@@ -142,14 +143,14 @@ class EditTask {
 
 class SourceModelEditTask extends EditTask {
 
-	private _knownInitialSelections:IEditorSelection[];
+	private _knownInitialSelections:Selection[];
 
-	constructor(model: IModel, initialSelections:IEditorSelection[]) {
+	constructor(model: IModel, initialSelections:Selection[]) {
 		super(model);
 		this._knownInitialSelections = initialSelections;
 	}
 
-	protected _getInitialSelections(): IEditorSelection[] {
+	protected _getInitialSelections(): Selection[] {
 		return this._knownInitialSelections;
 	}
 }
@@ -162,10 +163,10 @@ class BulkEditModel {
 	private _edits: IStringDictionary<IResourceEdit[]> = Object.create(null);
 	private _tasks: EditTask[];
 	private _sourceModel: URI;
-	private _sourceSelections: IEditorSelection[];
+	private _sourceSelections: Selection[];
 	private _sourceModelTask: SourceModelEditTask;
 
-	constructor(editorService: IEditorService, sourceModel: URI, sourceSelections: IEditorSelection[], edits: IResourceEdit[]) {
+	constructor(editorService: IEditorService, sourceModel: URI, sourceSelections: Selection[], edits: IResourceEdit[], private progress: IProgressRunner= null) {
 		this._editorService = editorService;
 		this._sourceModel = sourceModel;
 		this._sourceSelections = sourceSelections;
@@ -203,6 +204,10 @@ class BulkEditModel {
 		this._tasks = [];
 		var promises: TPromise<any>[] = [];
 
+		if (this.progress) {
+			this.progress.total(this._numberOfResourcesToModify * 2);
+		}
+
 		forEach(this._edits, entry => {
 			var promise = this._editorService.resolveEditorModel({ resource: URI.parse(entry.key) }).then(model => {
 				if (!model || !model.textEditorModel) {
@@ -212,7 +217,7 @@ class BulkEditModel {
 				var textEditorModel = <IModel>model.textEditorModel,
 					task: EditTask;
 
-				if (this._sourceModel && textEditorModel.getAssociatedResource().toString() ===  this._sourceModel.toString()) {
+				if (this._sourceModel && textEditorModel.uri.toString() ===  this._sourceModel.toString()) {
 					this._sourceModelTask = new SourceModelEditTask(textEditorModel, this._sourceSelections);
 					task = this._sourceModelTask;
 				} else {
@@ -221,31 +226,44 @@ class BulkEditModel {
 
 				entry.value.forEach(edit => task.addEdit(edit));
 				this._tasks.push(task);
+				if (this.progress) {
+					this.progress.worked(1);
+				}
 			});
 			promises.push(promise);
 		});
 
+
 		return TPromise.join(promises).then(_ => this);
 	}
 
-	public apply(): IEditorSelection {
-		this._tasks.forEach(task => task.apply());
-		var r: IEditorSelection = null;
+	public apply(): Selection {
+		this._tasks.forEach(task => this.applyTask(task));
+		var r: Selection = null;
 		if (this._sourceModelTask) {
 			r = this._sourceModelTask.getEndCursorSelection();
 		}
 		return r;
 	}
+
+	private applyTask(task): void {
+		task.apply();
+		if (this.progress) {
+			this.progress.worked(1);
+		}
+	}
 }
 
 export interface BulkEdit {
+	progress(progress: IProgressRunner);
 	add(edit: IResourceEdit[]): void;
 	finish(): TPromise<ISelection>;
 }
 
-export function bulkEdit(eventService:IEventService, editorService:IEditorService, editor:ICommonCodeEditor, edits:IResourceEdit[]):TPromise<any> {
+export function bulkEdit(eventService:IEventService, editorService:IEditorService, editor:ICommonCodeEditor, edits:IResourceEdit[], progress: IProgressRunner= null):TPromise<any> {
 	let bulk = createBulkEdit(eventService, editorService, editor);
 	bulk.add(edits);
+	bulk.progress(progress);
 	return bulk.finish();
 }
 
@@ -253,6 +271,11 @@ export function createBulkEdit(eventService: IEventService, editorService: IEdit
 
 	let all: IResourceEdit[] = [];
 	let recording = new ChangeRecorder(eventService).start();
+	let progressRunner: IProgressRunner;
+
+	function progress(progress: IProgressRunner) {
+		progressRunner= progress;
+	}
 
 	function add(edits: IResourceEdit[]): void {
 		all.push(...edits);
@@ -285,14 +308,14 @@ export function createBulkEdit(eventService: IEventService, editorService: IEdit
 		}
 
 		let uri: URI;
-		let selections: IEditorSelection[];
+		let selections: Selection[];
 
 		if (editor && editor.getModel()) {
-			uri = editor.getModel().getAssociatedResource();
+			uri = editor.getModel().uri;
 			selections = editor.getSelections();
 		}
 
-		let model = new BulkEditModel(editorService, uri, selections, all);
+		let model = new BulkEditModel(editorService, uri, selections, all, progressRunner);
 
 		return model.prepare().then(_ => {
 
@@ -307,6 +330,7 @@ export function createBulkEdit(eventService: IEventService, editorService: IEdit
 	}
 
 	return {
+		progress,
 		add,
 		finish
 	};

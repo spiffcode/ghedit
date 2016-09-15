@@ -7,13 +7,15 @@
 import WinJS = require('vs/base/common/winjs.base');
 import objects = require('vs/base/common/objects');
 import Modes = require('vs/editor/common/modes');
-import {AbstractMode, isDigit, createWordRegExp} from 'vs/editor/common/modes/abstractMode';
+import {CompatMode, isDigit, createWordRegExp} from 'vs/editor/common/modes/abstractMode';
 import {AbstractState} from 'vs/editor/common/modes/abstractState';
 import {IModeService} from 'vs/editor/common/services/modeService';
-import {RichEditSupport} from 'vs/editor/common/modes/supports/richEditSupport';
+import {LanguageConfigurationRegistry, LanguageConfiguration} from 'vs/editor/common/modes/languageConfigurationRegistry';
 import {TokenizationSupport, ILeavingNestedModeData, ITokenizationCustomization} from 'vs/editor/common/modes/supports/tokenizationSupport';
 import {TextualSuggestSupport} from 'vs/editor/common/modes/supports/suggestSupport';
 import {IEditorWorkerService} from 'vs/editor/common/services/editorWorkerService';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
+import {ICompatWorkerService} from 'vs/editor/common/services/compatWorkerService';
 
 
 var brackets = (function() {
@@ -449,56 +451,52 @@ export class PHPEnterHTMLState extends PHPState {
 
 }
 
-export class PHPMode extends AbstractMode implements ITokenizationCustomization {
+export class PHPMode extends CompatMode implements ITokenizationCustomization {
+
+	public static LANG_CONFIG:LanguageConfiguration = {
+		wordPattern: createWordRegExp('$_'),
+
+		comments: {
+			lineComment: '//',
+			blockComment: ['/*', '*/']
+		},
+
+		brackets: [
+			['{', '}'],
+			['[', ']'],
+			['(', ')']
+		],
+
+		autoClosingPairs: [
+			{ open: '{', close: '}', notIn: ['string.php'] },
+			{ open: '[', close: ']', notIn: ['string.php'] },
+			{ open: '(', close: ')', notIn: ['string.php'] },
+			{ open: '"', close: '"', notIn: ['string.php'] },
+			{ open: '\'', close: '\'', notIn: ['string.php'] }
+		]
+	};
 
 	public tokenizationSupport: Modes.ITokenizationSupport;
-	public richEditSupport: Modes.IRichEditSupport;
-	public suggestSupport:Modes.ISuggestSupport;
 
 	private modeService:IModeService;
 
 	constructor(
 		descriptor:Modes.IModeDescriptor,
 		@IModeService modeService: IModeService,
-		@IEditorWorkerService editorWorkerService: IEditorWorkerService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IEditorWorkerService editorWorkerService: IEditorWorkerService,
+		@ICompatWorkerService compatWorkerService: ICompatWorkerService
 	) {
-		super(descriptor.id);
+		super(descriptor.id, compatWorkerService);
 		this.modeService = modeService;
 
-		this.tokenizationSupport = new TokenizationSupport(this, this, true, false);
+		this.tokenizationSupport = new TokenizationSupport(this, this, true);
 
-		this.richEditSupport = new RichEditSupport(this.getId(), null, {
-			wordPattern: createWordRegExp('$_'),
-
-			comments: {
-				lineComment: '//',
-				blockComment: ['/*', '*/']
-			},
-
-			brackets: [
-				['{', '}'],
-				['[', ']'],
-				['(', ')']
-			],
-
-			__characterPairSupport: {
-				autoClosingPairs: [
-					{ open: '{', close: '}', notIn: ['string.php'] },
-					{ open: '[', close: ']', notIn: ['string.php'] },
-					{ open: '(', close: ')', notIn: ['string.php'] },
-					{ open: '"', close: '"', notIn: ['string.php'] },
-					{ open: '\'', close: '\'', notIn: ['string.php'] }
-				]
-			}
-		});
+		LanguageConfigurationRegistry.register(this.getId(), PHPMode.LANG_CONFIG);
 
 		if (editorWorkerService) {
-			this.suggestSupport = new TextualSuggestSupport(this.getId(), editorWorkerService);
+			Modes.SuggestRegistry.register(this.getId(), new TextualSuggestSupport(editorWorkerService, configurationService), true);
 		}
-	}
-
-	public asyncCtor(): WinJS.Promise {
-		return this.modeService.getOrCreateMode('text/html');
 	}
 
 	public getInitialState():Modes.IState {

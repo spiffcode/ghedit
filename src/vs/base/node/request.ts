@@ -9,9 +9,11 @@ import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { isBoolean } from 'vs/base/common/types';
 import https = require('https');
 import http = require('http');
+import { Stream } from 'stream';
 import { parse as parseUrl } from 'url';
 import { createWriteStream } from 'fs';
 import { assign } from 'vs/base/common/objects';
+import { createGunzip } from 'zlib';
 
 export interface IRequestOptions {
 	type?: string;
@@ -29,6 +31,7 @@ export interface IRequestOptions {
 export interface IRequestResult {
 	req: http.ClientRequest;
 	res: http.ClientResponse;
+	stream: Stream;
 }
 
 export function request(options: IRequestOptions): TPromise<IRequestResult> {
@@ -59,7 +62,13 @@ export function request(options: IRequestOptions): TPromise<IRequestResult> {
 					followRedirects: options.followRedirects - 1
 				})));
 			} else {
-				c({ req, res });
+				let stream: Stream = res;
+
+				if (res.headers['content-encoding'] === 'gzip') {
+					stream = stream.pipe(createGunzip());
+				}
+
+				c({ req, res, stream });
 			}
 		});
 		req.on('error', e);
@@ -81,8 +90,25 @@ export function download(filePath: string, opts: IRequestOptions): TPromise<void
 		let out = createWriteStream(filePath);
 
 		out.once('finish', () => c(null));
-		pair.res.once('error', e);
-		pair.res.pipe(out);
+		pair.stream.once('error', e);
+		pair.stream.pipe(out);
+	}));
+}
+
+export function text(opts: IRequestOptions): TPromise<string> {
+	return request(opts).then(pair => new Promise((c, e) => {
+		if (!((pair.res.statusCode >= 200 && pair.res.statusCode < 300) || pair.res.statusCode === 1223)) {
+			return e('Server returned ' + pair.res.statusCode);
+		}
+
+		if (pair.res.statusCode === 204) {
+			return c(null);
+		}
+
+		let buffer: string[] = [];
+		pair.stream.on('data', d => buffer.push(d));
+		pair.stream.on('end', () => c(buffer.join('')));
+		pair.stream.on('error', e);
 	}));
 }
 
@@ -101,8 +127,8 @@ export function json<T>(opts: IRequestOptions): TPromise<T> {
 		}
 
 		let buffer: string[] = [];
-		pair.res.on('data', d => buffer.push(d));
-		pair.res.on('end', () => c(JSON.parse(buffer.join(''))));
-		pair.res.on('error', e);
+		pair.stream.on('data', d => buffer.push(d));
+		pair.stream.on('end', () => c(JSON.parse(buffer.join(''))));
+		pair.stream.on('error', e);
 	}));
 }

@@ -5,13 +5,16 @@
 'use strict';
 
 import {TPromise} from 'vs/base/common/winjs.base';
+import Event from 'vs/base/common/event';
 import {IViewlet} from 'vs/workbench/common/viewlet';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 
-export var IViewletService = createDecorator<IViewletService>('viewletService');
+export const IViewletService = createDecorator<IViewletService>('viewletService');
 
 export interface IViewletService {
-	serviceId : ServiceIdentifier<any>;
+	_serviceBrand : ServiceIdentifier<any>;
+
+	onDidActiveViewletChange: Event<IViewlet>;
 
 	/**
 	 * Opens a viewlet with the given identifier and pass keyboard focus to it if specified.

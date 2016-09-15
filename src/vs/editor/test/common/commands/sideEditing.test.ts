@@ -14,11 +14,14 @@ import {IIdentifiedSingleEditOperation} from 'vs/editor/common/editorCommon';
 import {Model} from 'vs/editor/common/model/model';
 import {ILineEdit, ModelLine} from 'vs/editor/common/model/modelLine';
 import {MockConfiguration} from 'vs/editor/test/common/mocks/mockConfiguration';
+import {viewModelHelper} from 'vs/editor/test/common/editorTestUtils';
+
+const NO_TAB_SIZE = 0;
 
 function testCommand(lines:string[], selection:Selection, edits:IIdentifiedSingleEditOperation[], expectedLines:string[], expectedSelection:Selection): void {
-	let model = new Model(lines.join('\n'), Model.DEFAULT_CREATION_OPTIONS, null);
+	let model = Model.createFromString(lines.join('\n'));
 	let config = new MockConfiguration(null);
-	let cursor = new Cursor(0, config, model, null, false);
+	let cursor = new Cursor(0, config, model, viewModelHelper(model), false);
 
 	cursor.setSelections('tests', [selection]);
 
@@ -36,7 +39,7 @@ function testCommand(lines:string[], selection:Selection, edits:IIdentifiedSingl
 }
 
 function testLineEditMarker(text:string, column:number, stickToPreviousCharacter:boolean, edit:ILineEdit, expectedColumn: number): void {
-	var line = new ModelLine(1, text);
+	var line = new ModelLine(1, text, NO_TAB_SIZE);
 	line.addMarker({
 		id: '1',
 		line: null,
@@ -46,7 +49,7 @@ function testLineEditMarker(text:string, column:number, stickToPreviousCharacter
 		oldColumn: 0,
 	});
 
-	line.applyEdits({}, [edit]);
+	line.applyEdits({}, [edit], NO_TAB_SIZE);
 
 	assert.equal(line.getMarkers()[0].column, expectedColumn);
 }

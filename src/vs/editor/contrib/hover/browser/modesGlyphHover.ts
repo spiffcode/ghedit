@@ -45,9 +45,9 @@ class MarginComputer implements IHoverComputer<IHoverMessage[]> {
 		for (i = 0, len = lineDecorations.length; i < len; i++) {
 			d = lineDecorations[i];
 
-			if (d.options.glyphMarginClassName && d.options.hoverMessage) {
+			if (d.options.glyphMarginClassName && d.options.glyphMarginHoverMessage) {
 				result.push({
-					value: d.options.hoverMessage
+					value: d.options.glyphMarginHoverMessage
 				});
 			}
 		}
@@ -91,6 +91,11 @@ export class ModesGlyphHoverWidget extends GlyphHoverWidget {
 			(result:any) => this._withResult(result)
 		);
 
+	}
+
+	public dispose(): void {
+		this._hoverOperation.cancel();
+		super.dispose();
 	}
 
 	public onModelDecorationsChanged(): void {

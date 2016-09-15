@@ -7,12 +7,8 @@
 import Event from 'vs/base/common/event';
 import {IDisposable} from 'vs/base/common/lifecycle';
 import {TPromise} from 'vs/base/common/winjs.base';
-import {ServiceIdentifier, createDecorator} from 'vs/platform/instantiation/common/instantiation';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 import * as modes from 'vs/editor/common/modes';
-import {ILanguage} from 'vs/editor/common/modes/monarch/monarchTypes';
-import {IRichEditConfiguration} from 'vs/editor/common/modes/supports/richEditSupport';
-import {IEditorWorkerService} from 'vs/editor/common/services/editorWorkerService';
-import {IModelService} from 'vs/editor/common/services/modelService';
 
 export var IModeService = createDecorator<IModeService>('modeService');
 
@@ -44,14 +40,13 @@ export interface IValidLanguageExtensionPoint {
 }
 
 export interface IModeService {
-	serviceId: ServiceIdentifier<any>;
+	_serviceBrand: any;
 
 	onDidAddModes: Event<string[]>;
 	onDidCreateMode: Event<modes.IMode>;
 
 	configureMode(modeName: string, options: any): void;
 	configureModeById(modeId: string, options: any): void;
-	configureAllModes(config:any): void;
 	getConfigurationForMode(modeId:string): any;
 
 	// --- reading
@@ -62,7 +57,8 @@ export interface IModeService {
 	getExtensions(alias: string): string[];
 	getMimeForMode(modeId: string): string;
 	getLanguageName(modeId:string): string;
-	getModeIdForLanguageName(alias:string): string;
+	getModeIdForLanguageName(alias: string): string;
+	getModeIdByFilenameOrFirstLine(filename: string, firstLine?: string): string;
 	getModeId(commaSeparatedMimetypesOrCommaSeparatedIds: string): string;
 	getConfigurationFiles(modeId: string): string[];
 
@@ -73,7 +69,6 @@ export interface IModeService {
 	getOrCreateModeByLanguageName(languageName: string): TPromise<modes.IMode>;
 	getOrCreateModeByFilenameOrFirstLine(filename: string, firstLine?:string): TPromise<modes.IMode>;
 
-	registerRichEditSupport(modeId: string, support: IRichEditConfiguration): IDisposable;
 	registerTokenizationSupport(modeId: string, callback: (mode: modes.IMode) => modes.ITokenizationSupport): IDisposable;
-	registerMonarchDefinition(modelService: IModelService, editorWorkerService: IEditorWorkerService, modeId:string, language:ILanguage): IDisposable;
+	registerTokenizationSupport2(modeId: string, support: modes.TokensProvider): IDisposable;
 }

@@ -10,11 +10,15 @@ import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IMessageService} from 'vs/platform/message/common/message';
 
 export class ContextViewService implements IContextViewService {
-	public serviceId = IContextViewService;
+	public _serviceBrand: any;
 
 	private contextView: ContextView;
 
-	constructor(container: HTMLElement, telemetryService: ITelemetryService, messageService: IMessageService) {
+	constructor(
+		container: HTMLElement,
+		@ITelemetryService telemetryService: ITelemetryService,
+		@IMessageService messageService: IMessageService
+	) {
 		this.contextView = new ContextView(container);
 	}
 

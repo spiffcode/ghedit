@@ -12,13 +12,13 @@ import { TPromise, Promise } from 'vs/base/common/winjs.base';
 import * as Async from 'vs/base/common/async';
 import Severity from 'vs/base/common/severity';
 import * as Strings from 'vs/base/common/strings';
-import { EventEmitter, ListenerUnbind } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'vs/base/common/eventEmitter';
 
 import { TerminateResponse, SuccessData, ErrorData } from 'vs/base/common/processes';
 import { LineProcess, LineData } from 'vs/base/node/processes';
 
 import { IOutputService, IOutputChannel } from 'vs/workbench/parts/output/common/output';
-import { SystemVariables } from 'vs/workbench/parts/lib/node/systemVariables';
+import { ISystemVariables } from 'vs/base/common/parsers';
 
 import { IMarkerService } from 'vs/platform/markers/common/markers';
 import { ValidationStatus } from 'vs/base/common/parsers';
@@ -30,12 +30,14 @@ import { StartStopProblemCollector, WatchingProblemCollector, ProblemCollectorEv
 import { ITaskSystem, ITaskSummary, ITaskRunResult, TaskError, TaskErrors, TaskRunnerConfiguration, TaskDescription, CommandOptions, ShowOutput, TelemetryEvent, Triggers, TaskSystemEvents, TaskEvent, TaskType } from 'vs/workbench/parts/tasks/common/taskSystem';
 import * as FileConfig from './processRunnerConfiguration';
 
+import {IDisposable, dispose} from 'vs/base/common/lifecycle';
+
 export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 
 	public static TelemetryEventName: string = 'taskService';
 
 	private fileConfig: FileConfig.ExternalTaskRunnerConfiguration;
-	private variables: SystemVariables;
+	private variables: ISystemVariables;
 	private markerService: IMarkerService;
 	private modelService: IModelService;
 	private outputService: IOutputService;
@@ -51,7 +53,7 @@ export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 	private childProcess: LineProcess;
 	private activeTaskIdentifier: string;
 
-	constructor(fileConfig:FileConfig.ExternalTaskRunnerConfiguration, variables:SystemVariables, markerService:IMarkerService, modelService: IModelService, telemetryService: ITelemetryService, outputService:IOutputService, outputChannelId:string, clearOutput: boolean = true) {
+	constructor(fileConfig:FileConfig.ExternalTaskRunnerConfiguration, variables:ISystemVariables, markerService:IMarkerService, modelService: IModelService, telemetryService: ITelemetryService, outputService:IOutputService, outputChannelId:string, clearOutput: boolean = true) {
 		super();
 		this.fileConfig = fileConfig;
 		this.variables = variables;
@@ -224,14 +226,14 @@ export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 		}
 		if (task.isWatching) {
 			let watchingProblemMatcher = new WatchingProblemCollector(this.resolveMatchers(task.problemMatchers), this.markerService, this.modelService);
-			let toUnbind: ListenerUnbind[] = [];
+			let toUnbind: IDisposable[] = [];
 			let event: TaskEvent = { taskId: task.id, taskName: task.name, type: TaskType.Watching };
 			let eventCounter: number = 0;
-			toUnbind.push(watchingProblemMatcher.on(ProblemCollectorEvents.WatchingBeginDetected, () => {
+			toUnbind.push(watchingProblemMatcher.addListener2(ProblemCollectorEvents.WatchingBeginDetected, () => {
 				eventCounter++;
 				this.emit(TaskSystemEvents.Active, event);
 			}));
-			toUnbind.push(watchingProblemMatcher.on(ProblemCollectorEvents.WatchingEndDetected, () => {
+			toUnbind.push(watchingProblemMatcher.addListener2(ProblemCollectorEvents.WatchingEndDetected, () => {
 				eventCounter--;
 				this.emit(TaskSystemEvents.Inactive, event);
 			}));
@@ -241,7 +243,7 @@ export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 			let promise = this.childProcess.start().then((success): ITaskSummary => {
 				this.childProcessEnded();
 				watchingProblemMatcher.dispose();
-				toUnbind.forEach(unbind => unbind());
+				toUnbind = dispose(toUnbind);
 				toUnbind = null;
 				for (let i = 0; i < eventCounter; i++) {
 					this.emit(TaskSystemEvents.Inactive, event);
@@ -258,7 +260,7 @@ export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 			}, (error: ErrorData) => {
 				this.childProcessEnded();
 				watchingProblemMatcher.dispose();
-				toUnbind.forEach(unbind => unbind());
+				toUnbind = dispose(toUnbind);
 				toUnbind = null;
 				for (let i = 0; i < eventCounter; i++) {
 					this.emit(TaskSystemEvents.Inactive, event);
@@ -386,15 +388,7 @@ export class ProcessRunnerSystem extends EventEmitter implements ITaskSystem {
 	}
 
 	private resolveVariable(value: string): string {
-		let regexp =/\$\{(.*?)\}/g;
-		return value.replace(regexp, (match:string, name:string) => {
-			let value = (<any>this.variables)[name];
-			if (value) {
-				return value;
-			} else {
-				return match;
-			}
-		});
+		return this.variables.resolve(value);
 	}
 
 	public log(value: string): void  {

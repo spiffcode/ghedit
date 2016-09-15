@@ -12,6 +12,7 @@ import * as editorCommon from 'vs/editor/common/editorCommon';
 import {Model} from 'vs/editor/common/model/model';
 import {IMode} from 'vs/editor/common/modes';
 import {MockConfiguration} from 'vs/editor/test/common/mocks/mockConfiguration';
+import {viewModelHelper} from 'vs/editor/test/common/editorTestUtils';
 
 export function testCommand(
 	lines: string[],
@@ -22,13 +23,13 @@ export function testCommand(
 	expectedSelection: Selection
 ): void {
 
-	let model = new Model(lines.join('\n'), Model.DEFAULT_CREATION_OPTIONS, mode);
+	let model = Model.createFromString(lines.join('\n'), undefined, mode);
 	let config = new MockConfiguration(null);
-	let cursor = new Cursor(0, config, model, null, false);
+	let cursor = new Cursor(0, config, model, viewModelHelper(model), false);
 
 	cursor.setSelections('tests', [selection]);
 
-	cursor.configuration.handlerDispatcher.trigger('tests', editorCommon.Handler.ExecuteCommand, commandFactory(cursor.getSelection()));
+	cursor.trigger('tests', editorCommon.Handler.ExecuteCommand, commandFactory(cursor.getSelection()));
 
 	let actualValue = model.toRawText().lines;
 	assert.deepEqual(actualValue, expectedLines);
@@ -47,7 +48,7 @@ export function testCommand(
 export function getEditOperation(model: editorCommon.IModel, command: editorCommon.ICommand): editorCommon.IIdentifiedSingleEditOperation[] {
 	var operations: editorCommon.IIdentifiedSingleEditOperation[] = [];
 	var editOperationBuilder: editorCommon.IEditOperationBuilder = {
-		addEditOperation: (range: editorCommon.IEditorRange, text: string) => {
+		addEditOperation: (range: Range, text: string) => {
 			operations.push({
 				identifier: null,
 				range: range,
@@ -56,7 +57,7 @@ export function getEditOperation(model: editorCommon.IModel, command: editorComm
 			});
 		},
 
-		trackSelection: (selection: editorCommon.IEditorSelection) => {
+		trackSelection: (selection: Selection) => {
 			return null;
 		}
 	};

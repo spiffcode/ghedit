@@ -8,7 +8,7 @@
 import 'vs/css!./defineKeybinding';
 import * as nls from 'vs/nls';
 import {RunOnceScheduler} from 'vs/base/common/async';
-import {IHTMLContentElement} from 'vs/base/common/htmlContent';
+import {MarkedString} from 'vs/base/common/htmlContent';
 import {CommonKeybindings, KeyCode, KeyMod, Keybinding} from 'vs/base/common/keyCodes';
 import {IDisposable, dispose} from 'vs/base/common/lifecycle';
 import {TPromise} from 'vs/base/common/winjs.base';
@@ -17,7 +17,7 @@ import {renderHtml} from 'vs/base/browser/htmlContentRenderer';
 import {StandardKeyboardEvent} from 'vs/base/browser/keyboardEvent';
 import {StyleMutator} from 'vs/base/browser/styleMutator';
 import {IOSupport} from 'vs/platform/keybinding/common/keybindingResolver';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 import {Range} from 'vs/editor/common/core/range';
 import {EditorAction} from 'vs/editor/common/editorAction';
 import {Behaviour} from 'vs/editor/common/editorActionEnablement';
@@ -26,6 +26,7 @@ import {CommonEditorRegistry, ContextKey, EditorActionDescriptor} from 'vs/edito
 import {ICodeEditor, IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference} from 'vs/editor/browser/editorBrowser';
 import {EditorBrowserRegistry} from 'vs/editor/browser/editorBrowserExtensions';
 import {CodeSnippet, getSnippetController} from 'vs/editor/contrib/snippet/common/snippet';
+import {SmartSnippetInserter} from 'vs/editor/contrib/defineKeybinding/common/smartSnippetInserter';
 
 const NLS_LAUNCH_MESSAGE = nls.localize('defineKeybinding.start', "Define Keybinding");
 const NLS_DEFINE_MESSAGE = nls.localize('defineKeybinding.initial', "Press desired key combination and ENTER");
@@ -61,14 +62,14 @@ export class DefineKeybindingController implements editorCommon.IEditorContribut
 		this._launchWidget = new DefineKeybindingLauncherWidget(this._editor, keybindingService, () => this.launch());
 		this._defineWidget = new DefineKeybindingWidget(this._editor, keybindingService, (keybinding) => this._onAccepted(keybinding));
 
-		this._toDispose.push(this._editor.addListener2(editorCommon.EventType.ConfigurationChanged, (e) => {
+		this._toDispose.push(this._editor.onDidChangeConfiguration((e) => {
 			if (isInterestingEditorModel(this._editor)) {
 				this._launchWidget.show();
 			} else {
 				this._launchWidget.hide();
 			}
 		}));
-		this._toDispose.push(this._editor.addListener2(editorCommon.EventType.ModelChanged, (e) => {
+		this._toDispose.push(this._editor.onDidChangeModel((e) => {
 			if (isInterestingEditorModel(this._editor)) {
 				this._launchWidget.show();
 			} else {
@@ -112,6 +113,10 @@ export class DefineKeybindingController implements editorCommon.IEditorContribut
 			'}{{}}'
 		].join('\n');
 
+		let smartInsertInfo = SmartSnippetInserter.insertSnippet(this._editor.getModel(), this._editor.getPosition());
+		snippetText = smartInsertInfo.prepend + snippetText + smartInsertInfo.append;
+		this._editor.setPosition(smartInsertInfo.position);
+
 		getSnippetController(this._editor).run(new CodeSnippet(snippetText), 0, 0);
 	}
 
@@ -123,12 +128,12 @@ export class DefineKeybindingController implements editorCommon.IEditorContribut
 			return;
 		}
 
-		let url = model.getAssociatedResource().toString();
+		let url = model.uri.toString();
 		if (!INTERESTING_FILE.test(url)) {
 			return;
 		}
 
-		this._modelToDispose.push(model.addListener2(editorCommon.EventType.ModelContentChanged2, (e) => this._updateDecorations.schedule()));
+		this._modelToDispose.push(model.onDidChangeContent((e) => this._updateDecorations.schedule()));
 		this._modelToDispose.push({
 			dispose: () => {
 				this._dec = this._editor.deltaDecorations(this._dec, []);
@@ -170,27 +175,21 @@ export class DefineKeybindingController implements editorCommon.IEditorContribut
 
 		let newDecorations: editorCommon.IModelDeltaDecoration[] = [];
 		data.forEach((item) => {
-			let msg:IHTMLContentElement[];
+			let msg:MarkedString[];
 			let className: string;
 			let inlineClassName: string;
 			let overviewRulerColor: string;
 
 			if (!item.label) {
 				// this is the error case
-				msg = [{
-					tagName: 'span',
-					text: NLS_KB_LAYOUT_ERROR_MESSAGE
-				}];
+				msg = [NLS_KB_LAYOUT_ERROR_MESSAGE];
 				className = 'keybindingError';
 				inlineClassName = 'inlineKeybindingError';
 				overviewRulerColor = 'rgba(250, 100, 100, 0.6)';
 			} else {
 				// this is the info case
-				msg = [{
-					tagName: 'span',
-					text: NLS_KB_LAYOUT_INFO_MESSAGE
-				}];
-				msg = msg.concat(this._keybindingService.getHTMLLabelFor(item.keybinding));
+				msg = [NLS_KB_LAYOUT_INFO_MESSAGE];
+				msg = msg.concat(this._keybindingService.getLabelFor(item.keybinding));
 				className = 'keybindingInfo';
 				inlineClassName = 'inlineKeybindingInfo';
 				overviewRulerColor = 'rgba(100, 100, 250, 0.6)';
@@ -211,7 +210,7 @@ export class DefineKeybindingController implements editorCommon.IEditorContribut
 				options: {
 					stickiness: editorCommon.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 					className: className,
-					htmlMessage: msg,
+					hoverMessage: msg,
 					overviewRuler: {
 						color: overviewRulerColor,
 						darkColor: overviewRulerColor,
@@ -374,7 +373,7 @@ class DefineKeybindingWidget implements IOverlayWidget {
 			let htmlkb = this._keybindingService.getHTMLLabelFor(this._lastKeybinding);
 			htmlkb.forEach((item) => this._outputNode.appendChild(renderHtml(item)));
 		}));
-		this._toDispose.push(this._editor.addListener2(editorCommon.EventType.ConfigurationChanged, (e) => {
+		this._toDispose.push(this._editor.onDidChangeConfiguration((e) => {
 			if (this._isVisible) {
 				this._layout();
 			}
@@ -479,7 +478,7 @@ function isInterestingEditorModel(editor:editorCommon.ICommonCodeEditor): boolea
 	if (!model) {
 		return false;
 	}
-	let url = model.getAssociatedResource().toString();
+	let url = model.uri.toString();
 	return INTERESTING_FILE.test(url);
 }
 

@@ -8,16 +8,12 @@
 			"id": "rust",
 			"extensions": [".rs"],
 			"aliases": ["Rust", "rust"],
-			"configuration": "./rust.configuration.json"
+			"configuration": "./language-configuration.json"
 		}],
 		"grammars": [{
 			"language": "rust",
 			"path": "./syntaxes/rust.json",
 			"scopeName":"source.rust"
-		}],
-		"snippets": [{
-			"language": "rust",
-			"path": "./snippets/rust.json"
 		}]
 	}
 }

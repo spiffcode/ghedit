@@ -16,9 +16,9 @@ import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 export class MessageService extends WorkbenchMessageService {
 
 	constructor(
-		private contextService: IWorkspaceContextService,
-		private windowService: IWindowService,
-		telemetryService: ITelemetryService
+		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IWindowService private windowService: IWindowService,
+		@ITelemetryService telemetryService: ITelemetryService
 	) {
 		super(telemetryService);
 	}
@@ -32,7 +32,7 @@ export class MessageService extends WorkbenchMessageService {
 			confirmation.secondaryButton = nls.localize('cancelButton', "Cancel");
 		}
 
-		let opts: Electron.Dialog.ShowMessageBoxOptions = {
+		let opts: Electron.ShowMessageBoxOptions = {
 			title: confirmation.title || this.contextService.getConfiguration().env.appName,
 			message: confirmation.message,
 			buttons: [
@@ -43,8 +43,10 @@ export class MessageService extends WorkbenchMessageService {
 			cancelId: 1
 		};
 
+		// Linux: buttons are swapped
 		if (isLinux) {
-			opts.defaultId = 1; // Linux: buttons are swapped
+			opts.defaultId = 1;
+			opts.cancelId = 0;
 		}
 
 		if (confirmation.detail) {
@@ -62,7 +64,7 @@ export class MessageService extends WorkbenchMessageService {
 
 	private mnemonicLabel(label: string): string {
 		if (!isWindows) {
-			return label.replace(/&&/g, ''); // no mnemonic support on mac/linux in buttons yet
+			return label.replace(/\(&&\w\)|&&/g, ''); // no mnemonic support on mac/linux
 		}
 
 		return label.replace(/&&/g, '&');

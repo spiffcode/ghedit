@@ -6,9 +6,8 @@
 
 import {TPromise} from 'vs/base/common/winjs.base';
 import Event from 'vs/base/common/event';
-import {IQuickNavigateConfiguration, IAutoFocus} from 'vs/base/parts/quickopen/common/quickOpen';
-import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
-import {IEditorInput} from 'vs/platform/editor/common/editor';
+import {IQuickNavigateConfiguration, IAutoFocus, IEntryRunContext} from 'vs/base/parts/quickopen/common/quickOpen';
+import {createDecorator} from 'vs/platform/instantiation/common/instantiation';
 
 export interface IPickOpenEntry {
 	id?: string;
@@ -16,6 +15,8 @@ export interface IPickOpenEntry {
 	description?: string;
 	detail?: string;
 	separator?: ISeparator;
+	alwaysShow?: boolean;
+	run?: (context: IEntryRunContext) => void;
 }
 
 export interface ISeparator {
@@ -74,10 +75,15 @@ export interface IInputOptions {
 	validateInput?: (input: string) => TPromise<string>;
 }
 
-export var IQuickOpenService = createDecorator<IQuickOpenService>('quickOpenService');
+export interface IShowOptions {
+	quickNavigateConfiguration?: IQuickNavigateConfiguration;
+}
+
+export const IQuickOpenService = createDecorator<IQuickOpenService>('quickOpenService');
 
 export interface IQuickOpenService {
-	serviceId : ServiceIdentifier<any>;
+
+	_serviceBrand: any;
 
 	/**
 	 * Asks the container to show the quick open control with the optional prefix set. If the optional parameter
@@ -86,7 +92,7 @@ export interface IQuickOpenService {
 	 *
 	 * The returned promise completes when quick open is closing.
 	 */
-	show(prefix?: string, quickNavigateConfiguration?: IQuickNavigateConfiguration): TPromise<void>;
+	show(prefix?: string, options?: IShowOptions): TPromise<void>;
 
 	/**
 	 * Refreshes the quick open control. No-op, if the control is hidden.
@@ -94,16 +100,6 @@ export interface IQuickOpenService {
 	 * in the quick open control.
 	 */
 	refresh(input?: string): TPromise<void>;
-
-	/**
-	 * Returns the sorted list of editor inputs that have been opened by the user.
-	 */
-	getEditorHistory(): IEditorInput[];
-
-	/**
-	 * Removes an editor history entry by the given input.
-	 */
-	removeEditorHistoryEntry(input: IEditorInput): void;
 
 	/**
 	 * A convenient way to bring up quick open as a picker with custom elements. This bypasses the quick open handler

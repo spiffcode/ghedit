@@ -6,13 +6,13 @@
 'use strict';
 
 import * as assert from 'assert';
+import { TestInstantiationService } from 'vs/test/utils/instantiationTestUtils';
 import {TPromise} from 'vs/base/common/winjs.base';
 import URI from 'vs/base/common/uri';
 import paths = require('vs/base/common/paths');
-import {FileEditorInput} from 'vs/workbench/parts/files/browser/editors/fileEditorInput';
+import {FileEditorInput} from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import {TextFileEditorModel, CACHE} from 'vs/workbench/parts/files/common/editors/textFileEditorModel';
-import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
-import {ITelemetryService, NullTelemetryService} from 'vs/platform/telemetry/common/telemetry';
+import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IMessageService} from 'vs/platform/message/common/message';
 import {IModelService} from 'vs/editor/common/services/modelService';
@@ -22,97 +22,60 @@ import {IStorageService} from 'vs/platform/storage/common/storage';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {ILifecycleService, NullLifecycleService} from 'vs/platform/lifecycle/common/lifecycle';
 import {IFileService} from 'vs/platform/files/common/files';
-import {ServiceCollection} from 'vs/platform/instantiation/common/serviceCollection';
 import {IUntitledEditorService} from 'vs/workbench/services/untitled/common/untitledEditorService';
-import {InstantiationService} from 'vs/platform/instantiation/common/instantiationService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import PartService = require('vs/workbench/services/part/common/partService');
-import {TextFileService} from 'vs/workbench/parts/files/browser/textFileServices';
 import {ITextFileService, EventType} from 'vs/workbench/parts/files/common/files';
-import {TestFileService, TestPartService, TestEditorService, TestConfigurationService, TestUntitledEditorService, TestStorageService, TestContextService, TestMessageService, TestEventService} from 'vs/workbench/test/browser/servicesTestUtils';
-import {createMockModelService, createMockModeService} from 'vs/editor/test/common/servicesTestUtils';
+import {createMockModelService, TestTextFileService, TestFileService, TestPartService, TestEditorService, TestConfigurationService, TestUntitledEditorService, TestStorageService, TestContextService, TestMessageService, TestEventService} from 'vs/test/utils/servicesTestUtils';
 
 function toResource(path) {
 	return URI.file(paths.join('C:\\', path));
 }
 
-let baseInstantiationService: IInstantiationService;
-let messageService: TestMessageService;
-let eventService: TestEventService;
-let textFileService: TextFileService;
+let eventService: IEventService;
+let textFileService: TestTextFileService;
 
 suite('Files - TextFileEditorModel', () => {
 
+	let instantiationService: TestInstantiationService;
+
 	setup(() => {
+		instantiationService= new TestInstantiationService();
 		eventService = new TestEventService();
-		messageService = new TestMessageService();
+		eventService= <IEventService> instantiationService.stub(IEventService, new TestEventService());
+		instantiationService.stub(IMessageService, new TestMessageService());
+		instantiationService.stub(IFileService, <any> TestFileService);
+		instantiationService.stub(IWorkspaceContextService, new TestContextService());
+		instantiationService.stub(ITelemetryService);
+		instantiationService.stub(IStorageService, new TestStorageService());
+		instantiationService.stub(IUntitledEditorService, new TestUntitledEditorService());
+		instantiationService.stub(IWorkbenchEditorService, new TestEditorService());
+		instantiationService.stub(PartService.IPartService, new TestPartService());
+		instantiationService.stub(IModeService);
+		instantiationService.stub(IModelService, createMockModelService(instantiationService));
+		instantiationService.stub(ILifecycleService, NullLifecycleService);
+		instantiationService.stub(IConfigurationService, new TestConfigurationService());
 
-		let services = new ServiceCollection();
-
-		services.set(IEventService, eventService);
-		services.set(IMessageService, messageService);
-		services.set(IFileService, <any> TestFileService);
-		services.set(IWorkspaceContextService, new TestContextService());
-		services.set(ITelemetryService, NullTelemetryService);
-		services.set(IStorageService, new TestStorageService());
-		services.set(IUntitledEditorService, new TestUntitledEditorService());
-		services.set(IWorkbenchEditorService, new TestEditorService());
-		services.set(PartService.IPartService, new TestPartService());
-		services.set(IModeService, createMockModeService());
-		services.set(IModelService, createMockModelService());
-		services.set(ILifecycleService, NullLifecycleService);
-		services.set(IConfigurationService, new TestConfigurationService());
-
-		baseInstantiationService = new InstantiationService(services);
-		textFileService = <any>baseInstantiationService.createInstance(<any>TextFileService);
-		services.set(ITextFileService, textFileService);
+		textFileService = <any>instantiationService.createInstance(<any>TestTextFileService);
+		instantiationService.stub(ITextFileService, textFileService);
 	});
 
 	teardown(() => {
-		eventService.dispose();
 		CACHE.clear();
 	});
 
-	test('Resolves from cache and disposes when last input disposed', function (done) {
-		let c1 = baseInstantiationService.createInstance(FileEditorInput, toResource('/path/index.txt'), 'text/plain', 'utf8');
-		let c2 = baseInstantiationService.createInstance(FileEditorInput, toResource('/path/index.txt'), 'text/plain', 'utf8');
-		let c3 = baseInstantiationService.createInstance(FileEditorInput, toResource('/path/index.txt'), 'text/plain', 'utf8');
-
-		c1.resolve(true).then((model1) => {
-			c2.resolve(true).then((model2) => {
-				assert.equal(model1, model2);
-
-				c2.dispose(false);
-				c1.resolve(true).then((model3) => {
-					assert.equal(model1, model3);
-
-					c1.dispose(true);
-					c3.resolve(true).then((model4) => {
-						assert.ok(model4 !== model1);
-
-						c1.dispose(true);
-						c2.dispose(true);
-						c3.dispose(true);
-
-						done();
-					});
-				});
-			});
-		});
-	});
-
 	test('Load does not trigger save', function (done) {
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index.txt'), 'utf8');
 
-		eventService.addListener('files:internalFileChanged', () => {
+		eventService.addListener2('files:internalFileChanged', () => {
 			assert.ok(false);
 		});
 
-		eventService.addListener(EventType.FILE_DIRTY, () => {
+		eventService.addListener2(EventType.FILE_DIRTY, () => {
 			assert.ok(false);
 		});
 
-		eventService.addListener(EventType.FILE_SAVED, () => {
+		eventService.addListener2(EventType.FILE_SAVED, () => {
 			assert.ok(false);
 		});
 
@@ -126,7 +89,7 @@ suite('Files - TextFileEditorModel', () => {
 	});
 
 	test('Load returns dirty model as long as model is dirty', function (done) {
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
 
 		m1.load().then(() => {
 			m1.textEditorModel.setValue('foo');
@@ -145,11 +108,11 @@ suite('Files - TextFileEditorModel', () => {
 	test('Revert', function (done) {
 		let eventCounter = 0;
 
-		eventService.addListener('files:fileReverted', () => {
+		eventService.addListener2(EventType.FILE_REVERTED, () => {
 			eventCounter++;
 		});
 
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
 
 		m1.load().then(() => {
 			m1.textEditorModel.setValue('foo');
@@ -169,7 +132,7 @@ suite('Files - TextFileEditorModel', () => {
 	});
 
 	test('Conflict Resolution Mode', function (done) {
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
 
 		m1.load().then(() => {
 			m1.setConflictResolutionMode();
@@ -195,16 +158,16 @@ suite('Files - TextFileEditorModel', () => {
 
 	test('Auto Save triggered when model changes', function (done) {
 		let eventCounter = 0;
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index.txt'), 'utf8');
 
 		(<any>m1).autoSaveAfterMillies = 10;
 		(<any>m1).autoSaveAfterMilliesEnabled = true;
 
-		eventService.addListener(EventType.FILE_DIRTY, () => {
+		eventService.addListener2(EventType.FILE_DIRTY, () => {
 			eventCounter++;
 		});
 
-		eventService.addListener(EventType.FILE_SAVED, () => {
+		eventService.addListener2(EventType.FILE_SAVED, () => {
 			eventCounter++;
 		});
 
@@ -224,7 +187,7 @@ suite('Files - TextFileEditorModel', () => {
 
 	test('Dirty tracking', function (done) {
 		let resource = toResource('/path/index_async.txt');
-		let i1 = baseInstantiationService.createInstance(FileEditorInput, resource, 'text/plain', 'utf8');
+		let i1 = instantiationService.createInstance(FileEditorInput, resource, 'text/plain', 'utf8');
 
 		i1.resolve().then((m1: TextFileEditorModel) => {
 			let dirty = m1.getLastDirtyTime();
@@ -245,8 +208,8 @@ suite('Files - TextFileEditorModel', () => {
 	});
 
 	test('save() and isDirty() - proper with check for mtimes', function (done) {
-		let c1 = baseInstantiationService.createInstance(FileEditorInput, toResource('/path/index_async2.txt'), 'text/plain', 'utf8');
-		let c2 = baseInstantiationService.createInstance(FileEditorInput, toResource('/path/index_async.txt'), 'text/plain', 'utf8');
+		let c1 = instantiationService.createInstance(FileEditorInput, toResource('/path/index_async2.txt'), 'text/plain', 'utf8');
+		let c2 = instantiationService.createInstance(FileEditorInput, toResource('/path/index_async.txt'), 'text/plain', 'utf8');
 
 		c1.resolve().then((m1: TextFileEditorModel) => {
 			c2.resolve().then((m2: TextFileEditorModel) => {
@@ -271,8 +234,8 @@ suite('Files - TextFileEditorModel', () => {
 						assert.ok(m1.getLastModifiedTime() > m1Mtime);
 						assert.ok(m2.getLastModifiedTime() > m2Mtime);
 
-						c1.dispose(true);
-						c2.dispose(true);
+						m1.dispose();
+						m2.dispose();
 
 						done();
 					});
@@ -283,15 +246,15 @@ suite('Files - TextFileEditorModel', () => {
 
 	test('Save Participant', function (done) {
 		let eventCounter = 0;
-		let m1 = baseInstantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
+		let m1 = instantiationService.createInstance(TextFileEditorModel, toResource('/path/index_async.txt'), 'utf8');
 
-		eventService.addListener(EventType.FILE_SAVED, (e) => {
+		eventService.addListener2(EventType.FILE_SAVED, (e) => {
 			assert.equal(m1.getValue(), 'bar');
 			assert.ok(!m1.isDirty());
 			eventCounter++;
 		});
 
-		eventService.addListener(EventType.FILE_SAVING, (e) => {
+		eventService.addListener2(EventType.FILE_SAVING, (e) => {
 			assert.ok(m1.isDirty());
 			m1.textEditorModel.setValue('bar');
 			assert.ok(m1.isDirty());

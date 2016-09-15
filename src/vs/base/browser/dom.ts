@@ -10,7 +10,6 @@ import {EventEmitter} from 'vs/base/common/eventEmitter';
 import {Disposable, IDisposable} from 'vs/base/common/lifecycle';
 import {isObject} from 'vs/base/common/types';
 import {isChrome, isWebKit} from 'vs/base/browser/browser';
-import {getService} from 'vs/base/browser/browserService';
 import {IKeyboardEvent, StandardKeyboardEvent} from 'vs/base/browser/keyboardEvent';
 import {IMouseEvent, StandardMouseEvent} from 'vs/base/browser/mouseEvent';
 
@@ -168,10 +167,10 @@ export function removeClass(node: HTMLElement, className: string): void {
  */
 export function toggleClass(node: HTMLElement, className: string, shouldHaveIt?: boolean): void {
 	_findClassName(node, className);
-	if (lastStart !== -1 && !shouldHaveIt) {
+	if (lastStart !== -1 && (shouldHaveIt === void 0 || !shouldHaveIt)) {
 		removeClass(node, className);
 	}
-	if (lastStart === -1 && shouldHaveIt) {
+	if (lastStart === -1 && (shouldHaveIt === void 0 || shouldHaveIt)) {
 		addClass(node, className);
 	}
 }
@@ -590,22 +589,50 @@ export function getTopLeftOffset(element: HTMLElement): { left: number; top: num
 	};
 }
 
-export interface IDomNodePosition {
+export interface IDomNodePagePosition {
 	left: number;
 	top: number;
 	width: number;
 	height: number;
 }
 
-export function getDomNodePosition(domNode: HTMLElement): IDomNodePosition {
-	let r = getTopLeftOffset(domNode);
+/**
+ * Returns the position of a dom node relative to the entire page.
+ */
+export function getDomNodePagePosition(domNode: HTMLElement): IDomNodePagePosition {
+	let bb = domNode.getBoundingClientRect();
 	return {
-		left: r.left,
-		top: r.top,
-		width: domNode.clientWidth,
-		height: domNode.clientHeight
+		left: bb.left + StandardWindow.scrollX,
+		top: bb.top + StandardWindow.scrollY,
+		width: bb.width,
+		height: bb.height
 	};
 }
+
+export interface IStandardWindow {
+	scrollX: number;
+	scrollY: number;
+}
+
+export const StandardWindow:IStandardWindow = new class {
+	get scrollX(): number {
+		if (typeof window.scrollX === 'number') {
+			// modern browsers
+			return window.scrollX;
+		} else {
+			return document.body.scrollLeft + document.documentElement.scrollLeft;
+		}
+	}
+
+	get scrollY(): number {
+		if (typeof window.scrollY === 'number') {
+			// modern browsers
+			return window.scrollY;
+		} else {
+			return document.body.scrollTop + document.documentElement.scrollTop;
+		}
+	}
+};
 
 // Adapted from WinJS
 // Gets the width of the content of the specified element. The content width does not include borders or padding.
@@ -638,7 +665,7 @@ export function getTotalHeight(element: HTMLElement): number {
 }
 
 // Gets the left coordinate of the specified element relative to the specified parent.
-export function getRelativeLeft(element: HTMLElement, parent: HTMLElement): number {
+function getRelativeLeft(element: HTMLElement, parent: HTMLElement): number {
 	if (element === null) {
 		return 0;
 	}
@@ -646,17 +673,6 @@ export function getRelativeLeft(element: HTMLElement, parent: HTMLElement): numb
 	let elementPosition = getTopLeftOffset(element);
 	let parentPosition = getTopLeftOffset(parent);
 	return elementPosition.left - parentPosition.left;
-}
-
-// Gets the top coordinate of the element relative to the specified parent.
-export function getRelativeTop(element: HTMLElement, parent: HTMLElement): number {
-	if (element === null) {
-		return 0;
-	}
-
-	let elementPosition = getTopLeftOffset(element);
-	let parentPosition = getTopLeftOffset(parent);
-	return parentPosition.top - elementPosition.top;
 }
 
 export function getLargestChildWidth(parent: HTMLElement, children: HTMLElement[]): number {
@@ -743,7 +759,7 @@ export function getCSSRule(selector: string, style: HTMLStyleElement = sharedSty
 	return null;
 }
 
-export function removeCSSRulesWithPrefix(ruleName: string, style = sharedStyle): void {
+export function removeCSSRulesContainingSelector(ruleName: string, style = sharedStyle): void {
 	if (!style) {
 		return;
 	}
@@ -753,7 +769,7 @@ export function removeCSSRulesWithPrefix(ruleName: string, style = sharedStyle):
 	for (let i = 0; i < rules.length; i++) {
 		let rule = rules[i];
 		let normalizedSelectorText = rule.selectorText.replace(/::/gi, ':');
-		if (normalizedSelectorText.indexOf(ruleName) === 0) {
+		if (normalizedSelectorText.indexOf(ruleName) !== -1) {
 			toDelete.push(i);
 		}
 	}
@@ -764,7 +780,10 @@ export function removeCSSRulesWithPrefix(ruleName: string, style = sharedStyle):
 }
 
 export function isHTMLElement(o: any): o is HTMLElement {
-	return getService().isHTMLElement(o);
+	if (typeof HTMLElement === 'object') {
+		return o instanceof HTMLElement;
+	}
+	return o && typeof o === 'object' && o.nodeType === 1 && typeof o.nodeName === 'string';
 }
 
 export const EventType = {
@@ -777,6 +796,7 @@ export const EventType = {
 	MOUSE_MOVE: 'mousemove',
 	MOUSE_OUT: 'mouseout',
 	CONTEXT_MENU: 'contextmenu',
+	WHEEL: 'wheel',
 	// Keyboard
 	KEY_DOWN: 'keydown',
 	KEY_PRESS: 'keypress',
@@ -919,7 +939,7 @@ export function append<T extends Node>(parent: HTMLElement, child: T): T {
 const SELECTOR_REGEX = /([\w\-]+)?(#([\w\-]+))?((.([\w\-]+))*)/;
 
 // Similar to builder, but much more lightweight
-export function emmet(description: string): HTMLElement {
+export function emmet<T extends HTMLElement>(description: string): T {
 	let match = SELECTOR_REGEX.exec(description);
 
 	if (!match) {
@@ -927,6 +947,7 @@ export function emmet(description: string): HTMLElement {
 	}
 
 	let result = document.createElement(match[1] || 'div');
+
 	if (match[3]) {
 		result.id = match[3];
 	}
@@ -934,7 +955,7 @@ export function emmet(description: string): HTMLElement {
 		result.className = match[4].replace(/\./g, ' ').trim();
 	}
 
-	return result;
+	return result as T;
 }
 
 export function show(...elements: HTMLElement[]): void {
@@ -982,4 +1003,12 @@ export function removeTabIndexAndUpdateFocus(node: HTMLElement): void {
 
 export function getElementsByTagName(tag: string): HTMLElement[] {
 	return Array.prototype.slice.call(document.getElementsByTagName(tag), 0);
+}
+
+export function finalHandler<T extends Event>(fn: (event: T)=>any): (event: T)=>any {
+	return e => {
+		e.preventDefault();
+		e.stopPropagation();
+		fn(e);
+	};
 }

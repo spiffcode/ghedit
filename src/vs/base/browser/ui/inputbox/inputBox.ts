@@ -9,7 +9,6 @@ import 'vs/css!./inputBox';
 import nls = require('vs/nls');
 import * as Bal from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
-import * as browser from 'vs/base/browser/browserService';
 import {IHTMLContentElement} from 'vs/base/common/htmlContent';
 import {renderHtml} from 'vs/base/browser/htmlContentRenderer';
 import aria = require('vs/base/browser/ui/aria/aria');
@@ -137,7 +136,7 @@ export class InputBox extends Widget {
 			}
 		}
 
-		setTimeout(() => this.layout(), 0);
+		setTimeout(() => this.updateMirror(), 0);
 
 		// Support actions
 		if (this.options.actions) {
@@ -204,7 +203,7 @@ export class InputBox extends Widget {
 	}
 
 	public hasFocus(): boolean {
-		return browser.getService().document.activeElement === this.input;
+		return document.activeElement === this.input;
 	}
 
 	public select(range: IRange = null): void {
@@ -358,13 +357,23 @@ export class InputBox extends Widget {
 		this._onDidChange.fire(this.value);
 
 		this.validate();
+		this.updateMirror();
 
-		if (this.mirror) {
-			let lastCharCode = this.value.charCodeAt(this.value.length - 1);
-			let suffix = lastCharCode === 10 ? ' ' : '';
-			this.mirror.textContent = this.value + suffix;
-			this.layout();
+		if (this.state === 'open') {
+			this.contextViewProvider.layout();
 		}
+	}
+
+	private updateMirror(): void {
+		if (!this.mirror) {
+			return;
+		}
+
+		const value = this.value || this.placeholder;
+		let lastCharCode = value.charCodeAt(value.length - 1);
+		let suffix = lastCharCode === 10 ? ' ' : '';
+		this.mirror.textContent = value + suffix;
+		this.layout();
 	}
 
 	public layout(): void {

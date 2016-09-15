@@ -111,6 +111,10 @@ class SortLinesAction extends EditorAction {
 
 	public run():TPromise<boolean> {
 
+		if (!SortLinesCommand.canRun(this.editor.getModel(), this.editor.getSelection(), this.descending)) {
+			return TPromise.as(false);
+		}
+
 		var command = new SortLinesCommand(this.editor.getSelection(), this.descending);
 
 		this.editor.executeCommands(this.id, [command]);
@@ -279,7 +283,7 @@ CommonEditorRegistry.registerEditorAction(new EditorActionDescriptor(SortLinesDe
 }, 'Sort Lines Descending'));
 CommonEditorRegistry.registerEditorAction(new EditorActionDescriptor(TrimTrailingWhitespaceAction, TrimTrailingWhitespaceAction.ID, nls.localize('lines.trimTrailingWhitespace', "Trim Trailing Whitespace"), {
 	context: ContextKey.EditorTextFocus,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_X
+	primary: KeyMod.chord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_X)
 }, 'Trim Trailing Whitespace'));
 CommonEditorRegistry.registerEditorAction(new EditorActionDescriptor(MoveLinesDownAction, MoveLinesDownAction.ID, nls.localize('lines.moveDown', "Move Line Down"), {
 	context: ContextKey.EditorTextFocus,

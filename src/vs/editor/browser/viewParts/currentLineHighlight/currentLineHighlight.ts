@@ -7,11 +7,13 @@
 
 import 'vs/css!./currentLineHighlight';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-import {ILayoutProvider, IRenderingContext, IViewContext} from 'vs/editor/browser/editorBrowser';
 import {DynamicViewOverlay} from 'vs/editor/browser/view/dynamicViewOverlay';
+import {ViewContext} from 'vs/editor/common/view/viewContext';
+import {IRenderingContext} from 'vs/editor/common/view/renderingContext';
+import {ILayoutProvider} from 'vs/editor/browser/viewLayout/layoutProvider';
 
 export class CurrentLineHighlightOverlay extends DynamicViewOverlay {
-	private _context:IViewContext;
+	private _context:ViewContext;
 	private _lineHeight:number;
 	private _readOnly:boolean;
 	private _layoutProvider:ILayoutProvider;
@@ -19,8 +21,9 @@ export class CurrentLineHighlightOverlay extends DynamicViewOverlay {
 	private _primaryCursorIsInEditableRange:boolean;
 	private _primaryCursorLineNumber:number;
 	private _scrollWidth:number;
+	private _contentWidth:number;
 
-	constructor(context:IViewContext, layoutProvider:ILayoutProvider) {
+	constructor(context:ViewContext, layoutProvider:ILayoutProvider) {
 		super();
 		this._context = context;
 		this._lineHeight = this._context.configuration.editor.lineHeight;
@@ -32,6 +35,7 @@ export class CurrentLineHighlightOverlay extends DynamicViewOverlay {
 		this._primaryCursorIsInEditableRange = true;
 		this._primaryCursorLineNumber = 1;
 		this._scrollWidth = this._layoutProvider.getScrollWidth();
+		this._contentWidth = this._context.configuration.editor.layoutInfo.contentWidth;
 
 		this._context.addEventHandler(this);
 	}
@@ -83,9 +87,12 @@ export class CurrentLineHighlightOverlay extends DynamicViewOverlay {
 		if (e.readOnly) {
 			this._readOnly = this._context.configuration.editor.readOnly;
 		}
+		if (e.layoutInfo) {
+			this._contentWidth = this._context.configuration.editor.layoutInfo.contentWidth;
+		}
 		return true;
 	}
-	public onLayoutChanged(layoutInfo:editorCommon.IEditorLayoutInfo): boolean {
+	public onLayoutChanged(layoutInfo:editorCommon.EditorLayoutInfo): boolean {
 		return true;
 	}
 	public onScrollChanged(e:editorCommon.IScrollEvent): boolean {
@@ -109,7 +116,7 @@ export class CurrentLineHighlightOverlay extends DynamicViewOverlay {
 			if (this._shouldShowCurrentLine()) {
 				return (
 					'<div class="current-line" style="width:'
-					+ String(this._scrollWidth)
+					+ String(Math.max(this._scrollWidth, this._contentWidth))
 					+ 'px; height:'
 					+ String(this._lineHeight)
 					+ 'px;"></div>'

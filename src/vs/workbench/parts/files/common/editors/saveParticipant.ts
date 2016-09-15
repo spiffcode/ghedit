@@ -10,7 +10,7 @@ import {IWorkbenchContribution} from 'vs/workbench/common/contributions';
 import {ICodeEditorService} from 'vs/editor/common/services/codeEditorService';
 import {TextFileChangeEvent, EventType} from 'vs/workbench/parts/files/common/files';
 import {IFilesConfiguration} from 'vs/platform/files/common/files';
-import {IPosition, IEditorSelection, IModel} from 'vs/editor/common/editorCommon';
+import {IPosition, IModel} from 'vs/editor/common/editorCommon';
 import {Selection} from 'vs/editor/common/core/selection';
 import {trimTrailingWhitespace} from 'vs/editor/common/commands/trimTrailingWhitespaceCommand';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
@@ -58,12 +58,12 @@ export class SaveParticipant implements IWorkbenchContribution {
 	 * Trim trailing whitespace on a model and ignore lines on which cursors are sitting if triggered via auto save.
 	 */
 	private doTrimTrailingWhitespace(model: IModel, isAutoSaved: boolean): void {
-		let prevSelection: IEditorSelection[] = [Selection.createSelection(1, 1, 1, 1)];
+		let prevSelection: Selection[] = [new Selection(1, 1, 1, 1)];
 		let cursors: IPosition[] = [];
 
-		// If this is auto save, try to find active cursors to prevent removing
-		// whitespace automatically while the user is typing at the end of a line
-		if (isAutoSaved && model.isAttachedToEditor()) {
+		// Find `prevSelection` in any case do ensure a good undo stack when pushing the edit
+		// Collect active cursors in `cursors` only if `isAutoSaved` to avoid having the cursors jump
+		if (model.isAttachedToEditor()) {
 			let allEditors = this.codeEditorService.listCodeEditors();
 			for (let i = 0, len = allEditors.length; i < len; i++) {
 				let editor = allEditors[i];
@@ -75,12 +75,14 @@ export class SaveParticipant implements IWorkbenchContribution {
 
 				if (model === editorModel) {
 					prevSelection = editor.getSelections();
-					cursors.push(...prevSelection.map(s => {
-						return {
-							lineNumber: s.positionLineNumber,
-							column: s.positionColumn
-						};
-					}));
+					if (isAutoSaved) {
+						cursors.push(...prevSelection.map(s => {
+							return {
+								lineNumber: s.positionLineNumber,
+								column: s.positionColumn
+							};
+						}));
+					}
 				}
 			}
 		}

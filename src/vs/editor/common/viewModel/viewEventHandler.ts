@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import {IEmitterEvent} from 'vs/base/common/eventEmitter';
+import {EmitterEvent} from 'vs/base/common/eventEmitter';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
 export class ViewEventHandler {
@@ -65,7 +65,7 @@ export class ViewEventHandler {
 	public onConfigurationChanged(e:editorCommon.IConfigurationChangedEvent): boolean {
 		return false;
 	}
-	public onLayoutChanged(layoutInfo:editorCommon.IEditorLayoutInfo): boolean {
+	public onLayoutChanged(layoutInfo:editorCommon.EditorLayoutInfo): boolean {
 		return false;
 	}
 	public onScrollChanged(e:editorCommon.IScrollEvent): boolean {
@@ -80,7 +80,7 @@ export class ViewEventHandler {
 
 	// --- end event handlers
 
-	public handleEvents(events:IEmitterEvent[]): void {
+	public handleEvents(events:EmitterEvent[]): void {
 
 		let shouldRender = false;
 
@@ -163,7 +163,7 @@ export class ViewEventHandler {
 					break;
 
 				case editorCommon.EventType.ViewLayoutChanged:
-					if (this.onLayoutChanged(<editorCommon.IEditorLayoutInfo>data)) {
+					if (this.onLayoutChanged(<editorCommon.EditorLayoutInfo>data)) {
 						shouldRender = true;
 					}
 					break;

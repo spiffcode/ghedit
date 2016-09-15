@@ -8,13 +8,11 @@ import * as nls from 'vs/nls';
 import {IAction} from 'vs/base/common/actions';
 import {onUnexpectedError} from 'vs/base/common/errors';
 import {matchesFuzzy} from 'vs/base/common/filters';
-import * as strings from 'vs/base/common/strings';
 import {TPromise} from 'vs/base/common/winjs.base';
 import {IContext, IHighlight, QuickOpenEntryGroup, QuickOpenModel} from 'vs/base/parts/quickopen/browser/quickOpenModel';
 import {IAutoFocus, Mode} from 'vs/base/parts/quickopen/common/quickOpen';
-import {IKeybindingService} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 import {EditorAction} from 'vs/editor/common/editorAction';
-import {Behaviour} from 'vs/editor/common/editorActionEnablement';
 import {ICommonCodeEditor, IEditor, IEditorActionDescriptorData} from 'vs/editor/common/editorCommon';
 import {BaseEditorQuickOpenAction} from './editorQuickOpen';
 
@@ -77,7 +75,7 @@ export class QuickCommandAction extends BaseEditorQuickOpenAction {
 	private _keybindingService: IKeybindingService;
 
 	constructor(descriptor: IEditorActionDescriptorData, editor: ICommonCodeEditor, @IKeybindingService keybindingService: IKeybindingService) {
-		super(descriptor, editor, nls.localize('QuickCommandAction.label', "Command Palette"), Behaviour.WidgetFocus | Behaviour.ShowInContextMenu);
+		super(descriptor, editor, nls.localize('QuickCommandAction.label', "Command Palette"));
 		this._keybindingService = keybindingService;
 	}
 
@@ -85,15 +83,11 @@ export class QuickCommandAction extends BaseEditorQuickOpenAction {
 		return new QuickOpenModel(this._editorActionsToEntries(this.editor.getActions(), value));
 	}
 
-	public getGroupId(): string {
-		return '4_tools/1_commands';
-	}
-
 	_sort(elementA: QuickOpenEntryGroup, elementB: QuickOpenEntryGroup): number {
 		let elementAName = elementA.getLabel().toLowerCase();
 		let elementBName = elementB.getLabel().toLowerCase();
 
-		return strings.localeCompare(elementAName, elementBName);
+		return elementAName.localeCompare(elementBName);
 	}
 
 	_editorActionsToEntries(actions: IAction[], searchValue: string): EditorActionCommandEntry[] {

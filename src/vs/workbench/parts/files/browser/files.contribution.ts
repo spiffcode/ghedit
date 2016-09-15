@@ -12,25 +12,21 @@ import {ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, Tog
 import nls = require('vs/nls');
 import {SyncActionDescriptor} from 'vs/platform/actions/common/actions';
 import {Registry} from 'vs/platform/platform';
-import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
-import {QuickOpenAction} from 'vs/workbench/browser/actions/quickOpenAction';
 import {IConfigurationRegistry, Extensions as ConfigurationExtensions} from 'vs/platform/configuration/common/configurationRegistry';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'vs/workbench/common/contributions';
-import {IEditorRegistry, Extensions as EditorExtensions, IEditorInputFactory} from 'vs/workbench/browser/parts/editor/baseEditor';
-import {EditorInput, IFileEditorInput} from 'vs/workbench/common/editor';
-import {QuickOpenHandlerDescriptor, IQuickOpenRegistry, Extensions as QuickOpenExtensions} from 'vs/workbench/browser/quickopen';
+import {IEditorRegistry, Extensions as EditorExtensions, IEditorInputFactory, EditorInput, IFileEditorInput} from 'vs/workbench/common/editor';
 import {FileEditorDescriptor} from 'vs/workbench/parts/files/browser/files';
 import {AutoSaveConfiguration, SUPPORTED_ENCODINGS} from 'vs/platform/files/common/files';
 import {FILE_EDITOR_INPUT_ID, VIEWLET_ID} from 'vs/workbench/parts/files/common/files';
 import {FileTracker} from 'vs/workbench/parts/files/browser/fileTracker';
 import {SaveParticipant} from 'vs/workbench/parts/files/common/editors/saveParticipant';
-import {FileEditorInput} from 'vs/workbench/parts/files/browser/editors/fileEditorInput';
+import {FileEditorInput} from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import {TextFileEditor} from 'vs/workbench/parts/files/browser/editors/textFileEditor';
 import {BinaryFileEditor} from 'vs/workbench/parts/files/browser/editors/binaryFileEditor';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {SyncDescriptor, AsyncDescriptor} from 'vs/platform/instantiation/common/descriptors';
-import {IKeybindings} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindings} from 'vs/platform/keybinding/common/keybinding';
 import {IViewletService} from 'vs/workbench/services/viewlet/common/viewletService';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
@@ -119,12 +115,11 @@ registry.registerWorkbenchAction(
 // Note: because of service injection, the descriptor needs to have the exact count
 // of arguments as the FileEditorInput constructor. Otherwise when creating an
 // instance through the instantiation service he will inject the services wrong!
-let descriptor = new AsyncDescriptor<IFileEditorInput>('vs/workbench/parts/files/browser/editors/fileEditorInput', 'FileEditorInput', /* DO NOT REMOVE */ void 0, /* DO NOT REMOVE */ void 0, /* DO NOT REMOVE */ void 0);
+let descriptor = new AsyncDescriptor<IFileEditorInput>('vs/workbench/parts/files/common/editors/fileEditorInput', 'FileEditorInput', /* DO NOT REMOVE */ void 0, /* DO NOT REMOVE */ void 0, /* DO NOT REMOVE */ void 0);
 (<IEditorRegistry>Registry.as(EditorExtensions.Editors)).registerDefaultFileInput(descriptor);
 
 interface ISerializedFileInput {
 	resource: string;
-	mime: string;
 }
 
 // Register Editor Input Factory
@@ -135,8 +130,7 @@ class FileEditorInputFactory implements IEditorInputFactory {
 	public serialize(editorInput: EditorInput): string {
 		let fileEditorInput = <FileEditorInput>editorInput;
 		let fileInput: ISerializedFileInput = {
-			resource: fileEditorInput.getResource().toString(),
-			mime: fileEditorInput.getMime()
+			resource: fileEditorInput.getResource().toString()
 		};
 
 		return JSON.stringify(fileInput);
@@ -145,7 +139,7 @@ class FileEditorInputFactory implements IEditorInputFactory {
 	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
 		let fileInput: ISerializedFileInput = JSON.parse(serializedEditorInput);
 
-		return instantiationService.createInstance(FileEditorInput, URI.parse(fileInput.resource), fileInput.mime, void 0);
+		return instantiationService.createInstance(FileEditorInput, URI.parse(fileInput.resource), void 0, void 0);
 	}
 }
 
@@ -166,14 +160,14 @@ let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigurationExt
 
 configurationRegistry.registerConfiguration({
 	'id': 'files',
-	'order': 7,
-	'title': nls.localize('filesConfigurationTitle', "Files configuration"),
+	'order': 9,
+	'title': nls.localize('filesConfigurationTitle', "Files"),
 	'type': 'object',
 	'properties': {
 		'files.exclude': {
 			'type': 'object',
 			'description': nls.localize('exclude', "Configure glob patterns for excluding files and folders."),
-			'default': { '**/.git': true, '**/.svn': true, '**/.DS_Store': true },
+			'default': { '**/.git': true, '**/.svn': true, '**/.hg': true, '**/.DS_Store': true },
 			'additionalProperties': {
 				'anyOf': [
 					{
@@ -239,57 +233,29 @@ configurationRegistry.registerConfiguration({
 
 configurationRegistry.registerConfiguration({
 	'id': 'explorer',
-	'order': 8,
-	'title': nls.localize('explorerConfigurationTitle', "File Explorer configuration"),
+	'order': 10,
+	'title': nls.localize('explorerConfigurationTitle', "File Explorer"),
 	'type': 'object',
 	'properties': {
-		'explorer.workingFiles.maxVisible': {
+		'explorer.openEditors.visible': {
 			'type': 'number',
-			'description': nls.localize('maxVisible', "Maximum number of working files to show before scrollbars appear."),
+			'description': nls.localize('openEditorsVisible', "Number of editors shown in the Open Editors pane. Set it to 0 to hide the pane."),
 			'default': 9
 		},
-		'explorer.workingFiles.dynamicHeight': {
+		'explorer.openEditors.dynamicHeight': {
 			'type': 'boolean',
-			'description': nls.localize('dynamicHeight', "Controls if the height of the working files section should adapt dynamically to the number of elements or not."),
+			'description': nls.localize('dynamicHeight', "Controls if the height of the open editors section should adapt dynamically to the number of elements or not."),
 			'default': true
 		},
 		'explorer.autoReveal': {
 			'type': 'boolean',
 			'description': nls.localize('autoReveal', "Controls if the explorer should automatically reveal files when opening them."),
 			'default': true
+		},
+		'explorer.enableDragAndDrop': {
+			'type': 'boolean',
+			'description': nls.localize('enableDragAndDrop', "Controls if the explorer should allow to move files and folders via drag and drop."),
+			'default': true
 		}
 	}
 });
-
-// Register quick open handler for working files
-
-const ALL_WORKING_FILES_PREFIX = '~';
-
-class OpenWorkingFileByNameAction extends QuickOpenAction {
-
-	public static ID = 'workbench.files.action.workingFilesPicker';
-	public static LABEL = nls.localize('workingFilesPicker', "Open Working File by Name");
-
-	constructor(actionId: string, actionLabel: string, @IQuickOpenService quickOpenService: IQuickOpenService) {
-		super(actionId, actionLabel, ALL_WORKING_FILES_PREFIX, quickOpenService);
-	}
-}
-
-(<IQuickOpenRegistry>Registry.as(QuickOpenExtensions.Quickopen)).registerQuickOpenHandler(
-	new QuickOpenHandlerDescriptor(
-		'vs/workbench/parts/files/browser/workingFilesPicker',
-		'WorkingFilesPicker',
-		ALL_WORKING_FILES_PREFIX,
-		[
-			{
-				prefix: ALL_WORKING_FILES_PREFIX,
-				needsEditor: false,
-				description: nls.localize('openWorkingFile', "Open Working File By Name")
-			}
-		]
-	)
-);
-
-registry.registerWorkbenchAction(new SyncActionDescriptor(OpenWorkingFileByNameAction, OpenWorkingFileByNameAction.ID, OpenWorkingFileByNameAction.LABEL, {
-	primary: KeyMod.chord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_P)
-}), 'Files: Open Working File by Name', nls.localize('filesCategory', "Files"));

@@ -9,10 +9,13 @@ import {AbstractState} from 'vs/editor/common/modes/abstractState';
 import {TokenizationSupport} from 'vs/editor/common/modes/supports/tokenizationSupport';
 
 export class MockMode implements IMode {
-
+	private static instanceCount = 0;
 	private _id:string;
 
-	constructor(id:string = 'mockMode') {
+	constructor(id?:string) {
+		if (typeof id === 'undefined') {
+			id = 'mockMode' + (++MockMode.instanceCount);
+		}
 		this._id = id;
 	}
 
@@ -57,6 +60,6 @@ export class MockTokenizingMode extends MockMode {
 
 		this.tokenizationSupport = new TokenizationSupport(this, {
 			getInitialState: () => new StateForMockTokenizingMode(this, tokenType)
-		}, false, false);
+		}, false);
 	}
 }

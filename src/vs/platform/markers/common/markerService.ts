@@ -11,7 +11,6 @@ import collections = require('vs/base/common/collections');
 import URI from 'vs/base/common/uri';
 import Event, {Emitter} from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
-import {Remotable, IThreadService} from 'vs/platform/thread/common/thread';
 import {IMarkerService, IMarkerData, IResourceMarker, IMarker, MarkerStatistics} from './markers';
 
 interface Key {
@@ -49,8 +48,8 @@ export interface MarkerData {
 }
 
 
-export abstract class MarkerService implements IMarkerService {
-	public serviceId = IMarkerService;
+export class MarkerService implements IMarkerService {
+	public _serviceBrand: any;
 	private _data: { [k: string]: IMarkerData[] };
 	private _stats: MarkerStatistics;
 	private _onMarkerChanged: Emitter<URI[]>;
@@ -182,7 +181,11 @@ export abstract class MarkerService implements IMarkerService {
 		entry.value.forEach(data => {
 
 			// before reading, we sanitize the data
-			MarkerService._sanitize(data);
+			// skip entry if not sanitizable
+			const ok = MarkerService._sanitize(data);
+			if (!ok) {
+				return;
+			}
 
 			bucket.push({
 				owner: key.owner,
@@ -279,47 +282,16 @@ export abstract class MarkerService implements IMarkerService {
 		}
 	}
 
-	private static _sanitize(data: IMarkerData): void {
+	private static _sanitize(data: IMarkerData): boolean {
+		if (!data.message) {
+			return false;
+		}
+
 		data.code = data.code || null;
 		data.startLineNumber = data.startLineNumber > 0 ? data.startLineNumber : 1;
 		data.startColumn = data.startColumn > 0 ? data.startColumn : 1;
 		data.endLineNumber = data.endLineNumber >= data.startLineNumber ? data.endLineNumber : data.startLineNumber;
 		data.endColumn = data.endColumn > 0 ? data.endColumn : data.startColumn;
-	}
-}
-
-export class SecondaryMarkerService extends MarkerService {
-
-	private _proxy: MainProcessMarkerService;
-
-	constructor(threadService: IThreadService) {
-		super();
-		this._proxy = threadService.getRemotable(MainProcessMarkerService);
-	}
-
-	public changeOne(owner: string, resource: URI, markers: IMarkerData[]): void {
-		this._proxy.changeOne(owner, resource, markers);
-	}
-
-	public changeAll(owner: string, data: IResourceMarker[]): void {
-		this._proxy.changeAll(owner, data);
-	}
-
-}
-
-@Remotable.MainContext('MainProcessMarkerService')
-export class MainProcessMarkerService extends MarkerService {
-
-	constructor(threadService: IThreadService) {
-		super();
-		threadService.registerRemotableInstance(MainProcessMarkerService, this);
-	}
-
-	public changeOne(owner: string, resource: URI, markers: IMarkerData[]): void {
-		super.changeOne(owner, resource, markers);
-	}
-
-	public changeAll(owner: string, data: IResourceMarker[]): void {
-		super.changeAll(owner, data);
+		return true;
 	}
 }

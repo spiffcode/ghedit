@@ -135,15 +135,6 @@ suite('Strings', () => {
 		assert.strictEqual(' 	  '.trim(), '');
 	});
 
-	test('localeCompare', function () {
-		assert.strictEqual(strings.localeCompare('a', 'a'), 'a'.localeCompare('a'));
-		assert.strictEqual(strings.localeCompare('A', 'A'), 'A'.localeCompare('A'));
-		assert.strictEqual(strings.localeCompare('All', 'A'), 'All'.localeCompare('A'));
-		assert.strictEqual(strings.localeCompare('A', 'All'), 'A'.localeCompare('All'));
-		assert.strictEqual(strings.localeCompare('A', 'a'), 'A'.localeCompare('a'));
-		assert.strictEqual(strings.localeCompare('a', 'A'), 'a'.localeCompare('A'));
-	});
-
 	test('appendWithLimit', function () {
 		assert.strictEqual(strings.appendWithLimit('ab', 'cd', 100), 'abcd');
 		assert.strictEqual(strings.appendWithLimit('ab', 'cd', 2), '...cd');
@@ -156,5 +147,16 @@ suite('Strings', () => {
 		assert.strictEqual(strings.repeat(' ', 1), ' ');
 		assert.strictEqual(strings.repeat(' ', 0), '');
 		assert.strictEqual(strings.repeat('abc', 2), 'abcabc');
+	});
+
+	test('lastNonWhitespaceIndex', () => {
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc  \t \t '), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc'), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc\t'), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc '), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc  \t \t '), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc  \t \t abc \t \t '), 11);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('abc  \t \t abc \t \t ', 8), 2);
+		assert.strictEqual(strings.lastNonWhitespaceIndex('  \t \t '), -1);
 	});
 });

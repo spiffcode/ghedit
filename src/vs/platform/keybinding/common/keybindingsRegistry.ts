@@ -6,25 +6,24 @@
 
 import {BinaryKeybindings, KeyCode} from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
-import {TypeConstraint, validateConstraints} from 'vs/base/common/types';
-import {ICommandHandler, ICommandHandlerDescription, ICommandsMap, IKeybindingItem, IKeybindings, KbExpr} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindingItem, IKeybindings, KbExpr} from 'vs/platform/keybinding/common/keybinding';
+import {CommandsRegistry, ICommandHandler, ICommandHandlerDescription} from 'vs/platform/commands/common/commands';
 import {Registry} from 'vs/platform/platform';
 
 export interface ICommandRule extends IKeybindings {
 	id: string;
 	weight: number;
-	context: KbExpr;
+	when: KbExpr;
 }
 
 export interface ICommandDescriptor extends ICommandRule {
 	handler: ICommandHandler;
-	description?: string | ICommandHandlerDescription;
+	description?: ICommandHandlerDescription;
 }
 
 export interface IKeybindingsRegistry {
 	registerCommandRule(rule: ICommandRule);
 	registerCommandDesc(desc: ICommandDescriptor): void;
-	getCommands(): ICommandsMap;
 	getDefaultKeybindings(): IKeybindingItem[];
 
 	WEIGHT: {
@@ -39,7 +38,6 @@ export interface IKeybindingsRegistry {
 class KeybindingsRegistryImpl implements IKeybindingsRegistry {
 
 	private _keybindings: IKeybindingItem[];
-	private _commands: ICommandsMap;
 
 	public WEIGHT = {
 		editorCore: (importance: number = 0): number => {
@@ -61,7 +59,6 @@ class KeybindingsRegistryImpl implements IKeybindingsRegistry {
 
 	constructor() {
 		this._keybindings = [];
-		this._commands = Object.create(null);
 	}
 
 	/**
@@ -88,50 +85,23 @@ class KeybindingsRegistryImpl implements IKeybindingsRegistry {
 	public registerCommandRule(rule: ICommandRule): void {
 		let actualKb = KeybindingsRegistryImpl.bindToCurrentPlatform(rule);
 
+		// here
 		if (actualKb && actualKb.primary) {
-			this.registerDefaultKeybinding(actualKb.primary, rule.id, rule.weight, 0, rule.context);
+			this.registerDefaultKeybinding(actualKb.primary, rule.id, rule.weight, 0, rule.when);
 		}
 
+		// here
 		if (actualKb && Array.isArray(actualKb.secondary)) {
-			actualKb.secondary.forEach((k, i) => this.registerDefaultKeybinding(k, rule.id, rule.weight, -i - 1, rule.context));
+			actualKb.secondary.forEach((k, i) => this.registerDefaultKeybinding(k, rule.id, rule.weight, -i - 1, rule.when));
 		}
 	}
 
 	public registerCommandDesc(desc: ICommandDescriptor): void {
 		this.registerCommandRule(desc);
-
-		// if (_commands[desc.id]) {
-		// 	console.warn('Duplicate handler for command: ' + desc.id);
-		// }
-		// this._commands[desc.id] = desc.handler;
-
-		let handler = desc.handler;
-		let description = desc.description || handler.description;
-
-		// add argument validation if rich command metadata is provided
-		if (typeof description === 'object') {
-			let constraints: TypeConstraint[] = [];
-			for (let arg of description.args) {
-				constraints.push(arg.constraint);
-			}
-			handler = function(accesor, args) {
-				validateConstraints(args, constraints);
-				return desc.handler(accesor, args);
-			};
-		}
-
-		// make sure description is there
-		handler.description = description;
-
-		// register handler
-		this._commands[desc.id] = handler;
+		CommandsRegistry.registerCommand(desc.id, desc);
 	}
 
-	public getCommands(): ICommandsMap {
-		return this._commands;
-	}
-
-	private registerDefaultKeybinding(keybinding: number, commandId: string, weight1: number, weight2: number, context: KbExpr): void {
+	private registerDefaultKeybinding(keybinding: number, commandId: string, weight1: number, weight2: number, when: KbExpr): void {
 		if (platform.isWindows) {
 			if (BinaryKeybindings.hasCtrlCmd(keybinding) && !BinaryKeybindings.hasShift(keybinding) && BinaryKeybindings.hasAlt(keybinding) && !BinaryKeybindings.hasWinCtrl(keybinding)) {
 				if (/^[A-Z0-9\[\]\|\;\'\,\.\/\`]$/.test(KeyCode.toString(BinaryKeybindings.extractKeyCode(keybinding)))) {
@@ -142,7 +112,7 @@ class KeybindingsRegistryImpl implements IKeybindingsRegistry {
 		this._keybindings.push({
 			keybinding: keybinding,
 			command: commandId,
-			context: context,
+			when: when,
 			weight1: weight1,
 			weight2: weight2
 		});

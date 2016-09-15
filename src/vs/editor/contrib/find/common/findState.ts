@@ -7,7 +7,6 @@
 import {EventEmitter} from 'vs/base/common/eventEmitter';
 import {IDisposable} from 'vs/base/common/lifecycle';
 import {Range} from 'vs/editor/common/core/range';
-import {IEditorRange} from 'vs/editor/common/editorCommon';
 
 export interface FindReplaceStateChangedEvent {
 	moveCursor: boolean;
@@ -22,6 +21,7 @@ export interface FindReplaceStateChangedEvent {
 	searchScope: boolean;
 	matchesPosition: boolean;
 	matchesCount: boolean;
+	currentMatch: boolean;
 }
 
 export interface INewFindReplaceState {
@@ -32,9 +32,7 @@ export interface INewFindReplaceState {
 	isRegex?: boolean;
 	wholeWord?: boolean;
 	matchCase?: boolean;
-	searchScope?: IEditorRange;
-	// matchesPosition?: number;
-	// matchesCount?: number;
+	searchScope?: Range;
 }
 
 export class FindReplaceState implements IDisposable {
@@ -48,9 +46,10 @@ export class FindReplaceState implements IDisposable {
 	private _isRegex: boolean;
 	private _wholeWord: boolean;
 	private _matchCase: boolean;
-	private _searchScope: IEditorRange;
+	private _searchScope: Range;
 	private _matchesPosition: number;
 	private _matchesCount: number;
+	private _currentMatch: Range;
 	private _eventEmitter: EventEmitter;
 
 	public get searchString(): string { return this._searchString; }
@@ -60,9 +59,10 @@ export class FindReplaceState implements IDisposable {
 	public get isRegex(): boolean { return this._isRegex; }
 	public get wholeWord(): boolean { return this._wholeWord; }
 	public get matchCase(): boolean { return this._matchCase; }
-	public get searchScope(): IEditorRange { return this._searchScope; }
+	public get searchScope(): Range { return this._searchScope; }
 	public get matchesPosition(): number { return this._matchesPosition; }
 	public get matchesCount(): number { return this._matchesCount; }
+	public get currentMatch(): Range { return this._currentMatch; }
 
 	constructor() {
 		this._searchString = '';
@@ -75,6 +75,7 @@ export class FindReplaceState implements IDisposable {
 		this._searchScope = null;
 		this._matchesPosition = 0;
 		this._matchesCount = 0;
+		this._currentMatch = null;
 		this._eventEmitter = new EventEmitter();
 	}
 
@@ -86,7 +87,7 @@ export class FindReplaceState implements IDisposable {
 		return this._eventEmitter.addListener2(FindReplaceState._CHANGED_EVENT, listener);
 	}
 
-	public changeMatchInfo(matchesPosition:number, matchesCount:number): void {
+	public changeMatchInfo(matchesPosition:number, matchesCount:number, currentMatch:Range): void {
 		let changeEvent:FindReplaceStateChangedEvent = {
 			moveCursor: false,
 			searchString: false,
@@ -98,7 +99,8 @@ export class FindReplaceState implements IDisposable {
 			matchCase: false,
 			searchScope: false,
 			matchesPosition: false,
-			matchesCount: false
+			matchesCount: false,
+			currentMatch: false
 		};
 		let somethingChanged = false;
 
@@ -120,6 +122,14 @@ export class FindReplaceState implements IDisposable {
 			somethingChanged = true;
 		}
 
+		if (typeof currentMatch !== 'undefined') {
+			if (!Range.equalsRange(this._currentMatch, currentMatch)) {
+				this._currentMatch = currentMatch;
+				changeEvent.currentMatch = true;
+				somethingChanged = true;
+			}
+		}
+
 		if (somethingChanged) {
 			this._eventEmitter.emit(FindReplaceState._CHANGED_EVENT, changeEvent);
 		}
@@ -137,7 +147,8 @@ export class FindReplaceState implements IDisposable {
 			matchCase: false,
 			searchScope: false,
 			matchesPosition: false,
-			matchesCount: false
+			matchesCount: false,
+			currentMatch: false
 		};
 		let somethingChanged = false;
 

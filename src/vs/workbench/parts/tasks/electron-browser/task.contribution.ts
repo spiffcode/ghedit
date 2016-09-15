@@ -17,7 +17,7 @@ import { IStringDictionary } from 'vs/base/common/collections';
 import { Action } from 'vs/base/common/actions';
 import * as Dom from 'vs/base/browser/dom';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { EventEmitter, ListenerUnbind } from 'vs/base/common/eventEmitter';
+import { EventEmitter } from 'vs/base/common/eventEmitter';
 import * as Builder from 'vs/base/browser/builder';
 import * as Types from 'vs/base/common/types';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -50,10 +50,13 @@ import { IStatusbarItem, IStatusbarRegistry, Extensions as StatusbarExtensions, 
 import { IQuickOpenRegistry, Extensions as QuickOpenExtensions, QuickOpenHandlerDescriptor } from 'vs/workbench/browser/quickopen';
 
 import { IQuickOpenService } from 'vs/workbench/services/quickopen/common/quickOpenService';
+import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+import Constants from 'vs/workbench/parts/markers/common/constants';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/workbench/services/workspace/common/contextService';
 
-import { SystemVariables } from 'vs/workbench/parts/lib/node/systemVariables';
+import { ConfigVariables } from 'vs/workbench/parts/lib/node/configVariables';
 import { ITextFileService, EventType } from 'vs/workbench/parts/files/common/files';
 import { IOutputService, IOutputChannelRegistry, Extensions as OutputExt, IOutputChannel } from 'vs/workbench/parts/output/common/output';
 
@@ -199,6 +202,7 @@ class ConfigureTaskRunnerAction extends Action {
 			return TPromise.as(undefined);
 		}
 		let sideBySide = !!(event && (event.ctrlKey || event.metaKey));
+		let configFileCreated = false;
 		return this.fileService.resolveFile(this.contextService.toResource('.vscode/tasks.json')).then((success) => {
 			return success;
 		}, (err:any) => {
@@ -212,7 +216,7 @@ class ConfigureTaskRunnerAction extends Action {
 					const outputChannel = this.outputService.getChannel(TaskService.OutputChannelId);
 					outputChannel.show();
 					outputChannel.append(nls.localize('ConfigureTaskRunnerAction.autoDetecting', 'Auto detecting tasks for {0}', selection.id) + '\n');
-					let detector = new ProcessRunnerDetector(this.fileService, this.contextService, new SystemVariables(this.editorService, this.contextService));
+					let detector = new ProcessRunnerDetector(this.fileService, this.contextService, new ConfigVariables(this.configurationService, this.editorService, this.contextService));
 					contentPromise = detector.detect(false, selection.id).then((value) => {
 						let config = value.config;
 						if (value.stderr && value.stderr.length > 0) {
@@ -244,6 +248,7 @@ class ConfigureTaskRunnerAction extends Action {
 					if (editorConfig.editor.insertSpaces) {
 						content = content.replace(/(\n)(\t+)/g, (_, s1, s2) => s1 + strings.repeat(' ', s2.length * editorConfig.editor.tabSize));
 					}
+					configFileCreated = true;
 					return this.fileService.createFile(this.contextService.toResource('.vscode/tasks.json'), content);
 				});
 			});
@@ -255,7 +260,8 @@ class ConfigureTaskRunnerAction extends Action {
 			return this.editorService.openEditor({
 				resource: stat.resource,
 				options: {
-					forceOpen: true
+					forceOpen: true,
+					pinned: configFileCreated // pin only if config file is created #8727
 				}
 			}, sideBySide);
 		}, (error) => {
@@ -356,7 +362,7 @@ class RunTaskAction extends AbstractTaskAction {
 
 class StatusBarItem implements IStatusbarItem {
 
-	private quickOpenService: IQuickOpenService;
+	private panelService: IPanelService;
 	private markerService: IMarkerService;
 	private taskService:ITaskService;
 	private outputService: IOutputService;
@@ -365,11 +371,12 @@ class StatusBarItem implements IStatusbarItem {
 	private activeCount: number;
 	private static progressChars:string = '|/-\\';
 
-	constructor(@IQuickOpenService quickOpenService:IQuickOpenService,
+	constructor(@IPanelService panelService:IPanelService,
 		@IMarkerService markerService:IMarkerService, @IOutputService outputService:IOutputService,
-		@ITaskService taskService:ITaskService) {
+		@ITaskService taskService:ITaskService,
+		@IPartService private partService: IPartService) {
 
-		this.quickOpenService = quickOpenService;
+		this.panelService = panelService;
 		this.markerService = markerService;
 		this.outputService = outputService;
 		this.taskService = taskService;
@@ -417,8 +424,13 @@ class StatusBarItem implements IStatusbarItem {
 //		}));
 
 		callOnDispose.push(Dom.addDisposableListener(label, 'click', (e:MouseEvent) => {
-			this.quickOpenService.show('!');
-		}));
+			const panel= this.panelService.getActivePanel();
+			if (panel && panel.getId() === Constants.MARKERS_PANEL_ID) {
+				this.partService.setPanelHidden(true);
+			} else {
+				this.panelService.openPanel(Constants.MARKERS_PANEL_ID, true);
+			}
+			}));
 
 		let updateStatus = (element:HTMLDivElement, stats:number): boolean => {
 			if (stats > 0) {
@@ -538,7 +550,7 @@ class NullTaskSystem extends EventEmitter implements ITaskSystem {
 }
 
 class TaskService extends EventEmitter implements ITaskService {
-	public serviceId = ITaskService;
+	public _serviceBrand: any;
 	public static SERVICE_ID: string = 'taskService';
 	public static OutputChannelId:string = 'tasks';
 	public static OutputChannelLabel:string = nls.localize('tasks', "Tasks");
@@ -560,11 +572,11 @@ class TaskService extends EventEmitter implements ITaskService {
 
 	private _taskSystemPromise: TPromise<ITaskSystem>;
 	private _taskSystem: ITaskSystem;
-	private taskSystemListeners: ListenerUnbind[];
+	private taskSystemListeners: IDisposable[];
 	private clearTaskSystemPromise: boolean;
 	private outputChannel: IOutputChannel;
 
-	private fileChangesListener: ListenerUnbind;
+	private fileChangesListener: IDisposable;
 
 	constructor(@IModeService modeService: IModeService, @IConfigurationService configurationService: IConfigurationService,
 		@IMarkerService markerService: IMarkerService, @IOutputService outputService: IOutputService,
@@ -609,13 +621,12 @@ class TaskService extends EventEmitter implements ITaskService {
 	}
 
 	private disposeTaskSystemListeners(): void {
-		this.taskSystemListeners.forEach(unbind => unbind());
-		this.taskSystemListeners = [];
+		this.taskSystemListeners = dispose(this.taskSystemListeners);
 	}
 
 	private disposeFileChangesListener(): void {
 		if (this.fileChangesListener) {
-			this.fileChangesListener();
+			this.fileChangesListener.dispose();
 			this.fileChangesListener = null;
 		}
 	}
@@ -626,7 +637,7 @@ class TaskService extends EventEmitter implements ITaskService {
 				this._taskSystem = new NullTaskSystem();
 				this._taskSystemPromise = TPromise.as(this._taskSystem);
 			} else {
-				let variables = new SystemVariables(this.editorService, this.contextService);
+				let variables = new ConfigVariables(this.configurationService, this.editorService, this.contextService);
 				let clearOutput = true;
 				this._taskSystemPromise = TPromise.as(this.configurationService.getConfiguration<TaskConfiguration>('tasks')).then((config: TaskConfiguration) => {
 					let parseErrors: string[] = config ? (<any>config).$parseErrors : null;
@@ -694,8 +705,8 @@ class TaskService extends EventEmitter implements ITaskService {
 							this._taskSystemPromise = null;
 							throw new TaskError(Severity.Info, nls.localize('TaskSystem.noBuildType', "No valid task runner configured. Supported task runners are 'service' and 'program'."), TaskErrors.NoValidTaskRunner);
 						}
-						this.taskSystemListeners.push(result.addListener(TaskSystemEvents.Active, (event) => this.emit(TaskServiceEvents.Active, event)));
-						this.taskSystemListeners.push(result.addListener(TaskSystemEvents.Inactive, (event) => this.emit(TaskServiceEvents.Inactive, event)));
+						this.taskSystemListeners.push(result.addListener2(TaskSystemEvents.Active, (event) => this.emit(TaskServiceEvents.Active, event)));
+						this.taskSystemListeners.push(result.addListener2(TaskSystemEvents.Inactive, (event) => this.emit(TaskServiceEvents.Inactive, event)));
 						this._taskSystem = result;
 						return result;
 					}, (err: any) => {
@@ -773,7 +784,7 @@ class TaskService extends EventEmitter implements ITaskService {
 					then((runResult: ITaskRunResult) => {
 						if (runResult.restartOnFileChanges) {
 							let pattern = runResult.restartOnFileChanges;
-							this.fileChangesListener = this.eventService.addListener(FileEventType.FILE_CHANGES, (event: FileChangesEvent) => {
+							this.fileChangesListener = this.eventService.addListener2(FileEventType.FILE_CHANGES, (event: FileChangesEvent) => {
 								let needsRestart = event.changes.some((change) => {
 									return (change.type === FileChangeType.ADDED || change.type === FileChangeType.DELETED) && !!match(pattern, change.resource.fsPath);
 								});

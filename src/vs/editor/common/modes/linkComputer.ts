@@ -11,16 +11,23 @@ export interface ILinkComputerTarget {
 	getLineContent(lineNumber:number): string;
 }
 
-// State machine for http:// or https://
-var STATE_MAP:{[ch:string]:number}[] = [], START_STATE = 1, END_STATE = 9, ACCEPT_STATE = 10;
-STATE_MAP[1] = { 'h': 2, 'H': 2 };
+// State machine for http:// or https:// or file://
+const STATE_MAP:{[ch:string]:number}[] = [];
+const START_STATE = 1;
+const END_STATE = 12;
+const ACCEPT_STATE = 13;
+
+STATE_MAP[1] = { 'h': 2, 'H': 2, 'f': 6, 'F': 6 };
 STATE_MAP[2] = { 't': 3, 'T': 3 };
 STATE_MAP[3] = { 't': 4, 'T': 4 };
 STATE_MAP[4] = { 'p': 5, 'P': 5 };
-STATE_MAP[5] = { 's': 6, 'S': 6, ':': 7 };
-STATE_MAP[6] = { ':': 7 };
-STATE_MAP[7] = { '/': 8 };
-STATE_MAP[8] = { '/': 9 };
+STATE_MAP[5] = { 's': 9, 'S': 9, ':': 10 };
+STATE_MAP[6] = { 'i': 7, 'I': 7 };
+STATE_MAP[7] = { 'l': 8, 'L': 8 };
+STATE_MAP[8] = { 'e': 9, 'E': 9 };
+STATE_MAP[9] = { ':': 10 };
+STATE_MAP[10] = { '/': 11 };
+STATE_MAP[11] = { '/': END_STATE };
 
 enum CharacterClass {
 	None = 0,
@@ -28,108 +35,113 @@ enum CharacterClass {
 	CannotEndIn = 2
 }
 
-var getCharacterClasses = (function() {
-	var FORCE_TERMINATION_CHARACTERS = ' \t<>\'\"';
-	var CANNOT_END_WITH_CHARACTERS = '.,;';
-	var _cachedResult: CharacterClass[] = null;
+const _openParens = '('.charCodeAt(0);
+const _closeParens = ')'.charCodeAt(0);
+const _openSquareBracket = '['.charCodeAt(0);
+const _closeSquareBracket = ']'.charCodeAt(0);
+const _openCurlyBracket = '{'.charCodeAt(0);
+const _closeCurlyBracket = '}'.charCodeAt(0);
 
-	var findLargestCharCode = (str:string):number => {
-		var r = 0;
-		for (var i = 0, len = str.length; i < len; i++) {
-			r = Math.max(r, str.charCodeAt(i));
-		}
-		return r;
-	};
+class CharacterClassifier {
 
-	var set = (str:string, toWhat:CharacterClass): void => {
-		for (var i = 0, len = str.length; i < len; i++) {
-			_cachedResult[str.charCodeAt(i)] = toWhat;
-		}
-	};
+	/**
+	 * Maintain a compact (fully initialized ASCII map for quickly classifying ASCII characters - used more often in code).
+	 */
+	private _asciiMap: CharacterClass[];
 
-	return function(): CharacterClass[] {
-		if (_cachedResult === null) {
-			// Find cachedResult size
-			var largestCharCode = Math.max(
-				findLargestCharCode(FORCE_TERMINATION_CHARACTERS),
-				findLargestCharCode(CANNOT_END_WITH_CHARACTERS)
-			);
+	/**
+	 * The entire map (sparse array).
+	 */
+	private _map: CharacterClass[];
 
-			// Initialize cachedResult
-			_cachedResult = [];
-			for (var i = 0; i < largestCharCode; i++) {
-				_cachedResult[i] = CharacterClass.None;
-			}
+	constructor() {
+		const FORCE_TERMINATION_CHARACTERS = ' \t<>\'\"、。｡､，．：；？！＠＃＄％＆＊‘“〈《「『【〔（［｛｢｣｝］）〕】』」》〉”’｀～…';
+		const CANNOT_END_WITH_CHARACTERS = '.,;';
 
-			// Fill in cachedResult
-			set(FORCE_TERMINATION_CHARACTERS, CharacterClass.ForceTermination);
-			set(CANNOT_END_WITH_CHARACTERS, CharacterClass.CannotEndIn);
+		this._asciiMap = [];
+		for (let i = 0; i < 256; i++) {
+			this._asciiMap[i] = CharacterClass.None;
 		}
 
-		return _cachedResult;
-	};
-})();
+		this._map = [];
 
-let _openParens = '('.charCodeAt(0);
-let _closeParens = ')'.charCodeAt(0);
-let _openSquareBracket = '['.charCodeAt(0);
-let _closeSquareBracket = ']'.charCodeAt(0);
-let _openCurlyBracket = '{'.charCodeAt(0);
-let _closeCurlyBracket = '}'.charCodeAt(0);
+		for (let i = 0; i < FORCE_TERMINATION_CHARACTERS.length; i++) {
+			this._set(FORCE_TERMINATION_CHARACTERS.charCodeAt(i), CharacterClass.ForceTermination);
+		}
+
+		for (let i = 0; i < CANNOT_END_WITH_CHARACTERS.length; i++) {
+			this._set(CANNOT_END_WITH_CHARACTERS.charCodeAt(i), CharacterClass.CannotEndIn);
+		}
+	}
+
+	private _set(charCode:number, charClass:CharacterClass): void {
+		if (charCode < 256) {
+			this._asciiMap[charCode] = charClass;
+		}
+		this._map[charCode] = charClass;
+	}
+
+	public classify(charCode:number): CharacterClass {
+		if (charCode < 256) {
+			return this._asciiMap[charCode];
+		}
+
+		let charClass = this._map[charCode];
+		if (charClass) {
+			return charClass;
+		}
+
+		return CharacterClass.None;
+	}
+}
+
+const characterClassifier = new CharacterClassifier();
 
 class LinkComputer {
 
 	private static _createLink(line:string, lineNumber:number, linkBeginIndex:number, linkEndIndex:number):ILink {
+		// Do not allow to end link in certain characters...
+		let lastIncludedCharIndex = linkEndIndex - 1;
+		do {
+			const chCode = line.charCodeAt(lastIncludedCharIndex);
+			const chClass = characterClassifier.classify(chCode);
+			if (chClass !== CharacterClass.CannotEndIn) {
+				break;
+			}
+			lastIncludedCharIndex--;
+		} while (lastIncludedCharIndex > linkBeginIndex);
+
 		return {
 			range: {
 				startLineNumber: lineNumber,
 				startColumn: linkBeginIndex + 1,
 				endLineNumber: lineNumber,
-				endColumn: linkEndIndex + 1
+				endColumn: lastIncludedCharIndex + 2
 			},
-			url: line.substring(linkBeginIndex, linkEndIndex)
+			url: line.substring(linkBeginIndex, lastIncludedCharIndex + 1)
 		};
 	}
 
 	public static computeLinks(model:ILinkComputerTarget):ILink[] {
+		let result:ILink[] = [];
+		for (let i = 1, lineCount = model.getLineCount(); i <= lineCount; i++) {
+			const line = model.getLineContent(i);
+			const len = line.length;
 
-		var i:number,
-			lineCount:number,
-			result:ILink[] = [];
-
-		var line:string,
-			j:number,
-			lastIncludedCharIndex:number,
-			len:number,
-			characterClasses = getCharacterClasses(),
-			characterClassesLength = characterClasses.length,
-			linkBeginIndex:number,
-			state:number,
-			ch:string,
-			chCode:number,
-			chClass:CharacterClass,
-			resetStateMachine:boolean,
-			hasOpenParens:boolean,
-			hasOpenSquareBracket:boolean,
-			hasOpenCurlyBracket:boolean;
-
-		for (i = 1, lineCount = model.getLineCount(); i <= lineCount; i++) {
-			line = model.getLineContent(i);
-			j = 0;
-			len = line.length;
-			linkBeginIndex = 0;
-			state = START_STATE;
-			hasOpenParens = false;
-			hasOpenSquareBracket = false;
-			hasOpenCurlyBracket = false;
+			let j = 0;
+			let linkBeginIndex = 0;
+			let state = START_STATE;
+			let hasOpenParens = false;
+			let hasOpenSquareBracket = false;
+			let hasOpenCurlyBracket = false;
 
 			while (j < len) {
-				ch = line.charAt(j);
-				chCode = line.charCodeAt(j);
-				resetStateMachine = false;
+
+				let resetStateMachine = false;
 
 				if (state === ACCEPT_STATE) {
-
+					const chCode = line.charCodeAt(j);
+					let chClass:CharacterClass;
 					switch (chCode) {
 						case _openParens:
 							hasOpenParens = true;
@@ -153,28 +165,17 @@ class LinkComputer {
 							chClass = (hasOpenCurlyBracket ? CharacterClass.None : CharacterClass.ForceTermination);
 							break;
 						default:
-							chClass = (chCode < characterClassesLength ? characterClasses[chCode] : CharacterClass.None);
+							chClass = characterClassifier.classify(chCode);
 					}
 
 					// Check if character terminates link
 					if (chClass === CharacterClass.ForceTermination) {
-
-						// Do not allow to end link in certain characters...
-						lastIncludedCharIndex = j - 1;
-						do {
-							chCode = line.charCodeAt(lastIncludedCharIndex);
-							chClass = (chCode < characterClassesLength ? characterClasses[chCode] : CharacterClass.None);
-							if (chClass !== CharacterClass.CannotEndIn) {
-								break;
-							}
-							lastIncludedCharIndex--;
-						} while (lastIncludedCharIndex > linkBeginIndex);
-
-						result.push(LinkComputer._createLink(line, i, linkBeginIndex, lastIncludedCharIndex + 1));
+						result.push(LinkComputer._createLink(line, i, linkBeginIndex, j));
 						resetStateMachine = true;
 					}
 				} else if (state === END_STATE) {
-					chClass = (chCode < characterClassesLength ? characterClasses[chCode] : CharacterClass.None);
+					const chCode = line.charCodeAt(j);
+					const chClass = characterClassifier.classify(chCode);
 
 					// Check if character terminates link
 					if (chClass === CharacterClass.ForceTermination) {
@@ -183,6 +184,7 @@ class LinkComputer {
 						state = ACCEPT_STATE;
 					}
 				} else {
+					const ch = line.charAt(j);
 					if (STATE_MAP[state].hasOwnProperty(ch)) {
 						state = STATE_MAP[state][ch];
 					} else {

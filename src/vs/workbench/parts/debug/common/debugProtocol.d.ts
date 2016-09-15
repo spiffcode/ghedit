@@ -81,6 +81,20 @@ declare module DebugProtocol {
 		};
 	}
 
+	/** Event message for "continued" event type.
+		The event indicates that the execution of the debuggee has continued.
+		Please note: a debug adapter is not expected to send this event in response to a request that implies that execution continues, e.g. 'launch' or 'continue'.
+		It is only necessary to send a ContinuedEvent if there was no previous request that implied this.
+	*/
+	export interface ContinuedEvent extends Event {
+		body: {
+			/** The thread which was continued. */
+			threadId: number;
+			/** If allThreadsContinued is true, a debug adapter can announce that all threads have continued. **/
+			allThreadsContinued?: boolean;
+		};
+	}
+
 	/** Event message for "exited" event type.
 		The event indicates that the debuggee has exited.
 	*/
@@ -139,6 +153,18 @@ declare module DebugProtocol {
 		}
 	}
 
+	/** Event message for "module" event type.
+		The event indicates that some information about a module has changed.
+	 */
+	export interface ModuleEvent extends Event {
+		body: {
+			/** The reason for the event. */
+			reason: 'new' | 'changed' | 'removed';
+			/** The new, changed, or removed module. In case of 'removed' only the module id is used. */
+			module: Module;
+		}
+	}
+
 	//---- Requests
 
 	/** On error that is whenever 'success' is false, the body can provide more details.
@@ -165,6 +191,11 @@ declare module DebugProtocol {
 		columnsStartAt1?: boolean;
 		/** Determines in what format paths are specified. Possible values are 'path' or 'uri'. The default is 'path', which is the native format. */
 		pathFormat?: string;
+
+		/** Client supports the optional type attribute for variables. */
+		supportsVariableType?: boolean;
+		/** Client supports the paging of variables. */
+		supportsVariablePaging?: boolean;
 	}
 	/** Response to Initialize request. */
 	export interface InitializeResponse extends Response {
@@ -241,6 +272,8 @@ declare module DebugProtocol {
 		breakpoints?: SourceBreakpoint[];
 		/** Deprecated: The code locations of the breakpoints. */
 		lines?: number[];
+		/** A value of true indicates that the underlying source has been modified which results in new breakpoint locations. */
+		sourceModified?: boolean;
 	}
 	/** Response to "setBreakpoints" request.
 		Returned is information about each breakpoint created by this request.
@@ -301,16 +334,20 @@ declare module DebugProtocol {
 	}
 	/** Arguments for "continue" request. */
 	export interface ContinueArguments {
-		/** continue execution for this thread. */
+		/** Continue execution for the specified thread (if possible). If the backend cannot continue on a single thread but will continue on all threads, it should set the allThreadsContinued attribute in the response to true. */
 		threadId: number;
 	}
-	/** Response to "continue" request. This is just an acknowledgement, so no body field is required. */
+	/** Response to "continue" request. */
 	export interface ContinueResponse extends Response {
+		body: {
+			/** If true, the continue request has ignored the specified thread and continued all threads instead. If this attribute is missing a value of 'true' is assumed for backward compatibility. */
+			allThreadsContinued?: boolean;
+		};
 	}
 
 	/** Next request; value of command field is "next".
 		The request starts the debuggee to run again for one step.
-		penDebug will respond with a StoppedEvent (event type 'step') after running the step.
+		The debug adapter first sends the NextResponse and then a StoppedEvent (event type 'step') after the step has completed.
 	*/
 	export interface NextRequest extends Request {
 		arguments: NextArguments;
@@ -325,8 +362,12 @@ declare module DebugProtocol {
 	}
 
 	/** StepIn request; value of command field is "stepIn".
-		The request starts the debuggee to run again for one step.
-		The debug adapter will respond with a StoppedEvent (event type 'step') after running the step.
+		The request starts the debuggee to step into a function/method if possible.
+		If it cannot step into a target, "stepIn" behaves like "next".
+		The debug adapter first sends the StepInResponse and then a StoppedEvent (event type 'step') after the step has completed.
+		If there are multiple function/method calls (or other targets) on the source line,
+		the optional argument 'targetId' can be used to control into which target the "stepIn" should occur.
+		The list of possible targets for a given source line can be retrieved via the "stepInTargets" request.
 	*/
 	export interface StepInRequest extends Request {
 		arguments: StepInArguments;
@@ -335,14 +376,16 @@ declare module DebugProtocol {
 	export interface StepInArguments {
 		/** Continue execution for this thread. */
 		threadId: number;
+		/** Optional id of the target to step into. */
+		targetId?: number;
 	}
 	/** Response to "stepIn" request. This is just an acknowledgement, so no body field is required. */
 	export interface StepInResponse extends Response {
 	}
 
-	/** StepOutIn request; value of command field is "stepOut".
+	/** StepOut request; value of command field is "stepOut".
 		The request starts the debuggee to run again for one step.
-		penDebug will respond with a StoppedEvent (event type 'step') after running the step.
+		The debug adapter first sends the StepOutResponse and then a StoppedEvent (event type 'step') after the step has completed.
 	*/
 	export interface StepOutRequest extends Request {
 		arguments: StepOutArguments;
@@ -356,9 +399,61 @@ declare module DebugProtocol {
 	export interface StepOutResponse extends Response {
 	}
 
+	/** StepBack request; value of command field is "stepBack".
+		The request starts the debuggee to run one step backwards.
+		The debug adapter first sends the StepBackResponse and then a StoppedEvent (event type 'step') after the step has completed.
+	*/
+	export interface StepBackRequest extends Request {
+		arguments: StepBackArguments;
+	}
+	/** Arguments for "stepBack" request. */
+	export interface StepBackArguments {
+		/** Continue execution for this thread. */
+		threadId: number;
+	}
+	/** Response to "stepBack" request. This is just an acknowledgement, so no body field is required. */
+	export interface StepBackResponse extends Response {
+	}
+
+	/** RestartFrame request; value of command field is "restartFrame".
+		The request restarts execution of the specified stackframe.
+		The debug adapter first sends the RestartFrameResponse and then a StoppedEvent (event type 'restart') after the restart has completed.
+	*/
+	export interface RestartFrameRequest extends Request {
+		arguments: RestartFrameArguments;
+	}
+	/** Arguments for "restartFrame" request. */
+	export interface RestartFrameArguments {
+		/** Restart this stackframe. */
+		frameId: number;
+	}
+	/** Response to "restartFrame" request. This is just an acknowledgement, so no body field is required. */
+	export interface RestartFrameResponse extends Response {
+	}
+
+	/** Goto request; value of command field is "goto".
+		The request sets the location where the debuggee will continue to run.
+		This makes it possible to skip the execution of code or to executed code again.
+		The code between the current location and the goto target is not executed but skipped.
+		The debug adapter first sends the GotoResponse and then a StoppedEvent (event type 'goto').
+	*/
+	export interface GotoRequest extends Request {
+		arguments: GotoArguments;
+	}
+	/** Arguments for "goto" request. */
+	export interface GotoArguments {
+		/** Set the goto target for this thread. */
+		threadId: number;
+		/** The location where the debuggee will continue to run. */
+		targetId: number;
+	}
+	/** Response to "goto" request. This is just an acknowledgement, so no body field is required. */
+	export interface GotoResponse extends Response {
+	}
+
 	/** Pause request; value of command field is "pause".
 		The request suspenses the debuggee.
-		penDebug will respond with a StoppedEvent (event type 'pause') after a successful 'pause' command.
+		The debug adapter first sends the PauseResponse and then a StoppedEvent (event type 'pause') after the thread has been paused successfully.
 	*/
 	export interface PauseRequest extends Request {
 		arguments: PauseArguments;
@@ -418,7 +513,8 @@ declare module DebugProtocol {
 	}
 
 	/** Variables request; value of command field is "variables".
-		Retrieves all children for the given variable reference.
+		Retrieves all child variables for the given variable reference.
+		An optional filter can be used to limit the fetched children to either named or indexed children.
 	*/
 	export interface VariablesRequest extends Request {
 		arguments: VariablesArguments;
@@ -427,12 +523,41 @@ declare module DebugProtocol {
 	export interface VariablesArguments {
 		/** The Variable reference. */
 		variablesReference: number;
+		/** Optional filter to limit the child variables to either named or indexed. If ommited, both types are fetched. */
+		filter?: "indexed" | "named";
+		/** The index of the first variable to return; if omitted children start at 0. */
+		start?: number;
+		/** The number of variables to return. If count is missing or 0, all variables are returned. */
+		count?: number;
 	}
 	/** Response to "variables" request. */
 	export interface VariablesResponse extends Response {
 		body: {
-			/** All children for the given variable reference */
+			/** All (or a range) of variables for the given variable reference. */
 			variables: Variable[];
+		};
+	}
+
+	/** setVariable request; value of command field is "setVariable".
+		Set the variable with the given name in the variable container to a new value.
+	*/
+	export interface SetVariableRequest extends Request {
+		arguments: SetVariableArguments;
+	}
+	/** Arguments for "setVariable" request. */
+	export interface SetVariableArguments {
+		/** The reference of the variable container. */
+		variablesReference: number;
+		/** The name of the variable. */
+		name: string;
+		/** The value of the variable. */
+		value: string;
+	}
+	/** Response to "setVariable" request. */
+	export interface SetVariableResponse extends Response {
+		body: {
+			/** the new value of the variable. */
+			value: string;
 		};
 	}
 
@@ -452,6 +577,8 @@ declare module DebugProtocol {
 		body: {
 			/** Content of the source reference */
 			content: string;
+			/** Optional content type (mime type) of the source. */
+			mimeType?: string;
 		};
 	}
 
@@ -465,6 +592,29 @@ declare module DebugProtocol {
 		body: {
 			/** All threads. */
 			threads: Thread[];
+		};
+	}
+
+	/**
+	 * Modules can be retrieved from the debug adapter with the ModulesRequest which can either return all modules or a range of modules to support paging.
+	 */
+	export interface ModulesRequest extends Request {
+		arguments: ModulesArguments;
+	}
+	/** Arguments for "modules" request. */
+	export interface ModulesArguments {
+		/** The index of the first module to return; if omitted modules start at 0. */
+		startModule?: number;
+		/** The number of modules to return. If moduleCount is not specified or 0, all modules are returned. */
+		moduleCount?: number;
+	}
+	/** Response to "modules" request. */
+	export interface ModulesResponse extends Response {
+		body: {
+			/** All modules or range of modules. */
+			modules: Module[];
+			/** The total number of modules available. */
+			totalModules?: number;
 		};
 	}
 
@@ -487,11 +637,101 @@ declare module DebugProtocol {
 	/** Response to "evaluate" request. */
 	export interface EvaluateResponse extends Response {
 		body: {
-			/** The result of the evaluate. */
+			/** The result of the evaluate request. */
 			result: string;
+			/** The optional type of the evaluate result. */
+			type?: string;
 			/** If variablesReference is > 0, the evaluate result is structured and its children can be retrieved by passing variablesReference to the VariablesRequest */
 			variablesReference: number;
+			/** The number of named child variables.
+				The client can use this optional information to present the variables in a paged UI and fetch them in chunks. */
+			namedVariables?: number;
+			/** The number of indexed child variables.
+				The client can use this optional information to present the variables in a paged UI and fetch them in chunks. */
+			indexedVariables?: number;
 		};
+	}
+
+	/** StepInTargets request; value of command field is "stepInTargets".
+		This request retrieves the possible stepIn targets for the specified stack frame.
+		These targets can be used in the "stepIn" request.
+		The StepInTargets may only be called if the "supportsStepInTargetsRequest" capability exists and is true.
+	 */
+	export interface StepInTargetsRequest extends Request {
+		arguments: StepInTargetsArguments;
+	}
+	/** Arguments for "stepInTargets" request. */
+	export interface StepInTargetsArguments {
+		/** The stack frame for which to retrieve the possible stepIn targets. */
+		frameId: number;
+	}
+	/** Response to "stepInTargets" request. */
+	export interface StepInTargetsResponse extends Response {
+		body: {
+			/** The possible stepIn targets of the specified source location. */
+			targets: StepInTarget[];
+		};
+	}
+
+	/** GotoTargets request; value of command field is "gotoTargets".
+		This request retrieves the possible goto targets for the specified source location.
+		These targets can be used in the "goto" request.
+		The GotoTargets request may only be called if the "supportsGotoTargetsRequest" capability exists and is true.
+	 */
+	export interface GotoTargetsRequest extends Request {
+		arguments: GotoTargetsArguments;
+	}
+	/** Arguments for "gotoTargets" request. */
+	export interface GotoTargetsArguments {
+		/** The source location for which the goto targets are determined. */
+		source: Source;
+		/** The line location for which the goto targets are determined. */
+		line: number;
+		/** An optional column location for which the goto targets are determined. */
+		column?: number;
+	}
+	/** Response to "gotoTargets" request. */
+	export interface GotoTargetsResponse extends Response {
+		body: {
+			/** The possible goto targets of the specified location. */
+			targets: GotoTarget[];
+		};
+	}
+
+	/** EXPERIMENTAL, DO NOT USE!
+		CompletionsRequest request; value of command field is "completions".
+		Returns a list of possible completions for a given caret position and text.
+		The CompletionsRequest may only be called if the "supportsCompletionsRequest" capability exists and is true.
+	 */
+	export interface CompletionsRequest extends Request {
+		arguments: CompletionsArguments;
+	}
+	/** Arguments for "completions" request. */
+	export interface CompletionsArguments {
+		/** One or more source lines. Typically this is the text a user has typed into the debug console before he asked for completion. */
+		text: string;
+		/** The character position for which to determine the completion proposals. */
+		column: number;
+		/** An optional line for which to determine the completion proposals. If missing the first line of the text is assumed. */
+		line?: number;
+	}
+	/** Response to "completions" request. */
+	export interface CompletionsResponse extends Response {
+		body: {
+			/** The possible completions for . */
+			targets: CompletionItem[];
+		};
+	}
+
+	export interface CompletionItem {
+		/** The label of this completion item. By default this is also the text that is inserted when selecting this completion. */
+		label: string;
+		/** If text is not falsy then it is inserted instead of the label. */
+		text?: string;
+		/** When a completion is selected it replaces 'length' characters starting at 'start' in the text passed to the CompletionsRequest.
+			If missing the frontend will try to determine these values heuristically. */
+		start?: number;
+		length?: number;
 	}
 
 	//---- Types
@@ -508,6 +748,18 @@ declare module DebugProtocol {
 		supportsEvaluateForHovers?: boolean;
 		/** Available filters for the setExceptionBreakpoints request. */
 		exceptionBreakpointFilters?: ExceptionBreakpointsFilter[];
+		/** The debug adapter supports stepping back. */
+		supportsStepBack?: boolean;
+		/** The debug adapter supports setting a variable to a value. */
+		supportsSetVariable?: boolean;
+		/** The debug adapter supports restarting a frame. */
+		supportsRestartFrame?: boolean;
+		/** The debug adapter supports the gotoTargetsRequest. */
+		supportsGotoTargetsRequest?: boolean;
+		/** The debug adapter supports the stepInTargetsRequest. */
+		supportsStepInTargetsRequest?: boolean;
+		/** The debug adapter supports the completionsRequest. */
+		supportsCompletionsRequest?: boolean;
 	}
 
 	/** An ExceptionBreakpointsFilter is shown in the UI as an option for configuring how exceptions are dealt with. */
@@ -539,6 +791,66 @@ declare module DebugProtocol {
 		urlLabel?: string;
 	}
 
+	/**
+	 * A Module object represents a row in the modules view.
+	 * Two attributes are mandatory: an id identifies a module in the modules view and is used in a ModuleEvent for identifying a module for adding, updating or deleting.
+	 * The name is used to minimally render the module in the UI.
+	 *
+	 * Additional attributes can be added to the module. They will show up in the module View if they have a corresponding ColumnDescriptor.
+	 *
+	 * To avoid an unnecessary proliferation of additional attributes with similar semantics but different names
+	 * we recommend to re-use attributes from the 'recommended' list below first, and only introduce new attributes if nothing appropriate could be found.
+	 */
+	export interface Module {
+		/** Unique identifier for the module. */
+		id: number | string;
+		/** A name of the module. */
+		name: string;
+
+		// optional but recommended attributes.
+		// always try to use these first before introducing additional attributes.
+
+		/** Logical full path to the module. The exact definition is implementation defined, but usually this would be a full path to the on-disk file for the module. */
+		path?: string
+		/** True if the module is optimized. */
+		isOptimized?: boolean
+		/** True if the module is considered 'user code' by a debugger that supports 'Just My Code'. */
+		isUserCode?: boolean
+		/** Version of Module. */
+		version? : string
+		/** User understandable description of if symbols were found for the module (ex: 'Symbols Loaded', 'Symbols not found', etc */
+		symbolStatus?: string
+		/** Logical full path to the symbol file. The exact definition is implementation defined. */
+		symbolFilePath?: string
+		/** Module created or modified. */
+		dateTimeStamp?: string
+		/** Address range covered by this module. */
+		addressRange?: string
+	}
+
+	/**
+	 * A ColumnDescriptor specifies what module attribute to show in a column of the ModulesView, how to format it, and what the column's label should be.
+	 * It is only used if the underlying UI actually supports this level of customization.
+	 */
+	export interface ColumnDescriptor {
+		/** Name of the attribute rendered in this column. */
+		attributeName: string;
+		/** Header UI label of column. */
+		label: string;
+		/** Format to use for the rendered values in this column. TBD how the format strings looks like. */
+		format: string;
+		/** Width of this column in characters (hint only). */
+		width: number;
+	}
+
+	/**
+	 * The ModulesViewDescriptor is the container for all declarative configuration options of a ModuleView.
+	 * For now it only specifies the columns to be shown in the modules view.
+	 */
+	export interface ModulesViewDescriptor {
+		columns: ColumnDescriptor[];
+	}
+
 	/** A Thread */
 	export interface Thread {
 		/** Unique identifier for the thread. */
@@ -563,7 +875,7 @@ declare module DebugProtocol {
 
 	/** A Stackframe contains the source location. */
 	export interface StackFrame {
-		/** An identifier for the stack frame. This id can be used to retrieve the scopes of the frame with the 'scopesRequest'. */
+		/** An identifier for the stack frame. It must be unique across all threads. This id can be used to retrieve the scopes of the frame with the 'scopesRequest' or to restart the execution of a stackframe. */
 		id: number;
 		/** The name of the stack frame, typically a method name */
 		name: string;
@@ -573,6 +885,10 @@ declare module DebugProtocol {
 		line: number;
 		/** The column within the line. If source is null or doesn't exist, column is 0 and must be ignored. */
 		column: number;
+		/** An optional end line of the range covered by the stack frame. */
+		endLine?: number;
+		/** An optional end column of the range covered by the stack frame. */
+		endColumn?: number;
 	}
 
 	/** A Scope is a named container for variables. */
@@ -581,20 +897,40 @@ declare module DebugProtocol {
 		name: string;
 		/** The variables of this scope can be retrieved by passing the value of variablesReference to the VariablesRequest. */
 		variablesReference: number;
+		/** The number of named variables in this scope.
+			The client can use this optional information to present the variables in a paged UI and fetch them in chunks. */
+		namedVariables?: number;
+		/** The number of indexed variables in this scope.
+			The client can use this optional information to present the variables in a paged UI and fetch them in chunks. */
+		indexedVariables?: number;
 		/** If true, the number of variables in this scope is large or expensive to retrieve. */
 		expensive: boolean;
 	}
 
 	/** A Variable is a name/value pair.
+		Optionally a variable can have a 'type' that is shown if space permits or when hovering over the variable's name.
+		An optional 'kind' is used to render additional properties of the variable, e.g. different icons can be used to indicate that a variable is public or private.
 		If the value is structured (has children), a handle is provided to retrieve the children with the VariablesRequest.
+		If the number of children is large, the number should be returned via the optional 'totalVariables' attribute.
+		The client can use this optional information to present the children in a paged UI and fetch them in chunks.
 	*/
 	export interface Variable {
-		/** The variable's name */
+		/** The variable's name. */
 		name: string;
+		/** The variable's type. */
+		type?: string;
 		/** The variable's value. For structured objects this can be a multi line text, e.g. for a function the body of a function. */
 		value: string;
+		/** Properties of a variable that can be used to determine how to render the variable in the UI. Format of the string value: TBD. */
+		kind?: string;
 		/** If variablesReference is > 0, the variable is structured and its children can be retrieved by passing variablesReference to the VariablesRequest. */
 		variablesReference: number;
+		/** The number of named child variables in this scope.
+			The client can use this optional information to present the children in a paged UI and fetch them in chunks. */
+		namedVariables?: number;
+		/** The number of indexed child variables in this scope.
+			The client can use this optional information to present the children in a paged UI and fetch them in chunks. */
+		indexedVariables?: number;
 	}
 
 	/** Properties of a breakpoint passed to the setBreakpoints request.
@@ -628,9 +964,41 @@ declare module DebugProtocol {
 		message?: string;
 		/** The source where the breakpoint is located. */
 		source?: Source;
-		/** The actual line of the breakpoint. */
+		/** The start line of the actual range covered by the breakpoint. */
 		line?: number;
-		/** The actual column of the breakpoint. */
+		/** An optional start column of the actual range covered by the breakpoint. */
 		column?: number;
+		/** An optional end line of the actual range covered by the breakpoint. */
+		endLine?: number;
+		/**  An optional end column of the actual range covered by the breakpoint. If no end line is given, then the end column is assumed to be in the start line. */
+		endColumn?: number;
+	}
+
+	/** A StepInTarget can be used in the 'stepIn' request and determines into
+	 *  which single target the stepIn request should step.
+	 */
+	export interface StepInTarget {
+		/** Unique identifier for a stepIn target. */
+		id: number;
+		/** The name of the stepIn target (shown in the UI). */
+ 		label: string;
+	}
+
+	/** A GotoTarget describes a code location that can be used as a target in the 'goto' request.
+		The possible goto targets can be determined via the 'gotoTargets' request.
+	 */
+	export interface GotoTarget {
+		/** Unique identifier for a goto target. This is used in the goto request. */
+		id: number;
+		/** The name of the goto target (shown in the UI). */
+ 		label: string;
+		/** The line of the goto target. */
+		line: number;
+		/** An optional column of the goto target. */
+		column?: number;
+		/** An optional end line of the range covered by the goto target. */
+		endLine?: number;
+		/** An optional end column of the range covered by the goto target. */
+		endColumn?: number;
 	}
 }

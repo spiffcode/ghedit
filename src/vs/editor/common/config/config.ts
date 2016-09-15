@@ -7,34 +7,29 @@
 import {KeyCode, KeyMod} from 'vs/base/common/keyCodes';
 import {IEditorService} from 'vs/platform/editor/common/editor';
 import {ServicesAccessor} from 'vs/platform/instantiation/common/instantiation';
-import {IKeybindings, KbExpr} from 'vs/platform/keybinding/common/keybindingService';
+import {IKeybindings, KbExpr} from 'vs/platform/keybinding/common/keybinding';
 import {ICommandDescriptor, KeybindingsRegistry} from 'vs/platform/keybinding/common/keybindingsRegistry';
+import {ICommandHandlerDescription} from 'vs/platform/commands/common/commands';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import {ICodeEditorService} from 'vs/editor/common/services/codeEditorService';
+import {ICommandHandler} from 'vs/platform/commands/common/commands';
 
 const H = editorCommon.Handler;
+const D = editorCommon.CommandDescription;
 
-export function findFocusedEditor(commandId: string, accessor: ServicesAccessor, args: any, complain: boolean): editorCommon.ICommonCodeEditor {
-	let codeEditorService = accessor.get(ICodeEditorService);
-	let editorId = args.context.editorId;
-	if (!editorId) {
-		if (complain) {
-			console.warn('Cannot execute ' + commandId + ' because no editor is focused.');
-		}
-		return null;
-	}
-	let editor = codeEditorService.getCodeEditor(editorId);
+export function findFocusedEditor(commandId: string, accessor: ServicesAccessor, complain: boolean): editorCommon.ICommonCodeEditor {
+	let editor = accessor.get(ICodeEditorService).getFocusedCodeEditor();
 	if (!editor) {
 		if (complain) {
-			console.warn('Cannot execute ' + commandId + ' because editor `' + editorId + '` could not be found.');
+			console.warn('Cannot execute ' + commandId + ' because no code editor is focused.');
 		}
 		return null;
 	}
 	return editor;
 }
 
-export function withCodeEditorFromCommandHandler(commandId: string, accessor: ServicesAccessor, args: any, callback: (editor:editorCommon.ICommonCodeEditor) => void): void {
-	let editor = findFocusedEditor(commandId, accessor, args, true);
+export function withCodeEditorFromCommandHandler(commandId: string, accessor: ServicesAccessor, callback: (editor:editorCommon.ICommonCodeEditor) => void): void {
+	let editor = findFocusedEditor(commandId, accessor, true);
 	if (editor) {
 		callback(editor);
 	}
@@ -57,53 +52,57 @@ export function getActiveEditor(accessor: ServicesAccessor): editorCommon.ICommo
 }
 
 function triggerEditorHandler(handlerId: string, accessor: ServicesAccessor, args: any): void {
-	withCodeEditorFromCommandHandler(handlerId, accessor, args, (editor) => {
+	withCodeEditorFromCommandHandler(handlerId, accessor, (editor) => {
 		editor.trigger('keyboard', handlerId, args);
 	});
 }
 
-function registerCoreCommand(handlerId: string, kb: IKeybindings, weight: number = KeybindingsRegistry.WEIGHT.editorCore(), context?: KbExpr): void {
+function registerCoreCommand(handlerId: string, kb: IKeybindings, weight?: number, when?: KbExpr, description?: ICommandHandlerDescription): void {
 	let desc: ICommandDescriptor = {
 		id: handlerId,
 		handler: triggerEditorHandler.bind(null, handlerId),
-		weight: weight,
-		context: (context ? context : KbExpr.has(editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS)),
+		weight: weight ? weight : KeybindingsRegistry.WEIGHT.editorCore(),
+		when: (when ? when : KbExpr.has(editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS)),
 		primary: kb.primary,
 		secondary: kb.secondary,
 		win: kb.win,
 		mac: kb.mac,
-		linux: kb.linux
+		linux: kb.linux,
+		description: description
 	};
 	KeybindingsRegistry.registerCommandDesc(desc);
 }
 
-function registerCoreDispatchCommand2(handlerId: string) {
+function registerOverwritableCommand(handlerId:string, handler:ICommandHandler): void {
 	let desc: ICommandDescriptor = {
 		id: handlerId,
-		handler: triggerEditorHandler.bind(null, handlerId),
+		handler: handler,
 		weight: KeybindingsRegistry.WEIGHT.editorCore(),
-		context: null,
+		when: null,
 		primary: 0
 	};
 	KeybindingsRegistry.registerCommandDesc(desc);
 
 	let desc2: ICommandDescriptor = {
 		id: 'default:' + handlerId,
-		handler: (accessor: ServicesAccessor, args: any) => {
-			withCodeEditorFromCommandHandler(handlerId, accessor, args, (editor) => {
-				editor.trigger('keyboard', handlerId, args[0]);
-			});
-		},
+		handler: handler,
 		weight: KeybindingsRegistry.WEIGHT.editorCore(),
-		context: null,
+		when: null,
 		primary: 0
 	};
 	KeybindingsRegistry.registerCommandDesc(desc2);
 }
-registerCoreDispatchCommand2(H.Type);
-registerCoreDispatchCommand2(H.ReplacePreviousChar);
-registerCoreDispatchCommand2(H.Paste);
-registerCoreDispatchCommand2(H.Cut);
+
+function registerCoreDispatchCommand(handlerId: string): void {
+	registerOverwritableCommand(handlerId, triggerEditorHandler.bind(null, handlerId));
+}
+registerCoreDispatchCommand(H.Type);
+registerCoreDispatchCommand(H.ReplacePreviousChar);
+registerCoreDispatchCommand(H.Paste);
+registerCoreDispatchCommand(H.Cut);
+
+registerOverwritableCommand(H.CompositionStart, () => {});
+registerOverwritableCommand(H.CompositionEnd, () => {});
 
 function getMacWordNavigationKB(shift:boolean, key:KeyCode): number {
 	// For macs, word navigation is based on the alt modifier
@@ -161,6 +160,9 @@ function getWordNavigationKB(shift:boolean, key:KeyCode): number {
 // Control+l => show_at_center
 // Control+Command+d => noop
 // Control+Command+shift+d => noop
+
+// Register cursor commands
+registerCoreCommand(H.CursorMove, { primary: null }, null, null, D.CursorMove);
 
 registerCoreCommand(H.CursorLeft, {
 	primary: KeyCode.LeftArrow,
@@ -239,10 +241,14 @@ registerCoreCommand(H.ScrollLineDown, {
 });
 
 registerCoreCommand(H.ScrollPageUp, {
-	primary: KeyMod.CtrlCmd | KeyCode.PageUp
+	primary: KeyMod.CtrlCmd | KeyCode.PageUp,
+	win: { primary: KeyMod.Alt | KeyCode.PageUp },
+	linux: { primary: KeyMod.Alt | KeyCode.PageUp }
 });
 registerCoreCommand(H.ScrollPageDown, {
-	primary: KeyMod.CtrlCmd | KeyCode.PageDown
+	primary: KeyMod.CtrlCmd | KeyCode.PageDown,
+	win: { primary: KeyMod.Alt | KeyCode.PageDown },
+	linux: { primary: KeyMod.Alt | KeyCode.PageDown }
 });
 
 registerCoreCommand(H.CursorColumnSelectLeft, {
@@ -384,13 +390,11 @@ registerCoreCommand(H.Redo, {
 function selectAll(accessor: ServicesAccessor, args: any): void {
 	let HANDLER = editorCommon.Handler.SelectAll;
 
-	// If editor text focus
-	if (args.context[editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS]) {
-		let focusedEditor = findFocusedEditor(HANDLER, accessor, args, false);
-		if (focusedEditor) {
-			focusedEditor.trigger('keyboard', HANDLER, args);
-			return;
-		}
+	let focusedEditor = findFocusedEditor(HANDLER, accessor, false);
+	// Only if editor text focus (i.e. not if editor has widget focus).
+	if (focusedEditor && focusedEditor.isFocused()) {
+		focusedEditor.trigger('keyboard', HANDLER, args);
+		return;
 	}
 
 	// Ignore this action when user is focussed on an element that allows for entering text
@@ -403,6 +407,7 @@ function selectAll(accessor: ServicesAccessor, args: any): void {
 	// Redirecting to last active editor
 	let activeEditor = getActiveEditor(accessor);
 	if (activeEditor) {
+		activeEditor.focus();
 		activeEditor.trigger('keyboard', HANDLER, args);
 		return;
 	}
@@ -411,6 +416,6 @@ KeybindingsRegistry.registerCommandDesc({
 	id: 'editor.action.selectAll',
 	handler: selectAll,
 	weight: KeybindingsRegistry.WEIGHT.editorCore(),
-	context: null,
+	when: KbExpr.has(editorCommon.KEYBINDING_CONTEXT_EDITOR_TEXT_FOCUS),
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_A
 });
