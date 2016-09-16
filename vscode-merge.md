@@ -22,7 +22,7 @@ git pull https://github.com/Microsoft/vscode.git release/1.1
 # One by one, "three way merge" vscode changes into our forked files.
 # Forked file headers indicate the version hash and file they were forked from.
 # E.g. <hash of version at time of fork>:<file>. Use this to get the common ancestor.
-git show 31ce12f023580d67a66d14843e7f9983caadbe56:./src/vs/workbench/services/files/electron-browser/fileService.ts >../ghcode/src/forked/fileService.root.ts 
+git show 31ce12f023580d67a66d14843e7f9983caadbe56:./src/vs/workbench/services/files/electron-browser/fileService.ts >../ghcode/src/forked/fileService.root.ts
 
 # Do the three-way merge.
 cd ../ghcode/src/forked
@@ -32,7 +32,7 @@ diff3 -m fileService.ts fileService.root.ts ../vs/workbench/services/files/elect
 
 # Accept the merged file and clean up.
 cp fileService.merged.ts fileService.ts
-rm fileService.root.ts fileService.merged.ts 
+rm fileService.root.ts fileService.merged.ts
 
 # Merge the rest of the files (everything in the src/forked directory).
 
@@ -59,5 +59,17 @@ git push
 npm run push
 
 # Let everyone know they must update their vscode, build it, and clean build ghcode.
- 
+
+
+----
+# How to merge the merge branch back into master
+
+git checkout master
+git merge-base master merge-1.4
+<commit hash>
+git checkout <commit hash> .
+git commit -m 'Roll back 1.4 branch changes'
+git merge merge-1.4
+git push
+
 ```
