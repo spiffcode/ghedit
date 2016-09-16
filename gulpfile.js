@@ -151,6 +151,8 @@ gulp.task('clean', shell.task([
 
 gulp.task('pre-build', shell.task([
 	'cp index.html out-build',
+	'cp releasenotes.md out-build',
+	'cp documentation.md out-build',
 	'mkdir -p out-build/forked',
 	'cp src/forked/*.css out-build/forked',
 	'cp src/*.css out-build',

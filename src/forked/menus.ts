@@ -81,8 +81,8 @@ export class VSCodeMenu {
 			product: {
 				nameShort: 'GH Code',
 				nameLong: 'GH Code',
-				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.html',
-				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.html',
+				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.md',
+				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.md',
 				twitterUrl: 'https://twitter.com/ghcode',
 				requestFeatureUrl: 'https://github.com/spiffcode/ghcode/issues',
 				reportIssueUrl: 'https://github.com/spiffcode/ghcode/issues',
@@ -710,7 +710,7 @@ export class VSCodeMenu {
 		let gotoDefinition = this.createMenuItem(nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition"), 'editor.action.goToDeclaration');
 		let gotoLine = this.createMenuItem(nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line..."), 'workbench.action.gotoLine');
 		let gotoRepo = this.createMenuItem(nls.localize('miGotoRepository', "Go to &&Repository..."), 'workbench.action.github.chooseRepository');
-		let gotoRef = this.createMenuItem(nls.localize('miGotoReference', "Go to &&Branch or Tag..."), 'workbench.action.github.chooseReference');		
+		let gotoRef = this.createMenuItem(nls.localize('miGotoReference', "Go to &&Branch or Tag..."), 'workbench.action.github.chooseReference');
 
 		[
 			back,
