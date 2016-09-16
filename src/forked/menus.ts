@@ -710,6 +710,7 @@ export class VSCodeMenu {
 		let gotoDefinition = this.createMenuItem(nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition"), 'editor.action.goToDeclaration');
 		let gotoLine = this.createMenuItem(nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line..."), 'workbench.action.gotoLine');
 		let gotoRepo = this.createMenuItem(nls.localize('miGotoRepository', "Go to &&Repository..."), 'workbench.action.github.chooseRepository');
+		let gotoRef = this.createMenuItem(nls.localize('miGotoReference', "Go to &&Branch or Tag..."), 'workbench.action.github.chooseReference');		
 
 		[
 			back,
@@ -724,7 +725,8 @@ export class VSCodeMenu {
 			gotoSymbol,
 			gotoDefinition,
 			gotoLine,
-			gotoRepo
+			gotoRepo,
+			gotoRef
 		].forEach(item => gotoMenu.append(item));
 	}
 
