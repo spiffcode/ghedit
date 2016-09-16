@@ -30,11 +30,15 @@ export class UserNavbarItem implements INavbarItem {
 	// If the user is signed out show them a "Sign In" button.
 	// If they're signed in show them a menu that includes a "Sign Out" item.
 	public render(el: HTMLElement): IDisposable {
+		dom.addClass(el, 'navbar-entry');
 		let user = this.githubService.getAuthenticatedUserInfo();
 
 		if (!user) {
 			return this.renderSignedOut(el);
 		}
+
+		let	container = document.createElement('a');
+		el.appendChild(container);
 
 		let actions = [
 			// TODO: string localization
@@ -56,7 +60,7 @@ export class UserNavbarItem implements INavbarItem {
 			}),
 		];
 
-		return this.instantiationService.createInstance(DropdownMenu, el, {
+		return this.instantiationService.createInstance(DropdownMenu, container, {
 			tick: true,
 			label: user.login,
 			contextMenuProvider: this.contextMenuService,

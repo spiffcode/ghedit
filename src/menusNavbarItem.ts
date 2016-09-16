@@ -26,6 +26,7 @@ import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/edito
 import types = require('vs/base/common/types');
 import {toErrorMessage} from 'vs/base/common/errors';
 import nls = require('vs/nls');
+import dom = require('vs/base/browser/dom');
 
 export class MenusNavbarItem implements INavbarItem {
 	constructor(
@@ -42,7 +43,8 @@ export class MenusNavbarItem implements INavbarItem {
 	// If the user is signed out show them a "Sign In" button.
 	// If they're signed in show them a menu that includes a "Sign Out" item.
 	public render(el: HTMLElement): IDisposable {
-		let menusContainer = document.createElement('div');
+		dom.addClass(el, 'navbar-entry');
+		let menusContainer = document.createElement('a');
 		el.appendChild(menusContainer);
 
 		const items = Menu.getApplicationMenu().items;
