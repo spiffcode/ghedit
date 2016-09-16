@@ -110,6 +110,8 @@ gulp.task('clean-minified-ghcode', util.rimraf('out-build-min'));
 gulp.task('minify-ghcode', ['clean-minified-ghcode', 'optimize-ghcode'], common.minifyTask('out-build-opt', 'out-build-min', true));
 gulp.task('build-min', ['minify-ghcode'], shell.task([
 	'cp index.html out-build-min',
+	'cp documentation.md out-build-min',
+	'cp releasenotes.md out-build-min',
 	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/forked/workbench.main.js > /tmp/workbench.main.js',
 	'mv /tmp/workbench.main.js out-build-min/forked/workbench.main.js',
 ]));
