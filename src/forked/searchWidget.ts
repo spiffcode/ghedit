@@ -23,7 +23,7 @@ import Event, { Emitter } from 'vs/base/common/event';
 import { Builder } from 'vs/base/browser/builder';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/common/viewletService';
-import { isSearchViewletFocussed, appendKeyBindingLabel } from 'vs/workbench/parts/search/browser/searchActions';
+import { isSearchViewletFocussed, appendKeyBindingLabel } from 'forked/searchActions';
 import { CONTEXT_FIND_WIDGET_VISIBLE } from 'vs/editor/contrib/find/common/findController';
 
 export interface ISearchWidgetOptions {

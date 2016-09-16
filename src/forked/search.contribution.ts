@@ -28,7 +28,7 @@ import {KbExpr, IKeybindings} from 'vs/platform/keybinding/common/keybinding';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 import {IViewletService} from 'vs/workbench/services/viewlet/common/viewletService';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
-import {OpenSearchViewletAction, ReplaceInFilesAction} from 'vs/workbench/parts/search/browser/searchActions';
+import {OpenSearchViewletAction, ReplaceInFilesAction} from 'forked/searchActions';
 import {VIEWLET_ID} from 'vs/workbench/parts/search/common/constants';
 import { registerContributions as replaceContributions } from 'vs/workbench/parts/search/browser/replaceContributions';
 // import { registerContributions as searchWidgetContributions } from 'vs/workbench/parts/search/browser/searchWidget';

@@ -27,7 +27,7 @@ import {FindInput} from 'forked/findInput'; // Was 'vs/base/browser/ui/findinput
 import {ITree} from 'vs/base/parts/tree/browser/tree';
 import {Tree} from 'vs/base/parts/tree/browser/treeImpl';
 import {Scope} from 'vs/workbench/common/memento';
-import {OpenGlobalSettingsAction} from 'vs/workbench/browser/actions/openSettings';
+import {OpenGlobalSettingsAction} from 'forked/openSettings';
 import {UntitledEditorEvent, EventType as WorkbenchEventType} from 'vs/workbench/common/events';
 import {IEditorGroupService} from 'vs/workbench/services/group/common/groupService';
 import {getOutOfWorkspaceEditorResources} from 'vs/workbench/common/editor';

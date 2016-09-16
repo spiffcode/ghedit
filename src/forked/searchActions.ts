@@ -20,7 +20,7 @@ import { IReplaceService } from 'vs/workbench/parts/search/common/replace';
 import * as Constants from 'vs/workbench/parts/search/common/constants';
 import { CollapseAllAction as TreeCollapseAction } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { OpenGlobalSettingsAction } from 'vs/workbench/browser/actions/openSettings';
+import { OpenGlobalSettingsAction } from 'forked/openSettings';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Keybinding, KeyCode, KeyMod, CommonKeybindings } from 'vs/base/common/keyCodes';

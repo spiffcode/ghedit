@@ -101,7 +101,7 @@ import {MenusNavbarItem} from 'menusNavbarItem';
 import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
 import {WelcomePart} from 'welcomePart';
-import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbench/browser/actions/openSettings';
+import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'forked/openSettings';
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHCodeAction} from 'githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IAction} from 'vs/base/common/actions';
