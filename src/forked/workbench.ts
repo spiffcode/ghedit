@@ -353,7 +353,8 @@ export class Workbench implements IPartService {
 
 		// Empty workbench
 		else if (!this.workbenchParams.workspace) {
-			return TPromise.as([{ input: this.untitledEditorService.createOrGet() }]);
+			// DESKTOP: return TPromise.as([{ input: this.untitledEditorService.createOrGet() }]);
+			return TPromise.as(null);
 		}
 
 		return TPromise.as([]);
