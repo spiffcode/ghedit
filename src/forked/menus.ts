@@ -81,8 +81,8 @@ export class VSCodeMenu {
 			product: {
 				nameShort: 'GH Code',
 				nameLong: 'GH Code',
-				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.md',
-				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.md',
+				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.html',
+				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.html',
 				twitterUrl: 'https://twitter.com/ghcode',
 				requestFeatureUrl: 'https://github.com/spiffcode/ghcode/issues',
 				reportIssueUrl: 'https://github.com/spiffcode/ghcode/issues',
