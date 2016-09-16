@@ -40,8 +40,6 @@ export class MenusNavbarItem implements INavbarItem {
 	) {
 	}
 
-	// If the user is signed out show them a "Sign In" button.
-	// If they're signed in show them a menu that includes a "Sign Out" item.
 	public render(el: HTMLElement): IDisposable {
 		dom.addClass(el, 'navbar-entry');
 		let menusContainer = document.createElement('a');
