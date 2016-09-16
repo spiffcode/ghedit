@@ -43,7 +43,7 @@ var ghcodeResources = [
 	'out-build/forked/searchActions.js',
 	'out-build/forked/searchResultsView.js',
 	'out-build/forked/searchViewlet.js',
-	'out-build/forked/searchViewlet.css',
+	'out-build/forked/searchviewlet.css',
 	'out-build/forked/searchWidget.js',
 	'out-build/vs/workbench/parts/search/**/*.*',
 	'!**/test/**',
