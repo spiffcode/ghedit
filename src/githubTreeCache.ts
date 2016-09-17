@@ -48,10 +48,10 @@ export interface IGithubTreeCache
 {
     markDirty(): void,
     getFakeMtime() : number,
-    stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
-    lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void;
-    realpath(path: string, cb: (error: Error, result?: string) => void) : void,
-    readdir(path: string, callback: (error: Error, files?: string[]) => void): void,
+    stat(path: string, cb: (error: any, result?: IGithubTreeStat) => void): void;
+    lstat(path: string, cb: (error: any, result?: IGithubTreeStat) => void): void;
+    realpath(path: string, cb: (error: any, result?: string) => void) : void,
+    readdir(path: string, callback: (error: any, files?: string[]) => void): void,
 }
 
 export class GithubTreeCache implements IGithubTreeCache
@@ -187,35 +187,35 @@ export class GithubTreeCache implements IGithubTreeCache
         });
     }
 
-    public stat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
+    public stat(path: string, cb: (error: any, result?: IGithubTreeStat) => void): void {
         // stat follows symlinks
         this.refresh().then(() => {
             let entry = this.findEntry(path, true);
             if (!entry)
-                return cb(new Error('Cannot find file or directory.'));
+                return cb({ code: 'ENOENT' } );
             return cb(null, entry);
         }, () => {
-            return cb(new Error('Error contacting service.'));
+            return cb({ code: 'EINTR' });
         });
     }
 
-    public lstat(path: string, cb: (error: Error, result?: IGithubTreeStat) => void): void {
+    public lstat(path: string, cb: (error: any, result?: IGithubTreeStat) => void): void {
         // lstat does not follow symlinks
         this.refresh().then(() => {
             let entry = this.findEntry(path, false);
             if (!entry)
-                return cb(new Error('Cannot find file or directory.'));
+                return cb({ code: 'ENOENT' });
             return cb(null, entry);
         }, () => {
-            return cb(new Error('Error contacting service.'));
+            return cb({ code: 'EINTR' });
         });
     }
 
-    public realpath(path: string, cb: (error: Error, result?: string) => void) : void {
+    public realpath(path: string, cb: (error: any, result?: string) => void) : void {
         this.refresh().then(() => {
             let entry = this.findEntry(path, false);
             if (!entry)
-                return cb(new Error('Cannot find file or directory.'));
+                return cb({ code: 'ENOENT' });
 
             if ((entry.mode & S_IFMT) === S_IFLNK) {
                 if (entry.realpath)
@@ -223,18 +223,19 @@ export class GithubTreeCache implements IGithubTreeCache
             }
             return cb(null, path);
         }, () => {
-            return cb(new Error('Error contacting service.'));
+            return cb({ code: 'EINTR' });
         });
     }
 
-    public readdir(path: string, cb: (error: Error, files?: string[]) => void): void {
+    public readdir(path: string, cb: (error: any, files?: string[]) => void): void {
         this.refresh().then(() => {
             let entry = this.findEntry(path, true);
-            if (!entry)
-                return cb(new Error('Cannot find file or directory.'));
+            if (!entry) {
+                return cb({ code: 'ENOENT' });
+						}
 
             if ((entry.mode & S_IFMT) !== S_IFDIR) {
-                cb(new Error('This path is not a directory.'));
+                cb({ code: 'ENOTDIR' });
                 return;
             }
 
@@ -245,7 +246,7 @@ export class GithubTreeCache implements IGithubTreeCache
 
             cb(null, Object.keys(entry.children));
         }, () => {
-            return cb(new Error('Error contacting service.'));
+            return cb({ code: 'EINTR' });
         });
     }
 }

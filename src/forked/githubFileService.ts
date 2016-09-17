@@ -346,6 +346,21 @@ export class FileService implements IFileService {
 		});
 	}
 
+	private checkNotify(absolutePath: string) {
+		if (this.options.settingsNotificationPaths) {
+			let notify:boolean = false;
+			for (let i = 0; i < this.options.settingsNotificationPaths.length; i++) {
+				if (absolutePath === this.options.settingsNotificationPaths[i]) {
+					notify = true;
+					break;
+				}
+			}
+			if (notify) {
+				setTimeout(() => { this.eventEmitter.emit("settingsFileChanged"); }, 0);
+			}
+		}		
+	}
+
 	private updateGistContent(resource: uri, value: string, options: IUpdateContentOptions): TPromise<IFileStat> {
 		// 0 = '', 1 = '$gist', 2 = description, 3 = filename
 		let absolutePath = this.toAbsolutePath(resource);
@@ -383,18 +398,7 @@ export class FileService implements IFileService {
 						if (!addBom && encodingToWrite === encoding.UTF8) {
 							writeFilePromise = this.updateGist(info, parts[2], parts[3], value).then(() => {
 								// Is this one of the settings files that requires change notification?
-								if (this.options.settingsNotificationPaths) {
-									let notify:boolean = false;
-									for (let i = 0; i < this.options.settingsNotificationPaths.length; i++) {
-										if (absolutePath === this.options.settingsNotificationPaths[i]) {
-											notify = true;
-											break;
-										}
-									}
-									if (notify) {
-										setTimeout(() => { this.eventEmitter.emit("settingsFileChanged"); }, 0);
-									}
-								}
+								this.checkNotify(absolutePath);
 								return true;
 							}, (error: GithubError) => {
 								console.log('failed to gist.update ' + resource.toString(true));
@@ -464,8 +468,9 @@ export class FileService implements IFileService {
 						this.repo.write(this.ref, path, value, commitMessage, { encode: true }, (err: GithubError) => {
 							err ? e(err) : c(null);
 						});
-					}).then(() => {
+					}).then(() => {						
 						this.cache.markDirty();
+						this.checkNotify(absolutePath);
 						return;
 					}, (error: GithubError) => {
 						console.log('failed to repo.write ' + resource.toString(true));

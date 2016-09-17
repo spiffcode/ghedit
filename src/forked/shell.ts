@@ -493,7 +493,8 @@ export class WorkbenchShell {
 		fileService.updateOptions({
 			settingsNotificationPaths: [
 				this.configuration.env.appSettingsPath,
-				this.configuration.env.appKeybindingsPath
+				this.configuration.env.appKeybindingsPath,
+				'/.vscode/settings.json'
 			],
 			gistRegEx: (<IMainEnvironment>this.configuration.env).gistRegEx
 		});

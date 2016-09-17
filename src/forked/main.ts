@@ -200,7 +200,7 @@ function getWorkspace(environment: IMainEnvironment, repoInfo: any): IWorkspace 
 function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: IGithubService): winjs.TPromise<void> {
 	let eventService = new EventService();
 	let contextService = new WorkspaceContextService(eventService, workspace, configuration, options);
-	let configurationService = new ConfigurationService(contextService, eventService);
+	let configurationService = new ConfigurationService(contextService, eventService, githubService);
 
 	// Since the configuration service is one of the core services that is used in so many places, we initialize it
 	// right before startup of the workbench shell to have its data ready for consumers

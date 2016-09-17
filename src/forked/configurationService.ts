@@ -27,19 +27,32 @@ import {IDisposable} from 'vs/base/common/lifecycle';
 import {JSONPath} from 'vs/base/common/json';
 import {applyEdits} from 'vs/base/common/jsonFormatter';
 import {setProperty} from 'vs/base/common/jsonEdit';
-import fs = require('fs');
+// TODO: import fs = require('fs');
+import {IGithubService} from 'githubService';
+import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
+import {Github, Repository, Error as GithubError} from 'github';
+import paths = require('vs/base/common/paths');
+import baseMime = require('vs/base/common/mime');
 
 export class ConfigurationService extends CommonConfigurationService {
 
 	public _serviceBrand: any;
 
 	protected contextService: IWorkspaceContextService;
+	private githubService: IGithubService;
+	private cache: IGithubTreeCache;
 	private toDispose: IDisposable;
 
-	constructor(contextService: IWorkspaceContextService, eventService: IEventService) {
+	constructor(contextService: IWorkspaceContextService, eventService: IEventService, githubService: IGithubService) {
 		super(contextService, eventService);
 
+		this.githubService = githubService;
+		this.cache = this.githubService.getCache();
 		this.registerListeners();
+
+		this.eventService.addListener2("settingsFileChanged", () => {
+			this.loadConfiguration().then(() => this.handleConfigurationChange());
+		});		
 	}
 
 	protected registerListeners(): void {
@@ -65,21 +78,27 @@ export class ConfigurationService extends CommonConfigurationService {
 	}
 
 	protected resolveContent(resource: uri): TPromise<IContent> {
-		console.log('configurationService.resolveContent fs.readFile(\"' + resource.toString(true) + '\") unimplemented');
 		return new TPromise<IContent>((c, e) => {
-			e('configurationService.resolveContent not implemented');
+			this.cache.stat(resource.fsPath, (error: any, stat?: IGithubTreeStat) => {
+				if (error) {
+					e('Error loading ' + resource.fsPath);
+					return;
+				}
+				this.githubService.repo.getBlobRaw(stat.sha, (err: GithubError, content: string | boolean) => {
+					if (!err) {
+						// The GitHub API wrapper we uses returns the boolean true for content when there is none!!
+						c({ resource: resource, value: (content == true ? '' : <string>content) });
+					} else {
+						e('Error loading ' + resource.fsPath);
+					}
+				});
+			});
 		});
-		/* TODO:
-		return readFile(resource.fsPath).then(contents => ({resource, value: contents.toString()}));
-		*/
 	}
 
 	protected resolveStat(resource: uri): TPromise<IStat> {
-		console.log('configurationService.resolveStat extfs.readdir(\"' + resource.toString(true) + '\") unimplemented');
 		return new TPromise<IStat>((c, e) => {
-			e('configurationService.resolveStat not implemented');
-			/* TODO:
-			extfs.readdir(resource.fsPath, (error, children) => {
+			this.cache.readdir(resource.fsPath, (error, children) => {
 				if (error) {
 					if ((<any>error).code === 'ENOTDIR') {
 						c({
@@ -94,10 +113,11 @@ export class ConfigurationService extends CommonConfigurationService {
 						resource: resource,
 						isDirectory: true,
 						children: children.map((child) => {
+/*							
 							if (platform.isMacintosh) {
 								child = strings.normalizeNFC(child); // Mac: uses NFD unicode form on disk, but we want NFC
 							}
-
+*/
 							return {
 								resource: uri.file(paths.join(resource.fsPath, child))
 							};
@@ -105,7 +125,6 @@ export class ConfigurationService extends CommonConfigurationService {
 					});
 				}
 			});
-			*/
 		});
 	}
 
