@@ -83,7 +83,7 @@ export class VSCodeMenu {
 				nameLong: 'GH Code',
 				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.html',
 				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.html',
-				twitterUrl: 'https://twitter.com/ghcode',
+				twitterUrl: null,
 				requestFeatureUrl: 'https://github.com/spiffcode/ghcode/issues',
 				reportIssueUrl: 'https://github.com/spiffcode/ghcode/issues',
 				licenseUrl: 'https://github.com/spiffcode/ghcode/blob/master/LICENSE.txt',
