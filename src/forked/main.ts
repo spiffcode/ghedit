@@ -210,6 +210,15 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 		return domContentLoaded().then(() => {
 			timers.afterReady = new Date();
 
+			// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
+			// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
+			// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
+			// Does this have any terrible side-effects? Good question!
+			if (navigator.userAgent.indexOf('Trident/') >= 0 || navigator.userAgent.indexOf('Edge/') >= 0) {
+				document.body.style.width = '12345px';
+				document.body.style.height = '12345px';
+			}
+
 			// Open Shell
 			let beforeOpen = new Date();
 			let shell = new WorkbenchShell(document.body, workspace, {
