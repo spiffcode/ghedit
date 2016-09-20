@@ -143,9 +143,13 @@ export class GithubService implements IGithubService {
 		recentRepos.slice(0, RECENT_REPOS_COUNT);
 
 		// Save it out
-		let s = JSON.stringify(recentRepos);
-		window.sessionStorage.setItem('githubRecentRepos', s);
-		window.localStorage.setItem('lastGithubRecentRepos', s);
+		try {
+			let s = JSON.stringify(recentRepos);
+			window.sessionStorage.setItem('githubRecentRepos', s);
+			window.localStorage.setItem('lastGithubRecentRepos', s);
+		} catch (error) {
+			// Safari raises Quota Exceeded exception in Private Browsing mode.
+		}
 	}
 
 	public getRecentRepos(): string[] {
