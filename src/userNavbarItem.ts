@@ -43,10 +43,7 @@ export class UserNavbarItem implements INavbarItem {
 		let actions = [
 			// TODO: string localization
 			new Action('signOut', 'Sign Out', 'tight-menu-items', true, (event: any) => {
-				this.githubService.prepareSignOut();
-
-				// Refresh to the page to fully present the signed out state.
-				location.href = location.origin + location.pathname;
+				this.githubService.signOut();
 				return TPromise.as(true);
 			}),
 		];

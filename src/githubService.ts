@@ -36,7 +36,7 @@ export interface IGithubService {
 	authenticate(privateRepos: boolean);
 	openRepository(repo: string, ref?: string, isTag?: boolean): TPromise<any>;
 	getRecentRepos(): string[];
-	prepareSignOut(): void;
+	signOut(): void;
 }
 
 export class GithubService implements IGithubService {
@@ -169,7 +169,7 @@ export class GithubService implements IGithubService {
 		}		
 	}
 
-	public prepareSignOut() {
+	public signOut() {
 		var d = new Date();
 		d.setTime(d.getTime() - 1000);
 		document.cookie = 'githubToken=;expires=' + d.toUTCString();
@@ -177,13 +177,16 @@ export class GithubService implements IGithubService {
 		window.localStorage.removeItem('githubUser');
 		window.localStorage.removeItem('githubPassword');
 		window.localStorage.removeItem('lastGithubRepo');
-		window.localStorage.removeItem('lastGithubRecentRepo');
+		window.localStorage.removeItem('lastGithubRecentRepos');
 		window.localStorage.removeItem('lastGithubBranch');
 		window.localStorage.removeItem('lastGithubTag');
 		window.sessionStorage.removeItem('githubRepo');
 		window.sessionStorage.removeItem('githubRecentRepos');
 		window.sessionStorage.removeItem('githubBranch');
-		window.sessionStorage.removeItem('githubTag');		
+		window.sessionStorage.removeItem('githubTag');
+
+		// Refresh to the page to fully present the signed out state.
+		location.href = location.origin + location.pathname;				
 	}
 }
 
