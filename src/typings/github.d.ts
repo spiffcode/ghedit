@@ -119,6 +119,7 @@ declare module "github" {
 		avatar_url?: string;
 		name?: string;
 		email?: string;
+		type: string;
 	}
 
 	interface RepositoryInfo {

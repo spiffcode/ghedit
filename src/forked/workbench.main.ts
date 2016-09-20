@@ -43,6 +43,7 @@ import 'vs/workbench/parts/files/browser/files.contribution';
 
 import 'forked/search.contribution'; // Was 'vs/workbench/parts/search/browser/search.contribution'
 
+import 'github.contribution';
 
 // DESKTOP: import 'vs/workbench/parts/git/electron-browser/git.contribution';
 import 'vs/workbench/parts/git/browser/gitQuickOpen';

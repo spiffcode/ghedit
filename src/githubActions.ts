@@ -18,6 +18,7 @@ import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IMainEnvironment} from 'forked/main';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
+import {QuickOpenAction} from 'vs/workbench/browser/quickopen';
 
 export class AboutGHCodeAction extends Action {
 
@@ -45,48 +46,15 @@ export class AboutGHCodeAction extends Action {
 	}
 }
 
-export class ChooseRepositoryAction extends Action {
+export const OPEN_REPO_PREFIX = 'repo ';
+
+export class ChooseRepositoryAction extends QuickOpenAction {
 
 	public static ID = 'workbench.action.github.chooseRepository';
 	public static LABEL = 'Choose Repository';
 
-	constructor(
-		actionId: string,
-		actionLabel: string,
-		@IQuickOpenService private quickOpenService: IQuickOpenService,
-		@IGithubService private githubService: IGithubService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService
-	) {
-		super(actionId, actionLabel);
-	}
-
-	public run(): TPromise<any> {
-		let choices = new TPromise<string[]>((c, e) => {
-			// By default this api sorts by 'updated', which results in unexpected sort orders.
-			// Instead sort by last push time.
-			this.githubService.github.getUser().repos({sort: 'pushed', per_page: 1000 }, (err: Error, repos: RepositoryInfo[]) => {
-				if (err) {
-					e('Error contacting service.');
-				} else {
-					// Put the current repo at the top
-					let choices = repos.map(repo => repo.full_name).filter(name => name !== this.githubService.repoName);
-					if (this.githubService.repoName)
-						choices.splice(0, 0, this.githubService.repoName);
-					c(choices);
-				}
-			});
-		});
-
-		let options: IPickOptions = {
-				placeHolder: nls.localize('chooseRepository', 'Choose Repository'),
-				autoFocus: { autoFocusFirstEntry: true }
-		};
-
-		return this.quickOpenService.pick(choices, options).then((result) => {
-			if (result && result !== this.githubService.repoName) {
-				openRepository(result, <IMainEnvironment>this.contextService.getConfiguration().env);
-			}
-		});
+	constructor(actionId: string, actionLabel: string, @IQuickOpenService quickOpenService: IQuickOpenService) {
+		super(actionId, actionLabel, OPEN_REPO_PREFIX, quickOpenService);
 	}
 }
 

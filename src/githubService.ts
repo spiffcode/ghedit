@@ -12,6 +12,8 @@ import {TPromise} from 'vs/base/common/winjs.base';
 import {GithubTreeCache, IGithubTreeCache} from 'githubTreeCache';
 import {IMainEnvironment} from 'forked/main';
 
+const RECENT_REPOS_COUNT = 4;
+
 export var IGithubService = createDecorator<IGithubService>('githubService');
 
 export interface IGithubService {
@@ -33,6 +35,8 @@ export interface IGithubService {
 	getAuthenticatedUserInfo(): UserInfo;
 	authenticate(privateRepos: boolean);
 	openRepository(repo: string, ref?: string, isTag?: boolean): TPromise<any>;
+	getRecentRepos(): string[];
+	prepareSignOut(): void;
 }
 
 export class GithubService implements IGithubService {
@@ -119,6 +123,7 @@ export class GithubService implements IGithubService {
 				if (err) {
 					error(err);
 				} else {
+					this.addRecentRepo(this.repoName);
 					this.repoInfo = info;
 
 					// Don't support symlinks until githubFileService can load symlinked paths
@@ -127,6 +132,54 @@ export class GithubService implements IGithubService {
 				}
 			});
 		});
+	}
+
+	private addRecentRepo(repoName: string) {
+		// Add repoName first
+		let recentRepos = this.getRecentRepos().filter(repo => repo !== repoName);
+		recentRepos.splice(0, 0, repoName);
+
+		// Cap the list to RECENT_REPOS_COUNT entries
+		recentRepos.slice(0, RECENT_REPOS_COUNT);
+
+		// Save it out
+		let s = JSON.stringify(recentRepos);
+		window.sessionStorage.setItem('githubRecentRepos', s);
+		window.localStorage.setItem('lastGithubRecentRepos', s);
+	}
+
+	public getRecentRepos(): string[] {
+		// Grab the recent repos                                                                                                
+		let recentReposJson = window.sessionStorage.getItem('githubRecentRepos');                                                  
+		if (!recentReposJson) {                                                                                                
+			recentReposJson = window.localStorage.getItem('lastGithubRecentRepos');
+		}                                              
+	 
+		try {
+			let recentRepos = JSON.parse(recentReposJson);
+			if (!Array.isArray(recentRepos))
+				return [];
+			return recentRepos.filter((name => typeof name === 'string' && name.split('/').length === 2)).slice(0, RECENT_REPOS_COUNT);
+		} catch (error) {
+			return [];
+		}		
+	}
+
+	public prepareSignOut() {
+		var d = new Date();
+		d.setTime(d.getTime() - 1000);
+		document.cookie = 'githubToken=;expires=' + d.toUTCString();
+		window.localStorage.removeItem('githubToken');				
+		window.localStorage.removeItem('githubUser');
+		window.localStorage.removeItem('githubPassword');
+		window.localStorage.removeItem('lastGithubRepo');
+		window.localStorage.removeItem('lastGithubRecentRepo');
+		window.localStorage.removeItem('lastGithubBranch');
+		window.localStorage.removeItem('lastGithubTag');
+		window.sessionStorage.removeItem('githubRepo');
+		window.sessionStorage.removeItem('githubRecentRepos');
+		window.sessionStorage.removeItem('githubBranch');
+		window.sessionStorage.removeItem('githubTag');		
 	}
 }
 

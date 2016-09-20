@@ -76,6 +76,8 @@ function ghcodeLoaderConfig() {
 	result.paths.githubService = 'out-build/githubService';
 	result.paths.githubActions = 'out-build/githubActions';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
+	result.paths.openRepoHandler = 'out-build/openRepoHandler';
+	result.paths['github.contribution'] = 'out-build/github.contribution';
 	result.paths.userNavbarItem = 'out-build/userNavbarItem';
 	result.paths.welcomePart = 'out-build/welcomePart';
 	result.paths.menusNavbarItem = 'out-build/menusNavbarItem';

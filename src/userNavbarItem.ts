@@ -43,16 +43,7 @@ export class UserNavbarItem implements INavbarItem {
 		let actions = [
 			// TODO: string localization
 			new Action('signOut', 'Sign Out', 'tight-menu-items', true, (event: any) => {
-				window.localStorage.removeItem('githubToken');
-				var d = new Date();
-				d.setTime(d.getTime() - 1000);
-				document.cookie = 'githubToken=;expires=' + d.toUTCString();;
-				window.localStorage.removeItem('githubUser');
-				window.localStorage.removeItem('githubPassword');
-				window.sessionStorage.removeItem('githubRepo');
-				window.sessionStorage.removeItem('githuRef');
-				window.localStorage.removeItem('lastGithubRepo');
-				window.localStorage.removeItem('lastGithubRef');
+				this.githubService.prepareSignOut();
 
 				// Refresh to the page to fully present the signed out state.
 				location.href = location.origin + location.pathname;
