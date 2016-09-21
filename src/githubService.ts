@@ -104,7 +104,7 @@ export class GithubService implements IGithubService {
 	}
 
 	public authenticate(privateRepos: boolean) {
-		// If we're running on localhost authorize via the "GH Code localhost" application
+		// If we're running on localhost authorize via the "GHEdit localhost" application
 		// so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
 		// the authorization is done.
 		let client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
@@ -153,12 +153,12 @@ export class GithubService implements IGithubService {
 	}
 
 	public getRecentRepos(): string[] {
-		// Grab the recent repos                                                                                                
-		let recentReposJson = window.sessionStorage.getItem('githubRecentRepos');                                                  
-		if (!recentReposJson) {                                                                                                
+		// Grab the recent repos
+		let recentReposJson = window.sessionStorage.getItem('githubRecentRepos');
+		if (!recentReposJson) {
 			recentReposJson = window.localStorage.getItem('lastGithubRecentRepos');
-		}                                              
-	 
+		}
+
 		try {
 			let recentRepos = JSON.parse(recentReposJson);
 			if (!Array.isArray(recentRepos))
@@ -166,14 +166,14 @@ export class GithubService implements IGithubService {
 			return recentRepos.filter((name => typeof name === 'string' && name.split('/').length === 2)).slice(0, RECENT_REPOS_COUNT);
 		} catch (error) {
 			return [];
-		}		
+		}
 	}
 
 	public signOut() {
 		var d = new Date();
 		d.setTime(d.getTime() - 1000);
 		document.cookie = 'githubToken=;expires=' + d.toUTCString();
-		window.localStorage.removeItem('githubToken');				
+		window.localStorage.removeItem('githubToken');
 		window.localStorage.removeItem('githubUser');
 		window.localStorage.removeItem('githubPassword');
 		window.localStorage.removeItem('lastGithubRepo');
@@ -186,7 +186,7 @@ export class GithubService implements IGithubService {
 		window.sessionStorage.removeItem('githubTag');
 
 		// Refresh to the page to fully present the signed out state.
-		location.href = location.origin + location.pathname;				
+		location.href = location.origin + location.pathname;
 	}
 }
 

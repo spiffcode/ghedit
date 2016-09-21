@@ -165,12 +165,12 @@ export function enableBrowserHack(hack: BrowserHack) {
 		// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
 		// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
 		// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
-		// Does this have any terrible side-effects? Good question!				
+		// Does this have any terrible side-effects? Good question!
 		document.body.style.width = '12345px';
 		document.body.style.height = '12345px';
 		break;
 
-	case BrowserHack.MESSAGE_BOX_TEXT: 
+	case BrowserHack.MESSAGE_BOX_TEXT:
 		{
 			// Add new css rules / override existing ones. First create a style sheet.
 			// https://davidwalsh.name/add-rules-stylesheets
@@ -341,7 +341,7 @@ export class WorkbenchShell {
 				}
 
 				// This browser hack must be enabled once the workbench is loaded
-				enableBrowserHack(BrowserHack.TAB_DRAGGING);				
+				enableBrowserHack(BrowserHack.TAB_DRAGGING);
 			},
 
 			onServicesCreated: () => {
@@ -359,7 +359,7 @@ export class WorkbenchShell {
 				// Tell githubSearch about the editor service. Search needs to use IModels
 				// to perform accurate searches. Github's search is not robust enough (doesn't
 				// return line numbers, or all the matches) and is only used to get a list
-				// of matching uris. 
+				// of matching uris.
 				let editorService = <IWorkbenchEditorService>serviceCollection.get(IWorkbenchEditorService);
 				let searchService = <ISearchService>serviceCollection.get(ISearchService);
 				(<any>searchService).githubSearch.setEditorService(editorService);
@@ -405,7 +405,7 @@ export class WorkbenchShell {
 		}
 
 		this.navbarPart.addEntry({
-			text: '$(beaker)' + (this.isWelcomeMode() ? ' GH Code' : '') + (this.options.editor.readOnly ? ' (read only)' : ''),
+			text: '$(beaker)' + (this.isWelcomeMode() ? ' GHEdit' : '') + (this.options.editor.readOnly ? ' (read only)' : ''),
 			tooltip: AboutGHCodeAction.LABEL,
 			command: AboutGHCodeAction.ID,
 		}, NavbarAlignment.LEFT, 1000);

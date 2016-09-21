@@ -5,7 +5,7 @@
 See any of the existing forked files as an example.
 * Put the forked file in src/forked directory so everyone knows it's a fork.
 * Minimize changes to forked files to minimize merge conflicts.
-* Comment out, rather than delete, code which doesn't apply to GH Code.
+* Comment out, rather than delete, code which doesn't apply to GHEdit.
 VS Code changes within comment blocks will merge without conflicting.
 
 ### How To Merge A New Version Of Visual Studio Code

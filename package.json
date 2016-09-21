@@ -1,6 +1,6 @@
 {
-  "name": "ghcode",
-  "description": "GH Code",
+  "name": "ghedit",
+  "description": "GHEdit",
   "version": "0.0.1",
   "private": true,
   "dependencies": {},

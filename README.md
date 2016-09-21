@@ -1,4 +1,4 @@
-# GH Code
+# GHEdit
 
 #### INSTALLING
 ```bash
