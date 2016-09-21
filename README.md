@@ -68,12 +68,8 @@ M2: Public Release
 
 M3: Release followup
 * Move GHCode changes onto a vscode fork
-* JSON Schema intellisense
-* better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript)
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 * DM: clean up stuff
-* implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
-  Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
 
 #### BUGS
 
@@ -82,7 +78,6 @@ M1
 
 M2
 * DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
-* search within Command Palette barfs
 
 M3
 * Rename a file and keep commit history for that file
