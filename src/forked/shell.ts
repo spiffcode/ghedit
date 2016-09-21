@@ -139,6 +139,69 @@ fileActions.BaseFileAction.prototype._updateEnablement = function() {
 }
 
 /**
+ * Put code for browser specific hacks here.
+ */
+enum Browser {
+	IE = 0x1000,
+	EDGE = 0x2000
+}
+
+export enum BrowserHack {
+	EDITOR_MOUSE_CLICKS = 1 | Browser.IE | Browser.EDGE,
+	MESSAGE_BOX_TEXT = 2 | Browser.IE | Browser.EDGE,
+	TAB_DRAGGING = 3 | Browser.IE | Browser.EDGE
+}
+
+export function enableBrowserHack(hack: BrowserHack) {
+	// Check that this hack is for this browser
+	let isIE = navigator.userAgent.indexOf('Trident/') >= 0;
+	let isEdge = navigator.userAgent.indexOf('Edge/') >= 0;
+	if (isIE != ((hack & Browser.IE) != 0) && isEdge != ((hack & Browser.EDGE) != 0))
+		return;
+
+	switch (hack) {
+	case BrowserHack.EDITOR_MOUSE_CLICKS:
+		// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
+		// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
+		// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
+		// Does this have any terrible side-effects? Good question!				
+		document.body.style.width = '12345px';
+		document.body.style.height = '12345px';
+		break;
+
+	case BrowserHack.MESSAGE_BOX_TEXT: 
+		{
+			// Add new css rules / override existing ones. First create a style sheet.
+			// https://davidwalsh.name/add-rules-stylesheets
+			let style = document.createElement("style");
+			style.appendChild(document.createTextNode(""));
+			document.head.appendChild(style);
+
+			// Text in message boxes doesn't show due to how line-height affects display: block layout.
+			// According to CSS 2.1, Edge is correct and Chrome et al are wrong. Spec says "The baseline of an
+			// 'inline-block' is the baseline of its last line box in the normal flow, unless it has either no
+			// in-flow line boxes or if its 'overflow' property has a computed value other than 'visible', in
+			// which case the baseline is the bottom margin edge."
+			(<any>style.sheet).insertRule(".message-left-side.message-overflow-ellipsis { overflow: visible !important; }", 0);
+		}
+		break;
+
+	case BrowserHack.TAB_DRAGGING:
+		{
+			// Custom scrollbars get created when dragging tabs so that the tab container can scroll.
+			// On IE / Edge the actual scrollbars show instead. For now just forcefully deny overflow: scroll
+			// so the scrollbar doesn't appear
+			let divs = document.getElementsByClassName('tabs-container');
+			if (divs.length > 0) {
+				divs[0].removeAttribute('style');
+				divs[0].setAttribute('style', 'overflow: hidden !important');
+			}
+		}
+		break;
+	}
+}
+
+/**
  * The workbench shell contains the workbench with a rich header containing navigation and the activity bar.
  * With the Shell being the top level element in the page, it is also responsible for driving the layouting.
  */
@@ -262,6 +325,9 @@ export class WorkbenchShell {
 						promise.done(null, null);
 					}
 				}
+
+				// This browser hack must be enabled once the workbench is loaded
+				enableBrowserHack(BrowserHack.TAB_DRAGGING);				
 			},
 
 			onServicesCreated: () => {

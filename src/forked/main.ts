@@ -12,7 +12,7 @@
 
 import winjs = require('vs/base/common/winjs.base');
 // TODO: import {WorkbenchShell} from 'vs/workbench/electron-browser/shell';
-import {WorkbenchShell} from 'forked/shell';
+import {WorkbenchShell, enableBrowserHack, BrowserHack} from 'forked/shell';
 import {IOptions, IGlobalSettings} from 'vs/workbench/common/options';
 import errors = require('vs/base/common/errors');
 import platform = require('vs/base/common/platform');
@@ -197,31 +197,6 @@ function getWorkspace(environment: IMainEnvironment, repoInfo: any): IWorkspace 
 	return workspace;
 }
 
-function addBrowserHacks() {
-	// IE / Edge behaviors
-	if (navigator.userAgent.indexOf('Trident/') >= 0 || navigator.userAgent.indexOf('Edge/') >= 0) {
-		// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
-		// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
-		// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
-		// Does this have any terrible side-effects? Good question!				
-		document.body.style.width = '12345px';
-		document.body.style.height = '12345px';
-
-		// Add new css rules / override existing ones. First create a style sheet.
-		// https://davidwalsh.name/add-rules-stylesheets
-		var style = document.createElement("style");
-		style.appendChild(document.createTextNode(""));
-		document.head.appendChild(style);
-
-		// Text in message boxes doesn't show due to how line-height affects display: block layout.
-		// According to CSS 2.1, Edge is correct and Chrome et al are wrong. Spec says "The baseline of an
-		// 'inline-block' is the baseline of its last line box in the normal flow, unless it has either no
-		// in-flow line boxes or if its 'overflow' property has a computed value other than 'visible', in
-		// which case the baseline is the bottom margin edge."
-		(<any>style.sheet).insertRule(".message-left-side.message-overflow-ellipsis { overflow: visible !important; }", 0);
-	}
-}
-
 function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: IGithubService): winjs.TPromise<void> {
 	let eventService = new EventService();
 	let contextService = new WorkspaceContextService(eventService, workspace, configuration, options);
@@ -235,8 +210,9 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 		return domContentLoaded().then(() => {
 			timers.afterReady = new Date();
 
-			// Add browser specific workarounds
-			addBrowserHacks();
+			// Enable browser specific hacks
+			enableBrowserHack(BrowserHack.EDITOR_MOUSE_CLICKS);
+			enableBrowserHack(BrowserHack.MESSAGE_BOX_TEXT);
 
 			// Open Shell
 			let beforeOpen = new Date();
