@@ -213,6 +213,7 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 			// Enable browser specific hacks
 			enableBrowserHack(BrowserHack.EDITOR_MOUSE_CLICKS);
 			enableBrowserHack(BrowserHack.MESSAGE_BOX_TEXT);
+			enableBrowserHack(BrowserHack.TAB_LABEL);
 
 			// Open Shell
 			let beforeOpen = new Date();

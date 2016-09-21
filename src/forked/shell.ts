@@ -149,7 +149,8 @@ enum Browser {
 export enum BrowserHack {
 	EDITOR_MOUSE_CLICKS = 1 | Browser.IE | Browser.EDGE,
 	MESSAGE_BOX_TEXT = 2 | Browser.IE | Browser.EDGE,
-	TAB_DRAGGING = 3 | Browser.IE | Browser.EDGE
+	TAB_DRAGGING = 3 | Browser.IE | Browser.EDGE,
+	TAB_LABEL = 4 | Browser.IE
 }
 
 export function enableBrowserHack(hack: BrowserHack) {
@@ -190,7 +191,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 		{
 			// Custom scrollbars get created when dragging tabs so that the tab container can scroll.
 			// On IE / Edge the actual scrollbars show instead. For now just forcefully deny overflow: scroll
-			// so the scrollbar doesn't appear
+			// so the scrollbar doesn't appear.
 			let divs = document.getElementsByClassName('tabs-container');
 			if (divs.length > 0) {
 				divs[0].removeAttribute('style');
@@ -198,6 +199,19 @@ export function enableBrowserHack(hack: BrowserHack) {
 			}
 		}
 		break;
+
+	case BrowserHack.TAB_LABEL:
+		{
+			// Add new css rules / override existing ones. First create a style sheet.
+			// https://davidwalsh.name/add-rules-stylesheets
+			let style = document.createElement("style");
+			style.appendChild(document.createTextNode(""));
+			document.head.appendChild(style);
+
+			// margin-top: auto doesn't work for vertical center alignment on IE.
+			(<any>style.sheet).insertRule(".tab-label { margin-top: 6% !important; }", 0);
+			(<any>style.sheet).insertRule(".tab-close { margin-top: 8% !important; }", 0);
+		}
 	}
 }
 
