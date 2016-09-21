@@ -218,7 +218,7 @@ function addBrowserHacks() {
 		// 'inline-block' is the baseline of its last line box in the normal flow, unless it has either no
 		// in-flow line boxes or if its 'overflow' property has a computed value other than 'visible', in
 		// which case the baseline is the bottom margin edge."
-		(<any>style.sheet).insertRule(".message-left-side.message-overflow-ellipsis { overflow: initial !important; }");
+		(<any>style.sheet).insertRule(".message-left-side.message-overflow-ellipsis { overflow: visible !important; }", 0);
 	}
 }
 
