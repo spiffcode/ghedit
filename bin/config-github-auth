@@ -1,0 +1,7 @@
+if [ $# -eq 0 ]
+  then
+    gsutil cat gs://ghcodex.appspot.com/config.json
+    exit 1
+fi
+
+gsutil cp $1 gs://ghcodex.appspot.com/config.json

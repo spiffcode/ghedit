@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+gcloud alpha functions deploy github-auth-test --trigger-http --timeout 120 \
+--local-path auth-server --stage-bucket ghcode-auth-server --entry-point auth

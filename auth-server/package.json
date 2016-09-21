@@ -8,5 +8,6 @@
     "url": "https://github.com/spiffcode/ghcode.git"
   },
   "dependencies": {
+    "@google-cloud/storage": "^0.1.1"
   }
 }
