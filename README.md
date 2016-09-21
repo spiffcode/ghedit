@@ -37,28 +37,40 @@ npm install
 # Run once if first time or if vscode has been updated & compiled
 npm run clean
 
-# Perform a regular build of ghcode
+# Perform a regular build of ghcode. This prodoces loose js files
 npm run build
 
-# Push to gh-pages
+# Or, make an optimized build. This produces a packed but not minimized build
+npm run build-opt
+
+# Or, make a minimized build. This produces a packed and minimized build
+npm run build-min
+
+# Push to gh-pages. This makes a minimized build, then pushes that build
+# to your gh-pages branch.
+npm run push-min
+
+# If you wish, you can push the loose file build (much slower to load).
+# This does not perform a build, it just pushes the contents of out-build.
 npm run push
+
 ```
 #### RUNNING
 
-Start a web server in the ghcode directory.
+Start a web server in the ghcode directory at port 8000. Use http-server, the node
+app.
 
 #### TO DO
 
 M1: MS Preview
-* DP: Minimizing out-build
 
 M2: Public Release
-* sync up with latest vscode
+
+M3: Release followup
+* Move GHCode changes onto a vscode fork
 * JSON Schema intellisense
 * better Typescript intellisense (https://github.com/alexandrudima/monaco-typescript)
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
-
-M3: Release followup
 * DM: clean up stuff
 * implement Info menu (Show Quick Start ("N key tips about this environment": choose a repo, creating files, saving, ...),
   Show All Commands, GitHub repo, About, documentation, release notes, join us on twitter, request features, report issues)
@@ -69,14 +81,11 @@ M1
 <empty>
 
 M2
-* DM: tags aren't presented on ref menu
 * DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
-* DM: repo and ref menus need to scroll (or something) when too many items to fit in available view space
 * search within Command Palette barfs
 
 M3
-* Rename a file loses commit history for that file
-* need error message for invalid/inaccessible repo
+* Rename a file and keep commit history for that file
 * githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
 * file mime type detection is crippled due to disabled Node dependency
 * file encoding smarts (disabled due to Node dependency)
