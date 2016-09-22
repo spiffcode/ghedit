@@ -319,7 +319,7 @@ export class FileService implements IFileService {
 				public: false,
 				files: {}
 			};
-			data.files[filename] = {content: value};
+			data.files[filename] = {content: value || '{}' };
 
 			// Gist exists?
 			if (info.gist) {
