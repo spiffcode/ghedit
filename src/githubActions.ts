@@ -20,7 +20,7 @@ import {IMainEnvironment} from 'forked/main';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
 import {QuickOpenAction} from 'vs/workbench/browser/quickopen';
 
-export class AboutGHCodeAction extends Action {
+export class AboutGHEditAction extends Action {
 
 	public static ID = 'workbench.action.ghcode.welcome';
 	public static LABEL = 'About GHEdit';
@@ -150,6 +150,6 @@ export class ChooseReferenceAction extends Action {
 
 // Register these actions
 let registry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(new SyncActionDescriptor(AboutGHCodeAction, AboutGHCodeAction.ID, null), null);
+registry.registerWorkbenchAction(new SyncActionDescriptor(AboutGHEditAction, AboutGHEditAction.ID, null), null);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ChooseRepositoryAction, ChooseRepositoryAction.ID, ChooseRepositoryAction.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.F9 } ), null);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ChooseReferenceAction, ChooseReferenceAction.ID, ChooseReferenceAction.LABEL, { primary: KeyMod.CtrlCmd | KeyCode.F10 } ), null);

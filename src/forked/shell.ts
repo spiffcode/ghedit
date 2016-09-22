@@ -102,7 +102,7 @@ import {IGithubService} from 'githubService';
 import {IMainEnvironment} from 'forked/main';
 import {WelcomePart} from 'welcomePart';
 import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'forked/openSettings';
-import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHCodeAction} from 'githubActions';
+import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IAction} from 'vs/base/common/actions';
 import {VSCodeMenu} from 'forked/menus';
@@ -406,8 +406,8 @@ export class WorkbenchShell {
 
 		this.navbarPart.addEntry({
 			text: '$(beaker)' + (this.isWelcomeMode() ? ' GHEdit' : '') + (this.options.editor.readOnly ? ' (read only)' : ''),
-			tooltip: AboutGHCodeAction.LABEL,
-			command: AboutGHCodeAction.ID,
+			tooltip: AboutGHEditAction.LABEL,
+			command: AboutGHEditAction.ID,
 		}, NavbarAlignment.LEFT, 1000);
 
 		if (this.githubService.isAuthenticated()) {

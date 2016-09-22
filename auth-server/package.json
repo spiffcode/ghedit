@@ -1,6 +1,6 @@
 {
   "name": "github-auth",
-  "description": "ghcode GitHub authentication server",
+  "description": "GHEdit GitHub authentication server",
   "version": "0.0.1",
   "private": true,
   "repository": {

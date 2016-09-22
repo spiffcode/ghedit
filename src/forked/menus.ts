@@ -21,7 +21,7 @@ import * as Electron from 'fakeElectron';
 import { Keybinding } from 'vs/base/common/keyCodes';
 import product from 'vs/platform/product';
 import pkg from 'vs/platform/package';
-import {AboutGHCodeAction} from 'githubActions';
+import {AboutGHEditAction} from 'githubActions';
 
 /* DESKTOP:
 export function generateNewIssueUrl(baseUrl: string, name: string, version: string, commit: string, date: string): string {
@@ -355,7 +355,7 @@ export class VSCodeMenu {
 
 	private setMacApplicationMenu(macApplicationMenu: Electron.Menu): void {
 		// DESKTOP: let about = new MenuItem({ label: nls.localize('mAbout', "About {0}", this.envService.product.nameLong), role: 'about' });
-		let about = this.createMenuItem(nls.localize('mAbout', "About {0}", this.envService.product.nameLong), AboutGHCodeAction.ID);
+		let about = this.createMenuItem(nls.localize('mAbout', "About {0}", this.envService.product.nameLong), AboutGHEditAction.ID);
 		// DESKTOP: let checkForUpdates = this.getUpdateMenuItems();
 		let preferences = this.getPreferencesMenu();
 		// DESKTOP: let hide = new MenuItem({ label: nls.localize('mHide', "Hide {0}", this.envService.product.nameLong), role: 'hide', accelerator: 'Command+H' });

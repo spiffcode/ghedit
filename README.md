@@ -67,7 +67,7 @@ M1: MS Preview
 M2: Public Release
 
 M3: Release followup
-* Move GHCode changes onto a vscode fork
+* Move GHEdit changes onto a vscode fork
 * review TODO comments, use new convention for VSCode we want to keep for reference but is not considered a TODO
 * DM: clean up stuff
 
