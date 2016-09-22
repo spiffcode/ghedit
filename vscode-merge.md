@@ -22,10 +22,10 @@ git pull https://github.com/Microsoft/vscode.git release/1.1
 # One by one, "three way merge" vscode changes into our forked files.
 # Forked file headers indicate the version hash and file they were forked from.
 # E.g. <hash of version at time of fork>:<file>. Use this to get the common ancestor.
-git show 31ce12f023580d67a66d14843e7f9983caadbe56:./src/vs/workbench/services/files/electron-browser/fileService.ts >../ghcode/src/forked/fileService.root.ts
+git show 31ce12f023580d67a66d14843e7f9983caadbe56:./src/vs/workbench/services/files/electron-browser/fileService.ts >../ghedit/src/forked/fileService.root.ts
 
 # Do the three-way merge.
-cd ../ghcode/src/forked
+cd ../ghedit/src/forked
 diff3 -m fileService.ts fileService.root.ts ../vs/workbench/services/files/electron-browser/fileService.ts >fileService.merged.ts
 
 # Review the merge and fix conflicts.
@@ -39,8 +39,8 @@ rm fileService.root.ts fileService.merged.ts
 # Update file headers with the hash of the merged version.
 perl -i -pe 's/(Forked from ).*:/\1c212f0908f3d29933317bbc3233568fbca7944b1:/ig' *
 
-# Make a clean build of ghcode.
-cd ghcode
+# Make a clean build of ghedit.
+cd ghedit
 npm run clean
 npm run build
 
@@ -50,15 +50,15 @@ npm run build
 cd ../vscode
 git push
 
-# Commit and push updated ghcode.
-cd ../ghcode
+# Commit and push updated ghedit.
+cd ../ghedit
 git commit -am 'Merge with vscode release/1.1 (SHA c212f0908f3d29933317bbc3233568fbca7944b1)'
 git push
 
 # Publish the new version.
 npm run push
 
-# Let everyone know they must update their vscode, build it, and clean build ghcode.
+# Let everyone know they must update their vscode, build it, and clean build ghedit.
 
 
 ----

@@ -16,7 +16,7 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 
 // Build
 
-var ghcodeEntryPoints = _.flatten([
+var gheditEntryPoints = _.flatten([
 	buildfile.entrypoint('forked/workbench.main'),
 	buildfile.base,
 	// buildfile.standaloneLanguages,
@@ -24,7 +24,7 @@ var ghcodeEntryPoints = _.flatten([
 	buildfile.languages
 ]);
 
-var ghcodeResources = [
+var gheditResources = [
 	'out-build/forked/**/*.{svg,png}',
 	// 'out-build/vs/**/*.{svg,png}',
 	// '!out-build/vs/base/browser/ui/splitview/**/*',
@@ -52,7 +52,7 @@ var ghcodeResources = [
 	'out-build/vs/**/*.*',
 ];
 
-var ghcodeOtherSources = [
+var gheditOtherSources = [
 	'out-build/vs/css.js',
 	'out-build/vs/nls.js'
 	// 'out-build/vs/text.js'
@@ -68,7 +68,7 @@ var BUNDLED_FILE_HEADER = [
 	''
 ].join('\n');
 
-function ghcodeLoaderConfig() {
+function gheditLoaderConfig() {
 	var result = common.loaderConfig();
 
 	result.paths.lib = 'out-build/lib';
@@ -84,7 +84,7 @@ function ghcodeLoaderConfig() {
 	result.paths.fakeElectron = 'out-build/fakeElectron';
 
 	// TODO: Is this what we want?
-	// never ship marked in ghcode
+	// never ship marked in ghedit
 	// result.paths['vs/base/common/marked/marked'] = 'out-build/vs/base/common/marked/marked.mock';
 
 	result['vs/css'] = { inlineResources: true };
@@ -96,26 +96,26 @@ function ghcodeLoaderConfig() {
 	return result;
 }
 
-gulp.task('clean-optimized-ghcode', util.rimraf('out-build-opt'));
-gulp.task('optimize-ghcode', ['clean-optimized-ghcode', 'compile-build'], common.optimizeTask({
-	entryPoints: ghcodeEntryPoints,
-	otherSources: ghcodeOtherSources,
-	resources: ghcodeResources,
-	loaderConfig: ghcodeLoaderConfig(),
+gulp.task('clean-optimized-ghedit', util.rimraf('out-build-opt'));
+gulp.task('optimize-ghedit', ['clean-optimized-ghedit', 'compile-build'], common.optimizeTask({
+	entryPoints: gheditEntryPoints,
+	otherSources: gheditOtherSources,
+	resources: gheditResources,
+	loaderConfig: gheditLoaderConfig(),
 	header: BUNDLED_FILE_HEADER,
 	bundleInfo: true,
 	out: 'out-build-opt'
 }));
-gulp.task('build-opt', ['optimize-ghcode']);
+gulp.task('build-opt', ['optimize-ghedit']);
 
-gulp.task('clean-minified-ghcode', util.rimraf('out-build-min'));
-gulp.task('minify-ghcode', ['clean-minified-ghcode', 'optimize-ghcode'], common.minifyTask('out-build-opt', 'out-build-min', true));
-gulp.task('build-min', ['minify-ghcode'], shell.task([
+gulp.task('clean-minified-ghedit', util.rimraf('out-build-min'));
+gulp.task('minify-ghedit', ['clean-minified-ghedit', 'optimize-ghedit'], common.minifyTask('out-build-opt', 'out-build-min', true));
+gulp.task('build-min', ['minify-ghedit'], shell.task([
 	'cp index.html out-build-min',
 	'cp documentation.html out-build-min',
 	'cp releasenotes.html out-build-min',
 	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/forked/workbench.main.js > /tmp/workbench.main.js',
 	'mv /tmp/workbench.main.js out-build-min/forked/workbench.main.js',
 ]));
-// Is this below running optimize-ghcode twice?
-// gulp.task('ghcode-distro', ['minify-ghcode', 'optimize-ghcode']);
+// Is this below running optimize-ghedit twice?
+// gulp.task('ghedit-distro', ['minify-ghedit', 'optimize-ghedit']);

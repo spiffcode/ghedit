@@ -105,7 +105,7 @@ export class GithubService implements IGithubService {
 
 	public authenticate(privateRepos: boolean) {
 		// If we're running on localhost authorize via the "GHEdit localhost" application
-		// so we're redirected back to localhost (instead of spiffcode.github.io/ghcode) after
+		// so we're redirected back to localhost (instead of spiffcode.github.io/ghedit) after
 		// the authorization is done.
 		let client_id = (window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1') ? '60d6dd04487a8ef4b699' : 'bbc4f9370abd2b860a36';
 		let repoScope = privateRepos ? 'repo' : 'public_repo';

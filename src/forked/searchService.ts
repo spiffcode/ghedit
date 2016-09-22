@@ -231,7 +231,7 @@ class GithubSearch {
 
 			let fileWalkStartTime = Date.now();
 
-			// q=foo+repo:spiffcode/ghcode_test
+			// q=foo+repo:spiffcode/ghedit_test
 			let q:string = query.contentPattern.pattern + '+repo:' + this.githubService.repoName;
 			let s: GithubApiSearch = new github.Search({ query: encodeURIComponent(q) });
 			s.code(null, (err: GithubError, result: SearchResult) => {
@@ -252,7 +252,7 @@ class GithubSearch {
 				}
 
 				// Search on IModel's to get accurate search results. Github's search results
-				// are not complete and don't have line numbers. 
+				// are not complete and don't have line numbers.
 				this.modelSearch(query.contentPattern.pattern, result.items.map((item) => uri.file(item.path))).then((matches) => {
 					c({ limitHit: result.incomplete_results, results: matches,
 						stats: { fileWalkStartTime: fileWalkStartTime, fileWalkResultTime: Date.now(), directoriesWalked: 1, filesWalked: 1 } });
@@ -267,7 +267,7 @@ class GithubSearch {
 		// Return FileMatch[] given a pattern and a list of uris
 		return new TPromise<FileMatch[]>((c, e) => {
 			let limiter = new Limiter(1);
-			let promises = uris.map((uri) => limiter.queue(() => this.editorService.resolveEditorModel({ resource: uri })));			
+			let promises = uris.map((uri) => limiter.queue(() => this.editorService.resolveEditorModel({ resource: uri })));
 			TPromise.join(promises).then((models: ITextEditorModel[]) => {
 				let matches: FileMatch[] = [];
 				models.forEach((model) => {

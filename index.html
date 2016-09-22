@@ -12,7 +12,7 @@
 			.monaco-shell.vs-dark {
 				background-color: #1E1E1E;
 			}
-			.ghcode-body-startup {
+			.ghedit-body-startup {
 				margin: 0px; font-size: 11px; font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", "Sans-Serif", "Droid Sans Fallback";
 			}
 		</style>
@@ -182,7 +182,7 @@
 			var args = parseURLQueryArgs(); // TODO: really they pass a giant config={...} argument?
 
 			// Don't show progress for min or opt builds until that is working
-			var showProgress = (window.location.pathname !== '/ghcode/' && !args.b);
+			var showProgress = (window.location.pathname !== '/ghedit/' && !args.b);
 			if (showProgress) {
 				document.write('<progress id="loading_percent" value="0" max="100" style="width: 100%"></progress>');
 			}
@@ -245,9 +245,9 @@
 				configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 				configuration.workspacePath = args.workspacePath;
 
-				// If we're running on gh-pages the root is '/ghcode'
-				if (window.location.pathname === '/ghcode/') {
-					configuration.rootPath = '/ghcode';
+				// If we're running on gh-pages the root is '/ghedit'
+				if (window.location.pathname === '/ghedit/') {
+					configuration.rootPath = '/ghedit';
 				} else {
 					// If we're running locally then we're running out of one of the 'out-*' directories
 					configuration.buildType = args.b;
@@ -472,7 +472,7 @@
 
 							// Remove the progress indicator and related startup styles
 							var elBody = document.getElementsByTagName("body")[0];
-							elBody.classList.remove('ghcode-body-startup');
+							elBody.classList.remove('ghedit-body-startup');
 							if (showProgress) {
 								elBody.removeChild(document.getElementById('loading_percent'));
 							}
@@ -483,7 +483,7 @@
 
 		</script>
 	</head>
-	<body class="ghcode-body-startup monaco-shell vs-dark" aria-label=""> <!-- setting aria label to empty here seems to prevent NVDA from reading the full URL of the application on start/reload -->
+	<body class="ghedit-body-startup monaco-shell vs-dark" aria-label=""> <!-- setting aria label to empty here seems to prevent NVDA from reading the full URL of the application on start/reload -->
 		<script>
 			(function() {
 				try {

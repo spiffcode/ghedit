@@ -137,11 +137,11 @@ gulp.task('watch-build', ['watch-client-build']);
 
 // require('./build/gulpfile.hygiene');
 // require('./build/gulpfile.vscode');
-require('./build/gulpfile.ghcode');
+require('./build/gulpfile.ghedit');
 // require('./build/gulpfile.extensions');
 
 /* -------------------------------------------
- * TASKS from original ghcode gulpfile.js
+ * TASKS from original ghedit gulpfile.js
  * ------------------------------------------*/
 
 gulp.task('clean', shell.task([

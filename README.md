@@ -22,10 +22,10 @@ cd vscode
 cd ..
 
 # Clone this repository.
-git clone https://github.com/spiffcode/ghcode.git
+git clone https://github.com/spiffcode/ghedit.git
 
 # Create symbolic link to Visual Studio Code sources.
-cd ghcode
+cd ghedit
 ln -s ../../vscode/src/vs src/vs
 
 # Install local npm packages
@@ -33,11 +33,11 @@ npm install
 ```
 #### BUILDING
 ```bash
-# From the ghcode directory
+# From the ghedit directory
 # Run once if first time or if vscode has been updated & compiled
 npm run clean
 
-# Perform a regular build of ghcode. This prodoces loose js files
+# Perform a regular build of ghedit. This prodoces loose js files
 npm run build
 
 # Or, make an optimized build. This produces a packed but not minimized build
@@ -57,7 +57,7 @@ npm run push
 ```
 #### RUNNING
 
-Start a web server in the ghcode directory at port 8000. Use http-server, the node
+Start a web server in the ghedit directory at port 8000. Use http-server, the node
 app.
 
 #### TO DO

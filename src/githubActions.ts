@@ -22,7 +22,7 @@ import {QuickOpenAction} from 'vs/workbench/browser/quickopen';
 
 export class AboutGHEditAction extends Action {
 
-	public static ID = 'workbench.action.ghcode.welcome';
+	public static ID = 'workbench.action.ghedit.welcome';
 	public static LABEL = 'About GHEdit';
 
 	constructor(

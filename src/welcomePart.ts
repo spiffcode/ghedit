@@ -42,7 +42,7 @@ export class WelcomePart extends Part {
 		if (!this.githubService.isAuthenticated()) {
 			// Encourage the user to sign in.
 			// TODO: localization
-			el.innerHTML = `<div class='content welcome-text'>Welcome! <a href='https://github.com/spiffcode/ghcode' target='_blank'>GHEdit</a> is an
+			el.innerHTML = `<div class='content welcome-text'>Welcome! <a href='https://github.com/spiffcode/ghedit' target='_blank'>GHEdit</a> is an
 			experimental open source code editor based on <a href='https://code.visualstudio.com' target='_blank'>Visual Studio Code</a>.<p>
 			GHEdit runs entirely in your browser to provide you with a powerful, convenient way to browse and edit GitHub repositories.
 			<h4>Features</h4>
@@ -56,7 +56,7 @@ export class WelcomePart extends Part {
 			<li>Themes</li>
 			<li>Customizable Keyboard Shortcuts</li>
 			<li>Per-user, per-project customizable editor settings</li>
-			<li><a href='https://github.com/spiffcode/ghcode'>Open Source!</a></li>
+			<li><a href='https://github.com/spiffcode/ghedit'>Open Source!</a></li>
 			</ul>
 			<hr>
 			Sign in to your GitHub account to get started with your GitHub repositories.</div><p>

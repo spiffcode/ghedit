@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/spiffcode/ghcode.git"
+    "url": "https://github.com/spiffcode/ghedit.git"
   },
   "dependencies": {
     "@google-cloud/storage": "^0.1.1"

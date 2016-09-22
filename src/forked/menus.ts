@@ -81,12 +81,12 @@ export class VSCodeMenu {
 			product: {
 				nameShort: 'GHEdit',
 				nameLong: 'GHEdit',
-				documentationUrl: 'https://spiffcode.github.io/ghcode/documentation.html',
-				releaseNotesUrl: 'https://spiffcode.github.io/ghcode/releasenotes.html',
+				documentationUrl: 'https://spiffcode.github.io/ghedit/documentation.html',
+				releaseNotesUrl: 'https://spiffcode.github.io/ghedit/releasenotes.html',
 				twitterUrl: null,
-				requestFeatureUrl: 'https://github.com/spiffcode/ghcode/issues',
-				reportIssueUrl: 'https://github.com/spiffcode/ghcode/issues',
-				licenseUrl: 'https://github.com/spiffcode/ghcode/blob/master/LICENSE.txt',
+				requestFeatureUrl: 'https://github.com/spiffcode/ghedit/issues',
+				reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues',
+				licenseUrl: 'https://github.com/spiffcode/ghedit/blob/master/LICENSE.txt',
 				privacyStatementUrl: null,
 				npsSurveyUrl: null
 			},
