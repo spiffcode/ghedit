@@ -40,7 +40,7 @@ export class AboutGHEditAction extends Action {
 		if (this.githubService.isAuthenticated() && this.githubService.isTag) {
 			s.push('Note: GHEdit is in read only mode because you are viewing a tag.');
 		}
-		s.push('Welcome to GHEdit! Brought to you by Spiffcode, Inc.');
+		s.push('Welcome to GHEdit! Brought to you by your friends at Spiffcode, Inc.');
 		this.messageService.show(Severity.Info, s);
 		return TPromise.as(true);
 	}
