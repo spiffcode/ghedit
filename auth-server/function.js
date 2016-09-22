@@ -10,7 +10,8 @@ exports.auth = function (request, response) {
 		return;
 	}
 
-	console.log('ghauth ' + JSON.stringify(request.headers));
+// Don't log the headers so we won't retain the user's GitHub token anywhere.
+//	console.log('ghauth ' + JSON.stringify(request.headers));
 
 	storage.bucket('ghcodex.appspot.com').file('config.json').download(function (err, data) {
 //		console.log('configFile.download: err: ' + JSON.stringify(err) + '\ndata: ' + data);
