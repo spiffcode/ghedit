@@ -47,13 +47,13 @@ export class WelcomePart extends Part {
 			GHEdit runs entirely in your browser to provide you with a powerful, convenient way to browse and edit GitHub repositories.
 			<h4>Features</h4>
 			<ul>
-			<li>GitHub integration (view and edit repositories and files)</li>
+			<li>GitHub integration (view and edit repositories and files, in place)</li>
 			<li>Complete project explorer and text editor</li>
 			<li>Syntax highlighting and auto-complete for all major programming and markup languages</li>
 			<li>IntelliSense for Javascript, TypeScript, JSON</li>
 			<li>Project-wide search and replace</li>
-			<li>Themes</li>
 			<li>Side-by-side file comparison</li>
+			<li>Themes</li>
 			<li>Customizable Keyboard Shortcuts</li>
 			<li>Per-user, per-project customizable editor settings</li>
 			<li><a href='https://github.com/spiffcode/ghcode'>Open Source!</a></li>
