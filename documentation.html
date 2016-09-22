@@ -23,7 +23,7 @@
 		<li>Side-by-side file comparison</li>
 		<li>Customizable Keyboard Shortcuts</li>
 		<li>Per-user, per-project customizable editor settings</li>
-		<li><a href='https://github.com/spiffcode/ghcode'>Open Source</a></li>
+		<li><a href='https://github.com/spiffcode/ghcode'>Open Source!</a></li>
 	</ul>
 
 	We have not implemented all the major features of Visual Studio Code. These in particular:
@@ -50,10 +50,20 @@
 	<p>A: We think Visual Studio Code is a great IDE and that Cloud IDEs have tremendous potential. We decided to see if VSCode
 		could be adapted to run in the Cloud. It can!
 	</p>
+	<p><b>Q: How does it work?</b></p>
+	<p>A: GHEdit runs entirely in the browser without server-side processing.
+		It is hosted as a static GitHub Page and uses the GitHub API to read/write
+		repositories and files. The only custom "back-end" is a
+		<a href="https://github.com/spiffcode/ghcode/blob/master/auth-server/function.js">tiny Google Cloud Function</a>
+		to facilitate the GitHub authorization process. User Settings are saved to a GitHub Gist.</p>
 	<p><b>Q: What next?</b></p>
 	<p>A: We've satisfied our curiosity and don't intend to take this project further. <a href='https://github.com/spiffcode/ghcode'>GHEdit is open source</a> for anyone who'd like to do so.</p>
 	<p><b>Q: Why do I need to give GHEdit GitHub permissions?</b></p>
 	<p>A: GHEdit needs permission to operate on your behalf and to not be throttled by GitHub API rate limits.</p>
+	<p><b>Q: Go To Symbol, Go To Definition, and IntelliSense don't always seem to work. What's up with that?</b></p>
+	<p>A: GHEdit can only perform these operations across open files :(.</p>
+	<p><b>Q: What's your privacy policy?</b></p>
+	<p>A: We don't retain any user information, including GitHub credentials. We use Google Analytics to monitor overall usage.</p>
 
 </body>
 

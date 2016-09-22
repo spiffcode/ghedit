@@ -46,9 +46,16 @@ export class WelcomePart extends Part {
 			experimental open source web IDE based on <a href='https://code.visualstudio.com' target='_blank'>Visual Studio Code</a>.<p>
 			GHEdit provides a fast, rich environment for browsing and editing GitHub repositories. Featuring:
 			<ul>
-			<li>Syntax highlighting</li>
-			<li>IntelliSense for many languages including Javascript, Typescript, ...</li>
-			<li>Lots of other cool stuff</li>
+			<li>GitHub integration (view and edit repositories and files)</li>
+			<li>Complete project navigator and text editor</li>
+			<li>Syntax highlighting for all major programming and markup languages</li>
+			<li>IntelliSense for Javascript, TypeScript, JSON</li>
+			<li>Project-wide search and replace</li>
+			<li>Themes</li>
+			<li>Side-by-side file comparison</li>
+			<li>Customizable Keyboard Shortcuts</li>
+			<li>Per-user, per-project customizable editor settings</li>
+			<li><a href='https://github.com/spiffcode/ghcode'>Open Source!</a></li>
 			</ul>
 			Sign in to your GitHub account to open GitHub repositories.</div><p>
 			<input id='privateRepos' type='checkbox'>
