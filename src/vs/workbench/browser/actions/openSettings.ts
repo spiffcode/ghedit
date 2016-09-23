@@ -1,4 +1,5 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -18,7 +19,7 @@ import {getDefaultValuesContent} from 'vs/platform/configuration/common/model';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
-import {Position} from 'vs/platform/editor/common/editor';
+import {IEditorInput, Position} from 'vs/platform/editor/common/editor';
 import {IEditorGroupService} from 'vs/workbench/services/group/common/groupService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
 import {IFileService, IFileOperationResult, FileOperationResult} from 'vs/platform/files/common/files';
@@ -27,6 +28,8 @@ import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
 import {SyncActionDescriptor} from 'vs/platform/actions/common/actions';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
+import {IUntitledEditorService} from 'vs/workbench/services/untitled/common/untitledEditorService';
+import {UntitledEditorModel} from 'vs/workbench/common/editor/untitledEditorModel';
 
 export class BaseTwoEditorsAction extends Action {
 
@@ -40,7 +43,8 @@ export class BaseTwoEditorsAction extends Action {
 		@IMessageService protected messageService: IMessageService,
 		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
 		@IKeybindingService protected keybindingService: IKeybindingService,
-		@IInstantiationService protected instantiationService: IInstantiationService
+		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IUntitledEditorService protected untitledEditorService: IUntitledEditorService
 	) {
 		super(id, label);
 
@@ -59,20 +63,33 @@ export class BaseTwoEditorsAction extends Action {
 		});
 	}
 
+	private openEditors(left: IEditorInput, right: IEditorInput): TPromise<void> {
+		const editors = [
+			{ input: left, position: Position.LEFT, options: { pinned: true } },
+			{ input: right, position: Position.CENTER, options: { pinned: true } }
+		];
+		return this.editorService.openEditors(editors).then(() => {
+			this.editorGroupService.focusGroup(Position.CENTER);
+		});
+	}
+
 	protected openTwoEditors(leftHandDefaultInput: StringEditorInput, editableResource: URI, defaultEditableContents: string): TPromise<void> {
-
 		// Create as needed and open in editor
-		return this.createIfNotExists(editableResource, defaultEditableContents).then(() => {
+		return this.fileService.resolveContent(editableResource, { acceptTextOnly: true }).then(() => {
 			return this.editorService.createInput({ resource: editableResource }).then((typedRightHandEditableInput) => {
-				const editors = [
-					{ input: leftHandDefaultInput, position: Position.LEFT, options: { pinned: true } },
-					{ input: typedRightHandEditableInput, position: Position.CENTER, options: { pinned: true } }
-				];
-
-				return this.editorService.openEditors(editors).then(() => {
-					this.editorGroupService.focusGroup(Position.CENTER);
-				});
+				return this.openEditors(leftHandDefaultInput, typedRightHandEditableInput);
 			});
+		}, (error) => {
+			if ((<IFileOperationResult>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND) {
+				let typedRightHandEditableInput = this.untitledEditorService.createOrGet(editableResource);
+				return this.editorService.resolveEditorModel(typedRightHandEditableInput).then((model) => {
+					if (model instanceof UntitledEditorModel) {
+						model.setValue(defaultEditableContents);
+					}
+					return this.openEditors(leftHandDefaultInput, typedRightHandEditableInput);
+				});
+			}
+			return TPromise.wrapError(error);
 		});
 	}
 }
@@ -89,9 +106,10 @@ export class BaseOpenSettingsAction extends BaseTwoEditorsAction {
 		@IMessageService messageService: IMessageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IKeybindingService keybindingService: IKeybindingService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IUntitledEditorService untitledEditorService: IUntitledEditorService
 	) {
-		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService);
+		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService, untitledEditorService);
 	}
 
 	protected open(emptySettingsContents: string, settingsResource: URI): TPromise<void> {
@@ -117,9 +135,10 @@ export class OpenGlobalSettingsAction extends BaseOpenSettingsAction {
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IStorageService private storageService: IStorageService
+		@IStorageService private storageService: IStorageService,
+		@IUntitledEditorService untitledEditorService: IUntitledEditorService
 	) {
-		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService);
+		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService, untitledEditorService);
 	}
 
 	public run(event?: any): TPromise<void> {
@@ -168,9 +187,10 @@ export class OpenGlobalKeybindingsAction extends BaseTwoEditorsAction {
 		@IMessageService messageService: IMessageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IKeybindingService keybindingService: IKeybindingService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IUntitledEditorService untitledEditorService: IUntitledEditorService
 	) {
-		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService);
+		super(id, label, editorService, editorGroupService, fileService, configurationService, messageService, contextService, keybindingService, instantiationService, untitledEditorService);
 	}
 
 	public run(event?: any): TPromise<void> {

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import assert = require('assert');
+// import assert = require('assert');
 
 /**
  * Executes the given function (fn) over the given array of items (list) in parallel and returns the resulting errors and results as
@@ -48,10 +48,12 @@ export function loop<T, E>(param: (callback: (error: Error, result: T[]) => void
 export function loop<T, E>(param: T[], fn: (item: T, callback: (error: Error, result: E) => void, index: number, total: number) => void, callback: (error: Error, result: E[]) => void): void;
 export function loop<E>(param: any, fn: (item: any, callback: (error: Error, result: E) => void, index: number, total: number) => void, callback: (error: Error, result: E[]) => void): void {
 
+/*
 	// Assert
 	assert.ok(param, 'Missing first parameter');
 	assert.ok(typeof (fn) === 'function', 'Second parameter must be a function that is called for each element');
 	assert.ok(typeof (callback) === 'function', 'Third parameter must be a function that is called on error and success');
+*/
 
 	// Param is function, execute to retrieve array
 	if (typeof (param) === 'function') {
@@ -98,9 +100,14 @@ export function loop<E>(param: any, fn: (item: any, callback: (error: Error, res
 								results.push(result);
 							}
 
+/*
 							process.nextTick(() => {
 								looper(i + 1);
 							});
+*/
+							setTimeout(() => {
+								looper(i + 1);
+							}, 0);
 						}
 					}, i, param.length);
 				} catch (error) {
@@ -121,11 +128,13 @@ export function loop<E>(param: any, fn: (item: any, callback: (error: Error, res
 
 function Sequence(sequences: { (...param: any[]): void; }[]): void {
 
+/*
 	// Assert
 	assert.ok(sequences.length > 1, 'Need at least one error handler and one function to process sequence');
 	sequences.forEach((sequence) => {
 		assert.ok(typeof (sequence) === 'function');
 	});
+*/
 
 	// Execute in Loop
 	let errorHandler = sequences.splice(0, 1)[0]; //Remove error handler

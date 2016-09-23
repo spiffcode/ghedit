@@ -1,4 +1,5 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -7,10 +8,10 @@
 
 import {TPromise} from 'vs/base/common/winjs.base';
 import uri from 'vs/base/common/uri';
-import strings = require('vs/base/common/strings');
-import platform = require('vs/base/common/platform');
-import paths = require('vs/base/common/paths');
-import extfs = require('vs/base/node/extfs');
+// TODO: import strings = require('vs/base/common/strings');
+// TODO: import platform = require('vs/base/common/platform');
+// TODO: import paths = require('vs/base/common/paths');
+// TODO: import extfs = require('vs/base/node/extfs');
 import {IConfigFile} from 'vs/platform/configuration/common/model';
 import objects = require('vs/base/common/objects');
 import {IStat, IContent, ConfigurationService as CommonConfigurationService} from 'vs/platform/configuration/common/configurationService';
@@ -18,22 +19,36 @@ import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/c
 import {OptionsChangeEvent, EventType} from 'vs/workbench/common/events';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IDisposable} from 'vs/base/common/lifecycle';
-import {readFile, writeFile} from 'vs/base/node/pfs';
+// TODO: import {readFile, writeFile} from 'vs/base/node/pfs';
 import {JSONPath} from 'vs/base/common/json';
 import {applyEdits} from 'vs/base/common/jsonFormatter';
 import {setProperty} from 'vs/base/common/jsonEdit';
+// TODO: import fs = require('fs');
+import {IGithubService} from 'githubService';
+import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
+import {Github, Repository, Error as GithubError} from 'github';
+import paths = require('vs/base/common/paths');
+import baseMime = require('vs/base/common/mime');
 
 export class ConfigurationService extends CommonConfigurationService {
 
 	public _serviceBrand: any;
 
 	protected contextService: IWorkspaceContextService;
+	private githubService: IGithubService;
+	private cache: IGithubTreeCache;
 	private toDispose: IDisposable;
 
-	constructor(contextService: IWorkspaceContextService, eventService: IEventService) {
+	constructor(contextService: IWorkspaceContextService, eventService: IEventService, githubService: IGithubService) {
 		super(contextService, eventService);
 
+		this.githubService = githubService;
+		this.cache = this.githubService.getCache();
 		this.registerListeners();
+
+		this.eventService.addListener2("settingsFileChanged", () => {
+			this.loadConfiguration().then(() => this.handleConfigurationChange());
+		});
 	}
 
 	protected registerListeners(): void {
@@ -59,12 +74,27 @@ export class ConfigurationService extends CommonConfigurationService {
 	}
 
 	protected resolveContent(resource: uri): TPromise<IContent> {
-		return readFile(resource.fsPath).then(contents => ({resource, value: contents.toString()}));
+		return new TPromise<IContent>((c, e) => {
+			this.cache.stat(resource.fsPath, (error: any, stat?: IGithubTreeStat) => {
+				if (error) {
+					e('Error loading ' + resource.fsPath);
+					return;
+				}
+				this.githubService.repo.getBlobRaw(stat.sha, (err: GithubError, content: string | boolean) => {
+					if (!err) {
+						// The GitHub API wrapper we uses returns the boolean true for content when there is none!!
+						c({ resource: resource, value: (content == true ? '' : <string>content) });
+					} else {
+						e('Error loading ' + resource.fsPath);
+					}
+				});
+			});
+		});
 	}
 
 	protected resolveStat(resource: uri): TPromise<IStat> {
 		return new TPromise<IStat>((c, e) => {
-			extfs.readdir(resource.fsPath, (error, children) => {
+			this.cache.readdir(resource.fsPath, (error, children) => {
 				if (error) {
 					if ((<any>error).code === 'ENOTDIR') {
 						c({
@@ -79,10 +109,11 @@ export class ConfigurationService extends CommonConfigurationService {
 						resource: resource,
 						isDirectory: true,
 						children: children.map((child) => {
+/*
 							if (platform.isMacintosh) {
 								child = strings.normalizeNFC(child); // Mac: uses NFD unicode form on disk, but we want NFC
 							}
-
+*/
 							return {
 								resource: uri.file(paths.join(resource.fsPath, child))
 							};
@@ -118,6 +149,10 @@ export class ConfigurationService extends CommonConfigurationService {
 	}
 
 	public setUserConfiguration(key: any, value: any) : Thenable<void> {
+		console.log('configurationService.setUserConfiguration readFile(\"' + this.contextService.getConfiguration().env.appSettingsPath + '\") unimplemented');
+		return TPromise.as(null);
+
+		/* TODO:
 		let appSettingsPath = this.contextService.getConfiguration().env.appSettingsPath;
 		return readFile(appSettingsPath, 'utf8').then(content => {
 			let {tabSize, insertSpaces} = this.getConfiguration<{ tabSize: number; insertSpaces: boolean }>('editor');
@@ -126,6 +161,7 @@ export class ConfigurationService extends CommonConfigurationService {
 			content = applyEdits(content, edits);
 			return writeFile(appSettingsPath, content, 'utf8');
 		});
+		*/
 	}
 
 	public dispose(): void {

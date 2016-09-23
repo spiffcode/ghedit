@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
@@ -56,7 +57,7 @@
 }
 
 .search-viewlet .query-details {
-	min-height: 1em;
+	/* min-height: 1em; */
 	position: relative;
 	margin: 0 0 6px 17px;
 }
@@ -374,7 +375,7 @@
 /* High Contrast Theming */
 .hc-black .monaco-workbench .search-viewlet .input-box,
 .hc-black .monaco-workbench .search-viewlet .file-types .monaco-inputbox {
-	background-color: #000;
+	content: url('action-remove-dark.svg');
 }
 
 .hc-black .monaco-workbench .input-box {

@@ -1,10 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 
 import {TPromise} from 'vs/base/common/winjs.base';
+import {xhr} from 'vs/base/common/network';
 import nls = require('vs/nls');
 import Paths = require('vs/base/common/paths');
 import Json = require('vs/base/common/json');
@@ -13,14 +16,17 @@ import {IExtensionService} from 'vs/platform/extensions/common/extensions';
 import {ExtensionsRegistry, IExtensionMessageCollector} from 'vs/platform/extensions/common/extensionsRegistry';
 import {IThemeService, IThemeData} from 'vs/workbench/services/themes/common/themeService';
 import {getBaseThemeId, getSyntaxThemeId} from 'vs/platform/theme/common/themes';
+// TODO: import {IWindowService} from 'vs/workbench/services/window/electron-browser/windowService';
 import {IWindowService} from 'vs/workbench/services/window/electron-browser/windowService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {$} from 'vs/base/browser/builder';
 import Event, {Emitter} from 'vs/base/common/event';
 
-import plist = require('vs/base/node/plist');
-import pfs = require('vs/base/node/pfs');
+// TODO: import plist = require('vs/base/node/plist');
+// TODO: import pfs = require('vs/base/node/pfs');
 
 // implementation
 
@@ -109,6 +115,7 @@ export class ThemeService implements IThemeService {
 			@IExtensionService private extensionService: IExtensionService,
 			@IWindowService private windowService: IWindowService,
 			@IStorageService private storageService: IStorageService,
+			@IWorkspaceContextService private contextService: IWorkspaceContextService,
 			@ITelemetryService private telemetryService: ITelemetryService) {
 
 		this.knownThemes = [];
@@ -119,6 +126,10 @@ export class ThemeService implements IThemeService {
 				this.onThemes(ext.description.extensionFolderPath, ext.description.id, ext.value, ext.collector);
 			}
 		});
+
+		for (let theme of themesInitialize) {
+			this.onThemes("", theme.extensionId, theme.themes, null);
+		}
 
 		windowService.onBroadcast(e => {
 			if (e.channel === THEME_CHANNEL && typeof e.payload === 'string') {
@@ -198,9 +209,10 @@ export class ThemeService implements IThemeService {
 	}
 
 	private applyThemeCSS(themeId: string, defaultId: string, onApply: (theme:IInternalThemeData) => void): TPromise<boolean> {
+		let rootPath = (<IMainEnvironment>this.contextService.getConfiguration().env).rootPath + '/';
 		return this.loadTheme(themeId, defaultId).then(theme => {
 			if (theme) {
-				return applyTheme(theme, onApply);
+				return applyTheme(theme, rootPath, onApply);
 			}
 			return false;
 		});
@@ -276,13 +288,13 @@ function toCSSSelector(str: string) {
 	return str;
 }
 
-function applyTheme(theme: IInternalThemeData, onApply: (theme:IInternalThemeData) => void): TPromise<boolean> {
+function applyTheme(theme: IInternalThemeData, rootPath: string, onApply: (theme:IInternalThemeData) => void): TPromise<boolean> {
 	if (theme.styleSheetContent) {
 		_applyRules(theme.styleSheetContent);
 		onApply(theme);
 		return TPromise.as(true);
 	}
-	return _loadThemeDocument(theme.path).then(themeDocument => {
+	return _loadThemeDocument(theme.path, rootPath).then(themeDocument => {
 		let styleSheetContent = _processThemeObject(theme.id, themeDocument);
 		theme.styleSheetContent = styleSheetContent;
 		_applyRules(styleSheetContent);
@@ -293,27 +305,29 @@ function applyTheme(theme: IInternalThemeData, onApply: (theme:IInternalThemeDat
 	});
 }
 
-function _loadThemeDocument(themePath: string) : TPromise<ThemeDocument> {
-	return pfs.readFile(themePath).then(content => {
+function _loadThemeDocument(themePath: string, rootPath: string) : TPromise<ThemeDocument> {
+	// return pfs.readFile(themePath).then(content => {
+	return xhr({ type: 'GET', url: rootPath + themePath }).then((xhr: XMLHttpRequest) => {
+		let content = xhr.responseText;
 		if (Paths.extname(themePath) === '.json') {
 			let errors: Json.ParseError[] = [];
-			let contentValue = <ThemeDocument> Json.parse(content.toString(), errors);
+			let contentValue = <ThemeDocument> Json.parse(content, errors);
 			if (errors.length > 0) {
 				return TPromise.wrapError(new Error(nls.localize('error.cannotparsejson', "Problems parsing JSON theme file: {0}", errors.map(e => Json.getParseErrorMessage(e.error)).join(', '))));
 			}
 			if (contentValue.include) {
-				return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue.include)).then(includedValue => {
+				return _loadThemeDocument(Paths.join(Paths.dirname(themePath), contentValue.include), rootPath).then(includedValue => {
 					contentValue.settings = includedValue.settings.concat(contentValue.settings);
 					return TPromise.as(contentValue);
 				});
 			}
 			return TPromise.as(contentValue);
-		} else {
-			let parseResult = plist.parse(content.toString());
-			if (parseResult.errors && parseResult.errors.length) {
-				return TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
-			}
-			return TPromise.as(parseResult.value);
+		// } else {
+		// 	let parseResult = plist.parse(content.toString());
+		// 	if (parseResult.errors && parseResult.errors.length) {
+		// 		return TPromise.wrapError(new Error(nls.localize('error.cannotparse', "Problems parsing plist file: {0}", parseResult.errors.join(', '))));
+		// 	}
+		// 	return TPromise.as(parseResult.value);
 		}
 	});
 }
@@ -435,6 +449,98 @@ function _applyRules(styleSheetContent: string) {
 		(<HTMLStyleElement>themeStyles[0]).innerHTML = styleSheetContent;
 	}
 }
+
+let themesInitialize = [
+	{
+		extensionId: "vscode.theme-defaults",
+		themes: [
+			{
+				id: "",
+				label: "Dark+ (default dark)",
+				uiTheme: "vs-dark",
+				path: "./themes/dark_plus.json"
+			},
+			{
+				id: "",
+				label: "Light+ (default light)",
+				uiTheme: "vs",
+				path: "./themes/light_plus.json"
+			},
+			{
+				id: "",
+				label: "Dark (Visual Studio)",
+				uiTheme: "vs-dark",
+				path: "./themes/dark_vs.json"
+			},
+			{
+				id: "",
+				label: "Light (Visual Studio)",
+				uiTheme: "vs",
+				path: "./themes/light_vs.json"
+			},
+			{
+				id: "",
+				label: "High Contrast",
+				uiTheme: "hc-black",
+				path: "./themes/hc_black.json"
+			},
+			{
+				id: "",
+				label: "Monokai",
+				uiTheme: "vs-dark",
+				path: "./themes/Monokai.json"
+			},
+			{
+				id: "",
+				label: "Monokai Dimmed",
+				uiTheme: "vs-dark",
+				path: "./themes/dimmed-monokai.json"
+			},
+			{
+				id: "",
+				label: "Abyss",
+				uiTheme: "vs-dark",
+				path: "./themes/Abyss.json"
+			},
+			{
+				id: "",
+				label: "Kimbie Dark",
+				uiTheme: "vs-dark",
+				path: "./themes/Kimbie_dark.json"
+			},
+			{
+				id: "",
+				label: "Quiet Light",
+				uiTheme: "vs",
+				path: "./themes/QuietLight.json"
+			},
+			{
+				id: "",
+				label: "Red",
+				uiTheme: "vs-dark",
+				path: "./themes/red.json"
+			},
+			{
+				id: "",
+				label: "Solarized Dark",
+				uiTheme: "vs-dark",
+				path: "./themes/Solarized-dark.json"
+			},
+			{
+				id: "",
+				label: "Solarized Light",
+				uiTheme: "vs",
+				path: "./themes/Solarized-light.json"
+			},
+			{
+				id: "",
+				label: "Tomorrow Night Blue",
+				uiTheme: "vs-dark",
+				path: "./themes/Tomorrow-Night-Blue.json"
+			},
+		],
+	}
+];
 
 interface RGBA { r: number; g: number; b: number; a: number; }
 

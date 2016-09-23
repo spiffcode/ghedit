@@ -1,4 +1,5 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -31,8 +32,12 @@ import {IWindowService} from 'vs/workbench/services/window/electron-browser/wind
 import {IEditorGroupService} from 'vs/workbench/services/group/common/groupService';
 import {IModelService} from 'vs/editor/common/services/modelService';
 import {ModelBuilder} from 'vs/editor/node/model/modelBuilder';
+import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
+import {QuickOpenController} from 'vs/workbench/browser/parts/quickopen/quickOpenController';
+import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 
 export class TextFileService extends AbstractTextFileService {
+	private instService: IInstantiationService;
 
 	private static MAX_CONFIRM_FILES = 10;
 
@@ -52,6 +57,9 @@ export class TextFileService extends AbstractTextFileService {
 		@IModelService modelService: IModelService
 	) {
 		super(contextService, instantiationService, configurationService, telemetryService, editorService, editorGroupService, eventService, fileService, modelService);
+		this.instService = instantiationService;
+
+		this.modeService = modeService;
 
 		this.init();
 	}
@@ -232,9 +240,23 @@ export class TextFileService extends AbstractTextFileService {
 			opts.defaultId = 2;
 		}
 
+/*
 		const choice = this.windowService.getWindow().showMessageBox(opts);
 
 		return buttons[choice].result;
+*/
+
+		// Need blocking modal behavior because this method returns a result
+		// synchronously.
+		if (window.confirm(nls.localize('saveFileOK', 'OK to save file?'))) {
+			return ConfirmResult.SAVE;
+		} else {
+			if (window.confirm(nls.localize('performActionOK', 'OK to continue action without saving?'))) {
+				return ConfirmResult.DONT_SAVE;
+			} else {
+				return ConfirmResult.CANCEL;
+			}
+		}
 	}
 
 	private mnemonicLabel(label: string): string {
@@ -273,57 +295,103 @@ export class TextFileService extends AbstractTextFileService {
 
 	private doSaveAll(fileResources: URI[], untitledResources: URI[]): TPromise<ITextFileOperationResult> {
 
-		// Handle files first that can just be saved
-		return super.saveAll(fileResources).then(result => {
+		// Preflight for untitled to handle cancellation from the dialog
+		let targetsForUntitled: URI[] = [];
+		for (let i = 0; i < untitledResources.length; i++) {
+			let untitled = this.untitledEditorService.get(untitledResources[i]);
+			if (untitled) {
+				let targetPath: string;
 
-			// Preflight for untitled to handle cancellation from the dialog
-			let targetsForUntitled: URI[] = [];
-			for (let i = 0; i < untitledResources.length; i++) {
-				let untitled = this.untitledEditorService.get(untitledResources[i]);
-				if (untitled) {
-					let targetPath: string;
-
-					// Untitled with associated file path don't need to prompt
-					if (this.untitledEditorService.hasAssociatedFilePath(untitled.getResource())) {
-						targetPath = untitled.getResource().fsPath;
-					}
-
-					// Otherwise ask user
-					else {
-						targetPath = this.promptForPath(this.suggestFileName(untitledResources[i]));
-						if (!targetPath) {
-							return TPromise.as({
-								results: [...fileResources, ...untitledResources].map(r => {
-									return {
-										source: r
-									};
-								})
-							});
-						}
-					}
-
-					targetsForUntitled.push(URI.file(targetPath));
+				// Untitled with associated file path don't need to prompt
+				if (this.untitledEditorService.hasAssociatedFilePath(untitled.getResource())) {
+					targetPath = untitled.getResource().fsPath;
 				}
-			}
 
-			// Handle untitled
-			let untitledSaveAsPromises: TPromise<void>[] = [];
-			targetsForUntitled.forEach((target, index) => {
-				let untitledSaveAsPromise = this.saveAs(untitledResources[index], target).then(uri => {
-					result.results.push({
-						source: untitledResources[index],
-						target: uri,
-						success: !!uri
+				// Otherwise ask user
+				else {
+					targetPath = this.promptForPath(this.suggestFileName(untitledResources[i]));
+					if (!targetPath) {
+						return TPromise.as({
+							results: [...fileResources, ...untitledResources].map(r => {
+								return {
+									source: r
+								};
+							})
+						});
+					}
+				}
+
+				targetsForUntitled.push(URI.file(targetPath));
+			}
+		}
+
+		// This returns a TPromise that performs the save.
+		let saveAll = () => {
+			// Handle files first that can just be saved
+			return super.saveAll(fileResources).then(result => {
+
+				// Handle untitled
+				let untitledSaveAsPromises: TPromise<void>[] = [];
+				targetsForUntitled.forEach((target, index) => {
+					let untitledSaveAsPromise = this.saveAs(untitledResources[index], target).then(uri => {
+						result.results.push({
+							source: untitledResources[index],
+							target: uri,
+							success: !!uri
+						});
 					});
+
+					untitledSaveAsPromises.push(untitledSaveAsPromise);
 				});
 
-				untitledSaveAsPromises.push(untitledSaveAsPromise);
+				return TPromise.join(untitledSaveAsPromises).then(() => {
+					return result;
+				});
 			});
+		}
 
-			return TPromise.join(untitledSaveAsPromises).then(() => {
-				return result;
+		// See if any of these need a commit message
+		let needsCommitMessage: boolean = false;
+		let resources: URI[] = [...fileResources, ...targetsForUntitled];
+		for (let i = 0; i < resources.length; i++) {
+			let gistRegEx = (<IMainEnvironment>this.contextService.getConfiguration().env).gistRegEx;
+			if (!gistRegEx || !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
+				needsCommitMessage = true;
+				break;
+			}
+		}
+
+		if (needsCommitMessage) {
+			// Prompt for a commit message.
+			// We get the QuickOpenService here instead of via service injection because it hasn't
+			// yet been instantiated when the textFileService is -- BIG CLUE THIS ISN'T THE RIGHT
+			// PLACE TO DO THIS.
+			// TODO: validateInput fn to put appropriate constraints on the commit message.
+			let quickOpenService = this.instService.createInstance<IQuickOpenService>(QuickOpenController);
+			return quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
+				// If user canceled the input box.
+				if (!result) {
+					return TPromise.as({
+						results: [...fileResources, ...untitledResources].map((r) => {
+							return {
+								source: r
+							};
+						})
+					});
+				}
+
+				// This hack gets the commit message from here to the bowels of the githubFileService where
+				// it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+				// but that would involve forking a number of VSC source files.
+				this.fileService.updateOptions({ commitMessage: result });
+
+				// Save the files
+				return saveAll();
 			});
-		});
+		} else {
+			// No commit message needed; just save.
+			return saveAll();
+		}
 	}
 
 	public saveAs(resource: URI, target?: URI): TPromise<URI> {

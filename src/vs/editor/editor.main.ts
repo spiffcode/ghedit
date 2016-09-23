@@ -1,14 +1,16 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import 'vs/editor/browser/editor.all';
-import 'vs/editor/contrib/quickOpen/browser/quickOutline.contribution';
-import 'vs/editor/contrib/quickOpen/browser/gotoLine.contribution';
-import 'vs/editor/contrib/quickOpen/browser/quickCommand.contribution';
+// These are already provided by Workbench implementations.
+// import 'vs/editor/contrib/quickOpen/browser/quickOutline.contribution';
+// import 'vs/editor/contrib/quickOpen/browser/gotoLine.contribution';
+// import 'vs/editor/contrib/quickOpen/browser/quickCommand.contribution';
 import 'vs/languages/languages.main';
 import 'vs/languages/php/common/php.contribution';
 
@@ -17,6 +19,7 @@ import {createMonacoEditorAPI} from 'vs/editor/browser/standalone/standaloneEdit
 import {createMonacoLanguagesAPI, registerStandaloneSchema} from 'vs/editor/browser/standalone/standaloneLanguages';
 import {DefaultConfig} from 'vs/editor/common/config/defaultConfig';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
+import 'vs/editor/browser/standalone/standaloneSchemas';
 
 // Set defaults for standalone editor
 DefaultConfig.editor.wrappingIndent = 'none';

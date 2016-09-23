@@ -1,4 +1,5 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -9,7 +10,7 @@ import {Registry} from 'vs/platform/platform';
 import {Action, IAction} from 'vs/base/common/actions';
 import {ActionItem, BaseActionItem, Separator} from 'vs/base/browser/ui/actionbar/actionbar';
 import {Scope, IActionBarRegistry, Extensions as ActionBarExtensions, ActionBarContributor} from 'vs/workbench/browser/actionBarRegistry';
-import {FocusOpenEditorsView, FocusFilesExplorer, GlobalCompareResourcesAction, GlobalNewFileAction, GlobalNewFolderAction, RevertFileAction, SaveFilesAction, SaveAllAction, SaveFileAction, keybindingForAction, MoveFileToTrashAction, TriggerRenameFileAction, PasteFileAction, CopyFileAction, SelectResourceForCompareAction, CompareResourcesAction, NewFolderAction, NewFileAction, OpenToSideAction, ShowActiveFileInExplorer, CollapseExplorerView, RefreshExplorerView} from 'vs/workbench/parts/files/browser/fileActions';
+import {DeleteFileAction, FocusOpenEditorsView, FocusFilesExplorer, GlobalCompareResourcesAction, GlobalNewFileAction, GlobalNewFolderAction, RevertFileAction, SaveFilesAction, SaveAllAction, SaveFileAction, keybindingForAction, MoveFileToTrashAction, TriggerRenameFileAction, PasteFileAction, CopyFileAction, SelectResourceForCompareAction, CompareResourcesAction, NewFolderAction, NewFileAction, OpenToSideAction, ShowActiveFileInExplorer, CollapseExplorerView, RefreshExplorerView} from 'vs/workbench/parts/files/browser/fileActions';
 import {SyncActionDescriptor} from 'vs/platform/actions/common/actions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
@@ -81,8 +82,9 @@ class FilesViewerActionContributor extends ActionBarContributor {
 		let workspace = this.contextService.getWorkspace();
 		let isRoot = workspace && stat.resource.toString() === workspace.resource.toString();
 
-		// Copy File/Folder
-		if (!isRoot) {
+		// Copy File
+		// TODO: Make copying work for directories
+		if (!isRoot && !stat.isDirectory) {
 			actions.push(this.instantiationService.createInstance(CopyFileAction, tree, <FileStat>stat));
 		}
 
@@ -92,14 +94,18 @@ class FilesViewerActionContributor extends ActionBarContributor {
 		}
 
 		// Rename File/Folder
+		/* TODO: Currently high level github api doesn't support renaming.
 		if (!isRoot) {
 			actions.push(new Separator(null, 150));
 			actions.push(this.instantiationService.createInstance(TriggerRenameFileAction, tree, <FileStat>stat));
 		}
+		*/
 
-		// Delete File/Folder
-		if (!isRoot) {
-			actions.push(this.instantiationService.createInstance(MoveFileToTrashAction, tree, <FileStat>stat));
+		// Delete File
+		// TODO: make deleting work for directories
+		if (!isRoot && !stat.isDirectory) {
+			// TODO: actions.push(this.instantiationService.createInstance(MoveFileToTrashAction, tree, <FileStat>stat));
+			actions.push(this.instantiationService.createInstance(DeleteFileAction, tree, <FileStat>stat));
 		}
 
 		// Set Order

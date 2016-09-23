@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
@@ -16,8 +17,8 @@ import {IWorkbenchActionRegistry, Extensions} from 'vs/workbench/common/actionRe
 import {IQuickOpenService, IPickOpenEntry} from 'vs/workbench/services/quickopen/common/quickOpenService';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
-import {VIEWLET_ID, IExtensionsViewlet} from 'vs/workbench/parts/extensions/electron-browser/extensions';
-import {IExtensionGalleryService} from 'vs/platform/extensionManagement/common/extensionManagement';
+// DESKTOP: import {VIEWLET_ID, IExtensionsViewlet} from 'vs/workbench/parts/extensions/electron-browser/extensions';
+// DESKTOP: import {IExtensionGalleryService} from 'vs/platform/extensionManagement/common/extensionManagement';
 import {IViewletService} from 'vs/workbench/services/viewlet/common/viewletService';
 import {Delayer} from 'vs/base/common/async';
 
@@ -33,7 +34,7 @@ class SelectThemeAction extends Action {
 		@IQuickOpenService private quickOpenService: IQuickOpenService,
 		@IMessageService private messageService: IMessageService,
 		@IThemeService private themeService: IThemeService,
-		@IExtensionGalleryService private extensionGalleryService: IExtensionGalleryService,
+		// DESKTOP: @IExtensionGalleryService private extensionGalleryService: IExtensionGalleryService,
 		@IViewletService private viewletService: IViewletService
 	) {
 		super(id, label);
@@ -57,6 +58,7 @@ class SelectThemeAction extends Action {
 			const autoFocusIndex = firstIndex(picks, p => p.id === currentThemeId);
 			const delayer = new Delayer<void>(100);
 
+			/* DESKTOP:
 			if (this.extensionGalleryService.isEnabled()) {
 				const run = () => {
 					return this.viewletService.openViewlet(VIEWLET_ID, true)
@@ -75,6 +77,7 @@ class SelectThemeAction extends Action {
 					run
 				});
 			}
+			*/
 
 			return this.quickOpenService.pick(picks, { placeHolder, autoFocus: { autoFocusIndex }})
 				.then(

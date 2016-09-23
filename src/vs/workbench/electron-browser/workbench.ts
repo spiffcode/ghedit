@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
@@ -19,11 +20,11 @@ import timer = require('vs/base/common/timer');
 import errors = require('vs/base/common/errors');
 import {Registry} from 'vs/platform/platform';
 import {Identifiers} from 'vs/workbench/common/constants';
-import {isWindows, isLinux} from 'vs/base/common/platform';
+import {EventType} from 'vs/workbench/common/events';
 import {IOptions} from 'vs/workbench/common/options';
 import {IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions} from 'vs/workbench/common/contributions';
-import {BaseEditor} from 'vs/workbench/browser/parts/editor/baseEditor';
 import {IEditorRegistry, Extensions as EditorExtensions, TextEditorOptions, EditorInput, EditorOptions} from 'vs/workbench/common/editor';
+import {BaseEditor} from 'vs/workbench/browser/parts/editor/baseEditor';
 import {Part} from 'vs/workbench/browser/part';
 import {HistoryService} from 'vs/workbench/services/history/browser/history';
 import {ActivitybarPart} from 'vs/workbench/browser/parts/activitybar/activitybarPart';
@@ -44,8 +45,10 @@ import {WorkbenchEditorService} from 'vs/workbench/services/editor/browser/edito
 import {Position, Parts, IPartService} from 'vs/workbench/services/part/common/partService';
 import {IWorkspaceContextService as IWorkbenchWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IStorageService, StorageScope} from 'vs/platform/storage/common/storage';
-import {ContextMenuService} from 'vs/workbench/services/contextview/electron-browser/contextmenuService';
-import {WorkbenchKeybindingService} from 'vs/workbench/services/keybinding/electron-browser/keybindingService';
+// TODO: import {ContextMenuService} from 'vs/workbench/services/contextview/electron-browser/contextmenuService';
+import {ContextMenuService} from 'vs/platform/contextview/browser/contextMenuService';
+// TODO: import {WorkbenchKeybindingService} from 'vs/workbench/services/keybinding/electron-browser/keybindingService';
+import {StandaloneKeybindingService as WorkbenchKeybindingService} from 'vs/editor/browser/standalone/simpleServices';
 import {IWorkspace, IConfiguration} from 'vs/platform/workspace/common/workspace';
 import {IKeybindingService, IKeybindingContextKey} from 'vs/platform/keybinding/common/keybinding';
 import {IActivityService} from 'vs/workbench/services/activity/common/activityService';
@@ -66,7 +69,12 @@ import {IThreadService} from 'vs/workbench/services/thread/common/threadService'
 import {IStatusbarService} from 'vs/platform/statusbar/common/statusbar';
 import {IMenuService} from 'vs/platform/actions/common/actions';
 import {MenuService} from 'vs/platform/actions/common/menuService';
-import {IContextMenuService} from 'vs/platform/contextview/browser/contextView';
+import {IContextMenuService, IContextViewService} from 'vs/platform/contextview/browser/contextView';
+import {ICommandService} from 'vs/platform/commands/common/commands';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
+import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
+import {ITextFileService} from 'vs/workbench/parts/files/common/files';
+import {TextFileService} from 'vs/workbench/parts/files/electron-browser/textFileServices';
 
 interface WorkbenchParams {
 	workspace?: IWorkspace;
@@ -126,6 +134,7 @@ export class Workbench implements IPartService {
 		workspace: IWorkspace,
 		configuration: IConfiguration,
 		options: IOptions,
+		private isWelcomeMode: boolean,
 		serviceCollection: ServiceCollection,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
@@ -134,8 +143,13 @@ export class Workbench implements IPartService {
 		@IStorageService private storageService: IStorageService,
 		@ILifecycleService private lifecycleService: ILifecycleService,
 		@IMessageService private messageService: IMessageService,
-		@IThreadService private threadService: IThreadService
+		// TODO: @IThreadService private threadService: IThreadService,
+		@ICommandService private commandService: ICommandService,
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IContextViewService private contextViewService: IContextViewService,
+		@ITelemetryService private telemetryService: ITelemetryService
 	) {
+		this.isWelcomeMode = isWelcomeMode;
 
 		// Validate params
 		this.validateParams(container, configuration, options);
@@ -216,6 +230,16 @@ export class Workbench implements IPartService {
 
 			// Register Emitters
 			this.registerEmitters();
+
+			// Prevent drop events being cancelled. Without this tabs can't be dragged around the editor area.
+			// Why isn't this needed in VSCode (Electron)? Perhaps it has different default handling of drag events.
+			let contentArea = this.editorPart.getContentArea().getHTMLElement();
+			this.toDispose.push(DOM.addDisposableListener(contentArea, DOM.EventType.DRAG_OVER, (e: DragEvent) => {
+				e.preventDefault();
+			}));
+
+			// Prevent the browser from popping up its own context menu on top of ours.
+			this.toDispose.push(DOM.addDisposableListener(contentArea, DOM.EventType.CONTEXT_MENU, (e: Event) => DOM.EventHelper.stop(e)));
 
 			// Load composits and editors in parallel
 			let compositeAndEditorPromises: TPromise<any>[] = [];
@@ -326,7 +350,7 @@ export class Workbench implements IPartService {
 
 		// Empty workbench
 		else if (!this.workbenchParams.workspace) {
-			return TPromise.as([{ input: this.untitledEditorService.createOrGet() }]);
+			// DESKTOP: return TPromise.as([{ input: this.untitledEditorService.createOrGet() }]);
 		}
 
 		return TPromise.as([]);
@@ -347,11 +371,14 @@ export class Workbench implements IPartService {
 		serviceCollection.set(IStatusbarService, this.statusbarPart);
 
 		// Keybindings
-		this.keybindingService = this.instantiationService.createInstance(WorkbenchKeybindingService, <any>window);
+		// TODO: this.keybindingService = this.instantiationService.createInstance(WorkbenchKeybindingService, <any>window);
+		this.keybindingService = new WorkbenchKeybindingService(this.commandService, this.configurationService, this.messageService, document.body);
 		serviceCollection.set(IKeybindingService, this.keybindingService);
 
 		// Context Menu
-		serviceCollection.set(IContextMenuService, this.instantiationService.createInstance(ContextMenuService));
+		let contextMenuService = new ContextMenuService(document.body /* TODO: correct element? */, this.telemetryService, this.messageService, this.contextViewService)
+		// TODO: serviceCollection.set(IContextMenuService, this.instantiationService.createInstance(ContextMenuService));
+		serviceCollection.set(IContextMenuService, contextMenuService);
 
 		// Menus/Actions
 		serviceCollection.set(IMenuService, new SyncDescriptor(MenuService));
@@ -381,6 +408,8 @@ export class Workbench implements IPartService {
 		this.editorService = this.instantiationService.createInstance(WorkbenchEditorService, this.editorPart);
 		serviceCollection.set(IWorkbenchEditorService, this.editorService);
 		serviceCollection.set(IEditorGroupService, this.editorPart);
+		let textFileService = this.instantiationService.createInstance(TextFileService);
+		serviceCollection.set(ITextFileService, textFileService);
 
 		// History
 		serviceCollection.set(IHistoryService, this.instantiationService.createInstance(HistoryService));
@@ -416,6 +445,10 @@ export class Workbench implements IPartService {
 		let viewletRegistry = (<ViewletRegistry>Registry.as(ViewletExtensions.Viewlets));
 		if (!viewletRegistry.getDefaultViewletId()) {
 			this.sideBarHidden = true; // can only hide sidebar if we dont have a default viewlet id
+		}
+
+		if (this.isWelcomeMode) {
+			this.sideBarHidden = true; // hide the sidebar if in welcome mode
 		}
 
 		// Panel part visibility
@@ -706,7 +739,7 @@ export class Workbench implements IPartService {
 
 		// Create Workbench DIV Off-DOM
 		this.workbenchContainer = $('.monaco-workbench-container');
-		this.workbench = $().div({ 'class': 'monaco-workbench ' + (isWindows ? 'windows' : isLinux ? 'linux' : 'mac'), id: Identifiers.WORKBENCH_CONTAINER }).appendTo(this.workbenchContainer);
+		this.workbench = $().div({ 'class': 'monaco-workbench', id: Identifiers.WORKBENCH_CONTAINER }).appendTo(this.workbenchContainer);
 	}
 
 	private renderWorkbench(): void {
@@ -714,6 +747,11 @@ export class Workbench implements IPartService {
 		// Apply sidebar state as CSS class
 		if (this.sideBarHidden) {
 			this.workbench.addClass('nosidebar');
+		}
+
+		// Apply readonly state as CSS class
+		if (this.workbenchParams.options.editor.readOnly) {
+			this.workbench.addClass('readonly');
 		}
 
 		// Apply no-workspace state as CSS class
@@ -741,6 +779,12 @@ export class Workbench implements IPartService {
 			});
 
 		this.activitybarPart.create(activitybarPartContainer);
+
+		// TODO: Architect a way to hide the activity bar and have layout work rather than use this hack.
+		if (this.isWelcomeMode) {
+			this.activitybarPart.getContainer().getHTMLElement().style.minWidth = '0px';
+			this.activitybarPart.getContainer().getHTMLElement().style.width = '0px';
+		}
 	}
 
 	private createSidebarPart(): void {

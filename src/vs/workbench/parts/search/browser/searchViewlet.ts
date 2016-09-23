@@ -1,11 +1,12 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
-import 'vs/css!./media/searchviewlet';
+import 'vs/css!./searchviewlet';
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
 import {EditorType} from 'vs/editor/common/editorCommon';
@@ -20,7 +21,7 @@ import dom = require('vs/base/browser/dom');
 import {IAction, Action} from 'vs/base/common/actions';
 import {StandardKeyboardEvent} from 'vs/base/browser/keyboardEvent';
 import {Dimension, Builder, $} from 'vs/base/browser/builder';
-import { FindInput } from 'vs/base/browser/ui/findinput/findInput';
+import {FindInput} from 'vs/base/browser/ui/findinput/findInput';
 import {ITree} from 'vs/base/parts/tree/browser/tree';
 import {Tree} from 'vs/base/parts/tree/browser/treeImpl';
 import {Scope} from 'vs/workbench/common/memento';
@@ -151,6 +152,7 @@ export class SearchViewlet extends Viewlet {
 		};
 
 		this.queryDetails = this.searchWidgetsContainer.div({ 'class': ['query-details'] }, (builder) => {
+/*
 			builder.div({ 'class': 'more', 'tabindex': 0, 'role': 'button', 'title': nls.localize('moreSearch', "Toggle Search Details") })
 				.on(dom.EventType.CLICK, (e) => {
 					dom.EventHelper.stop(e);
@@ -163,6 +165,7 @@ export class SearchViewlet extends Viewlet {
 						this.toggleFileTypes();
 					}
 				});
+*/
 
 			//folder includes list
 			builder.div({ 'class': 'file-types' }, (builder) => {
@@ -240,6 +243,10 @@ export class SearchViewlet extends Viewlet {
 				$(this.inputPatternGlobalExclusions.inputElement).addClass('disabled');
 			}).hide();
 		}).getHTMLElement();
+
+		dom.addClass(this.queryDetails, 'more');
+		this.toggleFileTypes();
+		dom.removeClass(this.queryDetails, 'more');
 
 		this.messages = builder.div({ 'class': 'messages' }).hide().clone();
 
@@ -770,7 +777,8 @@ export class SearchViewlet extends Viewlet {
 				} else if (hasExcludes) {
 					message = nls.localize('noResultsExcludes', "No results found excluding '{0}' - ", excludePattern);
 				} else {
-					message = nls.localize('noResultsFound', "No results found. Review your settings for configured exclusions - ");
+					// message = nls.localize('noResultsFound', "No results found. Review your settings for configured exclusions - ");
+					message = nls.localize('noResultsFound', "No results found.");
 				}
 
 				// Indicate as status to ARIA
@@ -802,6 +810,8 @@ export class SearchViewlet extends Viewlet {
 
 						this.onQueryChanged(true);
 					});
+				}
+/*
 				} else {
 					$(div).a({
 						'class': ['pointer', 'prominent'],
@@ -814,6 +824,7 @@ export class SearchViewlet extends Viewlet {
 						action.run().done(() => action.dispose(), errors.onUnexpectedError);
 					});
 				}
+*/
 			} else {
 				this.viewModel.searchResult.toggleHighlights(true); // show highlights
 

@@ -1,27 +1,37 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
 import {IDisposable} from 'vs/base/common/lifecycle';
 import paths = require('vs/base/common/paths');
-import encoding = require('vs/base/node/encoding');
+// TODO: import encoding = require('vs/base/node/encoding');
 import errors = require('vs/base/common/errors');
 import strings = require('vs/base/common/strings');
 import uri from 'vs/base/common/uri';
 import timer = require('vs/base/common/timer');
 import {IFileService, IFilesConfiguration, IResolveFileOptions, IFileStat, IContent, IStreamContent, IImportResult, IResolveContentOptions, IUpdateContentOptions} from 'vs/platform/files/common/files';
-import {FileService as NodeFileService, IFileServiceOptions, IEncodingOverride} from 'vs/workbench/services/files/node/fileService';
+import {FileService as GitHubFileService, IFileServiceOptions, IEncodingOverride} from 'vs/workbench/services/files/node/fileService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IRequestService} from 'vs/platform/request/common/request';
+import {Github} from 'github';
+import {IGithubService} from 'githubService';
+
+// TODO: import {shell} from 'electron';
 import {Action} from 'vs/base/common/actions';
 import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
 
-import {shell} from 'electron';
+// TODO: Use vs/base/node/encoding replacement.
+const encoding = {
+	 UTF8: 'utf8'
+};
 
 // If we run with .NET framework < 4.5, we need to detect this error to inform the user
 const NET_VERSION_ERROR = 'System.MissingMethodException';
@@ -38,7 +48,9 @@ export class FileService implements IFileService {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IEventService private eventService: IEventService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
-		@IMessageService private messageService: IMessageService
+		@IMessageService private messageService: IMessageService,
+		@IRequestService private requestService: IRequestService,
+		@IGithubService private githubService: IGithubService
 	) {
 		const configuration = this.configurationService.getConfiguration<IFilesConfiguration>();
 		const env = this.contextService.getConfiguration().env;
@@ -71,7 +83,7 @@ export class FileService implements IFileService {
 
 		// create service
 		let workspace = this.contextService.getWorkspace();
-		this.raw = new NodeFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService);
+		this.raw = new GitHubFileService(workspace ? workspace.resource.fsPath : void 0, fileServiceConfig, this.eventService, this.requestService, this.githubService, this.contextService);
 
 		// Listeners
 		this.registerListeners();
@@ -80,6 +92,7 @@ export class FileService implements IFileService {
 	private onFileServiceError(msg: string): void {
 		errors.onUnexpectedError(msg);
 
+		/* GHC: Don't need this to run in the browser.
 		// Detect if we run < .NET Framework 4.5
 		if (msg && msg.indexOf(NET_VERSION_ERROR) >= 0) {
 			this.messageService.show(Severity.Warning, <IMessageWithAction>{
@@ -93,6 +106,7 @@ export class FileService implements IFileService {
 				]
 			});
 		}
+		*/
 	}
 
 	private registerListeners(): void {
@@ -125,6 +139,10 @@ export class FileService implements IFileService {
 			timerEvent.stop();
 
 			return result;
+		}, (error) => {
+			timerEvent.stop();
+
+			return TPromise.wrapError(error);
 		});
 	}
 
@@ -136,6 +154,10 @@ export class FileService implements IFileService {
 			timerEvent.stop();
 
 			return result;
+		}, (error) => {
+			timerEvent.stop();
+
+			return TPromise.wrapError(error);
 		});
 	}
 
@@ -193,7 +215,9 @@ export class FileService implements IFileService {
 
 		let absolutePath = resource.fsPath;
 
-		let result = shell.moveItemToTrash(absolutePath);
+// TODO:		let result = shell.moveItemToTrash(absolutePath);
+		console.log('shell.moveItemToTrash not implemented');
+		let result = null;
 		if (!result) {
 			return TPromise.wrapError<void>(new Error(nls.localize('trashFailed', "Failed to move '{0}' to the trash", paths.basename(absolutePath))));
 		}

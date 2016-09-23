@@ -1,11 +1,12 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import {IStringStream} from 'vs/platform/files/common/files';
-import * as crypto from 'crypto';
+// TODO: import * as crypto from 'crypto';
 import {DefaultEndOfLine, ITextModelCreationOptions, ITextModelResolvedOptions, IRawText} from 'vs/editor/common/editorCommon';
 import * as strings from 'vs/base/common/strings';
 import {guessIndentation} from 'vs/editor/common/model/indentationGuesser';
@@ -18,13 +19,13 @@ export class ModelBuilderResult {
 
 class ModelLineBasedBuilder {
 
-	private hash: crypto.Hash;
+	// TODO: private hash: crypto.Hash;
 	private BOM: string;
 	private lines: string[];
 	private currLineIndex: number;
 
 	constructor() {
-		this.hash = crypto.createHash('sha1');
+		// TODO: this.hash = crypto.createHash('sha1');
 		this.BOM = '';
 		this.lines = [];
 		this.currLineIndex = 0;
@@ -42,7 +43,7 @@ class ModelLineBasedBuilder {
 		for (let i = 0, len = lines.length; i < len; i++) {
 			this.lines[this.currLineIndex++] = lines[i];
 		}
-		this.hash.update(lines.join('\n') + '\n');
+		// TODO: this.hash.update(lines.join('\n') + '\n');
 	}
 
 	public finish(totalLength:number, carriageReturnCnt:number, opts:ITextModelCreationOptions): ModelBuilderResult {
@@ -86,17 +87,21 @@ class ModelLineBasedBuilder {
 				length: totalLength,
 				options: resolvedOpts
 			},
-			hash: this.hash.digest('hex')
+			// TODO: hash: this.hash.digest('hex')
+			hash: '0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff'
 		};
 	}
 }
 
 export function computeHash(rawText:IRawText): string {
+	/* TODO:
 	let hash = crypto.createHash('sha1');
 	for (let i = 0, len = rawText.lines.length; i < len; i++) {
 		hash.update(rawText.lines[i] + '\n');
 	}
 	return hash.digest('hex');
+	*/
+	return '0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff';
 }
 
 export class ModelBuilder {

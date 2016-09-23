@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import 'vs/css!./findInput';
+import 'vs/css!vs/base/browser/ui/findinput/findInput';
 
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
@@ -188,7 +189,7 @@ export class FindInput extends Widget {
 	}
 
 	private setInputWidth(): void {
-		let w = this.width - this.matchCount.width() - this.caseSensitive.width() - this.wholeWords.width() - this.regex.width();
+		let w = this.width - this.matchCount.width(); // - this.caseSensitive.width() - this.wholeWords.width() - this.regex.width();
 		this.inputBox.width = w;
 	}
 
@@ -219,6 +220,8 @@ export class FindInput extends Widget {
 				this.validate();
 			}
 		}));
+		this.regex.domNode.style.visibility = 'hidden';
+
 		this.wholeWords = this._register(new Checkbox({
 			actionClassName: 'whole-word',
 			title: NLS_WHOLE_WORD_CHECKBOX_LABEL + appendWholeWordsLabel,
@@ -232,6 +235,8 @@ export class FindInput extends Widget {
 				this.validate();
 			}
 		}));
+		this.wholeWords.domNode.style.visibility = 'hidden';
+
 		this.caseSensitive = this._register(new Checkbox({
 			actionClassName: 'case-sensitive',
 			title: NLS_CASE_SENSITIVE_CHECKBOX_LABEL + appendCaseSensitiveLabel,
@@ -248,6 +253,8 @@ export class FindInput extends Widget {
 				this._onCaseSensitiveKeyDown.fire(e);
 			}
 		}));
+		this.caseSensitive.domNode.style.visibility = 'hidden';
+
 		this.matchCount = this._register(new MatchCount({
 			onClick: (e) => {
 				this.inputBox.focus();
@@ -255,6 +262,7 @@ export class FindInput extends Widget {
 			}
 		}));
 
+/*
 		// Arrow-Key support to navigate between options
 		let indexes = [this.caseSensitive.domNode, this.wholeWords.domNode, this.regex.domNode];
 		this.onkeydown(this.domNode, (event: IKeyboardEvent) => {
@@ -282,6 +290,7 @@ export class FindInput extends Widget {
 				}
 			}
 		});
+*/
 
 		this.setInputWidth();
 

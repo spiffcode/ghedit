@@ -1,23 +1,29 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
-import fs = require('fs');
-import paths = require('path');
+// import fs = require('fs');
+import paths = require('vs/base/common/paths');
+import uri from 'vs/base/common/uri';
 
 import scorer = require('vs/base/common/scorer');
 import arrays = require('vs/base/common/arrays');
 import strings = require('vs/base/common/strings');
 import types = require('vs/base/common/types');
 import glob = require('vs/base/common/glob');
-import {IProgress, ISearchStats} from 'vs/platform/search/common/search';
+// import {IProgress, ISearchStats} from 'vs/platform/search/common/search';
+import {IProgress, FileMatch, IFileMatch, ISearchStats} from 'vs/platform/search/common/search';
 
-import extfs = require('vs/base/node/extfs');
+import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
+
 import flow = require('vs/base/node/flow');
-import {ISerializedFileMatch, ISerializedSearchComplete, IRawSearch, ISearchEngine} from './search';
+
+// import {ISerializedFileMatch, IRawSearch, ISearchEngine} from './search';
+import {ISerializedFileMatch, ISerializedSearchComplete, IRawSearch, ISearchEngine} from 'vs/workbench/services/search/node/search';
 
 export class FileWalker {
 	private config: IRawSearch;
@@ -36,7 +42,8 @@ export class FileWalker {
 
 	private walkedPaths: { [path: string]: boolean; };
 
-	constructor(config: IRawSearch) {
+	// constructor(config: IRawSearch) {
+	constructor(config: IRawSearch, private cache: IGithubTreeCache) {
 		this.config = config;
 		this.filePattern = config.filePattern;
 		this.excludePattern = config.excludePattern;
@@ -59,7 +66,8 @@ export class FileWalker {
 		this.isCanceled = true;
 	}
 
-	public walk(rootFolders: string[], extraFiles: string[], onResult: (result: ISerializedFileMatch, size: number) => void, done: (error: Error, isLimitHit: boolean) => void): void {
+	// public walk(rootFolders: string[], extraFiles: string[], onResult: (result: ISerializedFileMatch, size: number) => void, done: (error: Error, isLimitHit: boolean) => void): void {
+	public walk(rootFolders: string[], extraFiles: string[], onResult: (result: IFileMatch, size: number) => void, done: (error: Error, isLimitHit: boolean) => void): void {
 		this.fileWalkStartTime = Date.now();
 
 		// Support that the file pattern is a full path to a file that exists
@@ -70,7 +78,8 @@ export class FileWalker {
 
 			// Report result from file pattern if matching
 			if (exists) {
-				onResult({ path: this.filePattern }, size);
+				// onResult({ path: this.filePattern }, size);
+				onResult(new FileMatch(uri.file(this.filePattern)), size);
 
 				// Optimization: a match on an absolute path is a good result and we do not
 				// continue walking the entire root paths array for other matches because
@@ -93,7 +102,8 @@ export class FileWalker {
 			// For each root folder
 			flow.parallel(rootFolders, (absolutePath, perEntryCallback) => {
 				this.directoriesWalked++;
-				extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+				// this.extfs.readdir(absolutePath, (error: Error, files: string[]) => {
+				this.cache.readdir(absolutePath, (error: Error, files: string[]) => {
 					if (error || this.isCanceled || this.isLimitHit) {
 						return perEntryCallback(null, null);
 					}
@@ -106,7 +116,8 @@ export class FileWalker {
 
 						// Report result from file pattern if matching
 						if (match) {
-							onResult({ path: match }, size);
+							// onResult({ path: match }, size);
+							onResult(new FileMatch(uri.file(match)), size);
 						}
 
 						return this.doWalk(paths.normalize(absolutePath), '', files, onResult, perEntryCallback);
@@ -132,7 +143,8 @@ export class FileWalker {
 			return clb(false);
 		}
 
-		return fs.stat(this.filePattern, (error, stat) => {
+		// return fs.stat(this.filePattern, (error, stat) => {
+		return this.cache.stat(this.filePattern, (error, stat) => {
 			return clb(!error && !stat.isDirectory(), stat && stat.size); // only existing files
 		});
 	}
@@ -144,12 +156,14 @@ export class FileWalker {
 
 		const absolutePath = paths.join(basePath, this.filePattern);
 
-		return fs.stat(absolutePath, (error, stat) => {
+		// return this.fs.stat(absolutePath, (error, stat) => {
+		return this.cache.stat(absolutePath, (error, stat) => {
 			return clb(!error && !stat.isDirectory() ? absolutePath : null, stat && stat.size); // only existing files
 		});
 	}
 
-	private doWalk(absolutePath: string, relativeParentPathWithSlashes: string, files: string[], onResult: (result: ISerializedFileMatch, size: number) => void, done: (error: Error, result: any) => void): void {
+	// private doWalk(absolutePath: string, relativeParentPathWithSlashes: string, files: string[], onResult: (result: ISerializedFileMatch, size: number) => void, done: (error: Error, result: any) => void): void {
+	private doWalk(absolutePath: string, relativeParentPathWithSlashes: string, files: string[], onResult: (result: IFileMatch, size: number) => void, done: (error: Error, result: any) => void): void {
 
 		// Execute tasks on each file in parallel to optimize throughput
 		flow.parallel(files, (file: string, clb: (error: Error) => void): void => {
@@ -175,12 +189,18 @@ export class FileWalker {
 
 			// Use lstat to detect links
 			let currentAbsolutePath = [absolutePath, file].join(paths.sep);
-			fs.lstat(currentAbsolutePath, (error, lstat) => {
+
+			// Fix double slash by the above join when absolutePath is just '/'.
+			if (currentAbsolutePath.length >= 2 && currentAbsolutePath[0] === '/' && currentAbsolutePath[1] === '/')
+				currentAbsolutePath = currentAbsolutePath.substring(1, currentAbsolutePath.length);
+
+			// fs.lstat(currentAbsolutePath, (error, lstat) => {
+			this.cache.lstat(currentAbsolutePath, (error, lstat) => {
 				if (error || this.isCanceled || this.isLimitHit) {
 					return clb(null);
 				}
 
-				// If the path is a link, we must instead use fs.stat() to find out if the
+				// If the path is a link, we must instead use stat() to find out if the
 				// link is a directory or not because lstat will always return the stat of
 				// the link which is always a file.
 				this.statLinkIfNeeded(currentAbsolutePath, lstat, (error, stat) => {
@@ -205,7 +225,8 @@ export class FileWalker {
 							this.walkedPaths[realpath] = true; // remember as walked
 
 							// Continue walking
-							return extfs.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {
+							// return extfs.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {
+							return this.cache.readdir(currentAbsolutePath, (error: Error, children: string[]): void => {
 								if (error || this.isCanceled || this.isLimitHit) {
 									return clb(null);
 								}
@@ -242,7 +263,8 @@ export class FileWalker {
 		});
 	}
 
-	private matchFile(onResult: (result: ISerializedFileMatch, size: number) => void, absolutePath: string, relativePathWithSlashes: string, size?: number): void {
+	// private matchFile(onResult: (result: ISerializedFileMatch, size: number) => void, absolutePath: string, relativePathWithSlashes: string, size?: number): void {
+	private matchFile(onResult: (result: IFileMatch, size: number) => void, absolutePath: string, relativePathWithSlashes: string, size?: number): void {
 		if (this.isFilePatternMatch(relativePathWithSlashes) && (!this.includePattern || glob.match(this.includePattern, relativePathWithSlashes))) {
 			this.resultCount++;
 
@@ -251,9 +273,8 @@ export class FileWalker {
 			}
 
 			if (!this.isLimitHit) {
-				onResult({
-					path: absolutePath
-				}, size);
+				// onResult({ path: absolutePath }, size);
+				onResult(new FileMatch(uri.file(absolutePath)), size);
 			}
 		}
 	}
@@ -273,17 +294,21 @@ export class FileWalker {
 		return true;
 	}
 
-	private statLinkIfNeeded(path: string, lstat: fs.Stats, clb: (error: Error, stat: fs.Stats) => void): void {
+	// private statLinkIfNeeded(path: string, lstat: fs.Stats, clb: (error: Error, stat: fs.Stats) => void): void {
+	private statLinkIfNeeded(path: string, lstat: IGithubTreeStat, clb: (error: Error, stat: IGithubTreeStat) => void): void {
 		if (lstat.isSymbolicLink()) {
-			return fs.stat(path, clb); // stat the target the link points to
+			// return fs.stat(path, clb); // stat the target the link points to
+			return this.cache.stat(path, clb); // stat the target the link points to
 		}
 
 		return clb(null, lstat); // not a link, so the stat is already ok for us
 	}
 
-	private realPathIfNeeded(path: string, lstat: fs.Stats, clb: (error: Error, realpath?: string) => void): void {
+	// private realPathIfNeeded(path: string, lstat: fs.Stats, clb: (error: Error, realpath?: string) => void): void {
+	private realPathIfNeeded(path: string, lstat: IGithubTreeStat, clb: (error: Error, realpath?: string) => void): void {
 		if (lstat.isSymbolicLink()) {
-			return fs.realpath(path, (error, realpath) => {
+			// return fs.realpath(path, (error, realpath) => {
+			return this.cache.realpath(path, (error, realpath) => {
 				if (error) {
 					return clb(error);
 				}
@@ -301,11 +326,13 @@ export class Engine implements ISearchEngine {
 	private extraFiles: string[];
 	private walker: FileWalker;
 
-	constructor(config: IRawSearch) {
+	// constructor(config: IRawSearch) {
+	constructor(config: IRawSearch, private cache: IGithubTreeCache) {
 		this.rootFolders = config.rootFolders;
 		this.extraFiles = config.extraFiles;
 
-		this.walker = new FileWalker(config);
+		// this.walker = new FileWalker(config);
+		this.walker = new FileWalker(config, cache);
 	}
 
 	public search(onResult: (result: ISerializedFileMatch) => void, onProgress: (progress: IProgress) => void, done: (error: Error, complete: ISerializedSearchComplete) => void): void {
