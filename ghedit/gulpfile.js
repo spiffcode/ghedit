@@ -150,12 +150,12 @@ gulp.task('clean', shell.task([
 ]));
 
 gulp.task('pre-build', shell.task([
+	'mkdir -p out-build/ghedit',
+	'mkdir -p out-build/themes',
 	'cp index.html out-build',
 	'cp releasenotes.html out-build',
 	'cp documentation.html out-build',
-	'mkdir -p out-build/ghedit',
 	'cp src/ghedit/*.css out-build/ghedit',
-	'mkdir -p out-build/themes',
 	'cp src/themes/*.* out-build/themes',
 ]));
 
