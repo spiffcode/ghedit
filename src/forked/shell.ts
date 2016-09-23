@@ -106,7 +106,7 @@ import {WelcomePart} from 'welcomePart';
 import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'forked/openSettings';
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
-import {IAction} from 'vs/base/common/actions';
+import {Action, IAction} from 'vs/base/common/actions';
 import {VSCodeMenu} from 'forked/menus';
 
 const Identifiers = {
@@ -189,6 +189,32 @@ var referenceSearchRunPrev = referenceSearch.ReferenceAction.prototype.run;
 referenceSearch.ReferenceAction.prototype.run = function() {
 	showTip('referenceSearchTip', 'Note: Find All References only works within opened files in GHEdit.');
 	return referenceSearchRunPrev.call(this);
+}
+
+const CloseAction = new Action('welcome.close', nls.localize('close', "Close"), '', true, () => null);
+const ShowDocumentationAction = new Action(
+	'welcome.showDocumentation',
+	nls.localize('documentation', 'Documentation'),
+	null,
+	true,
+	() => {
+		window.open('https://spiffcode.github.io/ghedit/documentation.html?welcome=1', 'openDocumentationUrl');
+		return TPromise.as(true);
+	}
+);
+
+function showWelcomeTip() {
+	if (!getKeyValue('welcomeTip')) {
+		setKeyValue('welcomeTip', '1');
+		g_messageService.show(Severity.Info, {
+			message: nls.localize('readDocumentation', 'Welcome to GHEdit! Would you like to read the documentation?'),
+			actions:
+			[
+				CloseAction,
+				ShowDocumentationAction
+			]
+		});
+	}
 }
 
 /**
@@ -395,6 +421,10 @@ export class WorkbenchShell {
 
 				// This browser hack must be enabled once the workbench is loaded
 				enableBrowserHack(BrowserHack.TAB_DRAGGING);
+
+				// Show a first timer welcome tip
+				if (!this.isWelcomeMode())
+					showWelcomeTip();
 			},
 
 			onServicesCreated: () => {
