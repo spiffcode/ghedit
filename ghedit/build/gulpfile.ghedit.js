@@ -7,7 +7,7 @@ var gulp = require('gulp');
 var shell = require('gulp-shell');
 var path = require('path');
 var _ = require('underscore');
-var buildfile = require('../src/forked/buildfile');
+var buildfile = require('../src/buildfile');
 var util = require('./lib/util');
 var common = require('./gulpfile.common');
 
@@ -17,7 +17,7 @@ var headerVersion = process.env['BUILD_SOURCEVERSION'] || util.getVersion(root);
 // Build
 
 var gheditEntryPoints = _.flatten([
-	buildfile.entrypoint('forked/workbench.main'),
+	buildfile.entrypoint('vs/workbench/workbench.main'),
 	buildfile.base,
 	// buildfile.standaloneLanguages,
 	// buildfile.standaloneLanguages2,
@@ -25,7 +25,7 @@ var gheditEntryPoints = _.flatten([
 ]);
 
 var gheditResources = [
-	'out-build/forked/**/*.{svg,png}',
+	'out-build/**/*.{svg,png}',
 	// 'out-build/vs/**/*.{svg,png}',
 	// '!out-build/vs/base/browser/ui/splitview/**/*',
 	// '!out-build/vs/base/browser/ui/toolbar/**/*',
@@ -39,12 +39,6 @@ var gheditResources = [
 	'out-build/vs/base/common/errors.js',
 	// '!out-build/vs/workbench/**',
 	'out-build/monaco-*/**/*.*',
-	'out-build/forked/findInput.js',
-	'out-build/forked/searchActions.js',
-	'out-build/forked/searchResultsView.js',
-	'out-build/forked/searchViewlet.js',
-	'out-build/forked/searchviewlet.css',
-	'out-build/forked/searchWidget.js',
 	'out-build/vs/workbench/parts/search/**/*.*',
 	'!**/test/**',
 
@@ -72,7 +66,6 @@ function gheditLoaderConfig() {
 	var result = common.loaderConfig();
 
 	result.paths.lib = 'out-build/lib';
-	result.paths.forked = 'out-build/forked';
 	result.paths.githubService = 'out-build/githubService';
 	result.paths.githubActions = 'out-build/githubActions';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
@@ -114,8 +107,8 @@ gulp.task('build-min', ['minify-ghedit'], shell.task([
 	'cp index.html out-build-min',
 	'cp documentation.html out-build-min',
 	'cp releasenotes.html out-build-min',
-	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/forked/workbench.main.js > /tmp/workbench.main.js',
-	'mv /tmp/workbench.main.js out-build-min/forked/workbench.main.js',
+	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/vs/workbench/workbench.main.js > /tmp/workbench.main.js',
+	'mv /tmp/workbench.main.js out-build-min/vs/workbench/workbench.main.js',
 ]));
 // Is this below running optimize-ghedit twice?
 // gulp.task('ghedit-distro', ['minify-ghedit', 'optimize-ghedit']);
