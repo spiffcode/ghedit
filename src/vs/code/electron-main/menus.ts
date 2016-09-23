@@ -12,8 +12,8 @@ import * as underlyingPlatform from 'vs/base/common/platform';
 import * as arrays from 'vs/base/common/arrays';
 // DESKTOP: import * as env from 'vs/code/electron-main/env';
 // DESKTOP: import { ipcMain as ipc, app, shell, dialog, Menu, MenuItem } from 'electron';
-import { IWindowsService, IEnvironmentService, IPath, Menu, MenuItem } from 'fakeElectron';
-import * as Electron from 'fakeElectron';
+import { IWindowsService, IEnvironmentService, IPath, Menu, MenuItem } from 'ghedit/fakeElectron';
+import * as Electron from 'ghedit/fakeElectron';
 
 // DESKTOP: import { IWindowsService, WindowsManager, IOpenedPathsList } from 'vs/code/electron-main/windows';
 // DESKTOP: import { IPath, VSCodeWindow } from 'vs/code/electron-main/window';
