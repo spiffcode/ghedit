@@ -153,9 +153,8 @@ gulp.task('pre-build', shell.task([
 	'cp index.html out-build',
 	'cp releasenotes.html out-build',
 	'cp documentation.html out-build',
-	'mkdir -p out-build/forked',
-	'cp src/forked/*.css out-build/forked',
-	'cp src/*.css out-build',
+	'mkdir -p out-build/ghedit',
+	'cp src/ghedit/*.css out-build/ghedit',
 	'mkdir -p out-build/themes',
 	'cp src/themes/*.* out-build/themes',
 ]));

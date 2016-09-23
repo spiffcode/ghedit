@@ -25,7 +25,7 @@ var gheditEntryPoints = _.flatten([
 ]);
 
 var gheditResources = [
-	'out-build/forked/**/*.{svg,png}',
+	'out-build/ghedit/**/*.{svg,png}',
 	// 'out-build/vs/**/*.{svg,png}',
 	// '!out-build/vs/base/browser/ui/splitview/**/*',
 	// '!out-build/vs/base/browser/ui/toolbar/**/*',
