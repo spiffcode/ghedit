@@ -1,0 +1,19 @@
+{
+	"name": "rust",
+	"version": "0.1.0",
+	"publisher": "vscode",
+	"engines": { "vscode": "*" },
+	"contributes": {
+		"languages": [{
+			"id": "rust",
+			"extensions": [".rs"],
+			"aliases": ["Rust", "rust"],
+			"configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+			"language": "rust",
+			"path": "./syntaxes/rust.json",
+			"scopeName":"source.rust"
+		}]
+	}
+}
