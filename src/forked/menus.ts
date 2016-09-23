@@ -706,7 +706,7 @@ export class VSCodeMenu {
 		let switchGroup = new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miSwitchGroup', comment: ['&& denotes a mnemonic'] }, "Switch &&Group")), submenu: switchGroupMenu, enabled: true });
 
 		let gotoFile = this.createMenuItem(nls.localize({ key: 'miGotoFile', comment: ['&& denotes a mnemonic'] }, "Go to &&File..."), 'workbench.action.quickOpen');
-		let gotoSymbol = this.createMenuItem(nls.localize({ key: 'miGotoSymbol', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol..."), 'workbench.action.gotoSymbol');
+		// let gotoSymbol = this.createMenuItem(nls.localize({ key: 'miGotoSymbol', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol..."), 'workbench.action.gotoSymbol');
 		let gotoDefinition = this.createMenuItem(nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition"), 'editor.action.goToDeclaration');
 		let gotoLine = this.createMenuItem(nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line..."), 'workbench.action.gotoLine');
 		let gotoRepo = this.createMenuItem(nls.localize('miGotoRepository', "Go to &&Repository..."), 'workbench.action.github.chooseRepository');
@@ -722,7 +722,7 @@ export class VSCodeMenu {
 			*/
 			__separator__(),
 			gotoFile,
-			gotoSymbol,
+			// gotoSymbol,
 			gotoDefinition,
 			gotoLine,
 			gotoRepo,
