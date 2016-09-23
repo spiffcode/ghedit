@@ -15,6 +15,8 @@ import 'vs/css!./editorpart';
 
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import fileActions = require('vs/workbench/parts/files/browser/fileActions');
+import goToDeclaration = require('vs/editor/contrib/goToDeclaration/browser/goToDeclaration');
+import referenceSearch = require('vs/editor/contrib/referenceSearch/browser/referenceSearch');
 import * as nls from 'vs/nls';
 import {TPromise} from 'vs/base/common/winjs.base';
 import * as platform from 'vs/base/common/platform';
@@ -136,6 +138,57 @@ fileActions.BaseFileAction.prototype._updateEnablement = function() {
 	} else {
 		updateEnablementPrev.call(this);
 	}
+}
+
+function getKeyValue(key: string) {
+	let value = window.localStorage.getItem(key);
+	if (!value) {
+		var name = key + "=";
+		var ca = document.cookie.split(';');
+		for (var i = 0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+				value = c.substring(name.length,c.length);
+				break;
+			}
+		}
+	}
+	return value;
+}
+
+function setKeyValue(key: string, value: string) {
+	try {
+		// Raises an exception on Safari in private browsing mode
+		window.localStorage.setItem(key, '' + value);
+	} catch (error) {
+		var d = new Date();
+		d.setTime(d.getTime() + (365*24*60*60*1000));
+		var expires = "expires="+ d.toUTCString();
+		document.cookie = key + "=" + value + "; " + expires;
+	}
+}
+
+var g_messageService: IMessageService = null;
+function showTip(key: string, message: string) {
+	if (!getKeyValue(key)) {
+		setKeyValue(key, '1');
+		g_messageService.show(Severity.Info, message);
+	}
+}
+
+var definitionActionRunPrev = goToDeclaration.DefinitionAction.prototype.run;
+goToDeclaration.DefinitionAction.prototype.run = function() {
+	showTip('definitionActionTip', 'Note: Go To and Peek Definition only work within opened files in GHEdit.');
+	return definitionActionRunPrev.call(this);
+}
+
+var referenceSearchRunPrev = referenceSearch.ReferenceAction.prototype.run;
+referenceSearch.ReferenceAction.prototype.run = function() {
+	showTip('referenceSearchTip', 'Note: Find All References only works within opened files in GHEdit.');
+	return referenceSearchRunPrev.call(this);
 }
 
 /**
@@ -548,6 +601,7 @@ export class WorkbenchShell {
 
 		this.messageService = instantiationService.createInstance(MessageService);
 		serviceCollection.set(IMessageService, this.messageService);
+		g_messageService = this.messageService;
 
 		this.toUnbind.push(NullLifecycleService.onShutdown(() => disposables.dispose()));
 		serviceCollection.set(ILifecycleService, NullLifecycleService);
