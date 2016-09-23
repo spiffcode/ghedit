@@ -18,7 +18,7 @@ import glob = require('vs/base/common/glob');
 // import {IProgress, ISearchStats} from 'vs/platform/search/common/search';
 import {IProgress, FileMatch, IFileMatch, ISearchStats} from 'vs/platform/search/common/search';
 
-import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
+import {IGithubTreeCache, IGithubTreeStat} from 'ghedit/githubTreeCache';
 
 import flow = require('vs/base/node/flow');
 

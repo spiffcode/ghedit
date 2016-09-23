@@ -41,9 +41,9 @@ var github = require('lib/github');
 // TODO: import {toFileChangesEvent, normalize, IRawFileChange} from 'vs/workbench/services/files/node/watcher/common';
 import {IEventService} from 'vs/platform/event/common/event';
 import {Github, Repository, User, Gist, Error as GithubError} from 'github';
-import {IGithubService} from 'githubService';
+import {IGithubService} from 'forked/githubService';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import {IGithubTreeCache, IGithubTreeStat} from 'githubTreeCache';
+import {IGithubTreeCache, IGithubTreeStat} from 'ghedit/githubTreeCache';
 
 interface GistInfo {
 	gist: Gist;

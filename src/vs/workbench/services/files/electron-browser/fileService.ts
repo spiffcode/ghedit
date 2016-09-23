@@ -22,7 +22,7 @@ import {IEventService} from 'vs/platform/event/common/event';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IRequestService} from 'vs/platform/request/common/request';
 import {Github} from 'github';
-import {IGithubService} from 'githubService';
+import {IGithubService} from 'ghedit/githubService';
 
 // TODO: import {shell} from 'electron';
 import {Action} from 'vs/base/common/actions';

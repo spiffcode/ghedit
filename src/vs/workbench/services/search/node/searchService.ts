@@ -20,7 +20,7 @@ import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 // TODO: import {IRawSearch, ISerializedSearchComplete, ISerializedSearchProgressItem, ISerializedFileMatch, IRawSearchService} from './search';
 // TODO: import {ISearchChannel, SearchChannelClient} from './searchIpc';
-import {IGithubService} from 'githubService';
+import {IGithubService} from 'ghedit/githubService';
 var github = require('lib/github');
 import {Github, SearchResult, ResultItem, TextMatch, FragmentMatch, SearchOptions, Search as GithubApiSearch, Error as GithubError} from 'github';
 import {IRawSearch} from 'vs/workbench/services/search/node/search';

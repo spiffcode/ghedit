@@ -22,7 +22,7 @@ import * as Electron from 'fakeElectron';
 import { Keybinding } from 'vs/base/common/keyCodes';
 import product from 'vs/platform/product';
 import pkg from 'vs/platform/package';
-import {AboutGHEditAction} from 'githubActions';
+import {AboutGHEditAction} from 'ghedit/githubActions';
 
 /* DESKTOP:
 export function generateNewIssueUrl(baseUrl: string, name: string, version: string, commit: string, date: string): string {

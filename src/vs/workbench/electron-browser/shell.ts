@@ -90,16 +90,16 @@ import {ensureStaticPlatformServices} from 'vs/editor/browser/standalone/standal
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
 
 import {Github, Repository, Error as GithubError} from 'github';
-import {NavbarPart} from 'forked/navbarPart';
-import {INavbarService, NavbarAlignment, INavbarEntry} from 'forked/navbarService';
+import {NavbarPart} from 'ghedit/navbarPart';
+import {INavbarService, NavbarAlignment, INavbarEntry} from 'ghedit/navbarService';
 import {UserSettings} from 'vs/base/node/userSettings';
-import {UserNavbarItem} from 'userNavbarItem';
-import {MenusNavbarItem} from 'menusNavbarItem';
-import {IGithubService} from 'githubService';
+import {UserNavbarItem} from 'ghedit/userNavbarItem';
+import {MenusNavbarItem} from 'ghedit/menusNavbarItem';
+import {IGithubService} from 'ghedit/githubService';
 import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
-import {WelcomePart} from 'welcomePart';
+import {WelcomePart} from 'ghedit/welcomePart';
 import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbench/browser/actions/openSettings';
-import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'githubActions';
+import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'ghedit/githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {Action, IAction} from 'vs/base/common/actions';
 import {VSCodeMenu} from 'vs/code/electron-main/menus';

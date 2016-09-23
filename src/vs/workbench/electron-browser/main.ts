@@ -26,7 +26,7 @@ import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/co
 import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
 import {ConfigurationService} from 'vs/workbench/services/configuration/node/configurationService';
 import {Github, Repository, Error as GithubError, UserInfo} from 'github';
-import {GithubService, IGithubService} from 'githubService';
+import {GithubService, IGithubService} from 'ghedit/githubService';
 
 // TODO: import path = require('path');
 var path = {
