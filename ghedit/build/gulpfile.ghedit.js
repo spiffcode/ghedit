@@ -7,7 +7,7 @@ var gulp = require('gulp');
 var shell = require('gulp-shell');
 var path = require('path');
 var _ = require('underscore');
-var buildfile = require('../src/buildfile');
+var buildfile = require('../src/ghedit/buildfile');
 var util = require('./lib/util');
 var common = require('./gulpfile.common');
 
@@ -25,7 +25,7 @@ var gheditEntryPoints = _.flatten([
 ]);
 
 var gheditResources = [
-	'out-build/**/*.{svg,png}',
+	'out-build/forked/**/*.{svg,png}',
 	// 'out-build/vs/**/*.{svg,png}',
 	// '!out-build/vs/base/browser/ui/splitview/**/*',
 	// '!out-build/vs/base/browser/ui/toolbar/**/*',
@@ -66,6 +66,7 @@ function gheditLoaderConfig() {
 	var result = common.loaderConfig();
 
 	result.paths.lib = 'out-build/lib';
+	result.paths.ghedit = 'out-build/ghedit';
 	result.paths.githubService = 'out-build/githubService';
 	result.paths.githubActions = 'out-build/githubActions';
 	result.paths.githubTreeCache = 'out-build/githubTreeCache';
