@@ -8,12 +8,12 @@
 import {IDisposable} from 'vs/base/common/lifecycle';
 import {IContextMenuService} from 'vs/platform/contextview/browser/contextView';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
-import {INavbarItem} from 'forked/navbar';
+import {INavbarItem} from 'ghedit/navbar';
 import {DropdownMenu} from 'vs/base/browser/ui/dropdown/dropdown';
 import {IAction, Action} from 'vs/base/common/actions';
 import {ActionItem, Separator} from 'vs/base/browser/ui/actionbar/actionbar';
 import {TPromise} from 'vs/base/common/winjs.base';
-import {MenuItemType, Menu, MenuItem } from 'fakeElectron';
+import {MenuItemType, Menu, MenuItem } from 'ghedit/fakeElectron';
 import {dispose} from 'vs/base/common/lifecycle';
 import {Keybinding} from 'vs/base/common/keyCodes';
 import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';

@@ -13,7 +13,7 @@ import {QuickOpenHandler} from 'vs/workbench/browser/quickopen';
 import {Mode, IEntryRunContext, IAutoFocus, IModel, IQuickNavigateConfiguration} from 'vs/base/parts/quickopen/common/quickOpen';
 import {QuickOpenEntry, IContext, IHighlight, QuickOpenEntryGroup, QuickOpenModel} from 'vs/base/parts/quickopen/browser/quickOpenModel';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
-import {IGithubService, openRepository} from 'githubService'; 
+import {IGithubService, openRepository} from 'ghedit/githubService'; 
 import {ITree, IElementCallback} from 'vs/base/parts/tree/browser/tree';
 import {Builder, $} from 'vs/base/browser/builder';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';

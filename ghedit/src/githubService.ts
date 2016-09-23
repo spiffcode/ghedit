@@ -5,11 +5,11 @@
 
 'use strict';
 
-var github = require('lib/github');
+var github = require('ghedit/lib/github');
 import {Github, Repository, UserInfo, Error as GithubError} from 'github';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {TPromise} from 'vs/base/common/winjs.base';
-import {GithubTreeCache, IGithubTreeCache} from 'githubTreeCache';
+import {GithubTreeCache, IGithubTreeCache} from 'ghedit/githubTreeCache';
 import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 
 const RECENT_REPOS_COUNT = 4;

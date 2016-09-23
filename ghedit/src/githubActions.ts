@@ -12,7 +12,7 @@ import {IQuickOpenService, IPickOpenEntry, IPickOptions} from 'vs/workbench/serv
 import {Registry} from 'vs/platform/platform';
 import {SyncActionDescriptor} from 'vs/platform/actions/common/actions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
-import {IGithubService, openRepository} from 'githubService';
+import {IGithubService, openRepository} from 'ghedit/githubService';
 import {RepositoryInfo, TagInfo, Error} from 'github';
 import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';

@@ -11,7 +11,7 @@ import dom = require('vs/base/browser/dom');
 import {Part} from 'vs/workbench/browser/part';
 import {Builder, $} from 'vs/base/browser/builder';
 import {RepositoryInfo, Error} from 'github';
-import {IGithubService} from 'githubService';
+import {IGithubService} from 'ghedit/githubService';
 import {InputBox} from 'vs/base/browser/ui/inputbox/inputBox';
 import {Button} from 'vs/base/browser/ui/button/button';
 import {KeyCode} from 'vs/base/common/keyCodes';

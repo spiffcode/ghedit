@@ -5,10 +5,10 @@
 
 'use strict';
 
-var github = require('lib/github');
+var github = require('ghedit/lib/github');
 import {Repository, TreeItem, Error as GithubError} from 'github';
 import {TPromise} from 'vs/base/common/winjs.base';
-import {IGithubService} from 'githubService';
+import {IGithubService} from 'ghedit/githubService';
 import {Limiter} from 'vs/base/common/async';
 import paths = require('vs/base/common/paths');
 
