@@ -17,7 +17,7 @@ import {IGithubService, openRepository} from 'githubService';
 import {ITree, IElementCallback} from 'vs/base/parts/tree/browser/tree';
 import {Builder, $} from 'vs/base/browser/builder';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
-import {IMainEnvironment} from 'forked/main';
+import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 import {Limiter} from 'vs/base/common/async';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 

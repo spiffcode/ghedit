@@ -10,7 +10,7 @@ import {Github, Repository, UserInfo, Error as GithubError} from 'github';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {TPromise} from 'vs/base/common/winjs.base';
 import {GithubTreeCache, IGithubTreeCache} from 'githubTreeCache';
-import {IMainEnvironment} from 'forked/main';
+import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 
 const RECENT_REPOS_COUNT = 4;
 

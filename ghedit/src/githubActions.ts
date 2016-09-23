@@ -16,7 +16,7 @@ import {IGithubService, openRepository} from 'githubService';
 import {RepositoryInfo, TagInfo, Error} from 'github';
 import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import {IMainEnvironment} from 'forked/main';
+import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
 import {QuickOpenAction} from 'vs/workbench/browser/quickopen';
 
