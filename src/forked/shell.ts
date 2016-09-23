@@ -220,37 +220,32 @@ function showWelcomeTip() {
 /**
  * Put code for browser specific hacks here.
  */
-enum Browser {
-	IE = 0x1000,
-	EDGE = 0x2000
-}
-
 export enum BrowserHack {
-	EDITOR_MOUSE_CLICKS = 1 | Browser.IE | Browser.EDGE,
-	MESSAGE_BOX_TEXT = 2 | Browser.IE | Browser.EDGE,
-	TAB_DRAGGING = 3 | Browser.IE | Browser.EDGE,
-	TAB_LABEL = 4 | Browser.IE
+	EDITOR_MOUSE_CLICKS,
+	MESSAGE_BOX_TEXT,
+	TAB_DRAGGING,
+	TAB_LABEL
 }
 
 export function enableBrowserHack(hack: BrowserHack) {
-	// Check that this hack is for this browser
+	// Check for browser type
 	let isIE = navigator.userAgent.indexOf('Trident/') >= 0;
 	let isEdge = navigator.userAgent.indexOf('Edge/') >= 0;
-	if (isIE != ((hack & Browser.IE) != 0) && isEdge != ((hack & Browser.EDGE) != 0))
-		return;
 
 	switch (hack) {
 	case BrowserHack.EDITOR_MOUSE_CLICKS:
-		// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
-		// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
-		// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
-		// Does this have any terrible side-effects? Good question!
-		document.body.style.width = '12345px';
-		document.body.style.height = '12345px';
+		if (isIE && isEdge) {
+			// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
+			// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
+			// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
+			// Does this have any terrible side-effects? Good question!
+			document.body.style.width = '12345px';
+			document.body.style.height = '12345px';
+		}
 		break;
 
 	case BrowserHack.MESSAGE_BOX_TEXT:
-		{
+		if (isIE && isEdge) {
 			// Add new css rules / override existing ones. First create a style sheet.
 			// https://davidwalsh.name/add-rules-stylesheets
 			let style = document.createElement("style");
@@ -267,7 +262,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 		break;
 
 	case BrowserHack.TAB_DRAGGING:
-		{
+		if (isIE && isEdge) {
 			// Custom scrollbars get created when dragging tabs so that the tab container can scroll.
 			// On IE / Edge the actual scrollbars show instead. For now just forcefully deny overflow: scroll
 			// so the scrollbar doesn't appear.
@@ -280,7 +275,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 		break;
 
 	case BrowserHack.TAB_LABEL:
-		{
+		if (isIE) {
 			// Add new css rules / override existing ones. First create a style sheet.
 			// https://davidwalsh.name/add-rules-stylesheets
 			let style = document.createElement("style");
