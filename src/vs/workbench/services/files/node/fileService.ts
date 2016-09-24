@@ -30,7 +30,7 @@ import uri from 'vs/base/common/uri';
 import nls = require('vs/nls');
 import http = require('vs/base/common/http');
 import {IRequestService} from 'vs/platform/request/common/request';
-var github = require('lib/github');
+var github = require('ghedit/lib/github');
 
 // TODO: import pfs = require('vs/base/node/pfs');
 // TODO: import encoding = require('vs/base/node/encoding');

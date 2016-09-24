@@ -7,7 +7,7 @@
 'use strict';
 
 import 'vs/css!./media/shell';
-import 'vs/css!./editorpart';
+import 'vs/css!vs/workbench/browser/parts/editor/media/editorpart';
 
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import fileActions = require('vs/workbench/parts/files/browser/fileActions');

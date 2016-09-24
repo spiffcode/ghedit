@@ -6,7 +6,7 @@
 
 'use strict';
 
-import 'lib/github';
+import 'ghedit/lib/github';
 
 // Base
 import 'vs/base/common/strings';
@@ -40,7 +40,7 @@ import 'vs/workbench/parts/files/browser/files.contribution';
 
 import 'vs/workbench/parts/search/browser/search.contribution';
 
-import 'github.contribution';
+import 'ghedit/github.contribution';
 
 // DESKTOP: import 'vs/workbench/parts/git/electron-browser/git.contribution';
 import 'vs/workbench/parts/git/browser/gitQuickOpen';

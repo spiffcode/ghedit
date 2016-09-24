@@ -16,17 +16,17 @@
    if (typeof define === 'function' && define.amd) {
       define(
          [
-            'lib/es6-promise',
-            'lib/base-64',
-            'lib/utf8',
-            'lib/axios'
+            'ghedit/lib/es6-promise',
+            'ghedit/lib/base-64',
+            'ghedit/lib/utf8',
+            'ghedit/lib/axios'
          ],
          function (Promise, Base64, Utf8, axios) {
             return (root.Github = factory(Promise, Base64, Utf8, axios));
          }
       );
    } else if (typeof module === 'object' && module.exports) {
-      module.exports = factory(require('lib/es6-promise'), require('lib/base-64'), require('lib/utf8'), require('lib/axios'));
+      module.exports = factory(require('ghedit/lib/es6-promise'), require('ghedit/lib/base-64'), require('ghedit/lib/utf8'), require('ghedit/lib/axios'));
    } else {
       root.Github = factory(root.Promise, root.base64, root.utf8, root.axios);
    }

@@ -463,10 +463,10 @@
 						require.config(loaderConfig, false);
 					}
 
-					require(['forked/workbench.main'], function() {
+					require(['vs/workbench/workbench.main'], function() {
 						timers.afterLoad = new Date();
 
-						var main = require('forked/main');
+						var main = require('vs/workbench/electron-browser/main');
 						main.startup(configuration, globalSettings).then(function() {
 							mainStarted = true;
 
