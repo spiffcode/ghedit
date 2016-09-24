@@ -9,6 +9,7 @@
 require('events').EventEmitter.defaultMaxListeners = 100;
 
 const gulp = require('gulp');
+const debug = require('gulp-debug');
 const json = require('gulp-json-editor');
 const buffer = require('gulp-buffer');
 const tsb = require('gulp-tsb');
@@ -46,7 +47,8 @@ function createCompile(build, emitError) {
 
 	return function (token) {
 		const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));
-		const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+		const tsFilter = util.filter(data => /\.ts$/.test(data.path) && !/(\/|\\)test(\/|\\)/.test(data.path));
+//		const tsFilter = util.filter(data => /\.ts$/.test(data.path));
 		const noDeclarationsFilter = util.filter(data => !(/\.d\.ts$/.test(data.path)));
 
 		const input = es.through();
@@ -55,6 +57,7 @@ function createCompile(build, emitError) {
 			.pipe(bom())
 			.pipe(utf8Filter.restore)
 			.pipe(tsFilter)
+			.pipe(debug())
 			.pipe(util.loadSourcemaps())
 			.pipe(ts(token))
 			.pipe(noDeclarationsFilter)
