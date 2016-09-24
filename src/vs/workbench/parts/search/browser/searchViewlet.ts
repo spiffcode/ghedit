@@ -6,7 +6,7 @@
 
 'use strict';
 
-import 'vs/css!./searchviewlet';
+import 'vs/css!./media/searchviewlet';
 import nls = require('vs/nls');
 import {TPromise} from 'vs/base/common/winjs.base';
 import {EditorType} from 'vs/editor/common/editorCommon';
