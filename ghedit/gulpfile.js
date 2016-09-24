@@ -144,19 +144,18 @@ require('./build/gulpfile.ghedit');
  * TASKS from original ghedit gulpfile.js
  * ------------------------------------------*/
 
-gulp.task('clean', shell.task([
-	'rsync -a --delete $(cd "$(cd "src/vs" && echo $(pwd -P))"/../../out && echo $PWD)/ out-build',
-	'find out-build -iname "*exe" | xargs rm -f'
-]));
-
 gulp.task('pre-build', shell.task([
-	'mkdir -p out-build/ghedit',
+	'mkdir -p out-build',
+	'mkdir -p out-build-opt',
+	'mkdir -p out-build-min',
+	'../node_modules/.bin/gulp --cwd .. compile',
+	'rsync -a --delete ../out/ out-build',
+	'find out-build -iname "*exe" | xargs rm -f',
 	'mkdir -p out-build/themes',
+	'cp src/themes/*.* out-build/themes',
 	'cp index.html out-build',
 	'cp releasenotes.html out-build',
-	'cp documentation.html out-build',
-	'cp src/ghedit/*.css out-build/ghedit',
-	'cp src/themes/*.* out-build/themes',
+	'cp documentation.html out-build'
 ]));
 
 gulp.task('build', ['pre-build'], shell.task([

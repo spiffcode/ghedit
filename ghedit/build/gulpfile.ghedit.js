@@ -7,7 +7,7 @@ var gulp = require('gulp');
 var shell = require('gulp-shell');
 var path = require('path');
 var _ = require('underscore');
-var buildfile = require('../src/ghedit/buildfile');
+var buildfile = require('../../src/ghedit/buildfile');
 var util = require('./lib/util');
 var common = require('./gulpfile.common');
 
@@ -65,17 +65,17 @@ var BUNDLED_FILE_HEADER = [
 function gheditLoaderConfig() {
 	var result = common.loaderConfig();
 
-	result.paths.lib = 'out-build/lib';
+	result.paths.lib = 'out-build/ghedit/lib';
 	result.paths.ghedit = 'out-build/ghedit';
-	result.paths.githubService = 'out-build/githubService';
-	result.paths.githubActions = 'out-build/githubActions';
-	result.paths.githubTreeCache = 'out-build/githubTreeCache';
-	result.paths.openRepoHandler = 'out-build/openRepoHandler';
-	result.paths['github.contribution'] = 'out-build/github.contribution';
-	result.paths.userNavbarItem = 'out-build/userNavbarItem';
-	result.paths.welcomePart = 'out-build/welcomePart';
-	result.paths.menusNavbarItem = 'out-build/menusNavbarItem';
-	result.paths.fakeElectron = 'out-build/fakeElectron';
+	result.paths.githubService = 'out-build/ghedit/githubService';
+	result.paths.githubActions = 'out-build/ghedit/githubActions';
+	result.paths.githubTreeCache = 'out-build/ghedit/githubTreeCache';
+	result.paths.openRepoHandler = 'out-build/ghedit/openRepoHandler';
+	result.paths['github.contribution'] = 'out-build/ghedit/github.contribution';
+	result.paths.userNavbarItem = 'out-build/ghedit/userNavbarItem';
+	result.paths.welcomePart = 'out-build/ghedit/welcomePart';
+	result.paths.menusNavbarItem = 'out-build/ghedit/menusNavbarItem';
+	result.paths.fakeElectron = 'out-build/ghedit/fakeElectron';
 
 	// TODO: Is this what we want?
 	// never ship marked in ghedit

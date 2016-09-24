@@ -56,7 +56,6 @@
     "monaco-typescript": "0.5.0"
   },
   "scripts": {
-    "clean": "gulp clean",
     "build": "gulp build",
     "build-opt": "gulp build-opt",
     "build-min": "gulp build-min",

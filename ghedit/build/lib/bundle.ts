@@ -111,7 +111,7 @@ export function bundle(entryPoints:IEntryPoint[], config:ILoaderConfig, callback
 	});
 
 
-	var code = require('fs').readFileSync(path.join(__dirname, '../../src/vs/loader.js'));
+	var code = require('fs').readFileSync(path.join(__dirname, '../../out-build/vs/loader.js'));
 	var r: Function = <any> vm.runInThisContext('(function(require, module, exports) { ' + code + '\n});');
 	var loaderModule = { exports: {} };
 	r.call({}, require, loaderModule, loaderModule.exports);
