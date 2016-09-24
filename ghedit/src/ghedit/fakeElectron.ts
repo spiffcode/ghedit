@@ -2,8 +2,8 @@
 
 import {EventEmitter} from 'vs/base/common/eventEmitter';
 
-interface BrowserWindow {}
-interface NativeImage {}
+export interface BrowserWindow {}
+export interface NativeImage {}
 
 // https://github.com/electron/electron/blob/master/docs/api/menu-item.md
 // https://github.com/electron/electron/blob/master/docs/api/accelerator.md

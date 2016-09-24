@@ -26,7 +26,7 @@ export class SettingsManager extends UserSettings implements ISettingsService {
 	_serviceBrand: any;
 
 	constructor(@IEnvironmentService envService: IEnvironmentService) {
-		super(envService.appSettingsPath, envService.appKeybindingsPath);
+		super(null, null, null); // envService.appSettingsPath, envService.appKeybindingsPath);
 
 		app.on('will-quit', () => {
 			this.dispose();

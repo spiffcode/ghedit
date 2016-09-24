@@ -14,7 +14,7 @@ import * as json from 'vs/base/common/json';
 import * as objects from 'vs/base/common/objects';
 import URI from 'vs/base/common/uri';
 import {TPromise} from 'vs/base/common/winjs.base';
-// import Event, {Emitter} from 'vs/base/common/event';
+import Event, {Emitter} from 'vs/base/common/event';
 import {ServiceIdentifier, createDecorator} from 'vs/platform/instantiation/common/instantiation';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
 import {IFileService, IContent} from 'vs/platform/files/common/files';
@@ -22,18 +22,18 @@ import {IEventService} from 'vs/platform/event/common/event';
 
 export const ISettingsService = createDecorator<ISettingsService>('settingsService');
 
-export interface ISettingsService {
-	serviceId: ServiceIdentifier<any>;
-	loadSettings(): void;
-}
-
 export interface ISettings {
 	settings: any;
 	settingsParseErrors?: string[];
 	keybindings: any[];
 }
 
-export class UserSettings implements ISettingsService {
+export interface ISettingsService {
+	serviceId: ServiceIdentifier<any>;
+	loadSettings(): void;
+}
+
+export class UserSettings {
 
 //	private static CHANGE_BUFFER_DELAY = 300;
 
@@ -44,7 +44,7 @@ export class UserSettings implements ISettingsService {
 //	private appSettingsPath: string;
 //	private appKeybindingsPath: string;
 
-//	private _onChange: Emitter<ISettings>;
+	private _onChange: Emitter<ISettings>;
 
 	serviceId = ISettingsService;
 
@@ -67,6 +67,10 @@ export class UserSettings implements ISettingsService {
 		};
 
 		this.registerListener();
+	}
+
+	static getValue(userDataPath: string, key: string, fallback?: any): TPromise<any> {
+		return TPromise.as('');
 	}
 
 /*
@@ -96,17 +100,13 @@ export class UserSettings implements ISettingsService {
 	}
 */
 
-/*
 	get onChange(): Event<ISettings> {
 		return this._onChange.event;
 	}
-*/
 
-/*
 	getValue(key: string, fallback?: any): any {
-		return UserSettings.doGetValue(this.globalSettings.settings, key, fallback);
+		return ''; // UserSettings.doGetValue(this.globalSettings.settings, key, fallback);
 	}
-*/
 
 /*
 	private static doGetValue(globalSettings: any, key: string, fallback?: any): any {
@@ -154,6 +154,10 @@ export class UserSettings implements ISettingsService {
 	}
 */
 
+
+	loadSync(): boolean {
+		return true;
+	}
 /*
 	loadSync(): boolean {
 		let loadedSettings = this.doLoadSync();
@@ -246,14 +250,14 @@ export class UserSettings implements ISettingsService {
 	}
 */
 
-/*
 	dispose(): void {
+/*
 		if (this.watcher) {
 			this.watcher.close();
 			this.watcher = null;
 		}
-	}
 */
+	}
 
 	public loadSettings(): void {
 		// TODO: restructure the below as a composite Promise using Promise.join(),

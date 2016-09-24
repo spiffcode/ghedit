@@ -162,7 +162,7 @@ function main(accessor: ServicesAccessor, ipcServer: Server, userEnv: IProcessEn
 	windowsService.ready(userEnv);
 
 	// Install Menu
-	const menu = instantiationService.createInstance(VSCodeMenu);
+	const menu = (<VSCodeMenu>{}); // instantiationService.createInstance(VSCodeMenu);
 	menu.ready();
 
 	// Install Tasks

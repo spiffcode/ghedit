@@ -47,9 +47,9 @@ function createCompile(build, emitError) {
 
 	return function (token) {
 		const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));
-		const tsFilter = util.filter(data => /\.ts$/.test(data.path) && !/(\/|\\)test(\/|\\)/.test(data.path));
-//		const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+		const tsFilter = util.filter(data => /\.ts$/.test(data.path));
 		const noDeclarationsFilter = util.filter(data => !(/\.d\.ts$/.test(data.path)));
+		const noTestsFilter = util.filter(data => !/(\/|\\)test(\/|\\)/.test(data.path));
 
 		const input = es.through();
 		const output = input
@@ -57,7 +57,8 @@ function createCompile(build, emitError) {
 			.pipe(bom())
 			.pipe(utf8Filter.restore)
 			.pipe(tsFilter)
-			.pipe(debug())
+			.pipe(noTestsFilter)
+//			.pipe(debug())
 			.pipe(util.loadSourcemaps())
 			.pipe(ts(token))
 			.pipe(noDeclarationsFilter)

@@ -50,6 +50,30 @@ export class BogusWindow {
 // TODO:		return dialog.showMessageBox(this.win, options);
 		}
 	}
+
+	public openNew(): void {
+	}
+
+	public reload(): void {
+	}
+
+	public close(): void {
+	}
+
+	public focus(): void {
+	}
+
+	public openDevTools(): void {
+	}
+
+	public setFullScreen(fullscreen: boolean): void {
+	}
+
+	public setMenuBarVisibility(visible: boolean): void {
+	}
+
+	public flashFrame(): void {
+	}
 }
 
 export interface IWindowServices {

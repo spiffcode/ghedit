@@ -21,7 +21,7 @@ export class SearchService implements IRawSearchService {
 	private static BATCH_SIZE = 500;
 
 	public fileSearch(config: IRawSearch): PPromise<ISerializedSearchComplete, ISerializedSearchProgressItem> {
-		let engine = new FileSearchEngine(config);
+		let engine = new FileSearchEngine(config, null);
 
 		return this.doSearch(engine, SearchService.BATCH_SIZE);
 	}
@@ -34,7 +34,7 @@ export class SearchService implements IRawSearchService {
 			excludePattern: config.excludePattern,
 			filePattern: config.filePattern,
 			maxFilesize: MAX_FILE_SIZE
-		}));
+		}, null));
 
 		return this.doSearch(engine, SearchService.BATCH_SIZE);
 	}

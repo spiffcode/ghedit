@@ -126,7 +126,10 @@ export class Engine implements ISearchEngine {
 					}
 
 					if (fileMatch === null) {
-						fileMatch = new FileMatch(result.path);
+						// Cast to <any> because this code depends on ISerializedFileMatch
+						// which isn't used in GHEdit. This code isn't used in GHEdit either
+						// so this is a no-op to make the typescript compiler happy.
+						fileMatch = new FileMatch((<any>result).path);
 					}
 
 					if (lineMatch === null) {
@@ -141,7 +144,7 @@ export class Engine implements ISearchEngine {
 			};
 
 			// Read lines buffered to support large files
-			this.readlinesAsync(result.path, perLineCallback, { bufferLength: 8096, encoding: this.fileEncoding }, doneCallback);
+			this.readlinesAsync((<any>result).path, perLineCallback, { bufferLength: 8096, encoding: this.fileEncoding }, doneCallback);
 		}, (error, isLimitHit) => {
 			this.walkerIsDone = true;
 			this.walkerError = error;
