@@ -13,7 +13,7 @@ import "ghedit/openRepoHandler";
 
 (<IQuickOpenRegistry>Registry.as(QuickOpenExtensions.Quickopen)).registerQuickOpenHandler(
 	new QuickOpenHandlerDescriptor(
-		'openRepoHandler',
+		'ghedit/openRepoHandler',
 		'OpenRepoHandler',
 		OPEN_REPO_PREFIX,
 		nls.localize('openRepoDescription', "Open Repository")
