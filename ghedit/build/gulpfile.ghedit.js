@@ -42,8 +42,10 @@ var gheditResources = [
 	'out-build/vs/workbench/parts/search/**/*.*',
 	'!**/test/**',
 
-	// SUPER-HACK: This makes the web workers work...
-	'out-build/vs/**/*.*',
+	// SUPER-HACK: Do this until finding out why
+	// base:buildfile entry points aren't being packed.
+	'out-build/vs/base/common/**/*.*',
+	'out-build/vs/editor/common/**/*.*',
 ];
 
 var gheditOtherSources = [
