@@ -16,7 +16,7 @@ cd <project_root>/ghedit
 npm run build
 
 # Build targets:
-# build  - loose js files
+# build - loose js files
 # build-opt - packed not minimized. Requires ?b=opt when on localhost.
 # build-min - packed and minimized. Requires ?b=min when on localhost.
 ```
