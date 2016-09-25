@@ -166,14 +166,10 @@ gulp.task('watch', ['pre-build'], shell.task([
 	'cd src && tsc -w'
 ]));
 
-gulp.task('push', shell.task([
-	'GIT_DEPLOY_DIR=out-build bin/push'
-]));
-
-gulp.task('push-min-nobuild', shell.task([
+gulp.task('push', ['build-min'], shell.task([
 	'GIT_DEPLOY_DIR=out-build-min bin/push'
 ]));
 
-gulp.task('push-min', ['build-min'], shell.task([
+gulp.task('push-nobuild', shell.task([
 	'GIT_DEPLOY_DIR=out-build-min bin/push'
 ]));
