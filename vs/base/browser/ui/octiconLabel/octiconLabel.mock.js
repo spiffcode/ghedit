@@ -1,1 +1,0 @@
-define(["require","exports","vs/base/common/strings"],function(e,n,t){"use strict";function r(e){return e}var i=function(){function e(e){this._container=e}return Object.defineProperty(e.prototype,"text",{set:function(e){var n=e||"";n=t.escape(n),n=r(n),this._container.innerHTML=n},enumerable:!0,configurable:!0}),e}(),o={expand:r,OcticonLabel:i};return o});

@@ -1,5 +1,0 @@
-define(["require","exports","vs/base/common/errors","vs/base/common/winjs.base","./extHost.protocol"],function(e,t,o,n,r){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";var i=function(){function e(e,t){this._name=e,this._proxy=t.get(r.MainContext.MainThreadTelemetry)}return Object.defineProperty(e.prototype,"isOptedIn",{get:function(){throw o.notImplemented()},enumerable:!0,configurable:!0}),e.prototype.getTelemetryInfo=function(){return this._proxy.$getTelemetryInfo()},e.prototype.publicLog=function(e,t){return t=t||Object.create(null),t[this._name]=!0,this._proxy.$publicLog(e,t),n.TPromise.as(null)},e.prototype.timedPublicLog=function(){throw o.notImplemented()},e.prototype.addTelemetryAppender=function(){throw o.notImplemented()},e}();t.RemoteTelemetryService=i});

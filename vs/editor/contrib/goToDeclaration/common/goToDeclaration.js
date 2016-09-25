@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/base/common/errors","vs/base/common/winjs.base","vs/editor/common/editorCommonExtensions","vs/editor/common/modes","vs/base/common/async"],function(e,n,o,r,i,t,s){"use strict";function m(e,n){var i=t.DefinitionProviderRegistry.ordered(e),m=i.map(function(r,i){return s.asWinJsPromise(function(o){return r.provideDefinition(e,n,o)}).then(function(e){return e},function(e){o.onUnexpectedError(e)})});return r.TPromise.join(m).then(function(e){for(var n=[],o=0,r=e;o<r.length;o++){var i=r[o];Array.isArray(i)?n.push.apply(n,i):i&&n.push(i)}return n})}n.getDeclarationsAtPosition=m,i.CommonEditorRegistry.registerDefaultLanguageCommand("_executeDefinitionProvider",m)});

@@ -1,5 +1,0 @@
-var __extends=this&&this.__extends||function(t,e){function r(){this.constructor=t}for(var o in e)e.hasOwnProperty(o)&&(t[o]=e[o]);t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)};define(["require","exports","vs/workbench/browser/parts/editor/baseEditor"],function(t,e,r){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";var o=function(t){function e(e,r,o,i,n){t.call(this,e,r,o,i),this.mimetypes=n}return __extends(e,t),e.prototype.getMimeTypes=function(){return this.mimetypes},e}(r.EditorDescriptor);e.FileEditorDescriptor=o});

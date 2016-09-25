@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/platform/files/common/files","vs/workbench/services/files/node/watcher/common","vs/workbench/services/files/node/watcher/win32/csharpWatcherService"],function(e,t,r,n,i){"use strict";var o=function(){function e(e,t,r,n,i){this.basePath=e,this.ignored=t,this.eventEmitter=r,this.errorLogger=n,this.verboseLogging=i}return e.prototype.startWatching=function(){var e=this,t=new i.OutOfProcessWin32FolderWatcher(this.basePath,this.ignored,function(t){return e.onRawFileEvents(t)},function(t){return e.onError(t)},this.verboseLogging);return function(){return t.dispose()}},e.prototype.onRawFileEvents=function(e){e.length>0&&this.eventEmitter.emit(r.EventType.FILE_CHANGES,n.toFileChangesEvent(e))},e.prototype.onError=function(e){this.errorLogger(e)},e}();t.FileWatcher=o});

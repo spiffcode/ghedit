@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/base/common/platform","os","vs/base/common/winjs.base","vs/base/common/uuid"],function(e,n,o,t,r,s){"use strict";function m(e,n){var m=Object.create(null);m.sessionID=s.generateUuid()+Date.now(),m.commitHash=e,m.version=n,m["common.osVersion"]=t.release(),m["common.platform"]=o.Platform[o.platform];var a=0,i=Date.now();return Object.defineProperties(m,{timestamp:{get:function(){return new Date},enumerable:!0},"common.timesincesessionstart":{get:function(){return Date.now()-i},enumerable:!0},"common.sequence":{get:function(){return a++},enumerable:!0}}),r.TPromise.as(m)}n.resolveCommonProperties=m});

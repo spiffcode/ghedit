@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","string_decoder"],function(e,r,t){"use strict";var n=function(){function e(e){void 0===e&&(e="utf8"),this.stringDecoder=new t.StringDecoder(e),this.remaining=null}return e.prototype.write=function(e){var r=[],t=this.remaining?this.remaining+this.stringDecoder.write(e):this.stringDecoder.write(e);if(t.length<1)return r;for(var n,i=0;i<t.length&&(13===(n=t.charCodeAt(i))||10===n);)i++;for(var o=i;o<t.length;)if(n=t.charCodeAt(o),13===n||10===n){for(r.push(t.substring(i,o)),o++;o<t.length&&(13===(n=t.charCodeAt(o))||10===n);)o++;i=o}else o++;return this.remaining=i<t.length?t.substr(i):null,r},e.prototype.end=function(){return this.remaining},e}();r.LineDecoder=n});

@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/base/browser/builder","vs/base/common/strings","vs/css!./countBadge"],function(t,e,o,s){"use strict";var i=function(){function t(t,e,s){this.$el=o.$(".monaco-count-badge").appendTo(t),this.titleFormat=s||"",this.setCount(e||0)}return t.prototype.setCount=function(t){this.count=t,this.render()},t.prototype.setTitleFormat=function(t){this.titleFormat=t,this.render()},t.prototype.render=function(){this.$el.text(""+this.count),this.$el.title(s.format(this.titleFormat,this.count))},t.prototype.dispose=function(){this.$el&&(this.$el.destroy(),this.$el=null)},t}();e.CountBadge=i});

@@ -1,5 +1,0 @@
-define(["require","exports","vs/platform/platform","vs/base/common/eventEmitter"],function(t,e,n,i){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";function r(t){return t.length>0&&"#"===t.charAt(t.length-1)?t.substring(0,t.length-1):t}e.Extensions={JSONContribution:"base.contributions.json"};var s=function(){function t(){this.schemasById={},this.eventEmitter=new i.EventEmitter}return t.prototype.addRegistryChangedListener=function(t){return this.eventEmitter.addListener2("registryChanged",t)},t.prototype.registerSchema=function(t,e){this.schemasById[r(t)]=e,this.eventEmitter.emit("registryChanged",{})},t.prototype.getSchemaContributions=function(){return{schemas:this.schemasById}},t}(),o=new s;n.Registry.add(e.Extensions.JSONContribution,o)});

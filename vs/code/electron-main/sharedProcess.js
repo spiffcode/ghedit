@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","child_process","vs/base/common/uri","vs/base/common/objects"],function(e,r,s,o,n){"use strict";function t(e){var r=[],o=n.assign({},process.env,{AMD_ENTRYPOINT:"vs/code/node/sharedProcessMain"});e.allowOutput&&(o.VSCODE_ALLOW_IO="true"),e.debugPort&&r.push("--debug="+e.debugPort);var t=s.fork(c,["--type=SharedProcess"],{env:o,execArgv:r});return t.once("message",function(){return t.send("hey")}),t}function u(e){void 0===e&&(e={});var r,s=0,o=function(){++s>10||(r=t(e),r.on("exit",o))};return o(),{dispose:function(){r&&(r.removeListener("exit",o),r.kill(),r=null)}}}var c=o["default"].parse(e.toUrl("bootstrap")).fsPath;r.spawnSharedProcess=u});

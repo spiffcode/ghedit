@@ -1,5 +1,0 @@
-define(["require","exports","vs/base/common/strings"],function(t,n,e){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";function i(t){return e.startsWith(t,m)}function a(t){return m+t}n.DELIM_END="punctuation.definition.meta.tag.end.html",n.DELIM_START="punctuation.definition.meta.tag.begin.html",n.DELIM_ASSIGN="meta.tag.assign.html",n.ATTRIB_NAME="entity.other.attribute-name.html",n.ATTRIB_VALUE="string.html",n.COMMENT="comment.html.content",n.DELIM_COMMENT="comment.html",n.DOCTYPE="entity.other.attribute-name.html",n.DELIM_DOCTYPE="entity.name.tag.html";var m="entity.name.tag.tag-";n.isTag=i,n.getTag=a});

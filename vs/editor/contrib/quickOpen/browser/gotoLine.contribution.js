@@ -1,5 +1,0 @@
-define(["require","exports","vs/nls","vs/base/common/keyCodes","vs/editor/common/editorCommonExtensions","./gotoLine"],function(o,e,t,i,n,r){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";n.CommonEditorRegistry.registerEditorAction(new n.EditorActionDescriptor(r.GotoLineAction,r.GotoLineAction.ID,t.localize("label","Go to Line..."),{context:n.ContextKey.EditorFocus,primary:i.KeyMod.CtrlCmd|i.KeyCode.KEY_G,mac:{primary:i.KeyMod.WinCtrl|i.KeyCode.KEY_G}},"Go to Line..."))});

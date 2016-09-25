@@ -1,5 +1,0 @@
-define(["require","exports","vs/platform/instantiation/common/instantiation"],function(T,t,A){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";!function(T){T[T.ACTIVITYBAR_PART=0]="ACTIVITYBAR_PART",T[T.SIDEBAR_PART=1]="SIDEBAR_PART",T[T.PANEL_PART=2]="PANEL_PART",T[T.EDITOR_PART=3]="EDITOR_PART",T[T.STATUSBAR_PART=4]="STATUSBAR_PART"}(t.Parts||(t.Parts={}));t.Parts;!function(T){T[T.LEFT=0]="LEFT",T[T.RIGHT=1]="RIGHT"}(t.Position||(t.Position={}));t.Position;t.IPartService=A.createDecorator("partService")});

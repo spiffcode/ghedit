@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/nls","vs/base/common/platform","vs/base/browser/builder","vs/css!./aria"],function(t,e,a,r,n){"use strict";function o(t){u=n.$(".aria-container").appendTo(t),l=n.$(".alert").appendTo(u).attr({role:"alert","aria-atomic":"true"}),p=n.$(".status").appendTo(u).attr({role:"status","aria-atomic":"true"})}function s(t){c(l,t)}function i(t){r.isMacintosh?s(t):c(p,t)}function c(t,e){u&&(t.getHTMLElement().textContent===e&&(e=a.localize("repeated","{0} (occurred again)",e)),n.$(t).empty(),n.$(t).text(e))}var u,l,p;e.setARIAContainer=o,e.alert=s,e.status=i});

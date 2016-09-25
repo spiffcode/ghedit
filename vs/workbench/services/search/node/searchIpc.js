@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports"],function(e,t){"use strict";var n=function(){function e(e){this.service=e}return e.prototype.call=function(e,t){switch(e){case"fileSearch":return this.service.fileSearch(t);case"textSearch":return this.service.textSearch(t)}},e}();t.SearchChannel=n;var r=function(){function e(e){this.channel=e}return e.prototype.fileSearch=function(e){return this.channel.call("fileSearch",e)},e.prototype.textSearch=function(e){return this.channel.call("textSearch",e)},e}();t.SearchChannelClient=r});

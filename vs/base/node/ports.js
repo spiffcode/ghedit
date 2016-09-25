@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","net"],function(e,n,r){"use strict";function t(e,n,r,t){var c=!1,i=setTimeout(function(){if(!c)return c=!0,t(0)},r);o(e,n,function(e){if(!c)return c=!0,window.clearTimeout(i),t(e)})}function o(e,n,t){if(0===n)return t(0);var i=new r.Socket;i.once("connect",function(){return c(i),o(e+1,n-1,t)}),i.once("error",function(r){return c(i),"ECONNREFUSED"!==r.code?o(e+1,n-1,t):t(e)}),i.connect(e)}function c(e){try{e.removeAllListeners("connect"),e.removeAllListeners("error"),e.end(),e.destroy(),e.unref()}catch(n){console.error(n)}}n.findFreePort=t});

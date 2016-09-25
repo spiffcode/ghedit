@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/base/common/winjs.base"],function(e,n,t){"use strict";var r=function(){function e(e){this.appender=e}return e.prototype.call=function(e,n){var r=n.eventName,o=n.data;return this.appender.log(r,o),t.TPromise.as(null)},e}();n.TelemetryAppenderChannel=r;var o=function(){function e(e){this.channel=e}return e.prototype.log=function(e,n){return this.channel.call("log",{eventName:e,data:n})},e.prototype.dispose=function(){},e}();n.TelemetryAppenderClient=o});

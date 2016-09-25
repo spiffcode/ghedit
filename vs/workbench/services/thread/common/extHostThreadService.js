@@ -1,5 +1,0 @@
-var __extends=this&&this.__extends||function(e,t){function r(){this.constructor=e}for(var o in t)t.hasOwnProperty(o)&&(e[o]=t[o]);e.prototype=null===t?Object.create(t):(r.prototype=t.prototype,new r)};define(["require","exports","vs/workbench/services/thread/common/abstractThreadService"],function(e,t,r){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";var o=function(e){function t(t){e.call(this,!1),this._remoteCom=t,this._remoteCom.setManyHandler(this)}return __extends(t,e),t.prototype._callOnRemote=function(e,t,r){return this._remoteCom.callOnRemote(e,t,r)},t}(r.AbstractThreadService);t.ExtHostThreadService=o});

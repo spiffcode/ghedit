@@ -1,1 +1,0 @@
-define(["require","exports","vs/workbench/parts/git/browser/gitWorkbenchContributions","vs/workbench/parts/git/electron-browser/electronGitService","vs/workbench/parts/git/common/git","vs/platform/instantiation/common/extensions"],function(e,t,r,i,n,o){"use strict";r.registerContributions(),o.registerSingleton(n.IGitService,i.ElectronGitService)});

@@ -1,5 +1,0 @@
-define(["require","exports","vs/base/common/strings","vs/css!./octicons/octicons"],function(n,e,t){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";function c(n){return n.replace(/\$\(([^)]+)\)/g,function(n,e){return'<span class="octicon octicon-'+e+'"></span>'})}e.expand=c;var o=function(){function n(n){this._container=n}return Object.defineProperty(n.prototype,"text",{set:function(n){var e=n||"";e=t.escape(e),e=c(e),this._container.innerHTML=e},enumerable:!0,configurable:!0}),n}();e.OcticonLabel=o});

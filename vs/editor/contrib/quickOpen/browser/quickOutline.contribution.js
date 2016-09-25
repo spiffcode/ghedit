@@ -1,5 +1,0 @@
-define(["require","exports","vs/nls","vs/base/common/keyCodes","vs/platform/keybinding/common/keybinding","vs/editor/common/editorCommon","vs/editor/common/editorCommonExtensions","./quickOutline"],function(o,e,t,i,n,r,m,s){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";m.CommonEditorRegistry.registerEditorAction({ctor:s.QuickOutlineAction,id:s.QuickOutlineAction.ID,label:t.localize("label","Go to Symbol..."),alias:"Go to Symbol...",kbOpts:{context:m.ContextKey.EditorFocus,primary:i.KeyMod.CtrlCmd|i.KeyMod.Shift|i.KeyCode.KEY_O},menuOpts:{group:"navigation",order:3,kbExpr:n.KbExpr.and(n.KbExpr.has(r.ModeContextKeys.hasDocumentSymbolProvider))}})});

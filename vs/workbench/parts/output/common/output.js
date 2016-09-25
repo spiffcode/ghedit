@@ -1,5 +1,0 @@
-define(["require","exports","vs/platform/platform","vs/platform/instantiation/common/instantiation"],function(t,n,e,o){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";n.OUTPUT_MIME="text/x-code-output",n.OUTPUT_MODE_ID="Log",n.OUTPUT_EDITOR_INPUT_ID="vs.output",n.OUTPUT_PANEL_ID="workbench.panel.output",n.Extensions={OutputChannels:"workbench.contributions.outputChannels"},n.OUTPUT_SERVICE_ID="outputService",n.MAX_OUTPUT_LENGTH=1e6,n.IOutputService=o.createDecorator(n.OUTPUT_SERVICE_ID);var i=function(){function t(){this.channels=[]}return t.prototype.registerChannel=function(t,n){this.channels.every(function(n){return n.id!==t})&&this.channels.push({id:t,label:n})},t.prototype.getChannels=function(){return this.channels},t}();e.Registry.add(n.Extensions.OutputChannels,new i)});

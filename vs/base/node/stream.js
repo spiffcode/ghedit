@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","fs"],function(n,l,u){"use strict";function e(n,l,u){var e=!1,r=new Buffer(l),t=0;n.on("data",function(u){var e=Math.min(l-t,u.length);u.copy(r,t,0,e),t+=e,t===l&&n.destroy()}),n.on("error",function(n){e||(e=!0,u(n,null,null))});var o=function(){e||(e=!0,u(null,r,t))};n.on("close",o)}function r(n,l,e){u.open(n,"r",null,function(n,r){function t(n,l,t){u.close(r,function(u){return u?e(u,null,t):n&&"EISDIR"===n.code?e(n,null,t):e(null,l,t)})}function o(){u.read(r,c,f,l-f,null,function(n,u){return n?t(n,null,0):0===u?10===++i?t(null,c,f):o():(f+=u,f===l?t(null,c,f):o())})}if(n)return e(n,null,0);var c=new Buffer(l),f=0,i=0;o()})}l.readExactlyByStream=e,l.readExactlyByFile=r});

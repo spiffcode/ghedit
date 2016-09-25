@@ -1,5 +1,0 @@
-define(["require","exports","vs/base/common/platform","vs/workbench/parts/execution/electron-browser/terminalService","vs/platform/instantiation/common/extensions","vs/workbench/parts/execution/common/execution"],function(e,i,n,r,o,t){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";n.isWindows?o.registerSingleton(t.ITerminalService,r.WinTerminalService):n.isMacintosh?o.registerSingleton(t.ITerminalService,r.MacTerminalService):n.isLinux&&o.registerSingleton(t.ITerminalService,r.LinuxTerminalService)});

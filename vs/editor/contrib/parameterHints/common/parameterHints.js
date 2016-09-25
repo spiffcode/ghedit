@@ -1,5 +1,0 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(["require","exports","vs/base/common/winjs.base","vs/editor/common/editorCommonExtensions","vs/editor/common/modes","vs/base/common/async"],function(e,i,r,o,t,n){"use strict";function s(e,i){var o=t.SignatureHelpProviderRegistry.ordered(e)[0];return o?n.asWinJsPromise(function(r){return o.provideSignatureHelp(e,i,r)}):r.TPromise.as(void 0)}i.Context={Visible:"parameterHintsVisible",MultipleSignatures:"parameterHintsMultipleSignatures"},i.provideSignatureHelp=s,o.CommonEditorRegistry.registerDefaultLanguageCommand("_executeSignatureHelpProvider",s)});

@@ -1,5 +1,0 @@
-define(["require","exports","./extHost.protocol"],function(e,t,o){/*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-"use strict";var s=function(){function e(e){this._proxy=e.get(o.MainContext.MainThreadMessageService)}return e.prototype.showMessage=function(e,t,o){for(var s=[],n=0;n<o.length;n++){var r=o[n];if("string"==typeof r)s.push({title:r,handle:n,isCloseAffordance:!1});else if("object"==typeof r){var i=r.title,a=r.isCloseAffordance;s.push({title:i,isCloseAffordance:a,handle:n})}else console.warn("Invalid message item:",r)}return this._proxy.$showMessage(e,t,s).then(function(e){if("number"==typeof e)return o[e]})},e}();t.ExtHostMessageService=s});
