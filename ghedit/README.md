@@ -36,6 +36,7 @@ npm run push
 
 #### TO DO
 
+* Unify GHEdit's build with vscode's build to build once, not twice
 * review TODO comments, use new convention for code we want to keep for reference but is not considered a TODO
 * DM: clean up stuff
 
