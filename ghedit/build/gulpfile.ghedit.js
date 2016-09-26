@@ -108,6 +108,7 @@ gulp.task('clean-minified-ghedit', util.rimraf('out-build-min'));
 gulp.task('minify-ghedit', ['clean-minified-ghedit', 'optimize-ghedit'], common.minifyTask('out-build-opt', 'out-build-min', true));
 gulp.task('build-min', ['minify-ghedit'], shell.task([
 	'cp index.html out-build-min',
+	'cp favicon.* out-build-min',
 	'cp documentation.html out-build-min',
 	'cp releasenotes.html out-build-min',
 	'awk \'/Copyright.*Microsoft/{print " * Copyright (c) Spiffcode, Inc. All rights reserved."}1\' out-build-min/vs/workbench/workbench.main.js > /tmp/workbench.main.js',

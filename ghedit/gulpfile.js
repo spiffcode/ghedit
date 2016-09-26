@@ -154,6 +154,7 @@ gulp.task('pre-build', shell.task([
 	'mkdir -p out-build/themes',
 	'cp src/themes/*.* out-build/themes',
 	'cp index.html out-build',
+	'cp favicon.* out-build',
 	'cp releasenotes.html out-build',
 	'cp documentation.html out-build'
 ]));
