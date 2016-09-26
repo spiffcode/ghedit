@@ -59,6 +59,8 @@
 .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab {
 	display: flex;
 	width: 120px;
+	min-width: -moz-fit-content;
+	min-width: -webkit-fit-content;
 	min-width: fit-content;
 	overflow: hidden;
 	white-space: nowrap;
