@@ -1,6 +1,34 @@
 # GHEdit
 
-#### INSTALLING
+[GHEdit](https://spiffcode.github.io/ghedit/) is a fast, rich, open source code editor that runs great in web browsers. It's directly integrated with GitHub so
+you can work on your projects without installing anything.
+
+<p align="center">
+  <img alt="GHEdit in action" src="https://spiffcode.github.io/ghedit/demo.gif">
+</p>
+
+GHEdit is derived from Microsoft's [Visual Studio Code](https://code.visualstudio.com). We developed it to
+learn about web-based development environments and think it is useful enough to share.
+
+# Features
+
+<ul>
+	<li>GitHub integration (view and edit repositories and files, in place)</li>
+	<li>Complete project explorer and text editor</li>
+	<li>Syntax highlighting and auto-complete for all major programming and markup languages</li>
+	<li>IntelliSense for Javascript, TypeScript, JSON</li>
+	<li>Project-wide search and replace</li>
+	<li>Fuzzy filename search</li>
+	<li>Side-by-side file comparison</li>
+	<li>Themes</li>
+	<li>Customizable Keyboard Shortcuts</li>
+	<li>Per-user, per-project customizable editor settings</li>
+	<li><a href='https://github.com/spiffcode/ghedit'>Open Source!</a></li>
+</ul>
+
+# Developing
+
+#### INSTALLING SOURCE
 ```bash
 # Clone this repository.
 git clone https://github.com/spiffcode/ghedit.git
@@ -21,29 +49,15 @@ npm run build
 # build-min - packed and minimized. Requires ?b=min when on localhost.
 ```
 
-#### RUNNING
+#### RUNNING LOCALLY
 ```bash
 npm run http-server
 ```
 
 Now browse to http://localhost:8000
 
-#### PUSHING
+#### PUSHING TO GITHUB.IO
 ```bash
 # Push the build-min version to github.io
 npm run push
 ```
-
-#### TO DO
-
-* Unify GHEdit's build with vscode's build to build once, not twice
-* review TODO comments, use new convention for code we want to keep for reference but is not considered a TODO
-* DM: clean up stuff
-
-#### BUGS
-
-* DM: keyboard shortcuts (e.g. cmd-p) should be disabled in welcome mode
-* Rename a file and keep commit history for that file
-* githubFileService.resolve doesn't respect IResolveFileOptions (optimization)
-* file mime type detection is crippled due to disabled Node dependency
-* file encoding smarts (disabled due to Node dependency)
