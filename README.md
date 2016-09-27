@@ -3,7 +3,7 @@
 [GHEdit](https://spiffcode.github.io/ghedit/) is a fast, rich, open source code editor that runs great in web browsers. It's directly integrated with GitHub so
 you can work on your projects without installing anything.
 
-[Try it!](https://spiffcode.github.io/ghedit/)
+<a target="_blank" href="https://spiffcode.github.io/ghedit/">Try it!</a>
 
 <p align="center">
   <img alt="GHEdit in action" src="https://spiffcode.github.io/ghedit/demo.gif">
