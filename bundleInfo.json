@@ -17,6 +17,31 @@
 			"vs/languages/razor/common/razor",
 			"vs/languages/razor/common/razorWorker"
 		],
+		"vs/css": [
+			"require",
+			"exports",
+			"module"
+		],
+		"vs/nls": [
+			"require",
+			"exports",
+			"module"
+		],
+		"vs/base/common/worker/workerServer": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/marshalling",
+			"vs/base/common/worker/workerProtocol"
+		],
+		"vs/base/common/worker/simpleWorker": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/lifecycle",
+			"vs/base/common/winjs.base",
+			"vs/base/common/async"
+		],
 		"vs/workbench/workbench.main": [
 			"require",
 			"exports",
@@ -47,23 +72,6 @@
 			"vs/editor/editor.main",
 			"vs/workbench/electron-browser/main"
 		],
-		"vs/nls": [
-			"require",
-			"exports",
-			"module"
-		],
-		"vs/css": [
-			"require",
-			"exports",
-			"module"
-		],
-		"vs/base/common/worker/workerServer": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/marshalling",
-			"vs/base/common/worker/workerProtocol"
-		],
 		"vs/editor/common/worker/editorWorkerServer": [
 			"require",
 			"exports",
@@ -82,20 +90,6 @@
 			"vs/editor/common/services/compatWorkerServiceWorker",
 			"vs/editor/common/services/compatWorkerService",
 			"vs/editor/common/languages.common"
-		],
-		"vs/editor/common/services/editorSimpleWorker": [
-			"require",
-			"exports",
-			"vs/base/common/uri",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/core/range",
-			"vs/base/common/filters",
-			"vs/editor/common/diff/diffComputer",
-			"vs/editor/common/model/mirrorModel2",
-			"vs/editor/common/modes/linkComputer",
-			"vs/editor/common/modes/supports/inplaceReplaceSupport",
-			"vs/editor/common/model/wordHelper",
-			"vs/editor/common/standalone/standaloneBase"
 		],
 		"vs/editor/common/languages.common": [
 			"require",
@@ -128,13 +122,38 @@
 			"vs/editor/common/services/modeService",
 			"vs/editor/common/services/compatWorkerService"
 		],
-		"vs/base/common/worker/simpleWorker": [
+		"vs/editor/common/services/editorSimpleWorker": [
 			"require",
 			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/lifecycle",
+			"vs/base/common/uri",
 			"vs/base/common/winjs.base",
-			"vs/base/common/async"
+			"vs/editor/common/core/range",
+			"vs/base/common/filters",
+			"vs/editor/common/diff/diffComputer",
+			"vs/editor/common/model/mirrorModel2",
+			"vs/editor/common/modes/linkComputer",
+			"vs/editor/common/modes/supports/inplaceReplaceSupport",
+			"vs/editor/common/model/wordHelper",
+			"vs/editor/common/standalone/standaloneBase"
+		],
+		"vs/languages/handlebars/common/handlebars": [
+			"require",
+			"exports",
+			"vs/editor/common/modes",
+			"vs/languages/html/common/html",
+			"vs/languages/handlebars/common/handlebarsTokenTypes",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/modes/languageConfigurationRegistry",
+			"vs/editor/common/modes/abstractMode",
+			"vs/base/common/async",
+			"vs/editor/common/services/compatWorkerService",
+			"vs/platform/workspace/common/workspace"
+		],
+		"vs/languages/lib/common/beautify-html": [
+			"require",
+			"vs/languages/lib/common/beautify",
+			"vs/languages/lib/common/beautify-css"
 		],
 		"vs/languages/html/common/html": [
 			"require",
@@ -148,25 +167,6 @@
 			"vs/languages/html/common/htmlEmptyTagsShared",
 			"vs/editor/common/modes/languageConfigurationRegistry",
 			"vs/editor/common/modes/supports/tokenizationSupport",
-			"vs/base/common/async",
-			"vs/editor/common/services/compatWorkerService",
-			"vs/platform/workspace/common/workspace"
-		],
-		"vs/languages/lib/common/beautify-html": [
-			"require",
-			"vs/languages/lib/common/beautify",
-			"vs/languages/lib/common/beautify-css"
-		],
-		"vs/languages/handlebars/common/handlebars": [
-			"require",
-			"exports",
-			"vs/editor/common/modes",
-			"vs/languages/html/common/html",
-			"vs/languages/handlebars/common/handlebarsTokenTypes",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/modes/languageConfigurationRegistry",
-			"vs/editor/common/modes/abstractMode",
 			"vs/base/common/async",
 			"vs/editor/common/services/compatWorkerService",
 			"vs/platform/workspace/common/workspace"
@@ -188,21 +188,6 @@
 			"vs/editor/common/modes/supports/suggestSupport",
 			"vs/base/common/paths"
 		],
-		"vs/languages/php/common/php": [
-			"require",
-			"exports",
-			"vs/base/common/objects",
-			"vs/editor/common/modes",
-			"vs/editor/common/modes/abstractMode",
-			"vs/editor/common/modes/abstractState",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/modes/languageConfigurationRegistry",
-			"vs/editor/common/modes/supports/tokenizationSupport",
-			"vs/editor/common/modes/supports/suggestSupport",
-			"vs/editor/common/services/editorWorkerService",
-			"vs/platform/configuration/common/configuration",
-			"vs/editor/common/services/compatWorkerService"
-		],
 		"vs/languages/razor/common/razor": [
 			"require",
 			"exports",
@@ -222,6 +207,58 @@
 			"require",
 			"exports",
 			"vs/languages/html/common/htmlWorker"
+		],
+		"vs/languages/php/common/php": [
+			"require",
+			"exports",
+			"vs/base/common/objects",
+			"vs/editor/common/modes",
+			"vs/editor/common/modes/abstractMode",
+			"vs/editor/common/modes/abstractState",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/modes/languageConfigurationRegistry",
+			"vs/editor/common/modes/supports/tokenizationSupport",
+			"vs/editor/common/modes/supports/suggestSupport",
+			"vs/editor/common/services/editorWorkerService",
+			"vs/platform/configuration/common/configuration",
+			"vs/editor/common/services/compatWorkerService"
+		],
+		"vs/base/common/errors": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/objects",
+			"vs/base/common/platform",
+			"vs/base/common/types",
+			"vs/base/common/arrays",
+			"vs/base/common/strings"
+		],
+		"vs/base/common/marshalling": [
+			"require",
+			"exports",
+			"vs/base/common/uri"
+		],
+		"vs/base/common/worker/workerProtocol": [
+			"require",
+			"exports"
+		],
+		"vs/base/common/lifecycle": [
+			"require",
+			"exports",
+			"vs/base/common/types"
+		],
+		"vs/base/common/winjs.base": [
+			"vs/base/common/winjs.base.raw",
+			"vs/base/common/errors"
+		],
+		"vs/base/common/async": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/platform",
+			"vs/base/common/winjs.base",
+			"vs/base/common/cancellation",
+			"vs/base/common/lifecycle"
 		],
 		"ghedit/lib/github": [
 			"ghedit/lib/es6-promise",
@@ -278,6 +315,18 @@
 		],
 		"vs/css!vs/editor/contrib/inPlaceReplace/browser/inPlaceReplace": [],
 		"vs/css!vs/editor/contrib/wordHighlighter/browser/wordHighlighter": [],
+		"vs/workbench/browser/actions/toggleSidebarVisibility": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/nls",
+			"vs/platform/platform",
+			"vs/base/common/actions",
+			"vs/platform/actions/common/actions",
+			"vs/workbench/common/actionRegistry",
+			"vs/workbench/services/part/common/partService",
+			"vs/base/common/keyCodes"
+		],
 		"vs/languages/languages.main": [
 			"require",
 			"exports",
@@ -285,15 +334,16 @@
 			"vs/languages/html/common/html.contribution",
 			"vs/languages/razor/common/razor.contribution"
 		],
-		"vs/base/common/errors": [
+		"vs/workbench/browser/actions/toggleStatusbarVisibility": [
 			"require",
 			"exports",
+			"vs/base/common/winjs.base",
 			"vs/nls",
-			"vs/base/common/objects",
-			"vs/base/common/platform",
-			"vs/base/common/types",
-			"vs/base/common/arrays",
-			"vs/base/common/strings"
+			"vs/platform/platform",
+			"vs/base/common/actions",
+			"vs/platform/actions/common/actions",
+			"vs/workbench/common/actionRegistry",
+			"vs/workbench/services/part/common/partService"
 		],
 		"vs/platform/actions/browser/menusExtensionPoint": [
 			"require",
@@ -307,29 +357,6 @@
 			"vs/platform/keybinding/common/keybinding",
 			"vs/platform/actions/common/actions"
 		],
-		"vs/workbench/browser/actions/toggleStatusbarVisibility": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/nls",
-			"vs/platform/platform",
-			"vs/base/common/actions",
-			"vs/platform/actions/common/actions",
-			"vs/workbench/common/actionRegistry",
-			"vs/workbench/services/part/common/partService"
-		],
-		"vs/workbench/browser/actions/toggleSidebarVisibility": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/nls",
-			"vs/platform/platform",
-			"vs/base/common/actions",
-			"vs/platform/actions/common/actions",
-			"vs/workbench/common/actionRegistry",
-			"vs/workbench/services/part/common/partService",
-			"vs/base/common/keyCodes"
-		],
 		"vs/workbench/browser/actions/toggleSidebarPosition": [
 			"require",
 			"exports",
@@ -340,35 +367,6 @@
 			"vs/platform/actions/common/actions",
 			"vs/workbench/common/actionRegistry",
 			"vs/workbench/services/part/common/partService"
-		],
-		"vs/workbench/browser/actions/openSettings": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/nls",
-			"vs/base/common/uri",
-			"vs/base/common/network",
-			"vs/base/common/labels",
-			"vs/platform/platform",
-			"vs/base/common/actions",
-			"vs/base/common/strings",
-			"vs/workbench/common/actionRegistry",
-			"vs/workbench/common/editor/stringEditorInput",
-			"vs/platform/configuration/common/model",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/workbench/services/workspace/common/contextService",
-			"vs/platform/configuration/common/configuration",
-			"vs/platform/editor/common/editor",
-			"vs/workbench/services/group/common/groupService",
-			"vs/platform/storage/common/storage",
-			"vs/platform/files/common/files",
-			"vs/platform/message/common/message",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/platform/actions/common/actions",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/base/common/keyCodes",
-			"vs/workbench/services/untitled/common/untitledEditorService",
-			"vs/workbench/common/editor/untitledEditorModel"
 		],
 		"vs/workbench/browser/actions/configureLocale": [
 			"require",
@@ -401,6 +399,35 @@
 			"vs/workbench/parts/quickopen/browser/commandsHandler",
 			"vs/workbench/parts/quickopen/browser/gotoLineHandler",
 			"vs/workbench/parts/quickopen/browser/helpHandler"
+		],
+		"vs/workbench/browser/actions/openSettings": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/nls",
+			"vs/base/common/uri",
+			"vs/base/common/network",
+			"vs/base/common/labels",
+			"vs/platform/platform",
+			"vs/base/common/actions",
+			"vs/base/common/strings",
+			"vs/workbench/common/actionRegistry",
+			"vs/workbench/common/editor/stringEditorInput",
+			"vs/platform/configuration/common/model",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/workbench/services/workspace/common/contextService",
+			"vs/platform/configuration/common/configuration",
+			"vs/platform/editor/common/editor",
+			"vs/workbench/services/group/common/groupService",
+			"vs/platform/storage/common/storage",
+			"vs/platform/files/common/files",
+			"vs/platform/message/common/message",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/platform/actions/common/actions",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/base/common/keyCodes",
+			"vs/workbench/services/untitled/common/untitledEditorService",
+			"vs/workbench/common/editor/untitledEditorModel"
 		],
 		"vs/workbench/browser/parts/editor/editorPicker": [
 			"require",
@@ -464,6 +491,20 @@
 			"vs/workbench/parts/files/common/explorerViewModel",
 			"vs/base/common/keyCodes"
 		],
+		"ghedit/github.contribution": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/platform/platform",
+			"vs/workbench/browser/quickopen",
+			"ghedit/githubActions",
+			"ghedit/openRepoHandler"
+		],
+		"vs/workbench/parts/markers/markers.contribution": [
+			"require",
+			"exports",
+			"vs/workbench/parts/markers/browser/markersWorkbenchContributions"
+		],
 		"vs/workbench/parts/files/browser/files.contribution": [
 			"require",
 			"exports",
@@ -520,14 +561,20 @@
 			"vs/css!vs/workbench/parts/search/browser/media/search.contribution"
 		],
 		"vs/css!vs/workbench/parts/search/browser/media/search.contribution": [],
-		"ghedit/github.contribution": [
+		"vs/workbench/parts/html/browser/html.contribution": [
 			"require",
 			"exports",
 			"vs/nls",
+			"vs/platform/commands/common/commands",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/base/common/uri",
+			"vs/workbench/parts/html/common/htmlInput",
+			"vs/workbench/parts/html/browser/htmlPreviewPart",
 			"vs/platform/platform",
-			"vs/workbench/browser/quickopen",
-			"ghedit/githubActions",
-			"ghedit/openRepoHandler"
+			"vs/workbench/browser/parts/editor/baseEditor",
+			"vs/workbench/common/editor",
+			"vs/platform/instantiation/common/descriptors"
 		],
 		"vs/workbench/parts/git/browser/gitQuickOpen": [
 			"require",
@@ -543,25 +590,17 @@
 			"vs/workbench/services/quickopen/common/quickOpenService",
 			"vs/platform/message/common/message"
 		],
-		"vs/workbench/parts/markers/markers.contribution": [
+		"vs/editor/editor.main": [
 			"require",
 			"exports",
-			"vs/workbench/parts/markers/browser/markersWorkbenchContributions"
-		],
-		"vs/workbench/parts/html/browser/html.contribution": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/platform/commands/common/commands",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/base/common/uri",
-			"vs/workbench/parts/html/common/htmlInput",
-			"vs/workbench/parts/html/browser/htmlPreviewPart",
-			"vs/platform/platform",
-			"vs/workbench/browser/parts/editor/baseEditor",
-			"vs/workbench/common/editor",
-			"vs/platform/instantiation/common/descriptors"
+			"vs/editor/common/standalone/standaloneBase",
+			"vs/editor/browser/standalone/standaloneEditor",
+			"vs/editor/browser/standalone/standaloneLanguages",
+			"vs/editor/common/config/defaultConfig",
+			"vs/editor/browser/editor.all",
+			"vs/languages/languages.main",
+			"vs/languages/php/common/php.contribution",
+			"vs/editor/browser/standalone/standaloneSchemas"
 		],
 		"vs/workbench/parts/output/browser/output.contribution": [
 			"require",
@@ -584,6 +623,28 @@
 			"vs/css!vs/workbench/parts/output/browser/media/output.contribution"
 		],
 		"vs/css!vs/workbench/parts/output/browser/media/output.contribution": [],
+		"vs/base/common/severity": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/strings"
+		],
+		"vs/workbench/parts/contentprovider/common/contentprovider.contribution": [
+			"require",
+			"exports",
+			"vs/workbench/common/editor/resourceEditorInput",
+			"vs/editor/common/services/modelService",
+			"vs/editor/common/services/modeService",
+			"vs/base/common/winjs.base",
+			"vs/platform/jsonschemas/common/jsonContributionRegistry",
+			"vs/platform/platform",
+			"vs/workbench/common/contributions"
+		],
+		"vs/platform/event/common/eventService": [
+			"require",
+			"exports",
+			"vs/base/common/eventEmitter"
+		],
 		"vs/workbench/parts/themes/electron-browser/themes.contribution": [
 			"require",
 			"exports",
@@ -600,29 +661,6 @@
 			"vs/workbench/services/viewlet/common/viewletService",
 			"vs/base/common/async"
 		],
-		"vs/workbench/parts/contentprovider/common/contentprovider.contribution": [
-			"require",
-			"exports",
-			"vs/workbench/common/editor/resourceEditorInput",
-			"vs/editor/common/services/modelService",
-			"vs/editor/common/services/modeService",
-			"vs/base/common/winjs.base",
-			"vs/platform/jsonschemas/common/jsonContributionRegistry",
-			"vs/platform/platform",
-			"vs/workbench/common/contributions"
-		],
-		"vs/editor/editor.main": [
-			"require",
-			"exports",
-			"vs/editor/common/standalone/standaloneBase",
-			"vs/editor/browser/standalone/standaloneEditor",
-			"vs/editor/browser/standalone/standaloneLanguages",
-			"vs/editor/common/config/defaultConfig",
-			"vs/editor/browser/editor.all",
-			"vs/languages/languages.main",
-			"vs/languages/php/common/php.contribution",
-			"vs/editor/browser/standalone/standaloneSchemas"
-		],
 		"vs/workbench/electron-browser/main": [
 			"require",
 			"exports",
@@ -636,31 +674,12 @@
 			"vs/workbench/services/configuration/node/configurationService",
 			"ghedit/githubService"
 		],
-		"vs/base/common/marshalling": [
-			"require",
-			"exports",
-			"vs/base/common/uri"
-		],
-		"vs/base/common/worker/workerProtocol": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/severity": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/strings"
-		],
-		"vs/base/common/winjs.base": [
-			"vs/base/common/winjs.base.raw",
-			"vs/base/common/errors"
-		],
-		"vs/platform/event/common/eventService": [
-			"require",
-			"exports",
-			"vs/base/common/eventEmitter"
-		],
 		"vs/platform/event/common/event": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/platform/extensions/common/extensions": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
@@ -672,11 +691,6 @@
 			"vs/base/common/severity",
 			"vs/base/common/winjs.base",
 			"vs/platform/extensions/common/extensionsRegistry"
-		],
-		"vs/platform/extensions/common/extensions": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/platform/instantiation/common/serviceCollection": [
 			"require",
@@ -696,6 +710,11 @@
 			"vs/platform/instantiation/common/serviceCollection"
 		],
 		"vs/editor/common/services/modeService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/editor/common/services/resourceService": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
@@ -722,97 +741,9 @@
 			"vs/editor/common/modes/abstractState",
 			"vs/editor/common/modes/supports"
 		],
-		"vs/editor/common/services/resourceServiceImpl": [
-			"require",
-			"exports",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/lifecycle",
-			"vs/editor/common/services/resourceService"
-		],
-		"vs/editor/common/services/resourceService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/editor/common/services/compatWorkerServiceWorker": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/services/resourceService",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/model/mirrorModel",
-			"vs/base/common/errors",
-			"vs/editor/common/modes/modesRegistry"
-		],
-		"vs/editor/common/services/compatWorkerService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/base/common/uri": [
-			"require",
-			"exports",
-			"vs/base/common/platform"
-		],
-		"vs/editor/common/core/range": [
-			"require",
-			"exports",
-			"vs/editor/common/core/position"
-		],
-		"vs/editor/common/diff/diffComputer": [
-			"require",
-			"exports",
-			"vs/base/common/diff/diff",
-			"vs/base/common/strings"
-		],
-		"vs/base/common/filters": [
-			"require",
-			"exports",
-			"vs/base/common/strings",
-			"vs/base/common/map"
-		],
-		"vs/editor/common/model/mirrorModel2": [
-			"require",
-			"exports",
-			"vs/editor/common/viewModel/prefixSumComputer"
-		],
-		"vs/editor/common/modes/linkComputer": [
-			"require",
-			"exports"
-		],
-		"vs/editor/common/modes/supports/inplaceReplaceSupport": [
-			"require",
-			"exports"
-		],
-		"vs/editor/common/model/wordHelper": [
-			"require",
-			"exports"
-		],
-		"vs/editor/common/standalone/standaloneBase": [
-			"require",
-			"exports",
-			"vs/base/common/event",
-			"vs/base/common/keyCodes",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection",
-			"vs/base/common/winjs.base",
-			"vs/base/common/cancellation",
-			"vs/base/common/severity",
-			"vs/base/common/uri"
-		],
 		"vs/base/common/assert": [
 			"require",
 			"exports"
-		],
-		"vs/base/common/async": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/platform",
-			"vs/base/common/winjs.base",
-			"vs/base/common/cancellation",
-			"vs/base/common/lifecycle"
 		],
 		"vs/base/common/callbackList": [
 			"require",
@@ -837,15 +768,37 @@
 			"require",
 			"exports"
 		],
-		"vs/base/common/lifecycle": [
-			"require",
-			"exports",
-			"vs/base/common/types"
-		],
 		"vs/base/common/paths": [
 			"require",
 			"exports",
 			"vs/base/common/platform"
+		],
+		"vs/base/common/uri": [
+			"require",
+			"exports",
+			"vs/base/common/platform"
+		],
+		"vs/editor/common/services/resourceServiceImpl": [
+			"require",
+			"exports",
+			"vs/base/common/eventEmitter",
+			"vs/base/common/lifecycle",
+			"vs/editor/common/services/resourceService"
+		],
+		"vs/editor/common/services/compatWorkerServiceWorker": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/services/resourceService",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/model/mirrorModel",
+			"vs/base/common/errors",
+			"vs/editor/common/modes/modesRegistry"
+		],
+		"vs/editor/common/services/compatWorkerService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/platform/platform": [
 			"require",
@@ -871,17 +824,6 @@
 			"vs/base/common/timer",
 			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/editor/common/editorCommon": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/types"
-		],
-		"vs/editor/common/modes": [
-			"require",
-			"exports",
-			"vs/editor/common/modes/languageFeatureRegistry"
-		],
 		"vs/editor/common/modes/abstractMode": [
 			"require",
 			"exports",
@@ -899,6 +841,17 @@
 			"require",
 			"exports"
 		],
+		"vs/editor/common/editorCommon": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/types"
+		],
+		"vs/editor/common/modes": [
+			"require",
+			"exports",
+			"vs/editor/common/modes/languageFeatureRegistry"
+		],
 		"vs/editor/common/modes/monarch/monarchCommon": [
 			"require",
 			"exports"
@@ -910,6 +863,12 @@
 			"vs/editor/common/modes/lineStream",
 			"vs/editor/common/modes/monarch/monarchCommon",
 			"vs/editor/common/modes/supports/tokenizationSupport"
+		],
+		"vs/editor/common/modes/supports/suggestSupport": [
+			"require",
+			"exports",
+			"vs/base/common/filters",
+			"vs/base/common/async"
 		],
 		"vs/editor/common/modes/monarch/monarchCompile": [
 			"require",
@@ -931,11 +890,16 @@
 			"vs/base/common/strings",
 			"vs/editor/common/model/wordHelper"
 		],
-		"vs/editor/common/modes/supports/suggestSupport": [
+		"vs/base/common/filters": [
 			"require",
 			"exports",
-			"vs/base/common/filters",
-			"vs/base/common/async"
+			"vs/base/common/strings",
+			"vs/base/common/map"
+		],
+		"vs/editor/common/services/modelService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/editor/common/modes/supports/tokenizationSupport": [
 			"require",
@@ -944,12 +908,56 @@
 			"vs/editor/common/modes/nullMode",
 			"vs/editor/common/modes/supports"
 		],
-		"vs/editor/common/services/modelService": [
+		"vs/editor/common/diff/diffComputer": [
 			"require",
 			"exports",
-			"vs/platform/instantiation/common/instantiation"
+			"vs/base/common/diff/diff",
+			"vs/base/common/strings"
+		],
+		"vs/editor/common/core/range": [
+			"require",
+			"exports",
+			"vs/editor/common/core/position"
+		],
+		"vs/editor/common/modes/linkComputer": [
+			"require",
+			"exports"
+		],
+		"vs/editor/common/modes/supports/inplaceReplaceSupport": [
+			"require",
+			"exports"
+		],
+		"vs/editor/common/model/mirrorModel2": [
+			"require",
+			"exports",
+			"vs/editor/common/viewModel/prefixSumComputer"
+		],
+		"vs/editor/common/model/wordHelper": [
+			"require",
+			"exports"
+		],
+		"vs/editor/common/standalone/standaloneBase": [
+			"require",
+			"exports",
+			"vs/base/common/event",
+			"vs/base/common/keyCodes",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection",
+			"vs/base/common/winjs.base",
+			"vs/base/common/cancellation",
+			"vs/base/common/severity",
+			"vs/base/common/uri"
+		],
+		"vs/languages/handlebars/common/handlebarsTokenTypes": [
+			"require",
+			"exports"
 		],
 		"vs/platform/instantiation/common/instantiation": [
+			"require",
+			"exports"
+		],
+		"vs/languages/lib/common/beautify": [
 			"require",
 			"exports"
 		],
@@ -958,24 +966,21 @@
 			"exports",
 			"vs/base/common/strings"
 		],
+		"vs/base/common/network": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base"
+		],
 		"vs/languages/html/common/htmlEmptyTagsShared": [
 			"require",
 			"exports",
 			"vs/base/common/arrays"
 		],
-		"vs/languages/lib/common/beautify": [
-			"require",
-			"exports"
-		],
 		"vs/languages/lib/common/beautify-css": [],
-		"vs/languages/handlebars/common/handlebarsTokenTypes": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/network": [
+		"vs/languages/html/common/htmlScanner": [
 			"require",
 			"exports",
-			"vs/base/common/winjs.base"
+			"vs/languages/html/common/htmlTokenTypes"
 		],
 		"vs/languages/html/common/htmlTags": [
 			"require",
@@ -983,22 +988,21 @@
 			"vs/base/common/strings",
 			"vs/nls"
 		],
-		"vs/languages/html/common/htmlScanner": [
-			"require",
-			"exports",
-			"vs/languages/html/common/htmlTokenTypes"
-		],
 		"vs/base/common/objects": [
 			"require",
 			"exports",
 			"vs/base/common/types"
 		],
-		"vs/editor/common/services/editorWorkerService": [
+		"vs/languages/razor/common/razorTokenTypes": [
+			"require",
+			"exports"
+		],
+		"vs/platform/configuration/common/configuration": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/platform/configuration/common/configuration": [
+		"vs/editor/common/services/editorWorkerService": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
@@ -1013,11 +1017,19 @@
 			"vs/editor/common/modes/abstractMode",
 			"vs/languages/razor/common/razorTokenTypes"
 		],
-		"vs/languages/razor/common/razorTokenTypes": [
+		"vs/base/common/platform": [
 			"require",
 			"exports"
 		],
-		"ghedit/lib/es6-promise": [
+		"vs/base/common/types": [
+			"require",
+			"exports"
+		],
+		"vs/base/common/arrays": [
+			"require",
+			"exports"
+		],
+		"vs/base/common/winjs.base.raw": [
 			"require",
 			"exports",
 			"module"
@@ -1027,12 +1039,17 @@
 			"exports",
 			"module"
 		],
-		"ghedit/lib/axios": [],
+		"ghedit/lib/es6-promise": [
+			"require",
+			"exports",
+			"module"
+		],
 		"ghedit/lib/utf8": [
 			"require",
 			"exports",
 			"module"
 		],
+		"ghedit/lib/axios": [],
 		"vs/base/common/map": [
 			"require",
 			"exports"
@@ -1088,24 +1105,6 @@
 			"vs/css!vs/editor/contrib/accessibility/browser/accessibility"
 		],
 		"vs/css!vs/editor/contrib/accessibility/browser/accessibility": [],
-		"vs/editor/contrib/clipboard/browser/clipboard": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/keyCodes",
-			"vs/base/common/lifecycle",
-			"vs/base/common/winjs.base",
-			"vs/base/browser/browser",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/editor/common/config/config",
-			"vs/editor/common/editorAction",
-			"vs/editor/common/editorActionEnablement",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/platform/actions/common/actions",
-			"vs/css!vs/editor/contrib/clipboard/browser/clipboard"
-		],
-		"vs/css!vs/editor/contrib/clipboard/browser/clipboard": [],
 		"vs/editor/browser/widget/diffEditorWidget": [
 			"require",
 			"exports",
@@ -1132,6 +1131,24 @@
 			"vs/css!vs/editor/browser/widget/media/diffEditor"
 		],
 		"vs/css!vs/editor/browser/widget/media/diffEditor": [],
+		"vs/editor/contrib/clipboard/browser/clipboard": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/keyCodes",
+			"vs/base/common/lifecycle",
+			"vs/base/common/winjs.base",
+			"vs/base/browser/browser",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/editor/common/config/config",
+			"vs/editor/common/editorAction",
+			"vs/editor/common/editorActionEnablement",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/platform/actions/common/actions",
+			"vs/css!vs/editor/contrib/clipboard/browser/clipboard"
+		],
+		"vs/css!vs/editor/contrib/clipboard/browser/clipboard": [],
 		"vs/editor/contrib/codelens/browser/codelens": [
 			"require",
 			"exports",
@@ -1218,6 +1235,33 @@
 			"vs/editor/contrib/format/common/format",
 			"vs/editor/contrib/format/common/formatCommand"
 		],
+		"vs/editor/contrib/gotoError/browser/gotoError": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/errors",
+			"vs/base/common/event",
+			"vs/base/common/keyCodes",
+			"vs/base/common/lifecycle",
+			"vs/base/common/severity",
+			"vs/base/common/winjs.base",
+			"vs/base/browser/dom",
+			"vs/base/browser/htmlContentRenderer",
+			"vs/platform/commands/common/commands",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/platform/markers/common/markers",
+			"vs/platform/telemetry/common/telemetry",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorAction",
+			"vs/editor/common/editorActionEnablement",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/browser/editorBrowserExtensions",
+			"vs/editor/contrib/zoneWidget/browser/zoneWidget",
+			"vs/editor/contrib/quickFix/common/quickFix",
+			"vs/css!vs/editor/contrib/gotoError/browser/gotoError"
+		],
+		"vs/css!vs/editor/contrib/gotoError/browser/gotoError": [],
 		"vs/editor/contrib/goToDeclaration/browser/goToDeclaration": [
 			"require",
 			"exports",
@@ -1250,33 +1294,19 @@
 			"vs/css!vs/editor/contrib/goToDeclaration/browser/goToDeclaration"
 		],
 		"vs/css!vs/editor/contrib/goToDeclaration/browser/goToDeclaration": [],
-		"vs/editor/contrib/gotoError/browser/gotoError": [
+		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
 			"require",
 			"exports",
 			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/event",
 			"vs/base/common/keyCodes",
-			"vs/base/common/lifecycle",
-			"vs/base/common/severity",
 			"vs/base/common/winjs.base",
-			"vs/base/browser/dom",
-			"vs/base/browser/htmlContentRenderer",
-			"vs/platform/commands/common/commands",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/platform/markers/common/markers",
-			"vs/platform/telemetry/common/telemetry",
-			"vs/editor/common/core/position",
 			"vs/editor/common/core/range",
 			"vs/editor/common/editorAction",
-			"vs/editor/common/editorActionEnablement",
+			"vs/editor/common/editorCommon",
 			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/browser/editorBrowserExtensions",
-			"vs/editor/contrib/zoneWidget/browser/zoneWidget",
-			"vs/editor/contrib/quickFix/common/quickFix",
-			"vs/css!vs/editor/contrib/gotoError/browser/gotoError"
+			"vs/editor/common/services/editorWorkerService",
+			"vs/editor/contrib/inPlaceReplace/common/inPlaceReplaceCommand"
 		],
-		"vs/css!vs/editor/contrib/gotoError/browser/gotoError": [],
 		"vs/editor/contrib/hover/browser/hover": [
 			"require",
 			"exports",
@@ -1299,19 +1329,6 @@
 			"vs/css!vs/editor/contrib/hover/browser/hover"
 		],
 		"vs/css!vs/editor/contrib/hover/browser/hover": [],
-		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/keyCodes",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorAction",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/common/services/editorWorkerService",
-			"vs/editor/contrib/inPlaceReplace/common/inPlaceReplaceCommand"
-		],
 		"vs/editor/contrib/iPadShowKeyboard/browser/iPadShowKeyboard": [
 			"require",
 			"exports",
@@ -1323,6 +1340,15 @@
 			"vs/css!vs/editor/contrib/iPadShowKeyboard/browser/iPadShowKeyboard"
 		],
 		"vs/css!vs/editor/contrib/iPadShowKeyboard/browser/iPadShowKeyboard": [],
+		"vs/editor/contrib/carretOperations/common/carretOperations": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorAction",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/contrib/carretOperations/common/moveCarretCommand"
+		],
 		"vs/editor/contrib/linesOperations/common/linesOperations": [
 			"require",
 			"exports",
@@ -1338,14 +1364,15 @@
 			"vs/editor/contrib/linesOperations/common/deleteLinesCommand",
 			"vs/editor/contrib/linesOperations/common/moveLinesCommand"
 		],
-		"vs/editor/contrib/carretOperations/common/carretOperations": [
+		"vs/editor/contrib/multicursor/common/multicursor": [
 			"require",
 			"exports",
 			"vs/nls",
+			"vs/base/common/keyCodes",
 			"vs/base/common/winjs.base",
 			"vs/editor/common/editorAction",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/contrib/carretOperations/common/moveCarretCommand"
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/editorCommonExtensions"
 		],
 		"vs/editor/contrib/links/browser/links": [
 			"require",
@@ -1371,16 +1398,6 @@
 			"vs/css!vs/editor/contrib/links/browser/links"
 		],
 		"vs/css!vs/editor/contrib/links/browser/links": [],
-		"vs/editor/contrib/multicursor/common/multicursor": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/keyCodes",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorAction",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/editorCommonExtensions"
-		],
 		"vs/editor/contrib/parameterHints/browser/parameterHints": [
 			"require",
 			"exports",
@@ -1497,33 +1514,6 @@
 			"vs/css!vs/editor/contrib/snippet/browser/snippet"
 		],
 		"vs/css!vs/editor/contrib/snippet/browser/snippet": [],
-		"vs/editor/contrib/snippet/common/snippet": [
-			"require",
-			"exports",
-			"vs/base/common/collections",
-			"vs/base/common/keyCodes",
-			"vs/base/common/strings",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/editor/common/core/editOperation",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/base/common/lifecycle"
-		],
-		"vs/editor/contrib/suggest/browser/tabCompletion": [
-			"require",
-			"exports",
-			"vs/base/common/keyCodes",
-			"vs/editor/common/services/codeEditorService",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/platform/keybinding/common/keybindingsRegistry",
-			"vs/editor/common/modes/snippetsRegistry",
-			"vs/platform/platform",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/contrib/snippet/common/snippet"
-		],
 		"vs/editor/contrib/suggest/browser/suggest": [
 			"require",
 			"exports",
@@ -1546,15 +1536,32 @@
 			"vs/editor/contrib/suggest/common/suggestModel",
 			"vs/editor/contrib/suggest/browser/suggestWidget"
 		],
-		"vs/editor/contrib/toggleWordWrap/common/toggleWordWrap": [
+		"vs/editor/contrib/suggest/browser/tabCompletion": [
 			"require",
 			"exports",
-			"vs/nls",
 			"vs/base/common/keyCodes",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorAction",
-			"vs/editor/common/editorActionEnablement",
-			"vs/editor/common/editorCommonExtensions"
+			"vs/editor/common/services/codeEditorService",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/platform/keybinding/common/keybindingsRegistry",
+			"vs/editor/common/modes/snippetsRegistry",
+			"vs/platform/platform",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/contrib/snippet/common/snippet"
+		],
+		"vs/editor/contrib/snippet/common/snippet": [
+			"require",
+			"exports",
+			"vs/base/common/collections",
+			"vs/base/common/keyCodes",
+			"vs/base/common/strings",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/editor/common/core/editOperation",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/base/common/lifecycle"
 		],
 		"vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode": [
 			"require",
@@ -1568,6 +1575,16 @@
 			"vs/editor/common/config/commonEditorConfig",
 			"vs/platform/keybinding/common/keybindingsRegistry"
 		],
+		"vs/editor/contrib/toggleWordWrap/common/toggleWordWrap": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/keyCodes",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorAction",
+			"vs/editor/common/editorActionEnablement",
+			"vs/editor/common/editorCommonExtensions"
+		],
 		"vs/editor/contrib/wordHighlighter/common/wordHighlighter": [
 			"require",
 			"exports",
@@ -1578,6 +1595,14 @@
 			"vs/editor/common/editorCommonExtensions",
 			"vs/editor/common/modes",
 			"vs/base/common/lifecycle"
+		],
+		"vs/base/common/actions": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/eventEmitter",
+			"vs/base/common/events",
+			"vs/base/common/event"
 		],
 		"vs/editor/contrib/defineKeybinding/browser/defineKeybinding": [
 			"require",
@@ -1635,54 +1660,11 @@
 			"vs/editor/common/services/modelService",
 			"vs/editor/common/editorActionEnablement"
 		],
-		"vs/languages/handlebars/common/handlebars.contribution": [
-			"require",
-			"exports",
-			"vs/editor/common/modes/modesRegistry"
-		],
-		"vs/languages/html/common/html.contribution": [
-			"require",
-			"exports",
-			"vs/editor/common/modes/modesRegistry",
-			"vs/nls",
-			"vs/platform/platform",
-			"vs/platform/configuration/common/configurationRegistry"
-		],
-		"vs/base/common/platform": [
-			"require",
-			"exports"
-		],
-		"vs/languages/razor/common/razor.contribution": [
-			"require",
-			"exports",
-			"vs/editor/common/modes/modesRegistry"
-		],
-		"vs/base/common/types": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/arrays": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/idGenerator": [
-			"require",
-			"exports"
-		],
-		"vs/platform/extensions/common/extensionsRegistry": [
+		"vs/base/common/keyCodes": [
 			"require",
 			"exports",
 			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/paths",
-			"vs/base/common/severity",
-			"vs/platform/jsonschemas/common/jsonContributionRegistry",
-			"vs/platform/platform"
-		],
-		"vs/platform/keybinding/common/keybinding": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
+			"vs/base/common/platform"
 		],
 		"vs/platform/actions/common/actions": [
 			"require",
@@ -1692,14 +1674,6 @@
 			"vs/platform/instantiation/common/descriptors",
 			"vs/platform/commands/common/commands",
 			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/base/common/actions": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/events",
-			"vs/base/common/event"
 		],
 		"vs/workbench/common/actionRegistry": [
 			"require",
@@ -1714,6 +1688,20 @@
 			"vs/platform/instantiation/common/instantiation",
 			"vs/base/common/severity"
 		],
+		"vs/workbench/services/part/common/partService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/languages/handlebars/common/handlebars.contribution": [
+			"require",
+			"exports",
+			"vs/editor/common/modes/modesRegistry"
+		],
+		"vs/base/common/idGenerator": [
+			"require",
+			"exports"
+		],
 		"vs/base/browser/dom": [
 			"require",
 			"exports",
@@ -1726,10 +1714,10 @@
 			"vs/base/browser/keyboardEvent",
 			"vs/base/browser/mouseEvent"
 		],
-		"vs/workbench/services/part/common/partService": [
+		"vs/languages/razor/common/razor.contribution": [
 			"require",
 			"exports",
-			"vs/platform/instantiation/common/instantiation"
+			"vs/editor/common/modes/modesRegistry"
 		],
 		"vs/base/common/labels": [
 			"require",
@@ -1739,34 +1727,28 @@
 			"vs/base/common/strings",
 			"vs/base/common/paths"
 		],
-		"vs/base/common/keyCodes": [
+		"vs/languages/html/common/html.contribution": [
+			"require",
+			"exports",
+			"vs/editor/common/modes/modesRegistry",
+			"vs/nls",
+			"vs/platform/platform",
+			"vs/platform/configuration/common/configurationRegistry"
+		],
+		"vs/platform/keybinding/common/keybinding": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/platform/extensions/common/extensionsRegistry": [
 			"require",
 			"exports",
 			"vs/nls",
-			"vs/base/common/platform"
-		],
-		"vs/workbench/common/editor/stringEditorInput": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/mime",
-			"vs/workbench/common/editor",
-			"vs/workbench/common/editor/stringEditorModel",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/services/editor/common/editorService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/platform/configuration/common/model": [
-			"require",
-			"exports",
-			"vs/base/common/objects",
-			"vs/platform/platform",
-			"vs/base/common/types",
-			"vs/base/common/json",
-			"vs/platform/configuration/common/configurationRegistry"
+			"vs/base/common/errors",
+			"vs/base/common/paths",
+			"vs/base/common/severity",
+			"vs/platform/jsonschemas/common/jsonContributionRegistry",
+			"vs/platform/platform"
 		],
 		"vs/workbench/services/workspace/common/contextService": [
 			"require",
@@ -1775,17 +1757,7 @@
 			"vs/platform/instantiation/common/instantiation",
 			"vs/platform/workspace/common/baseWorkspaceContextService"
 		],
-		"vs/platform/editor/common/editor": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/services/group/common/groupService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/platform/storage/common/storage": [
+		"vs/workbench/services/editor/common/editorService": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
@@ -1797,35 +1769,30 @@
 			"vs/base/common/events",
 			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/platform/message/common/message": [
+		"vs/workbench/parts/quickopen/browser/gotoSymbolHandler": [
 			"require",
 			"exports",
-			"vs/nls",
 			"vs/base/common/winjs.base",
-			"vs/base/common/severity",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/base/common/actions"
-		],
-		"vs/workbench/services/untitled/common/untitledEditorService": [
-			"require",
-			"exports",
-			"vs/base/common/uri",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/base/common/events",
-			"vs/base/common/arrays",
-			"vs/workbench/common/editor/untitledEditorInput"
-		],
-		"vs/workbench/common/editor/untitledEditorModel": [
-			"require",
-			"exports",
-			"vs/workbench/common/editor/stringEditorModel",
+			"vs/nls",
+			"vs/base/common/errors",
+			"vs/base/common/types",
+			"vs/base/common/strings",
+			"vs/base/parts/quickopen/common/quickOpen",
+			"vs/base/parts/quickopen/browser/quickOpenModel",
+			"vs/workbench/browser/quickopen",
+			"vs/workbench/browser/parts/editor/textEditor",
+			"vs/workbench/common/editor",
+			"vs/base/common/filters",
+			"vs/base/common/keyCodes",
 			"vs/editor/common/editorCommon",
-			"vs/workbench/common/events",
-			"vs/platform/configuration/common/configuration",
-			"vs/platform/event/common/event",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/services/modelService"
+			"vs/workbench/services/editor/common/editorService",
+			"vs/workbench/services/quickopen/common/quickOpenService",
+			"vs/platform/workspace/common/workspace",
+			"vs/editor/contrib/quickOpen/common/quickOpen",
+			"vs/editor/common/modes",
+			"vs/css!vs/workbench/parts/quickopen/browser/media/gotoSymbolHandler"
 		],
+		"vs/css!vs/workbench/parts/quickopen/browser/media/gotoSymbolHandler": [],
 		"vs/workbench/browser/quickopen": [
 			"require",
 			"exports",
@@ -1900,35 +1867,40 @@
 			"vs/workbench/browser/quickopen",
 			"vs/workbench/services/quickopen/common/quickOpenService"
 		],
-		"vs/workbench/parts/quickopen/browser/gotoSymbolHandler": [
+		"vs/workbench/common/editor/stringEditorInput": [
 			"require",
 			"exports",
 			"vs/base/common/winjs.base",
-			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/types",
-			"vs/base/common/strings",
-			"vs/base/parts/quickopen/common/quickOpen",
-			"vs/base/parts/quickopen/browser/quickOpenModel",
-			"vs/workbench/browser/quickopen",
-			"vs/workbench/browser/parts/editor/textEditor",
+			"vs/base/common/mime",
 			"vs/workbench/common/editor",
-			"vs/base/common/filters",
-			"vs/base/common/keyCodes",
-			"vs/editor/common/editorCommon",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/workbench/services/quickopen/common/quickOpenService",
-			"vs/platform/workspace/common/workspace",
-			"vs/editor/contrib/quickOpen/common/quickOpen",
-			"vs/editor/common/modes",
-			"vs/css!vs/workbench/parts/quickopen/browser/media/gotoSymbolHandler"
+			"vs/workbench/common/editor/stringEditorModel",
+			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/css!vs/workbench/parts/quickopen/browser/media/gotoSymbolHandler": [],
-		"vs/base/parts/quickopen/common/quickOpen": [
+		"vs/platform/configuration/common/model": [
 			"require",
-			"exports"
+			"exports",
+			"vs/base/common/objects",
+			"vs/platform/platform",
+			"vs/base/common/types",
+			"vs/base/common/json",
+			"vs/platform/configuration/common/configurationRegistry"
 		],
-		"vs/base/common/scorer": [
+		"vs/platform/editor/common/editor": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/workbench/services/group/common/groupService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/platform/storage/common/storage": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/base/parts/quickopen/common/quickOpen": [
 			"require",
 			"exports"
 		],
@@ -1948,15 +1920,44 @@
 			"vs/base/browser/dom",
 			"vs/base/common/scorer"
 		],
-		"vs/workbench/common/editor": [
+		"vs/base/common/scorer": [
+			"require",
+			"exports"
+		],
+		"vs/platform/message/common/message": [
 			"require",
 			"exports",
+			"vs/nls",
 			"vs/base/common/winjs.base",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/event",
-			"vs/base/common/types",
+			"vs/base/common/severity",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/base/common/actions"
+		],
+		"vs/workbench/services/untitled/common/untitledEditorService": [
+			"require",
+			"exports",
 			"vs/base/common/uri",
-			"vs/base/common/events"
+			"vs/platform/instantiation/common/instantiation",
+			"vs/base/common/events",
+			"vs/base/common/arrays",
+			"vs/workbench/common/editor/untitledEditorInput"
+		],
+		"vs/workbench/common/editor/untitledEditorModel": [
+			"require",
+			"exports",
+			"vs/workbench/common/editor/stringEditorModel",
+			"vs/editor/common/editorCommon",
+			"vs/workbench/common/events",
+			"vs/platform/configuration/common/configuration",
+			"vs/platform/event/common/event",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/services/modelService"
+		],
+		"vs/workbench/common/memento": [
+			"require",
+			"exports",
+			"vs/base/common/types",
+			"vs/platform/storage/common/storage"
 		],
 		"vs/workbench/parts/files/common/files": [
 			"require",
@@ -1966,11 +1967,31 @@
 			"vs/platform/instantiation/common/instantiation",
 			"vs/workbench/parts/files/common/explorerViewModel"
 		],
-		"vs/workbench/common/memento": [
+		"vs/base/browser/ui/splitview/splitview": [
 			"require",
 			"exports",
+			"vs/base/common/lifecycle",
+			"vs/base/common/eventEmitter",
 			"vs/base/common/types",
-			"vs/platform/storage/common/storage"
+			"vs/base/common/objects",
+			"vs/base/browser/dom",
+			"vs/base/common/numbers",
+			"vs/base/browser/ui/sash/sash",
+			"vs/base/browser/keyboardEvent",
+			"vs/base/common/keyCodes",
+			"vs/base/common/event",
+			"vs/css!vs/base/browser/ui/splitview/splitview"
+		],
+		"vs/css!vs/base/browser/ui/splitview/splitview": [],
+		"vs/workbench/common/editor": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/eventEmitter",
+			"vs/base/common/event",
+			"vs/base/common/types",
+			"vs/base/common/uri",
+			"vs/base/common/events"
 		],
 		"vs/workbench/browser/viewlet": [
 			"require",
@@ -1992,22 +2013,6 @@
 			"vs/workbench/services/editor/common/editorService",
 			"vs/workbench/browser/composite"
 		],
-		"vs/base/browser/ui/splitview/splitview": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/types",
-			"vs/base/common/objects",
-			"vs/base/browser/dom",
-			"vs/base/common/numbers",
-			"vs/base/browser/ui/sash/sash",
-			"vs/base/browser/keyboardEvent",
-			"vs/base/common/keyCodes",
-			"vs/base/common/event",
-			"vs/css!vs/base/browser/ui/splitview/splitview"
-		],
-		"vs/css!vs/base/browser/ui/splitview/splitview": [],
 		"vs/workbench/parts/files/browser/views/explorerViewer": [
 			"require",
 			"exports",
@@ -2055,6 +2060,20 @@
 			"vs/platform/actions/common/actions",
 			"vs/platform/actions/browser/menuItemActionItem"
 		],
+		"vs/workbench/parts/files/browser/views/emptyView": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/platform",
+			"vs/base/browser/dom",
+			"vs/base/common/winjs.base",
+			"vs/base/browser/ui/button/button",
+			"vs/base/browser/builder",
+			"vs/base/browser/ui/splitview/splitview",
+			"vs/platform/platform",
+			"vs/workbench/common/actionRegistry",
+			"vs/platform/instantiation/common/instantiation"
+		],
 		"vs/workbench/parts/files/browser/views/explorerView": [
 			"require",
 			"exports",
@@ -2091,20 +2110,24 @@
 			"vs/platform/message/common/message",
 			"vs/platform/actions/common/resourceContextKey"
 		],
-		"vs/workbench/parts/files/browser/views/emptyView": [
+		"vs/base/browser/ui/actionbar/actionbar": [
 			"require",
 			"exports",
 			"vs/nls",
-			"vs/base/common/platform",
-			"vs/base/browser/dom",
-			"vs/base/common/winjs.base",
-			"vs/base/browser/ui/button/button",
+			"vs/base/common/lifecycle",
 			"vs/base/browser/builder",
-			"vs/base/browser/ui/splitview/splitview",
-			"vs/platform/platform",
-			"vs/workbench/common/actionRegistry",
-			"vs/platform/instantiation/common/instantiation"
+			"vs/base/common/platform",
+			"vs/base/common/actions",
+			"vs/base/browser/dom",
+			"vs/base/common/events",
+			"vs/base/common/types",
+			"vs/base/common/eventEmitter",
+			"vs/base/browser/touch",
+			"vs/base/browser/keyboardEvent",
+			"vs/base/common/keyCodes",
+			"vs/css!vs/base/browser/ui/actionbar/actionbar"
 		],
+		"vs/css!vs/base/browser/ui/actionbar/actionbar": [],
 		"vs/workbench/parts/files/browser/views/openEditorsView": [
 			"require",
 			"exports",
@@ -2148,24 +2171,36 @@
 			"vs/workbench/services/editor/common/editorService",
 			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/base/browser/ui/actionbar/actionbar": [
+		"ghedit/githubActions": [
 			"require",
 			"exports",
 			"vs/nls",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/builder",
-			"vs/base/common/platform",
+			"vs/base/common/winjs.base",
 			"vs/base/common/actions",
-			"vs/base/browser/dom",
-			"vs/base/common/events",
-			"vs/base/common/types",
-			"vs/base/common/eventEmitter",
-			"vs/base/browser/touch",
-			"vs/base/browser/keyboardEvent",
+			"vs/workbench/services/quickopen/common/quickOpenService",
+			"vs/platform/platform",
+			"vs/platform/actions/common/actions",
+			"vs/workbench/common/actionRegistry",
+			"ghedit/githubService",
+			"vs/platform/message/common/message",
+			"vs/platform/workspace/common/workspace",
 			"vs/base/common/keyCodes",
-			"vs/css!vs/base/browser/ui/actionbar/actionbar"
+			"vs/workbench/browser/quickopen"
 		],
-		"vs/css!vs/base/browser/ui/actionbar/actionbar": [],
+		"ghedit/openRepoHandler": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/scorer",
+			"vs/base/common/winjs.base",
+			"vs/workbench/browser/quickopen",
+			"vs/base/parts/quickopen/common/quickOpen",
+			"vs/base/parts/quickopen/browser/quickOpenModel",
+			"ghedit/githubService",
+			"vs/workbench/services/workspace/common/contextService",
+			"vs/base/common/async",
+			"vs/platform/message/common/message"
+		],
 		"vs/workbench/browser/actionBarRegistry": [
 			"require",
 			"exports",
@@ -2185,6 +2220,19 @@
 			"vs/base/common/paths",
 			"vs/base/common/mime"
 		],
+		"vs/workbench/parts/markers/browser/markersWorkbenchContributions": [
+			"require",
+			"exports",
+			"vs/workbench/parts/markers/common/messages",
+			"vs/workbench/parts/markers/common/constants",
+			"vs/base/common/keyCodes",
+			"vs/platform/platform",
+			"vs/platform/actions/common/actions",
+			"vs/workbench/common/actionRegistry",
+			"vs/workbench/browser/panel",
+			"vs/platform/configuration/common/configurationRegistry",
+			"vs/workbench/parts/markers/browser/markersPanelActions"
+		],
 		"vs/platform/configuration/common/configurationRegistry": [
 			"require",
 			"exports",
@@ -2194,11 +2242,6 @@
 			"vs/base/common/objects",
 			"vs/platform/extensions/common/extensionsRegistry",
 			"vs/platform/jsonschemas/common/jsonContributionRegistry"
-		],
-		"vs/workbench/common/contributions": [
-			"require",
-			"exports",
-			"vs/platform/platform"
 		],
 		"vs/workbench/parts/files/browser/fileActions": [
 			"require",
@@ -2244,6 +2287,11 @@
 			"vs/css!vs/workbench/parts/files/browser/media/fileactions"
 		],
 		"vs/css!vs/workbench/parts/files/browser/media/fileactions": [],
+		"vs/workbench/common/contributions": [
+			"require",
+			"exports",
+			"vs/platform/platform"
+		],
 		"vs/workbench/parts/files/browser/files": [
 			"require",
 			"exports",
@@ -2285,27 +2333,6 @@
 			"vs/platform/configuration/common/configuration",
 			"vs/platform/event/common/event"
 		],
-		"vs/workbench/parts/files/common/editors/fileEditorInput": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/platform/platform",
-			"vs/base/common/types",
-			"vs/base/common/paths",
-			"vs/base/common/mime",
-			"vs/base/common/labels",
-			"vs/base/common/strings",
-			"vs/base/common/assert",
-			"vs/workbench/common/editor",
-			"vs/workbench/common/editor/binaryEditorModel",
-			"vs/platform/files/common/files",
-			"vs/workbench/parts/files/common/files",
-			"vs/workbench/parts/files/common/editors/textFileEditorModel",
-			"vs/workbench/services/workspace/common/contextService",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/base/common/lifecycle",
-			"vs/platform/event/common/event"
-		],
 		"vs/workbench/parts/files/browser/editors/textFileEditor": [
 			"require",
 			"exports",
@@ -2345,6 +2372,27 @@
 			"vs/platform/telemetry/common/telemetry",
 			"vs/workbench/services/editor/common/editorService"
 		],
+		"vs/workbench/parts/files/common/editors/fileEditorInput": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/platform/platform",
+			"vs/base/common/types",
+			"vs/base/common/paths",
+			"vs/base/common/mime",
+			"vs/base/common/labels",
+			"vs/base/common/strings",
+			"vs/base/common/assert",
+			"vs/workbench/common/editor",
+			"vs/workbench/common/editor/binaryEditorModel",
+			"vs/platform/files/common/files",
+			"vs/workbench/parts/files/common/files",
+			"vs/workbench/parts/files/common/editors/textFileEditorModel",
+			"vs/workbench/services/workspace/common/contextService",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/base/common/lifecycle",
+			"vs/platform/event/common/event"
+		],
 		"vs/platform/instantiation/common/descriptors": [
 			"require",
 			"exports",
@@ -2368,6 +2416,17 @@
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
 		],
+		"vs/workbench/parts/search/common/constants": [
+			"require",
+			"exports"
+		],
+		"vs/workbench/parts/search/browser/replaceContributions": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/extensions",
+			"vs/workbench/parts/search/common/replace",
+			"vs/workbench/parts/search/browser/replaceService"
+		],
 		"vs/workbench/parts/search/browser/searchActions": [
 			"require",
 			"exports",
@@ -2390,16 +2449,12 @@
 			"vs/platform/keybinding/common/keybinding",
 			"vs/workbench/parts/files/common/editors/fileEditorInput"
 		],
-		"vs/workbench/parts/search/common/constants": [
-			"require",
-			"exports"
-		],
-		"vs/workbench/parts/search/browser/replaceContributions": [
+		"vs/platform/commands/common/commands": [
 			"require",
 			"exports",
-			"vs/platform/instantiation/common/extensions",
-			"vs/workbench/parts/search/common/replace",
-			"vs/workbench/parts/search/browser/replaceService"
+			"vs/base/common/winjs.base",
+			"vs/base/common/types",
+			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/workbench/parts/search/browser/searchWidget": [
 			"require",
@@ -2420,61 +2475,6 @@
 			"vs/workbench/services/viewlet/common/viewletService",
 			"vs/workbench/parts/search/browser/searchActions",
 			"vs/editor/contrib/find/common/findController"
-		],
-		"ghedit/githubActions": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/winjs.base",
-			"vs/base/common/actions",
-			"vs/workbench/services/quickopen/common/quickOpenService",
-			"vs/platform/platform",
-			"vs/platform/actions/common/actions",
-			"vs/workbench/common/actionRegistry",
-			"ghedit/githubService",
-			"vs/platform/message/common/message",
-			"vs/platform/workspace/common/workspace",
-			"vs/base/common/keyCodes",
-			"vs/workbench/browser/quickopen"
-		],
-		"ghedit/openRepoHandler": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/scorer",
-			"vs/base/common/winjs.base",
-			"vs/workbench/browser/quickopen",
-			"vs/base/parts/quickopen/common/quickOpen",
-			"vs/base/parts/quickopen/browser/quickOpenModel",
-			"ghedit/githubService",
-			"vs/workbench/services/workspace/common/contextService",
-			"vs/base/common/async",
-			"vs/platform/message/common/message"
-		],
-		"vs/workbench/parts/git/common/git": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/parts/markers/browser/markersWorkbenchContributions": [
-			"require",
-			"exports",
-			"vs/workbench/parts/markers/common/messages",
-			"vs/workbench/parts/markers/common/constants",
-			"vs/base/common/keyCodes",
-			"vs/platform/platform",
-			"vs/platform/actions/common/actions",
-			"vs/workbench/common/actionRegistry",
-			"vs/workbench/browser/panel",
-			"vs/platform/configuration/common/configurationRegistry",
-			"vs/workbench/parts/markers/browser/markersPanelActions"
-		],
-		"vs/platform/commands/common/commands": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types",
-			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/workbench/parts/html/common/htmlInput": [
 			"require",
@@ -2510,12 +2510,71 @@
 			"vs/platform/editor/common/editor",
 			"vs/platform/instantiation/common/descriptors"
 		],
+		"vs/editor/browser/standalone/standaloneEditor": [
+			"require",
+			"exports",
+			"vs/editor/common/editorCommon",
+			"vs/editor/browser/editorBrowser",
+			"vs/base/common/async",
+			"vs/editor/browser/standalone/standaloneCodeEditor",
+			"vs/base/common/scrollable",
+			"vs/editor/browser/standalone/standaloneServices",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/platform/instantiation/common/serviceCollection",
+			"vs/platform/instantiation/common/instantiationService",
+			"vs/editor/browser/standalone/colorizer",
+			"vs/editor/browser/standalone/simpleServices",
+			"vs/editor/common/services/editorWorkerServiceImpl",
+			"vs/editor/contrib/diffNavigator/common/diffNavigator",
+			"vs/editor/browser/standalone/standaloneSchemas",
+			"vs/css!vs/editor/browser/standalone/media/standalone-tokens"
+		],
+		"vs/css!vs/editor/browser/standalone/media/standalone-tokens": [],
+		"vs/workbench/parts/git/common/git": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/editor/browser/standalone/standaloneLanguages": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/platform/extensions/common/extensionsRegistry",
+			"vs/platform/jsonschemas/common/jsonContributionRegistry",
+			"vs/platform/platform",
+			"vs/editor/common/modes/modesRegistry",
+			"vs/editor/browser/standalone/standaloneServices",
+			"vs/editor/common/modes",
+			"vs/editor/browser/standalone/standaloneCodeEditor",
+			"vs/editor/common/core/range",
+			"vs/base/common/async",
+			"vs/editor/common/modes/monarch/monarchCompile",
+			"vs/editor/common/modes/monarch/monarchLexer",
+			"vs/editor/common/modes/languageConfigurationRegistry"
+		],
+		"vs/editor/common/config/defaultConfig": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/platform",
+			"vs/editor/common/model/wordHelper"
+		],
+		"vs/languages/php/common/php.contribution": [
+			"require",
+			"exports",
+			"vs/editor/common/modes/modesRegistry"
+		],
 		"vs/editor/common/modes/modesRegistry": [
 			"require",
 			"exports",
 			"vs/nls",
 			"vs/base/common/event",
 			"vs/platform/platform"
+		],
+		"vs/editor/browser/standalone/standaloneSchemas": [
+			"require",
+			"exports",
+			"vs/nls"
 		],
 		"vs/platform/instantiation/common/extensions": [
 			"require",
@@ -2550,6 +2609,11 @@
 			"vs/workbench/services/part/common/partService",
 			"vs/workbench/services/panel/common/panelService"
 		],
+		"vs/base/common/eventEmitter": [
+			"require",
+			"exports",
+			"vs/base/common/errors"
+		],
 		"vs/workbench/parts/output/common/output": [
 			"require",
 			"exports",
@@ -2564,6 +2628,13 @@
 			"vs/base/common/winjs.base",
 			"vs/workbench/browser/composite",
 			"vs/base/common/actions"
+		],
+		"vs/base/common/timer": [
+			"require",
+			"exports",
+			"vs/base/common/platform",
+			"vs/base/common/errors",
+			"vs/base/common/stopwatch"
 		],
 		"vs/workbench/services/themes/common/themeService": [
 			"require",
@@ -2581,59 +2652,41 @@
 			"vs/platform/instantiation/common/instantiation",
 			"vs/editor/common/services/modelService"
 		],
-		"vs/editor/browser/standalone/standaloneEditor": [
+		"vs/base/common/graph": [
 			"require",
 			"exports",
-			"vs/editor/common/editorCommon",
-			"vs/editor/browser/editorBrowser",
-			"vs/base/common/async",
-			"vs/editor/browser/standalone/standaloneCodeEditor",
-			"vs/base/common/scrollable",
-			"vs/editor/browser/standalone/standaloneServices",
+			"vs/base/common/types",
+			"vs/base/common/collections"
+		],
+		"ghedit/githubService": [
+			"require",
+			"exports",
 			"vs/platform/instantiation/common/instantiation",
-			"vs/platform/instantiation/common/serviceCollection",
-			"vs/platform/instantiation/common/instantiationService",
-			"vs/editor/browser/standalone/colorizer",
-			"vs/editor/browser/standalone/simpleServices",
-			"vs/editor/common/services/editorWorkerServiceImpl",
-			"vs/editor/contrib/diffNavigator/common/diffNavigator",
-			"vs/editor/browser/standalone/standaloneSchemas",
-			"vs/css!vs/editor/browser/standalone/media/standalone-tokens"
+			"vs/base/common/winjs.base",
+			"ghedit/githubTreeCache"
 		],
-		"vs/css!vs/editor/browser/standalone/media/standalone-tokens": [],
-		"vs/editor/common/config/defaultConfig": [
+		"vs/base/common/mime": [
 			"require",
 			"exports",
-			"vs/nls",
-			"vs/base/common/platform",
-			"vs/editor/common/model/wordHelper"
+			"vs/base/common/paths",
+			"vs/base/common/types",
+			"vs/base/common/strings",
+			"vs/base/common/glob"
 		],
-		"vs/editor/browser/standalone/standaloneLanguages": [
+		"vs/workbench/services/configuration/node/configurationService": [
 			"require",
 			"exports",
 			"vs/base/common/winjs.base",
-			"vs/platform/extensions/common/extensionsRegistry",
-			"vs/platform/jsonschemas/common/jsonContributionRegistry",
-			"vs/platform/platform",
-			"vs/editor/common/modes/modesRegistry",
-			"vs/editor/browser/standalone/standaloneServices",
-			"vs/editor/common/modes",
-			"vs/editor/browser/standalone/standaloneCodeEditor",
-			"vs/editor/common/core/range",
-			"vs/base/common/async",
-			"vs/editor/common/modes/monarch/monarchCompile",
-			"vs/editor/common/modes/monarch/monarchLexer",
-			"vs/editor/common/modes/languageConfigurationRegistry"
+			"vs/base/common/uri",
+			"vs/base/common/objects",
+			"vs/platform/configuration/common/configurationService",
+			"vs/workbench/common/events",
+			"vs/base/common/paths"
 		],
-		"vs/languages/php/common/php.contribution": [
+		"vs/editor/common/modes/supports": [
 			"require",
 			"exports",
-			"vs/editor/common/modes/modesRegistry"
-		],
-		"vs/editor/browser/standalone/standaloneSchemas": [
-			"require",
-			"exports",
-			"vs/nls"
+			"vs/editor/common/core/modeTransition"
 		],
 		"vs/workbench/electron-browser/shell": [
 			"require",
@@ -2711,54 +2764,6 @@
 		],
 		"vs/css!vs/workbench/electron-browser/media/shell": [],
 		"vs/css!vs/workbench/browser/parts/editor/media/editorpart": [],
-		"vs/base/common/timer": [
-			"require",
-			"exports",
-			"vs/base/common/platform",
-			"vs/base/common/errors",
-			"vs/base/common/stopwatch"
-		],
-		"vs/workbench/services/configuration/node/configurationService": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/uri",
-			"vs/base/common/objects",
-			"vs/platform/configuration/common/configurationService",
-			"vs/workbench/common/events",
-			"vs/base/common/paths"
-		],
-		"ghedit/githubService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/base/common/winjs.base",
-			"ghedit/githubTreeCache"
-		],
-		"vs/base/common/eventEmitter": [
-			"require",
-			"exports",
-			"vs/base/common/errors"
-		],
-		"vs/base/common/graph": [
-			"require",
-			"exports",
-			"vs/base/common/types",
-			"vs/base/common/collections"
-		],
-		"vs/base/common/winjs.base.raw": [
-			"require",
-			"exports",
-			"module"
-		],
-		"vs/base/common/mime": [
-			"require",
-			"exports",
-			"vs/base/common/paths",
-			"vs/base/common/types",
-			"vs/base/common/strings",
-			"vs/base/common/glob"
-		],
 		"vs/editor/common/services/languagesRegistry": [
 			"require",
 			"exports",
@@ -2767,11 +2772,6 @@
 			"vs/base/common/mime",
 			"vs/base/common/strings",
 			"vs/editor/common/modes/modesRegistry"
-		],
-		"vs/editor/common/modes/supports": [
-			"require",
-			"exports",
-			"vs/editor/common/core/modeTransition"
 		],
 		"vs/editor/common/model/mirrorModel": [
 			"require",
@@ -2782,24 +2782,6 @@
 			"vs/editor/common/model/textModelWithTokens",
 			"vs/editor/common/core/range",
 			"vs/editor/common/core/position"
-		],
-		"vs/editor/common/core/position": [
-			"require",
-			"exports"
-		],
-		"vs/editor/common/viewModel/prefixSumComputer": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/diff/diff": [
-			"require",
-			"exports",
-			"vs/base/common/diff/diffChange"
-		],
-		"vs/editor/common/core/selection": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range"
 		],
 		"vs/editor/common/modes/languageFeatureRegistry": [
 			"require",
@@ -2831,13 +2813,31 @@
 			"vs/editor/common/modes",
 			"vs/editor/common/modes/supports"
 		],
+		"vs/base/common/diff/diff": [
+			"require",
+			"exports",
+			"vs/base/common/diff/diffChange"
+		],
 		"vs/editor/common/modes/supports/richEditBrackets": [
 			"require",
 			"exports",
 			"vs/base/common/strings",
 			"vs/editor/common/core/range"
 		],
+		"vs/editor/common/core/position": [
+			"require",
+			"exports"
+		],
 		"vs/editor/common/modes/nullMode": [
+			"require",
+			"exports"
+		],
+		"vs/editor/common/core/selection": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range"
+		],
+		"vs/editor/common/viewModel/prefixSumComputer": [
 			"require",
 			"exports"
 		],
@@ -2856,10 +2856,18 @@
 			"vs/base/common/platform",
 			"vs/base/common/event"
 		],
-		"vs/editor/common/services/codeEditorService": [
+		"vs/editor/browser/editorBrowserExtensions": [
 			"require",
 			"exports",
-			"vs/platform/instantiation/common/instantiation"
+			"vs/platform/platform"
+		],
+		"vs/editor/browser/standalone/colorizer": [
+			"require",
+			"exports",
+			"vs/base/common/async",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/viewLayout/viewLineRenderer",
+			"vs/editor/common/core/viewLineToken"
 		],
 		"vs/editor/common/editorCommonExtensions": [
 			"require",
@@ -2876,6 +2884,31 @@
 			"vs/editor/common/editorCommon",
 			"vs/editor/common/services/modelService",
 			"vs/platform/actions/common/actions"
+		],
+		"vs/editor/common/services/codeEditorService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/base/browser/htmlContentRenderer": [
+			"require",
+			"exports",
+			"vs/base/browser/dom",
+			"vs/base/common/idGenerator",
+			"vs/base/common/strings",
+			"vs/base/common/winjs.base",
+			"vs/base/common/marked/marked"
+		],
+		"vs/editor/browser/config/configuration": [
+			"require",
+			"exports",
+			"vs/base/common/event",
+			"vs/base/common/lifecycle",
+			"vs/base/common/platform",
+			"vs/base/browser/browser",
+			"vs/editor/common/config/commonEditorConfig",
+			"vs/editor/common/editorCommon",
+			"vs/editor/browser/config/elementSizeObserver"
 		],
 		"vs/editor/common/commonCodeEditor": [
 			"require",
@@ -2902,31 +2935,6 @@
 			"vs/editor/common/viewModel/viewModelImpl",
 			"vs/base/common/hash",
 			"vs/editor/common/modes/editorModeContext"
-		],
-		"vs/editor/browser/config/configuration": [
-			"require",
-			"exports",
-			"vs/base/common/event",
-			"vs/base/common/lifecycle",
-			"vs/base/common/platform",
-			"vs/base/browser/browser",
-			"vs/editor/common/config/commonEditorConfig",
-			"vs/editor/common/editorCommon",
-			"vs/editor/browser/config/elementSizeObserver"
-		],
-		"vs/base/browser/htmlContentRenderer": [
-			"require",
-			"exports",
-			"vs/base/browser/dom",
-			"vs/base/common/idGenerator",
-			"vs/base/common/strings",
-			"vs/base/common/winjs.base",
-			"vs/base/common/marked/marked"
-		],
-		"vs/editor/browser/editorBrowserExtensions": [
-			"require",
-			"exports",
-			"vs/platform/platform"
 		],
 		"vs/editor/browser/view/viewImpl": [
 			"require",
@@ -2979,44 +2987,6 @@
 			"vs/base/browser/keyboardEvent",
 			"vs/base/browser/dom"
 		],
-		"vs/editor/common/editorAction": [
-			"require",
-			"exports",
-			"vs/base/common/actions",
-			"vs/base/common/strings",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorActionEnablement"
-		],
-		"vs/editor/common/config/commonEditorConfig": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/event",
-			"vs/base/common/lifecycle",
-			"vs/base/common/objects",
-			"vs/base/common/platform",
-			"vs/platform/configuration/common/configurationRegistry",
-			"vs/platform/platform",
-			"vs/editor/common/config/defaultConfig",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/viewLayout/editorLayoutProvider",
-			"vs/base/common/scrollable"
-		],
-		"vs/editor/common/editorActionEnablement": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle"
-		],
-		"vs/editor/common/config/config": [
-			"require",
-			"exports",
-			"vs/base/common/keyCodes",
-			"vs/platform/editor/common/editor",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/platform/keybinding/common/keybindingsRegistry",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/services/codeEditorService"
-		],
 		"vs/base/browser/ui/sash/sash": [
 			"require",
 			"exports",
@@ -3032,9 +3002,33 @@
 			"vs/css!vs/base/browser/ui/sash/sash"
 		],
 		"vs/css!vs/base/browser/ui/sash/sash": [],
-		"vs/editor/common/viewLayout/viewLineRenderer": [
+		"vs/editor/common/config/commonEditorConfig": [
 			"require",
-			"exports"
+			"exports",
+			"vs/nls",
+			"vs/base/common/event",
+			"vs/base/common/lifecycle",
+			"vs/base/common/objects",
+			"vs/base/common/platform",
+			"vs/platform/configuration/common/configurationRegistry",
+			"vs/platform/platform",
+			"vs/editor/common/config/defaultConfig",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/viewLayout/editorLayoutProvider",
+			"vs/base/common/scrollable"
+		],
+		"vs/editor/common/editorAction": [
+			"require",
+			"exports",
+			"vs/base/common/actions",
+			"vs/base/common/strings",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorActionEnablement"
+		],
+		"vs/editor/common/editorActionEnablement": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle"
 		],
 		"vs/editor/common/viewLayout/viewLineParts": [
 			"require",
@@ -3045,16 +3039,20 @@
 			"vs/editor/common/core/viewLineToken",
 			"vs/editor/common/viewModel/viewModel"
 		],
-		"vs/editor/common/core/viewLineToken": [
+		"vs/editor/common/viewModel/viewModel": [
 			"require",
-			"exports",
-			"vs/editor/common/core/arrays"
+			"exports"
 		],
 		"vs/editor/browser/editorBrowser": [
 			"require",
 			"exports"
 		],
-		"vs/editor/common/viewModel/viewModel": [
+		"vs/editor/common/core/viewLineToken": [
+			"require",
+			"exports",
+			"vs/editor/common/core/arrays"
+		],
+		"vs/editor/common/viewLayout/viewLineRenderer": [
 			"require",
 			"exports"
 		],
@@ -3069,6 +3067,16 @@
 			"vs/editor/common/services/modelService",
 			"vs/base/common/async"
 		],
+		"vs/editor/common/config/config": [
+			"require",
+			"exports",
+			"vs/base/common/keyCodes",
+			"vs/platform/editor/common/editor",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/platform/keybinding/common/keybindingsRegistry",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/services/codeEditorService"
+		],
 		"vs/editor/contrib/comment/common/blockCommentCommand": [
 			"require",
 			"exports",
@@ -3078,13 +3086,10 @@
 			"vs/editor/common/core/selection",
 			"vs/editor/common/modes/languageConfigurationRegistry"
 		],
-		"vs/editor/browser/standalone/colorizer": [
+		"vs/platform/contextview/browser/contextView": [
 			"require",
 			"exports",
-			"vs/base/common/async",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/viewLayout/viewLineRenderer",
-			"vs/editor/common/core/viewLineToken"
+			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/editor/contrib/comment/common/lineCommentCommand": [
 			"require",
@@ -3097,10 +3102,49 @@
 			"vs/editor/contrib/comment/common/blockCommentCommand",
 			"vs/editor/common/modes/languageConfigurationRegistry"
 		],
-		"vs/platform/contextview/browser/contextView": [
+		"vs/editor/contrib/find/browser/findWidget": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/errors",
+			"vs/base/common/keyCodes",
+			"vs/base/common/strings",
+			"vs/base/browser/dom",
+			"vs/base/browser/ui/findinput/findInput",
+			"vs/base/browser/ui/inputbox/inputBox",
+			"vs/base/browser/ui/widget",
+			"vs/editor/browser/editorBrowser",
+			"vs/editor/contrib/find/common/findModel",
+			"vs/editor/common/core/range",
+			"vs/css!vs/editor/contrib/find/browser/findWidget"
+		],
+		"vs/css!vs/editor/contrib/find/browser/findWidget": [],
+		"vs/editor/contrib/format/common/format": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/uri",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/common/modes",
+			"vs/editor/common/services/modelService",
+			"vs/base/common/async"
+		],
+		"vs/editor/contrib/format/common/formatCommand": [
+			"require",
+			"exports",
+			"vs/base/common/strings",
+			"vs/editor/common/core/range"
+		],
+		"vs/platform/markers/common/markers": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/base/common/htmlContent": [
+			"require",
+			"exports"
 		],
 		"vs/editor/contrib/find/common/findController": [
 			"require",
@@ -3122,44 +3166,29 @@
 			"vs/editor/common/modes",
 			"vs/base/common/async"
 		],
-		"vs/editor/contrib/format/common/format": [
+		"vs/editor/contrib/zoneWidget/browser/zoneWidget": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle",
+			"vs/base/common/objects",
+			"vs/base/browser/dom",
+			"vs/base/browser/ui/sash/sash",
+			"vs/editor/common/core/range",
+			"vs/css!vs/editor/contrib/zoneWidget/browser/zoneWidget"
+		],
+		"vs/css!vs/editor/contrib/zoneWidget/browser/zoneWidget": [],
+		"vs/editor/contrib/quickFix/common/quickFix": [
 			"require",
 			"exports",
 			"vs/base/common/errors",
 			"vs/base/common/uri",
 			"vs/base/common/winjs.base",
+			"vs/base/common/idGenerator",
 			"vs/editor/common/core/range",
 			"vs/editor/common/editorCommonExtensions",
 			"vs/editor/common/modes",
 			"vs/editor/common/services/modelService",
 			"vs/base/common/async"
-		],
-		"vs/editor/contrib/find/browser/findWidget": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/keyCodes",
-			"vs/base/common/strings",
-			"vs/base/browser/dom",
-			"vs/base/browser/ui/findinput/findInput",
-			"vs/base/browser/ui/inputbox/inputBox",
-			"vs/base/browser/ui/widget",
-			"vs/editor/browser/editorBrowser",
-			"vs/editor/contrib/find/common/findModel",
-			"vs/editor/common/core/range",
-			"vs/css!vs/editor/contrib/find/browser/findWidget"
-		],
-		"vs/css!vs/editor/contrib/find/browser/findWidget": [],
-		"vs/editor/contrib/format/common/formatCommand": [
-			"require",
-			"exports",
-			"vs/base/common/strings",
-			"vs/editor/common/core/range"
-		],
-		"vs/base/common/htmlContent": [
-			"require",
-			"exports"
 		],
 		"vs/editor/contrib/goToDeclaration/common/goToDeclaration": [
 			"require",
@@ -3200,6 +3229,11 @@
 			"vs/base/common/winjs.base",
 			"vs/editor/common/core/range"
 		],
+		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplaceCommand": [
+			"require",
+			"exports",
+			"vs/editor/common/core/selection"
+		],
 		"vs/editor/contrib/zoneWidget/browser/peekViewWidget": [
 			"require",
 			"exports",
@@ -3217,40 +3251,17 @@
 			"vs/css!vs/editor/contrib/zoneWidget/browser/peekViewWidget"
 		],
 		"vs/css!vs/editor/contrib/zoneWidget/browser/peekViewWidget": [],
-		"vs/platform/markers/common/markers": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/editor/contrib/zoneWidget/browser/zoneWidget": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/common/objects",
-			"vs/base/browser/dom",
-			"vs/base/browser/ui/sash/sash",
-			"vs/editor/common/core/range",
-			"vs/css!vs/editor/contrib/zoneWidget/browser/zoneWidget"
-		],
-		"vs/css!vs/editor/contrib/zoneWidget/browser/zoneWidget": [],
-		"vs/editor/contrib/quickFix/common/quickFix": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/uri",
-			"vs/base/common/winjs.base",
-			"vs/base/common/idGenerator",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/common/modes",
-			"vs/editor/common/services/modelService",
-			"vs/base/common/async"
-		],
 		"vs/platform/opener/common/opener": [
 			"require",
 			"exports",
 			"vs/base/common/winjs.base",
 			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/editor/contrib/hover/browser/modesGlyphHover": [
+			"require",
+			"exports",
+			"vs/editor/contrib/hover/browser/hoverOperation",
+			"vs/editor/contrib/hover/browser/hoverWidgets"
 		],
 		"vs/editor/contrib/hover/browser/modesContentHover": [
 			"require",
@@ -3271,29 +3282,16 @@
 			"vs/css!vs/base/browser/ui/progressbar/progressbar"
 		],
 		"vs/css!vs/base/browser/ui/progressbar/progressbar": [],
-		"vs/editor/contrib/hover/browser/modesGlyphHover": [
-			"require",
-			"exports",
-			"vs/editor/contrib/hover/browser/hoverOperation",
-			"vs/editor/contrib/hover/browser/hoverWidgets"
-		],
 		"vs/editor/contrib/linesOperations/common/sortLinesCommand": [
 			"require",
 			"exports",
 			"vs/editor/common/core/editOperation",
 			"vs/editor/common/core/range"
 		],
-		"vs/editor/common/commands/trimTrailingWhitespaceCommand": [
+		"vs/editor/contrib/carretOperations/common/moveCarretCommand": [
 			"require",
 			"exports",
-			"vs/base/common/strings",
-			"vs/editor/common/core/editOperation",
 			"vs/editor/common/core/range"
-		],
-		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplaceCommand": [
-			"require",
-			"exports",
-			"vs/editor/common/core/selection"
 		],
 		"vs/editor/contrib/linesOperations/common/copyLinesCommand": [
 			"require",
@@ -3307,6 +3305,19 @@
 			"vs/editor/common/core/range",
 			"vs/editor/common/core/selection"
 		],
+		"vs/editor/contrib/linesOperations/common/moveLinesCommand": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection"
+		],
+		"vs/editor/common/commands/trimTrailingWhitespaceCommand": [
+			"require",
+			"exports",
+			"vs/base/common/strings",
+			"vs/editor/common/core/editOperation",
+			"vs/editor/common/core/range"
+		],
 		"vs/editor/contrib/links/common/links": [
 			"require",
 			"exports",
@@ -3318,6 +3329,14 @@
 			"vs/base/common/async",
 			"vs/platform/commands/common/commands",
 			"vs/editor/common/services/modelService"
+		],
+		"vs/editor/contrib/parameterHints/common/parameterHints": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/common/modes",
+			"vs/base/common/async"
 		],
 		"vs/editor/contrib/parameterHints/browser/parameterHintsWidget": [
 			"require",
@@ -3337,14 +3356,10 @@
 			"vs/css!vs/editor/contrib/parameterHints/browser/parameterHints"
 		],
 		"vs/css!vs/editor/contrib/parameterHints/browser/parameterHints": [],
-		"vs/editor/contrib/carretOperations/common/moveCarretCommand": [
+		"vs/editor/contrib/referenceSearch/common/referenceSearch": [
 			"require",
 			"exports",
-			"vs/editor/common/core/range"
-		],
-		"vs/editor/contrib/parameterHints/common/parameterHints": [
-			"require",
-			"exports",
+			"vs/base/common/errors",
 			"vs/base/common/winjs.base",
 			"vs/editor/common/editorCommonExtensions",
 			"vs/editor/common/modes",
@@ -3381,45 +3396,11 @@
 			"vs/css!vs/editor/contrib/quickFix/browser/quickFix"
 		],
 		"vs/css!vs/editor/contrib/quickFix/browser/quickFix": [],
-		"vs/editor/contrib/referenceSearch/common/referenceSearch": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/common/modes",
-			"vs/base/common/async"
-		],
 		"vs/platform/progress/common/progress": [
 			"require",
 			"exports",
 			"vs/platform/instantiation/common/instantiation"
 		],
-		"vs/editor/common/services/bulkEdit": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/arrays",
-			"vs/base/common/collections",
-			"vs/base/common/uri",
-			"vs/base/common/winjs.base",
-			"vs/platform/files/common/files",
-			"vs/editor/common/core/editOperation",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection"
-		],
-		"vs/editor/contrib/rename/browser/renameInputField": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/lifecycle",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/core/range",
-			"vs/editor/browser/editorBrowser",
-			"vs/css!vs/editor/contrib/rename/browser/renameInputField"
-		],
-		"vs/css!vs/editor/contrib/rename/browser/renameInputField": [],
 		"vs/editor/contrib/rename/common/rename": [
 			"require",
 			"exports",
@@ -3428,59 +3409,6 @@
 			"vs/base/common/errors",
 			"vs/editor/common/editorCommonExtensions",
 			"vs/editor/common/modes"
-		],
-		"vs/editor/contrib/smartSelect/common/tokenSelectionSupport": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/core/range",
-			"vs/editor/common/services/modelService",
-			"vs/editor/contrib/smartSelect/common/tokenTree"
-		],
-		"vs/editor/contrib/linesOperations/common/moveLinesCommand": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection"
-		],
-		"vs/editor/common/core/editOperation": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range"
-		],
-		"vs/editor/common/modes/snippetsRegistry": [
-			"require",
-			"exports",
-			"vs/base/common/strings",
-			"vs/platform/platform"
-		],
-		"vs/editor/contrib/suggest/common/suggest": [
-			"require",
-			"exports",
-			"vs/base/common/async",
-			"vs/base/common/arrays",
-			"vs/base/common/strings",
-			"vs/base/common/errors",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/common/modes",
-			"vs/editor/common/modes/snippetsRegistry",
-			"vs/platform/platform"
-		],
-		"vs/editor/contrib/suggest/common/suggestModel": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/event",
-			"vs/base/common/lifecycle",
-			"vs/base/common/strings",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/modes",
-			"vs/editor/contrib/snippet/common/snippet",
-			"vs/editor/contrib/suggest/common/suggest",
-			"vs/editor/contrib/suggest/common/completionModel",
-			"vs/editor/common/core/position"
 		],
 		"vs/editor/contrib/referenceSearch/browser/referencesWidget": [
 			"require",
@@ -3515,12 +3443,84 @@
 			"vs/css!vs/editor/contrib/referenceSearch/browser/referencesWidget"
 		],
 		"vs/css!vs/editor/contrib/referenceSearch/browser/referencesWidget": [],
+		"vs/editor/common/services/bulkEdit": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/arrays",
+			"vs/base/common/collections",
+			"vs/base/common/uri",
+			"vs/base/common/winjs.base",
+			"vs/platform/files/common/files",
+			"vs/editor/common/core/editOperation",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection"
+		],
+		"vs/editor/contrib/rename/browser/renameInputField": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/errors",
+			"vs/base/common/lifecycle",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/core/range",
+			"vs/editor/browser/editorBrowser",
+			"vs/css!vs/editor/contrib/rename/browser/renameInputField"
+		],
+		"vs/css!vs/editor/contrib/rename/browser/renameInputField": [],
+		"vs/editor/contrib/smartSelect/common/tokenSelectionSupport": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/core/range",
+			"vs/editor/common/services/modelService",
+			"vs/editor/contrib/smartSelect/common/tokenTree"
+		],
+		"vs/editor/contrib/suggest/common/suggest": [
+			"require",
+			"exports",
+			"vs/base/common/async",
+			"vs/base/common/arrays",
+			"vs/base/common/strings",
+			"vs/base/common/errors",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/common/modes",
+			"vs/editor/common/modes/snippetsRegistry",
+			"vs/platform/platform"
+		],
+		"vs/editor/contrib/suggest/common/suggestModel": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/event",
+			"vs/base/common/lifecycle",
+			"vs/base/common/strings",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/modes",
+			"vs/editor/contrib/snippet/common/snippet",
+			"vs/editor/contrib/suggest/common/suggest",
+			"vs/editor/contrib/suggest/common/completionModel",
+			"vs/editor/common/core/position"
+		],
 		"vs/base/browser/keyboardEvent": [
 			"require",
 			"exports",
 			"vs/base/common/keyCodes",
 			"vs/base/common/platform",
 			"vs/base/browser/browser"
+		],
+		"vs/editor/common/modes/snippetsRegistry": [
+			"require",
+			"exports",
+			"vs/base/common/strings",
+			"vs/platform/platform"
+		],
+		"vs/editor/common/core/editOperation": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range"
 		],
 		"vs/editor/contrib/suggest/browser/suggestWidget": [
 			"require",
@@ -3543,19 +3543,26 @@
 			"vs/css!vs/editor/contrib/suggest/browser/suggest"
 		],
 		"vs/css!vs/editor/contrib/suggest/browser/suggest": [],
-		"vs/editor/contrib/defineKeybinding/common/smartSnippetInserter": [
-			"require",
-			"exports",
-			"vs/base/common/json",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range"
-		],
 		"vs/platform/keybinding/common/keybindingResolver": [
 			"require",
 			"exports",
 			"vs/base/common/keyCodes",
 			"vs/base/common/platform",
 			"vs/platform/keybinding/common/keybinding"
+		],
+		"vs/base/browser/mouseEvent": [
+			"require",
+			"exports",
+			"vs/base/common/platform",
+			"vs/base/browser/browser",
+			"vs/base/browser/iframe"
+		],
+		"vs/editor/contrib/defineKeybinding/common/smartSnippetInserter": [
+			"require",
+			"exports",
+			"vs/base/common/json",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range"
 		],
 		"vs/editor/contrib/folding/common/indentFoldStrategy": [
 			"require",
@@ -3566,57 +3573,34 @@
 			"exports",
 			"vs/editor/common/core/range"
 		],
-		"vs/base/browser/mouseEvent": [
-			"require",
-			"exports",
-			"vs/base/common/platform",
-			"vs/base/browser/browser",
-			"vs/base/browser/iframe"
-		],
-		"vs/workbench/common/editor/stringEditorModel": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/workbench/common/editor/textEditorModel",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/services/modelService",
-			"vs/editor/common/core/editOperation"
-		],
-		"vs/base/common/json": [
-			"require",
-			"exports",
-			"vs/nls"
-		],
 		"vs/workbench/common/events": [
 			"require",
 			"exports",
 			"vs/base/common/events"
 		],
-		"vs/platform/workspace/common/baseWorkspaceContextService": [
-			"require",
-			"exports",
-			"vs/base/common/uri",
-			"vs/base/common/paths"
-		],
-		"vs/workbench/common/editor/untitledEditorInput": [
+		"vs/base/browser/builder": [
 			"require",
 			"exports",
 			"vs/base/common/winjs.base",
-			"vs/base/common/mime",
-			"vs/base/common/labels",
-			"vs/base/common/paths",
-			"vs/workbench/common/editor",
-			"vs/workbench/common/editor/untitledEditorModel",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/platform/lifecycle/common/lifecycle",
-			"vs/platform/workspace/common/workspace",
-			"vs/editor/common/services/modeService",
+			"vs/base/common/types",
 			"vs/base/common/lifecycle",
-			"vs/platform/event/common/event",
-			"vs/workbench/common/events",
-			"vs/workbench/parts/files/common/files"
+			"vs/base/common/strings",
+			"vs/base/common/assert",
+			"vs/base/browser/dom",
+			"vs/css!vs/base/browser/builder"
+		],
+		"vs/css!vs/base/browser/builder": [],
+		"vs/editor/contrib/quickOpen/common/quickOpen": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/uri",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommonExtensions",
+			"vs/editor/common/modes",
+			"vs/editor/common/services/modelService",
+			"vs/base/common/async"
 		],
 		"vs/workbench/browser/parts/editor/textEditor": [
 			"require",
@@ -3637,35 +3621,16 @@
 			"vs/editor/common/services/modeService",
 			"vs/workbench/services/themes/common/themeService"
 		],
-		"vs/editor/contrib/quickOpen/common/quickOpen": [
+		"vs/base/common/json": [
 			"require",
 			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/uri",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommonExtensions",
-			"vs/editor/common/modes",
-			"vs/editor/common/services/modelService",
-			"vs/base/common/async"
+			"vs/nls"
 		],
 		"vs/base/common/comparers": [
 			"require",
 			"exports",
 			"vs/base/common/strings"
 		],
-		"vs/base/browser/builder": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types",
-			"vs/base/common/lifecycle",
-			"vs/base/common/strings",
-			"vs/base/common/assert",
-			"vs/base/browser/dom",
-			"vs/css!vs/base/browser/builder"
-		],
-		"vs/css!vs/base/browser/builder": [],
 		"vs/base/browser/ui/highlightedlabel/highlightedLabel": [
 			"require",
 			"exports",
@@ -3685,6 +3650,17 @@
 			"vs/base/browser/dom",
 			"vs/base/common/keyCodes"
 		],
+		"vs/base/common/numbers": [
+			"require",
+			"exports",
+			"vs/base/common/types"
+		],
+		"vs/platform/workspace/common/baseWorkspaceContextService": [
+			"require",
+			"exports",
+			"vs/base/common/uri",
+			"vs/base/common/paths"
+		],
 		"vs/base/browser/ui/toolbar/toolbar": [
 			"require",
 			"exports",
@@ -3703,21 +3679,6 @@
 			"exports",
 			"vs/base/browser/builder",
 			"vs/base/common/uri"
-		],
-		"vs/workbench/browser/composite": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/actions",
-			"vs/workbench/common/component",
-			"vs/workbench/common/events",
-			"vs/platform/telemetry/common/telemetry",
-			"vs/platform/instantiation/common/descriptors"
-		],
-		"vs/base/common/numbers": [
-			"require",
-			"exports",
-			"vs/base/common/types"
 		],
 		"vs/base/browser/ui/inputbox/inputBox": [
 			"require",
@@ -3760,6 +3721,80 @@
 			"vs/css!vs/base/parts/tree/browser/actionsRenderer"
 		],
 		"vs/css!vs/base/parts/tree/browser/actionsRenderer": [],
+		"vs/workbench/common/editor/stringEditorModel": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/workbench/common/editor/textEditorModel",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/services/modelService",
+			"vs/editor/common/core/editOperation"
+		],
+		"vs/base/browser/ui/button/button": [
+			"require",
+			"exports",
+			"vs/base/common/eventEmitter",
+			"vs/base/browser/dom",
+			"vs/base/browser/builder",
+			"vs/base/browser/keyboardEvent",
+			"vs/base/common/keyCodes",
+			"vs/css!vs/base/browser/ui/button/button"
+		],
+		"vs/css!vs/base/browser/ui/button/button": [],
+		"vs/base/parts/tree/browser/treeImpl": [
+			"require",
+			"exports",
+			"vs/base/parts/tree/browser/treeDefaults",
+			"vs/base/common/eventEmitter",
+			"vs/base/parts/tree/browser/treeModel",
+			"vs/base/parts/tree/browser/treeView",
+			"vs/base/common/iterator",
+			"vs/css!vs/base/parts/tree/browser/tree"
+		],
+		"vs/css!vs/base/parts/tree/browser/tree": [],
+		"vs/workbench/browser/composite": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/actions",
+			"vs/workbench/common/component",
+			"vs/workbench/common/events",
+			"vs/platform/telemetry/common/telemetry",
+			"vs/platform/instantiation/common/descriptors"
+		],
+		"vs/base/browser/touch": [
+			"require",
+			"exports",
+			"vs/base/common/arrays",
+			"vs/base/common/lifecycle",
+			"vs/base/browser/dom"
+		],
+		"vs/platform/actions/common/resourceContextKey": [
+			"require",
+			"exports",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/editor/common/services/modeService"
+		],
+		"vs/workbench/common/editor/untitledEditorInput": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/mime",
+			"vs/base/common/labels",
+			"vs/base/common/paths",
+			"vs/workbench/common/editor",
+			"vs/workbench/common/editor/untitledEditorModel",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/platform/lifecycle/common/lifecycle",
+			"vs/platform/workspace/common/workspace",
+			"vs/editor/common/services/modeService",
+			"vs/base/common/lifecycle",
+			"vs/platform/event/common/event",
+			"vs/workbench/common/events",
+			"vs/workbench/parts/files/common/files"
+		],
 		"vs/platform/actions/browser/menuItemActionItem": [
 			"require",
 			"exports",
@@ -3773,34 +3808,12 @@
 			"vs/base/browser/event",
 			"vs/base/common/event"
 		],
-		"vs/base/parts/tree/browser/treeImpl": [
+		"vs/workbench/parts/markers/common/messages": [
 			"require",
 			"exports",
-			"vs/base/parts/tree/browser/treeDefaults",
-			"vs/base/common/eventEmitter",
-			"vs/base/parts/tree/browser/treeModel",
-			"vs/base/parts/tree/browser/treeView",
-			"vs/base/common/iterator",
-			"vs/css!vs/base/parts/tree/browser/tree"
+			"vs/nls",
+			"vs/base/common/severity"
 		],
-		"vs/css!vs/base/parts/tree/browser/tree": [],
-		"vs/platform/actions/common/resourceContextKey": [
-			"require",
-			"exports",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/editor/common/services/modeService"
-		],
-		"vs/base/browser/ui/button/button": [
-			"require",
-			"exports",
-			"vs/base/common/eventEmitter",
-			"vs/base/browser/dom",
-			"vs/base/browser/builder",
-			"vs/base/browser/keyboardEvent",
-			"vs/base/common/keyCodes",
-			"vs/css!vs/base/browser/ui/button/button"
-		],
-		"vs/css!vs/base/browser/ui/button/button": [],
 		"vs/workbench/parts/files/browser/views/openEditorsViewer": [
 			"require",
 			"exports",
@@ -3826,6 +3839,50 @@
 			"vs/workbench/services/untitled/common/untitledEditorService",
 			"vs/workbench/browser/parts/editor/editorActions"
 		],
+		"vs/workbench/common/editor/diffEditorInput": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/winjs.base",
+			"vs/base/common/types",
+			"vs/base/common/labels",
+			"vs/base/common/mime",
+			"vs/base/common/events",
+			"vs/workbench/common/editor",
+			"vs/workbench/common/editor/textEditorModel",
+			"vs/workbench/common/editor/diffEditorModel",
+			"vs/workbench/common/editor/textDiffEditorModel",
+			"vs/base/common/lifecycle"
+		],
+		"vs/base/common/diagnostics": [
+			"require",
+			"exports",
+			"vs/base/common/platform"
+		],
+		"vs/workbench/parts/markers/common/constants": [
+			"require",
+			"exports"
+		],
+		"vs/workbench/parts/markers/browser/markersPanelActions": [
+			"require",
+			"exports",
+			"vs/base/common/async",
+			"vs/base/browser/dom",
+			"vs/base/common/lifecycle",
+			"vs/base/common/actions",
+			"vs/base/browser/ui/actionbar/actionbar",
+			"vs/base/browser/ui/inputbox/inputBox",
+			"vs/base/common/keyCodes",
+			"vs/platform/contextview/browser/contextView",
+			"vs/workbench/browser/panel",
+			"vs/workbench/parts/markers/common/messages",
+			"vs/workbench/parts/markers/common/constants",
+			"vs/workbench/services/part/common/partService",
+			"vs/workbench/services/panel/common/panelService",
+			"vs/platform/telemetry/common/telemetry",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/base/parts/tree/browser/treeDefaults"
+		],
 		"vs/workbench/browser/parts/editor/editorActions": [
 			"require",
 			"exports",
@@ -3844,33 +3901,6 @@
 			"vs/platform/keybinding/common/keybinding",
 			"vs/workbench/services/group/common/groupService",
 			"vs/workbench/browser/parts/editor/textEditor"
-		],
-		"vs/workbench/common/editor/diffEditorInput": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types",
-			"vs/base/common/labels",
-			"vs/base/common/mime",
-			"vs/base/common/events",
-			"vs/workbench/common/editor",
-			"vs/workbench/common/editor/textEditorModel",
-			"vs/workbench/common/editor/diffEditorModel",
-			"vs/workbench/common/editor/textDiffEditorModel",
-			"vs/base/common/lifecycle"
-		],
-		"vs/base/browser/touch": [
-			"require",
-			"exports",
-			"vs/base/common/arrays",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/dom"
-		],
-		"vs/base/common/diagnostics": [
-			"require",
-			"exports",
-			"vs/base/common/platform"
 		],
 		"vs/workbench/services/activity/common/activityService": [
 			"require",
@@ -3909,6 +3939,25 @@
 			"vs/workbench/common/editor",
 			"vs/platform/files/common/files"
 		],
+		"vs/workbench/parts/search/common/replace": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/workbench/browser/parts/editor/binaryEditor": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/winjs.base",
+			"vs/base/browser/builder",
+			"vs/base/browser/ui/resourceviewer/resourceViewer",
+			"vs/workbench/browser/parts/editor/baseEditor",
+			"vs/workbench/common/editor/binaryEditorModel",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/platform/telemetry/common/telemetry",
+			"vs/base/browser/ui/scrollbar/scrollableElement",
+			"vs/base/common/scrollable"
+		],
 		"vs/workbench/parts/files/browser/saveErrorHandler": [
 			"require",
 			"exports",
@@ -3933,19 +3982,60 @@
 			"vs/editor/common/services/modeService",
 			"vs/editor/common/services/modelService"
 		],
-		"vs/workbench/browser/parts/editor/binaryEditor": [
+		"vs/base/browser/ui/findinput/findInput": [
 			"require",
 			"exports",
 			"vs/nls",
+			"vs/base/browser/dom",
+			"vs/base/browser/ui/inputbox/inputBox",
+			"vs/base/browser/ui/checkbox/checkbox",
+			"vs/base/browser/ui/widget",
+			"vs/base/common/event",
+			"vs/css!vs/base/browser/ui/findinput/findInput"
+		],
+		"vs/css!vs/base/browser/ui/findinput/findInput": [],
+		"vs/workbench/parts/search/browser/replaceService": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/errors",
 			"vs/base/common/winjs.base",
-			"vs/base/browser/builder",
-			"vs/base/browser/ui/resourceviewer/resourceViewer",
-			"vs/workbench/browser/parts/editor/baseEditor",
-			"vs/workbench/common/editor/binaryEditorModel",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/platform/telemetry/common/telemetry",
-			"vs/base/browser/ui/scrollbar/scrollableElement",
-			"vs/base/common/scrollable"
+			"vs/base/common/uri",
+			"vs/base/common/network",
+			"vs/base/common/map",
+			"vs/platform/editor/common/editor",
+			"vs/editor/common/services/modelService",
+			"vs/platform/event/common/event",
+			"vs/workbench/parts/search/common/searchModel",
+			"vs/editor/common/services/bulkEdit",
+			"vs/workbench/common/editor/diffEditorInput",
+			"vs/platform/telemetry/common/telemetry"
+		],
+		"vs/workbench/common/editor/textEditorModel": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/editor/common/editorCommon",
+			"vs/workbench/common/editor",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/services/modelService",
+			"vs/editor/common/model/textModel"
+		],
+		"vs/base/common/scrollable": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle",
+			"vs/base/common/event"
+		],
+		"vs/workbench/parts/html/browser/webview": [
+			"require",
+			"exports",
+			"vs/base/common/uri",
+			"vs/base/common/winjs.base",
+			"vs/base/common/lifecycle",
+			"vs/base/browser/dom",
+			"vs/platform/theme/common/themes",
+			"vs/platform/commands/common/commands"
 		],
 		"vs/workbench/parts/search/common/searchModel": [
 			"require",
@@ -3968,121 +4058,6 @@
 			"vs/platform/search/common/search",
 			"vs/workbench/parts/search/common/replace"
 		],
-		"vs/workbench/parts/search/common/replace": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/parts/search/browser/replaceService": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/errors",
-			"vs/base/common/winjs.base",
-			"vs/base/common/uri",
-			"vs/base/common/network",
-			"vs/base/common/map",
-			"vs/platform/editor/common/editor",
-			"vs/editor/common/services/modelService",
-			"vs/platform/event/common/event",
-			"vs/workbench/parts/search/common/searchModel",
-			"vs/editor/common/services/bulkEdit",
-			"vs/workbench/common/editor/diffEditorInput",
-			"vs/platform/telemetry/common/telemetry"
-		],
-		"vs/base/browser/ui/findinput/findInput": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/browser/dom",
-			"vs/base/browser/ui/inputbox/inputBox",
-			"vs/base/browser/ui/checkbox/checkbox",
-			"vs/base/browser/ui/widget",
-			"vs/base/common/event",
-			"vs/css!vs/base/browser/ui/findinput/findInput"
-		],
-		"vs/css!vs/base/browser/ui/findinput/findInput": [],
-		"vs/workbench/parts/markers/common/messages": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/severity"
-		],
-		"vs/workbench/parts/markers/common/constants": [
-			"require",
-			"exports"
-		],
-		"vs/workbench/parts/markers/browser/markersPanelActions": [
-			"require",
-			"exports",
-			"vs/base/common/async",
-			"vs/base/browser/dom",
-			"vs/base/common/lifecycle",
-			"vs/base/common/actions",
-			"vs/base/browser/ui/actionbar/actionbar",
-			"vs/base/browser/ui/inputbox/inputBox",
-			"vs/base/common/keyCodes",
-			"vs/platform/contextview/browser/contextView",
-			"vs/workbench/browser/panel",
-			"vs/workbench/parts/markers/common/messages",
-			"vs/workbench/parts/markers/common/constants",
-			"vs/workbench/services/part/common/partService",
-			"vs/workbench/services/panel/common/panelService",
-			"vs/platform/telemetry/common/telemetry",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/base/parts/tree/browser/treeDefaults"
-		],
-		"vs/workbench/common/editor/textEditorModel": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/editor/common/editorCommon",
-			"vs/workbench/common/editor",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/services/modelService",
-			"vs/editor/common/model/textModel"
-		],
-		"vs/workbench/parts/html/browser/webview": [
-			"require",
-			"exports",
-			"vs/base/common/uri",
-			"vs/base/common/winjs.base",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/dom",
-			"vs/platform/theme/common/themes",
-			"vs/platform/commands/common/commands"
-		],
-		"vs/platform/lifecycle/common/lifecycle": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/services/panel/common/panelService": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/workbench/parts/output/browser/outputEditorInput": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/lifecycle",
-			"vs/base/common/strings",
-			"vs/base/common/async",
-			"vs/workbench/common/editor/stringEditorInput",
-			"vs/workbench/parts/output/common/output",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/platform/event/common/event",
-			"vs/workbench/common/events",
-			"vs/workbench/services/panel/common/panelService"
-		],
-		"vs/workbench/common/editor/resourceEditorModel": [
-			"require",
-			"exports",
-			"vs/workbench/common/editor/textEditorModel",
-			"vs/editor/common/services/modeService",
-			"vs/editor/common/services/modelService"
-		],
 		"vs/editor/browser/standalone/standaloneCodeEditor": [
 			"require",
 			"exports",
@@ -4100,12 +4075,6 @@
 			"vs/editor/browser/standalone/standaloneServices",
 			"vs/editor/browser/widget/codeEditorWidget",
 			"vs/editor/browser/widget/diffEditorWidget"
-		],
-		"vs/base/common/scrollable": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/common/event"
 		],
 		"vs/editor/browser/standalone/standaloneServices": [
 			"require",
@@ -4156,6 +4125,16 @@
 			"vs/platform/keybinding/common/keybindingResolver",
 			"vs/editor/common/editorCommon"
 		],
+		"vs/platform/lifecycle/common/lifecycle": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
+		"vs/base/common/stopwatch": [
+			"require",
+			"exports",
+			"vs/base/common/platform"
+		],
 		"vs/editor/common/services/editorWorkerServiceImpl": [
 			"require",
 			"exports",
@@ -4171,6 +4150,32 @@
 			"vs/editor/common/services/editorSimpleWorker",
 			"vs/base/common/worker/workerClient"
 		],
+		"ghedit/githubTreeCache": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/async",
+			"vs/base/common/paths"
+		],
+		"vs/workbench/parts/output/browser/outputEditorInput": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/lifecycle",
+			"vs/base/common/strings",
+			"vs/base/common/async",
+			"vs/workbench/common/editor/stringEditorInput",
+			"vs/workbench/parts/output/common/output",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/platform/event/common/event",
+			"vs/workbench/common/events",
+			"vs/workbench/services/panel/common/panelService"
+		],
+		"vs/workbench/services/panel/common/panelService": [
+			"require",
+			"exports",
+			"vs/platform/instantiation/common/instantiation"
+		],
 		"vs/base/browser/ui/aria/aria": [
 			"require",
 			"exports",
@@ -4180,6 +4185,28 @@
 			"vs/css!vs/base/browser/ui/aria/aria"
 		],
 		"vs/css!vs/base/browser/ui/aria/aria": [],
+		"vs/workbench/common/editor/resourceEditorModel": [
+			"require",
+			"exports",
+			"vs/workbench/common/editor/textEditorModel",
+			"vs/editor/common/services/modeService",
+			"vs/editor/common/services/modelService"
+		],
+		"vs/platform/configuration/common/configurationService": [
+			"require",
+			"exports",
+			"vs/base/common/paths",
+			"vs/base/common/winjs.base",
+			"vs/base/common/objects",
+			"vs/base/common/errors",
+			"vs/platform/configuration/common/model",
+			"vs/base/common/async",
+			"vs/base/common/collections",
+			"vs/platform/files/common/files",
+			"vs/platform/configuration/common/configurationRegistry",
+			"vs/platform/platform",
+			"vs/base/common/event"
+		],
 		"vs/platform/contextview/browser/contextViewService": [
 			"require",
 			"exports",
@@ -4187,13 +4214,18 @@
 			"vs/platform/telemetry/common/telemetry",
 			"vs/platform/message/common/message"
 		],
-		"vs/workbench/common/storage": [
+		"vs/editor/common/core/modeTransition": [
 			"require",
 			"exports",
-			"vs/base/common/types",
+			"vs/editor/common/core/arrays"
+		],
+		"vs/workbench/services/telemetry/common/workspaceStats": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
 			"vs/base/common/errors",
-			"vs/base/common/strings",
-			"vs/platform/storage/common/storage",
+			"vs/platform/files/common/files",
+			"vs/platform/telemetry/common/telemetry",
 			"vs/platform/workspace/common/workspace"
 		],
 		"vs/workbench/electron-browser/workbench": [
@@ -4259,13 +4291,13 @@
 			"vs/css!vs/workbench/electron-browser/media/workbench"
 		],
 		"vs/css!vs/workbench/electron-browser/media/workbench": [],
-		"vs/workbench/services/telemetry/common/workspaceStats": [
+		"vs/workbench/common/storage": [
 			"require",
 			"exports",
-			"vs/base/common/winjs.base",
+			"vs/base/common/types",
 			"vs/base/common/errors",
-			"vs/platform/files/common/files",
-			"vs/platform/telemetry/common/telemetry",
+			"vs/base/common/strings",
+			"vs/platform/storage/common/storage",
 			"vs/platform/workspace/common/workspace"
 		],
 		"vs/workbench/services/window/electron-browser/windowService": [
@@ -4313,6 +4345,17 @@
 			"ghedit/githubService",
 			"vs/platform/message/common/message"
 		],
+		"vs/platform/markers/common/markerService": [
+			"require",
+			"exports",
+			"vs/base/common/arrays",
+			"vs/base/common/network",
+			"vs/base/common/strings",
+			"vs/base/common/collections",
+			"vs/base/common/uri",
+			"vs/base/common/event",
+			"vs/base/common/severity"
+		],
 		"vs/workbench/services/search/node/searchService": [
 			"require",
 			"exports",
@@ -4330,17 +4373,6 @@
 			"ghedit/githubService",
 			"vs/workbench/services/search/node/fileSearch",
 			"vs/base/common/async"
-		],
-		"vs/platform/markers/common/markerService": [
-			"require",
-			"exports",
-			"vs/base/common/arrays",
-			"vs/base/common/network",
-			"vs/base/common/strings",
-			"vs/base/common/collections",
-			"vs/base/common/uri",
-			"vs/base/common/event",
-			"vs/base/common/severity"
 		],
 		"vs/editor/common/services/modelServiceImpl": [
 			"require",
@@ -4385,37 +4417,6 @@
 			"vs/editor/common/editorCommon",
 			"vs/editor/common/services/abstractCodeEditorService",
 			"vs/base/common/lifecycle"
-		],
-		"vs/platform/search/common/search": [
-			"require",
-			"exports",
-			"vs/platform/instantiation/common/instantiation"
-		],
-		"vs/platform/commands/common/commandService": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/platform/commands/common/commands",
-			"vs/platform/extensions/common/extensions"
-		],
-		"vs/workbench/services/themes/electron-browser/themeService": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/network",
-			"vs/nls",
-			"vs/base/common/paths",
-			"vs/base/common/json",
-			"vs/platform/extensions/common/extensions",
-			"vs/platform/extensions/common/extensionsRegistry",
-			"vs/platform/theme/common/themes",
-			"vs/workbench/services/window/electron-browser/windowService",
-			"vs/platform/storage/common/storage",
-			"vs/platform/workspace/common/workspace",
-			"vs/platform/telemetry/common/telemetry",
-			"vs/base/browser/builder",
-			"vs/base/common/event"
 		],
 		"ghedit/navbarPart": [
 			"require",
@@ -4501,17 +4502,10 @@
 			"vs/css!ghedit/welcomePart"
 		],
 		"vs/css!ghedit/welcomePart": [],
-		"vs/platform/opener/electron-browser/opener.contribution": [
+		"vs/platform/search/common/search": [
 			"require",
 			"exports",
-			"vs/platform/instantiation/common/extensions",
-			"vs/platform/opener/electron-browser/openerService",
-			"vs/platform/opener/common/opener"
-		],
-		"vs/base/common/stopwatch": [
-			"require",
-			"exports",
-			"vs/base/common/platform"
+			"vs/platform/instantiation/common/instantiation"
 		],
 		"vs/code/electron-main/menus": [
 			"require",
@@ -4522,32 +4516,38 @@
 			"ghedit/fakeElectron",
 			"ghedit/githubActions"
 		],
-		"vs/platform/configuration/common/configurationService": [
+		"vs/platform/commands/common/commandService": [
 			"require",
 			"exports",
-			"vs/base/common/paths",
 			"vs/base/common/winjs.base",
-			"vs/base/common/objects",
-			"vs/base/common/errors",
-			"vs/platform/configuration/common/model",
-			"vs/base/common/async",
-			"vs/base/common/collections",
-			"vs/platform/files/common/files",
-			"vs/platform/configuration/common/configurationRegistry",
-			"vs/platform/platform",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/platform/commands/common/commands",
+			"vs/platform/extensions/common/extensions"
+		],
+		"vs/workbench/services/themes/electron-browser/themeService": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/network",
+			"vs/nls",
+			"vs/base/common/paths",
+			"vs/base/common/json",
+			"vs/platform/extensions/common/extensions",
+			"vs/platform/extensions/common/extensionsRegistry",
+			"vs/platform/theme/common/themes",
+			"vs/workbench/services/window/electron-browser/windowService",
+			"vs/platform/storage/common/storage",
+			"vs/platform/workspace/common/workspace",
+			"vs/platform/telemetry/common/telemetry",
+			"vs/base/browser/builder",
 			"vs/base/common/event"
 		],
-		"ghedit/githubTreeCache": [
+		"vs/platform/opener/electron-browser/opener.contribution": [
 			"require",
 			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/async",
-			"vs/base/common/paths"
-		],
-		"vs/editor/common/core/modeTransition": [
-			"require",
-			"exports",
-			"vs/editor/common/core/arrays"
+			"vs/platform/instantiation/common/extensions",
+			"vs/platform/opener/electron-browser/openerService",
+			"vs/platform/opener/common/opener"
 		],
 		"vs/editor/common/model/modelLine": [
 			"require",
@@ -4556,6 +4556,10 @@
 			"vs/editor/common/model/tokensBinaryEncoding",
 			"vs/editor/common/core/modeTransition",
 			"vs/editor/common/core/viewLineToken"
+		],
+		"vs/base/common/diff/diffChange": [
+			"require",
+			"exports"
 		],
 		"vs/editor/common/model/textModel": [
 			"require",
@@ -4570,10 +4574,6 @@
 			"vs/editor/common/config/defaultConfig",
 			"vs/editor/common/viewModel/prefixSumComputer",
 			"vs/editor/common/model/indentRanges"
-		],
-		"vs/base/common/diff/diffChange": [
-			"require",
-			"exports"
 		],
 		"vs/editor/common/modes/languageSelector": [
 			"require",
@@ -4606,6 +4606,19 @@
 			"require",
 			"exports"
 		],
+		"vs/base/common/marked/marked": [
+			"vs/base/common/marked/raw.marked"
+		],
+		"vs/editor/browser/config/elementSizeObserver": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle"
+		],
+		"vs/editor/common/controller/cursorMoveHelper": [
+			"require",
+			"exports",
+			"vs/editor/common/core/selection"
+		],
 		"vs/editor/common/controller/cursor": [
 			"require",
 			"exports",
@@ -4621,38 +4634,15 @@
 			"vs/editor/common/editorCommon",
 			"vs/editor/common/modes/languageConfigurationRegistry"
 		],
-		"vs/editor/common/viewModel/viewModelImpl": [
-			"require",
-			"exports",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/lifecycle",
-			"vs/base/common/strings",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/viewModel/viewModelCursors",
-			"vs/editor/common/viewModel/viewModelDecorations"
-		],
-		"vs/editor/common/controller/cursorMoveHelper": [
-			"require",
-			"exports",
-			"vs/editor/common/core/selection"
-		],
 		"vs/editor/common/core/editorState": [
 			"require",
 			"exports",
 			"vs/base/common/strings",
 			"vs/editor/common/editorCommon"
 		],
-		"vs/editor/common/viewModel/splitLinesCollection": [
+		"vs/base/common/hash": [
 			"require",
-			"exports",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/viewModel/filteredLineTokens",
-			"vs/editor/common/viewModel/prefixSumComputer"
+			"exports"
 		],
 		"vs/editor/common/viewModel/characterHardWrappingLineMapper": [
 			"require",
@@ -4662,29 +4652,14 @@
 			"vs/editor/common/viewModel/prefixSumComputer",
 			"vs/editor/common/viewModel/splitLinesCollection"
 		],
-		"vs/base/common/hash": [
-			"require",
-			"exports"
-		],
-		"vs/editor/common/modes/editorModeContext": [
+		"vs/editor/common/viewModel/splitLinesCollection": [
 			"require",
 			"exports",
-			"vs/base/common/lifecycle",
-			"vs/editor/common/modes",
-			"vs/editor/common/editorCommon"
-		],
-		"vs/editor/browser/config/elementSizeObserver": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle"
-		],
-		"vs/editor/common/viewModel/viewEventHandler": [
-			"require",
-			"exports",
-			"vs/editor/common/editorCommon"
-		],
-		"vs/base/common/marked/marked": [
-			"vs/base/common/marked/raw.marked"
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/viewModel/filteredLineTokens",
+			"vs/editor/common/viewModel/prefixSumComputer"
 		],
 		"vs/editor/browser/controller/keyboardHandler": [
 			"require",
@@ -4702,13 +4677,30 @@
 			"vs/editor/common/viewModel/viewEventHandler",
 			"vs/editor/browser/config/configuration"
 		],
-		"vs/editor/browser/controller/pointerHandler": [
+		"vs/editor/common/viewModel/viewEventHandler": [
 			"require",
 			"exports",
-			"vs/base/browser/dom",
-			"vs/base/browser/touch",
-			"vs/editor/browser/controller/mouseHandler",
-			"vs/editor/browser/editorDom"
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/common/modes/editorModeContext": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle",
+			"vs/editor/common/modes",
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/common/viewModel/viewModelImpl": [
+			"require",
+			"exports",
+			"vs/base/common/eventEmitter",
+			"vs/base/common/lifecycle",
+			"vs/base/common/strings",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/viewModel/viewModelCursors",
+			"vs/editor/common/viewModel/viewModelDecorations"
 		],
 		"vs/editor/browser/view/viewController": [
 			"require",
@@ -4720,6 +4712,14 @@
 			"require",
 			"exports",
 			"vs/base/common/eventEmitter"
+		],
+		"vs/editor/browser/controller/pointerHandler": [
+			"require",
+			"exports",
+			"vs/base/browser/dom",
+			"vs/base/browser/touch",
+			"vs/editor/browser/controller/mouseHandler",
+			"vs/editor/browser/editorDom"
 		],
 		"vs/editor/browser/view/viewOverlays": [
 			"require",
@@ -4768,6 +4768,13 @@
 			"vs/css!vs/editor/browser/viewParts/glyphMargin/glyphMargin"
 		],
 		"vs/css!vs/editor/browser/viewParts/glyphMargin/glyphMargin": [],
+		"vs/editor/browser/viewParts/indentGuides/indentGuides": [
+			"require",
+			"exports",
+			"vs/editor/browser/view/dynamicViewOverlay",
+			"vs/css!vs/editor/browser/viewParts/indentGuides/indentGuides"
+		],
+		"vs/css!vs/editor/browser/viewParts/indentGuides/indentGuides": [],
 		"vs/editor/browser/viewParts/lineNumbers/lineNumbers": [
 			"require",
 			"exports",
@@ -4777,13 +4784,6 @@
 			"vs/css!vs/editor/browser/viewParts/lineNumbers/lineNumbers"
 		],
 		"vs/css!vs/editor/browser/viewParts/lineNumbers/lineNumbers": [],
-		"vs/editor/browser/viewParts/indentGuides/indentGuides": [
-			"require",
-			"exports",
-			"vs/editor/browser/view/dynamicViewOverlay",
-			"vs/css!vs/editor/browser/viewParts/indentGuides/indentGuides"
-		],
-		"vs/css!vs/editor/browser/viewParts/indentGuides/indentGuides": [],
 		"vs/editor/browser/viewParts/lines/viewLines": [
 			"require",
 			"exports",
@@ -4815,12 +4815,6 @@
 			"vs/css!vs/editor/browser/viewParts/overlayWidgets/overlayWidgets"
 		],
 		"vs/css!vs/editor/browser/viewParts/overlayWidgets/overlayWidgets": [],
-		"vs/editor/browser/viewParts/overviewRuler/overviewRuler": [
-			"require",
-			"exports",
-			"vs/editor/common/viewModel/viewEventHandler",
-			"vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl"
-		],
 		"vs/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler": [
 			"require",
 			"exports",
@@ -4829,14 +4823,6 @@
 			"vs/editor/browser/view/viewPart",
 			"vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl"
 		],
-		"vs/editor/browser/viewParts/rulers/rulers": [
-			"require",
-			"exports",
-			"vs/base/browser/styleMutator",
-			"vs/editor/browser/view/viewPart",
-			"vs/css!vs/editor/browser/viewParts/rulers/rulers"
-		],
-		"vs/css!vs/editor/browser/viewParts/rulers/rulers": [],
 		"vs/editor/browser/viewParts/scrollDecoration/scrollDecoration": [
 			"require",
 			"exports",
@@ -4847,6 +4833,27 @@
 			"vs/css!vs/editor/browser/viewParts/scrollDecoration/scrollDecoration"
 		],
 		"vs/css!vs/editor/browser/viewParts/scrollDecoration/scrollDecoration": [],
+		"vs/editor/browser/viewParts/overviewRuler/overviewRuler": [
+			"require",
+			"exports",
+			"vs/editor/common/viewModel/viewEventHandler",
+			"vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl"
+		],
+		"vs/editor/browser/viewParts/rulers/rulers": [
+			"require",
+			"exports",
+			"vs/base/browser/styleMutator",
+			"vs/editor/browser/view/viewPart",
+			"vs/css!vs/editor/browser/viewParts/rulers/rulers"
+		],
+		"vs/css!vs/editor/browser/viewParts/rulers/rulers": [],
+		"vs/editor/browser/viewParts/selections/selections": [
+			"require",
+			"exports",
+			"vs/editor/browser/view/dynamicViewOverlay",
+			"vs/css!vs/editor/browser/viewParts/selections/selections"
+		],
+		"vs/css!vs/editor/browser/viewParts/selections/selections": [],
 		"vs/editor/browser/viewParts/viewCursors/viewCursors": [
 			"require",
 			"exports",
@@ -4860,21 +4867,6 @@
 			"vs/css!vs/editor/browser/viewParts/viewCursors/viewCursors"
 		],
 		"vs/css!vs/editor/browser/viewParts/viewCursors/viewCursors": [],
-		"vs/editor/browser/viewParts/selections/selections": [
-			"require",
-			"exports",
-			"vs/editor/browser/view/dynamicViewOverlay",
-			"vs/css!vs/editor/browser/viewParts/selections/selections"
-		],
-		"vs/css!vs/editor/browser/viewParts/selections/selections": [],
-		"vs/editor/browser/viewParts/viewZones/viewZones": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/browser/styleMutator",
-			"vs/editor/browser/editorBrowser",
-			"vs/editor/browser/view/viewPart"
-		],
 		"vs/editor/common/view/viewContext": [
 			"require",
 			"exports"
@@ -4883,6 +4875,14 @@
 			"require",
 			"exports",
 			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/browser/viewParts/viewZones/viewZones": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/browser/styleMutator",
+			"vs/editor/browser/editorBrowser",
+			"vs/editor/browser/view/viewPart"
 		],
 		"vs/editor/common/core/arrays": [
 			"require",
@@ -4919,11 +4919,11 @@
 			"vs/editor/common/services/codeEditorService",
 			"vs/editor/browser/widget/codeEditorWidget"
 		],
-		"vs/editor/common/modes/textToHtmlTokenizer": [
+		"vs/editor/contrib/hover/browser/hoverOperation": [
 			"require",
 			"exports",
-			"vs/base/common/strings",
-			"vs/editor/common/modes/nullMode"
+			"vs/base/common/async",
+			"vs/base/common/errors"
 		],
 		"vs/editor/contrib/hover/common/hover": [
 			"require",
@@ -4933,46 +4933,6 @@
 			"vs/base/common/winjs.base",
 			"vs/editor/common/editorCommonExtensions",
 			"vs/editor/common/modes",
-			"vs/base/common/async"
-		],
-		"vs/editor/contrib/hover/browser/hoverOperation": [
-			"require",
-			"exports",
-			"vs/base/common/async",
-			"vs/base/common/errors"
-		],
-		"vs/editor/contrib/quickFix/browser/lightBulpWidget": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/dom",
-			"vs/editor/common/core/position",
-			"vs/editor/browser/editorBrowser"
-		],
-		"vs/editor/contrib/smartSelect/common/tokenTree": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range",
-			"vs/editor/common/modes/supports",
-			"vs/editor/common/modes/supports/richEditBrackets",
-			"vs/editor/common/modes/languageConfigurationRegistry"
-		],
-		"vs/editor/contrib/hover/browser/hoverWidgets": [
-			"require",
-			"exports",
-			"vs/base/common/keyCodes",
-			"vs/base/browser/styleMutator",
-			"vs/editor/common/core/position",
-			"vs/editor/browser/editorBrowser",
-			"vs/base/browser/ui/widget"
-		],
-		"vs/editor/contrib/suggest/common/completionModel": [
-			"require",
-			"exports",
-			"vs/base/common/arrays",
-			"vs/base/common/objects",
-			"vs/base/common/winjs.base",
-			"vs/base/common/filters",
 			"vs/base/common/async"
 		],
 		"vs/base/browser/ui/countBadge/countBadge": [
@@ -4994,14 +4954,6 @@
 			"vs/css!vs/base/browser/ui/fileLabel/fileLabel"
 		],
 		"vs/css!vs/base/browser/ui/fileLabel/fileLabel": [],
-		"vs/editor/common/model/model": [
-			"require",
-			"exports",
-			"vs/base/common/uri",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/model/editableTextModel",
-			"vs/editor/common/model/textModel"
-		],
 		"vs/base/browser/ui/leftRightWidget/leftRightWidget": [
 			"require",
 			"exports",
@@ -5009,6 +4961,29 @@
 			"vs/css!vs/base/browser/ui/leftRightWidget/leftRightWidget"
 		],
 		"vs/css!vs/base/browser/ui/leftRightWidget/leftRightWidget": [],
+		"vs/editor/common/modes/textToHtmlTokenizer": [
+			"require",
+			"exports",
+			"vs/base/common/strings",
+			"vs/editor/common/modes/nullMode"
+		],
+		"vs/editor/contrib/hover/browser/hoverWidgets": [
+			"require",
+			"exports",
+			"vs/base/common/keyCodes",
+			"vs/base/browser/styleMutator",
+			"vs/editor/common/core/position",
+			"vs/editor/browser/editorBrowser",
+			"vs/base/browser/ui/widget"
+		],
+		"vs/editor/contrib/quickFix/browser/lightBulpWidget": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle",
+			"vs/base/browser/dom",
+			"vs/editor/common/core/position",
+			"vs/editor/browser/editorBrowser"
+		],
 		"vs/base/browser/ui/list/listWidget": [
 			"require",
 			"exports",
@@ -5066,13 +5041,6 @@
 			"vs/css!vs/base/browser/ui/dropdown/dropdown"
 		],
 		"vs/css!vs/base/browser/ui/dropdown/dropdown": [],
-		"vs/workbench/common/component": [
-			"require",
-			"exports",
-			"vs/base/common/eventEmitter",
-			"vs/base/common/lifecycle",
-			"vs/workbench/common/memento"
-		],
 		"vs/base/browser/ui/contextview/contextview": [
 			"require",
 			"exports",
@@ -5083,11 +5051,6 @@
 			"vs/css!vs/base/browser/ui/contextview/contextview"
 		],
 		"vs/css!vs/base/browser/ui/contextview/contextview": [],
-		"vs/base/browser/event": [
-			"require",
-			"exports",
-			"vs/base/common/event"
-		],
 		"vs/base/parts/tree/browser/treeModel": [
 			"require",
 			"exports",
@@ -5123,6 +5086,78 @@
 			"require",
 			"exports"
 		],
+		"vs/editor/common/model/model": [
+			"require",
+			"exports",
+			"vs/base/common/uri",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/model/editableTextModel",
+			"vs/editor/common/model/textModel"
+		],
+		"vs/base/browser/event": [
+			"require",
+			"exports",
+			"vs/base/common/event"
+		],
+		"vs/editor/contrib/smartSelect/common/tokenTree": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range",
+			"vs/editor/common/modes/supports",
+			"vs/editor/common/modes/supports/richEditBrackets",
+			"vs/editor/common/modes/languageConfigurationRegistry"
+		],
+		"vs/editor/contrib/suggest/common/completionModel": [
+			"require",
+			"exports",
+			"vs/base/common/arrays",
+			"vs/base/common/objects",
+			"vs/base/common/winjs.base",
+			"vs/base/common/filters",
+			"vs/base/common/async"
+		],
+		"vs/workbench/common/editor/diffEditorModel": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/workbench/common/editor"
+		],
+		"vs/base/browser/ui/resourceviewer/resourceViewer": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/mime",
+			"vs/base/common/paths",
+			"vs/base/browser/builder",
+			"vs/base/browser/dom",
+			"vs/css!vs/base/browser/ui/resourceviewer/resourceviewer"
+		],
+		"vs/css!vs/base/browser/ui/resourceviewer/resourceviewer": [],
+		"vs/base/browser/ui/checkbox/checkbox": [
+			"require",
+			"exports",
+			"vs/base/browser/dom",
+			"vs/base/common/keyCodes",
+			"vs/base/browser/ui/widget",
+			"vs/css!vs/base/browser/ui/checkbox/checkbox"
+		],
+		"vs/css!vs/base/browser/ui/checkbox/checkbox": [],
+		"vs/workbench/common/component": [
+			"require",
+			"exports",
+			"vs/base/common/eventEmitter",
+			"vs/base/common/lifecycle",
+			"vs/workbench/common/memento"
+		],
+		"vs/base/common/set": [
+			"require",
+			"exports"
+		],
+		"vs/workbench/common/editor/textDiffEditorModel": [
+			"require",
+			"exports",
+			"vs/workbench/common/editor/diffEditorModel"
+		],
 		"vs/workbench/common/editor/editorStacksModel": [
 			"require",
 			"exports",
@@ -5138,29 +5173,7 @@
 			"vs/platform/editor/common/editor",
 			"vs/workbench/common/editor/diffEditorInput"
 		],
-		"vs/workbench/common/editor/diffEditorModel": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/workbench/common/editor"
-		],
-		"vs/workbench/common/editor/textDiffEditorModel": [
-			"require",
-			"exports",
-			"vs/workbench/common/editor/diffEditorModel"
-		],
-		"vs/base/browser/ui/resourceviewer/resourceViewer": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/mime",
-			"vs/base/common/paths",
-			"vs/base/browser/builder",
-			"vs/base/browser/dom",
-			"vs/css!vs/base/browser/ui/resourceviewer/resourceviewer"
-		],
-		"vs/css!vs/base/browser/ui/resourceviewer/resourceviewer": [],
-		"vs/base/common/set": [
+		"vs/platform/theme/common/themes": [
 			"require",
 			"exports"
 		],
@@ -5169,18 +5182,27 @@
 			"exports",
 			"vs/base/common/strings"
 		],
-		"vs/base/browser/ui/checkbox/checkbox": [
+		"vs/platform/contextview/browser/contextMenuService": [
 			"require",
 			"exports",
-			"vs/base/browser/dom",
-			"vs/base/common/keyCodes",
-			"vs/base/browser/ui/widget",
-			"vs/css!vs/base/browser/ui/checkbox/checkbox"
+			"vs/platform/contextview/browser/contextMenuHandler"
 		],
-		"vs/css!vs/base/browser/ui/checkbox/checkbox": [],
-		"vs/platform/theme/common/themes": [
+		"vs/base/worker/defaultWorkerFactory": [
 			"require",
-			"exports"
+			"exports",
+			"vs/base/common/flags",
+			"vs/base/common/lifecycle",
+			"vs/base/common/worker/workerClient",
+			"vs/base/browser/dom"
+		],
+		"vs/base/common/worker/workerClient": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/marshalling",
+			"vs/base/common/winjs.base",
+			"vs/base/common/worker/workerProtocol",
+			"vs/base/common/platform"
 		],
 		"vs/platform/keybinding/browser/keybindingServiceImpl": [
 			"require",
@@ -5200,11 +5222,6 @@
 			"vs/css!vs/platform/keybinding/browser/keybindings"
 		],
 		"vs/css!vs/platform/keybinding/browser/keybindings": [],
-		"vs/platform/contextview/browser/contextMenuService": [
-			"require",
-			"exports",
-			"vs/platform/contextview/browser/contextMenuHandler"
-		],
 		"vs/platform/actions/common/menuService": [
 			"require",
 			"exports",
@@ -5217,14 +5234,6 @@
 			"vs/platform/commands/common/commands",
 			"vs/platform/actions/common/resourceContextKey"
 		],
-		"vs/base/worker/defaultWorkerFactory": [
-			"require",
-			"exports",
-			"vs/base/common/flags",
-			"vs/base/common/lifecycle",
-			"vs/base/common/worker/workerClient",
-			"vs/base/browser/dom"
-		],
 		"vs/editor/common/model/textModelWithTokensHelpers": [
 			"require",
 			"exports",
@@ -5232,18 +5241,29 @@
 			"vs/editor/common/modes/languageConfigurationRegistry",
 			"vs/editor/common/model/wordHelper"
 		],
-		"vs/base/common/worker/workerClient": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/marshalling",
-			"vs/base/common/winjs.base",
-			"vs/base/common/worker/workerProtocol",
-			"vs/base/common/platform"
-		],
 		"vs/workbench/common/constants": [
 			"require",
 			"exports"
+		],
+		"vs/workbench/services/history/browser/history": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/platform",
+			"vs/nls",
+			"vs/base/common/events",
+			"vs/workbench/common/editor",
+			"vs/workbench/browser/parts/editor/textEditor",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/editor/common/core/selection",
+			"vs/platform/event/common/event",
+			"vs/platform/workspace/common/workspace",
+			"vs/base/common/lifecycle",
+			"vs/platform/storage/common/storage",
+			"vs/platform/lifecycle/common/lifecycle",
+			"vs/platform/platform",
+			"vs/platform/instantiation/common/instantiation",
+			"vs/workbench/services/group/common/groupService"
 		],
 		"vs/workbench/browser/parts/activitybar/activitybarPart": [
 			"require",
@@ -5269,26 +5289,6 @@
 			"vs/css!vs/workbench/browser/parts/activitybar/media/activitybarpart"
 		],
 		"vs/css!vs/workbench/browser/parts/activitybar/media/activitybarpart": [],
-		"vs/workbench/services/history/browser/history": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/platform",
-			"vs/nls",
-			"vs/base/common/events",
-			"vs/workbench/common/editor",
-			"vs/workbench/browser/parts/editor/textEditor",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/editor/common/core/selection",
-			"vs/platform/event/common/event",
-			"vs/platform/workspace/common/workspace",
-			"vs/base/common/lifecycle",
-			"vs/platform/storage/common/storage",
-			"vs/platform/lifecycle/common/lifecycle",
-			"vs/platform/platform",
-			"vs/platform/instantiation/common/instantiation",
-			"vs/workbench/services/group/common/groupService"
-		],
 		"vs/workbench/browser/parts/sidebar/sidebarPart": [
 			"require",
 			"exports",
@@ -5375,6 +5375,22 @@
 			"vs/css!vs/workbench/browser/parts/panel/media/panelpart"
 		],
 		"vs/css!vs/workbench/browser/parts/panel/media/panelpart": [],
+		"vs/workbench/browser/layout": [
+			"require",
+			"exports",
+			"vs/base/browser/builder",
+			"vs/base/browser/ui/sash/sash",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/workbench/services/part/common/partService",
+			"vs/workbench/services/workspace/common/contextService",
+			"vs/workbench/services/viewlet/common/viewletService",
+			"vs/platform/storage/common/storage",
+			"vs/platform/contextview/browser/contextView",
+			"vs/platform/event/common/event",
+			"vs/workbench/services/themes/common/themeService",
+			"vs/base/common/lifecycle",
+			"vs/workbench/services/group/common/groupService"
+		],
 		"vs/workbench/browser/parts/statusbar/statusbarPart": [
 			"require",
 			"exports",
@@ -5398,22 +5414,24 @@
 			"vs/css!vs/workbench/browser/parts/statusbar/media/statusbarpart"
 		],
 		"vs/css!vs/workbench/browser/parts/statusbar/media/statusbarpart": [],
-		"vs/workbench/browser/layout": [
+		"vs/base/browser/ui/messagelist/messageList": [
 			"require",
 			"exports",
+			"vs/nls",
+			"vs/base/common/winjs.base",
 			"vs/base/browser/builder",
-			"vs/base/browser/ui/sash/sash",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/workbench/services/part/common/partService",
-			"vs/workbench/services/workspace/common/contextService",
-			"vs/workbench/services/viewlet/common/viewletService",
-			"vs/platform/storage/common/storage",
-			"vs/platform/contextview/browser/contextView",
-			"vs/platform/event/common/event",
-			"vs/workbench/services/themes/common/themeService",
-			"vs/base/common/lifecycle",
-			"vs/workbench/services/group/common/groupService"
+			"vs/base/browser/dom",
+			"vs/base/common/errors",
+			"vs/base/browser/ui/aria/aria",
+			"vs/base/common/types",
+			"vs/base/common/event",
+			"vs/base/common/actions",
+			"vs/base/browser/htmlContentRenderer",
+			"vs/base/browser/keyboardEvent",
+			"vs/base/common/keyCodes",
+			"vs/css!vs/base/browser/ui/messagelist/messageList"
 		],
+		"vs/css!vs/base/browser/ui/messagelist/messageList": [],
 		"vs/platform/statusbar/common/statusbar": [
 			"require",
 			"exports",
@@ -5487,60 +5505,6 @@
 			"vs/editor/node/model/modelBuilder",
 			"vs/workbench/browser/parts/quickopen/quickOpenController"
 		],
-		"vs/base/browser/ui/messagelist/messageList": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/winjs.base",
-			"vs/base/browser/builder",
-			"vs/base/browser/dom",
-			"vs/base/common/errors",
-			"vs/base/browser/ui/aria/aria",
-			"vs/base/common/types",
-			"vs/base/common/event",
-			"vs/base/common/actions",
-			"vs/base/browser/htmlContentRenderer",
-			"vs/base/browser/keyboardEvent",
-			"vs/base/common/keyCodes",
-			"vs/css!vs/base/browser/ui/messagelist/messageList"
-		],
-		"vs/css!vs/base/browser/ui/messagelist/messageList": [],
-		"vs/workbench/services/files/node/fileService": [
-			"require",
-			"exports",
-			"vs/base/common/paths",
-			"vs/base/node/flow",
-			"vs/workbench/parts/files/common/files",
-			"vs/workbench/parts/files/common/explorerViewModel",
-			"vs/platform/files/common/files",
-			"vs/base/common/arrays",
-			"vs/base/common/mime",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types",
-			"vs/base/common/objects",
-			"vs/base/common/async",
-			"vs/base/common/uri",
-			"vs/nls",
-			"vs/base/common/http"
-		],
-		"vs/workbench/services/search/node/fileSearch": [
-			"require",
-			"exports",
-			"vs/base/common/paths",
-			"vs/base/common/uri",
-			"vs/base/common/scorer",
-			"vs/base/common/arrays",
-			"vs/base/common/strings",
-			"vs/base/common/types",
-			"vs/base/common/glob",
-			"vs/platform/search/common/search",
-			"vs/base/node/flow"
-		],
-		"vs/editor/common/services/abstractCodeEditorService": [
-			"require",
-			"exports",
-			"vs/base/common/event"
-		],
 		"vs/workbench/browser/part": [
 			"require",
 			"exports",
@@ -5561,6 +5525,42 @@
 			"exports",
 			"vs/base/common/eventEmitter"
 		],
+		"vs/workbench/services/search/node/fileSearch": [
+			"require",
+			"exports",
+			"vs/base/common/paths",
+			"vs/base/common/uri",
+			"vs/base/common/scorer",
+			"vs/base/common/arrays",
+			"vs/base/common/strings",
+			"vs/base/common/types",
+			"vs/base/common/glob",
+			"vs/platform/search/common/search",
+			"vs/base/node/flow"
+		],
+		"vs/workbench/services/files/node/fileService": [
+			"require",
+			"exports",
+			"vs/base/common/paths",
+			"vs/base/node/flow",
+			"vs/workbench/parts/files/common/files",
+			"vs/workbench/parts/files/common/explorerViewModel",
+			"vs/platform/files/common/files",
+			"vs/base/common/arrays",
+			"vs/base/common/mime",
+			"vs/base/common/winjs.base",
+			"vs/base/common/types",
+			"vs/base/common/objects",
+			"vs/base/common/async",
+			"vs/base/common/uri",
+			"vs/nls",
+			"vs/base/common/http"
+		],
+		"vs/editor/common/services/abstractCodeEditorService": [
+			"require",
+			"exports",
+			"vs/base/common/event"
+		],
 		"vs/platform/opener/electron-browser/openerService": [
 			"require",
 			"exports",
@@ -5577,11 +5577,11 @@
 			"vs/base/common/strings",
 			"vs/editor/common/core/viewLineToken"
 		],
-		"vs/editor/common/model/indentationGuesser": [
+		"vs/editor/common/model/indentRanges": [
 			"require",
 			"exports"
 		],
-		"vs/editor/common/model/indentRanges": [
+		"vs/editor/common/model/indentationGuesser": [
 			"require",
 			"exports"
 		],
@@ -5594,17 +5594,11 @@
 			"exports",
 			"vs/editor/common/core/arrays"
 		],
+		"vs/base/common/marked/raw.marked": [],
 		"vs/editor/common/commands/replaceCommand": [
 			"require",
 			"exports",
 			"vs/editor/common/core/selection"
-		],
-		"vs/editor/common/viewModel/viewModelCursors": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range",
-			"vs/editor/common/core/selection",
-			"vs/editor/common/editorCommon"
 		],
 		"vs/editor/common/controller/cursorCollection": [
 			"require",
@@ -5613,6 +5607,45 @@
 			"vs/editor/common/controller/oneCursor",
 			"vs/editor/common/core/selection",
 			"vs/editor/common/modes/languageConfigurationRegistry"
+		],
+		"vs/editor/common/viewModel/filteredLineTokens": [
+			"require",
+			"exports",
+			"vs/editor/common/core/viewLineToken"
+		],
+		"vs/editor/common/viewModel/viewModelCursors": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range",
+			"vs/editor/common/core/selection",
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/common/controller/textAreaState": [
+			"require",
+			"exports",
+			"vs/base/common/strings",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/common/controller/textAreaHandler": [
+			"require",
+			"exports",
+			"vs/base/common/async",
+			"vs/base/common/event",
+			"vs/base/common/keyCodes",
+			"vs/base/common/lifecycle",
+			"vs/editor/common/controller/textAreaState",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/browser/editorDom": [
+			"require",
+			"exports",
+			"vs/base/common/lifecycle",
+			"vs/base/browser/mouseEvent",
+			"vs/base/browser/dom",
+			"vs/base/browser/globalMouseMoveMonitor"
 		],
 		"vs/editor/common/controller/oneCursor": [
 			"require",
@@ -5637,30 +5670,12 @@
 			"vs/editor/common/editorCommon",
 			"vs/editor/common/viewModel/viewModel"
 		],
-		"vs/editor/common/viewModel/filteredLineTokens": [
+		"vs/editor/common/viewLayout/linesLayout": [
 			"require",
 			"exports",
-			"vs/editor/common/core/viewLineToken"
-		],
-		"vs/base/common/marked/raw.marked": [],
-		"vs/editor/common/controller/textAreaHandler": [
-			"require",
-			"exports",
-			"vs/base/common/async",
-			"vs/base/common/event",
-			"vs/base/common/keyCodes",
-			"vs/base/common/lifecycle",
-			"vs/editor/common/controller/textAreaState",
-			"vs/editor/common/core/position",
+			"vs/editor/common/viewLayout/verticalObjects",
 			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon"
-		],
-		"vs/editor/common/controller/textAreaState": [
-			"require",
-			"exports",
-			"vs/base/common/strings",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon"
+			"vs/editor/common/viewLayout/viewLinesViewportData"
 		],
 		"vs/editor/browser/controller/mouseHandler": [
 			"require",
@@ -5679,13 +5694,10 @@
 			"vs/base/browser/mouseEvent",
 			"vs/editor/common/config/commonEditorConfig"
 		],
-		"vs/editor/browser/editorDom": [
+		"vs/editor/browser/view/dynamicViewOverlay": [
 			"require",
 			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/mouseEvent",
-			"vs/base/browser/dom",
-			"vs/base/browser/globalMouseMoveMonitor"
+			"vs/editor/common/viewModel/viewEventHandler"
 		],
 		"vs/editor/browser/view/viewLayer": [
 			"require",
@@ -5693,12 +5705,10 @@
 			"vs/editor/browser/view/viewPart",
 			"vs/base/browser/styleMutator"
 		],
-		"vs/editor/common/viewLayout/linesLayout": [
+		"vs/editor/browser/view/viewPart": [
 			"require",
 			"exports",
-			"vs/editor/common/viewLayout/verticalObjects",
-			"vs/editor/common/core/range",
-			"vs/editor/common/viewLayout/viewLinesViewportData"
+			"vs/editor/common/viewModel/viewEventHandler"
 		],
 		"vs/editor/browser/viewLayout/scrollManager": [
 			"require",
@@ -5708,16 +5718,6 @@
 			"vs/base/browser/ui/scrollbar/scrollableElement",
 			"vs/editor/common/editorCommon",
 			"vs/editor/browser/editorBrowser"
-		],
-		"vs/editor/browser/view/viewPart": [
-			"require",
-			"exports",
-			"vs/editor/common/viewModel/viewEventHandler"
-		],
-		"vs/editor/browser/view/dynamicViewOverlay": [
-			"require",
-			"exports",
-			"vs/editor/common/viewModel/viewEventHandler"
 		],
 		"vs/editor/browser/viewParts/lines/viewLine": [
 			"require",
@@ -5734,14 +5734,6 @@
 			"require",
 			"exports"
 		],
-		"vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl": [
-			"require",
-			"exports",
-			"vs/base/browser/styleMutator",
-			"vs/editor/common/editorCommon",
-			"vs/base/browser/browser",
-			"vs/editor/common/view/overviewZoneManager"
-		],
 		"vs/editor/browser/viewParts/viewCursors/viewCursor": [
 			"require",
 			"exports",
@@ -5749,25 +5741,14 @@
 			"vs/editor/common/editorCommon",
 			"vs/editor/browser/config/configuration"
 		],
-		"vs/editor/contrib/find/common/findDecorations": [
+		"vs/base/browser/ui/scrollbar/horizontalScrollbar": [
 			"require",
 			"exports",
-			"vs/editor/common/editorCommon"
-		],
-		"vs/editor/contrib/find/common/replaceAllCommand": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range"
-		],
-		"vs/editor/common/model/editableTextModel": [
-			"require",
-			"exports",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/model/editStack",
-			"vs/editor/common/model/modelLine",
-			"vs/editor/common/model/textModelWithDecorations",
-			"vs/base/common/strings"
+			"vs/base/browser/ui/scrollbar/abstractScrollbar",
+			"vs/base/browser/mouseEvent",
+			"vs/base/common/scrollable",
+			"vs/base/browser/ui/scrollbar/scrollbarState",
+			"vs/base/browser/ui/scrollbar/scrollbarArrow"
 		],
 		"vs/base/browser/ui/list/listView": [
 			"require",
@@ -5782,15 +5763,6 @@
 			"vs/base/browser/ui/list/rangeMap",
 			"vs/base/browser/ui/list/rowCache"
 		],
-		"vs/base/browser/ui/scrollbar/horizontalScrollbar": [
-			"require",
-			"exports",
-			"vs/base/browser/ui/scrollbar/abstractScrollbar",
-			"vs/base/browser/mouseEvent",
-			"vs/base/common/scrollable",
-			"vs/base/browser/ui/scrollbar/scrollbarState",
-			"vs/base/browser/ui/scrollbar/scrollbarArrow"
-		],
 		"vs/base/browser/ui/scrollbar/verticalScrollbar": [
 			"require",
 			"exports",
@@ -5800,29 +5772,34 @@
 			"vs/base/browser/ui/scrollbar/scrollbarState",
 			"vs/base/browser/ui/scrollbar/scrollbarArrow"
 		],
+		"vs/editor/browser/viewParts/overviewRuler/overviewRulerImpl": [
+			"require",
+			"exports",
+			"vs/base/browser/styleMutator",
+			"vs/editor/common/editorCommon",
+			"vs/base/browser/browser",
+			"vs/editor/common/view/overviewZoneManager"
+		],
 		"vs/base/parts/tree/browser/treeViewModel": [
 			"require",
 			"exports",
 			"vs/base/common/eventEmitter",
 			"vs/base/common/iterator"
 		],
-		"vs/platform/contextview/browser/contextMenuHandler": [
+		"vs/editor/contrib/find/common/findDecorations": [
 			"require",
 			"exports",
-			"vs/base/browser/builder",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/mouseEvent",
-			"vs/base/common/actions",
-			"vs/base/browser/ui/menu/menu",
-			"vs/base/common/events",
-			"vs/base/common/severity",
-			"vs/css!vs/platform/contextview/browser/contextMenuHandler"
+			"vs/editor/common/editorCommon"
 		],
-		"vs/css!vs/platform/contextview/browser/contextMenuHandler": [],
 		"vs/base/common/flags": [
 			"require",
 			"exports",
 			"vs/base/common/platform"
+		],
+		"vs/editor/contrib/find/common/replaceAllCommand": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range"
 		],
 		"vs/workbench/browser/parts/activitybar/activityAction": [
 			"require",
@@ -5837,6 +5814,29 @@
 			"vs/css!vs/workbench/browser/parts/activitybar/media/activityaction"
 		],
 		"vs/css!vs/workbench/browser/parts/activitybar/media/activityaction": [],
+		"vs/platform/contextview/browser/contextMenuHandler": [
+			"require",
+			"exports",
+			"vs/base/browser/builder",
+			"vs/base/common/lifecycle",
+			"vs/base/browser/mouseEvent",
+			"vs/base/common/actions",
+			"vs/base/browser/ui/menu/menu",
+			"vs/base/common/events",
+			"vs/base/common/severity",
+			"vs/css!vs/platform/contextview/browser/contextMenuHandler"
+		],
+		"vs/css!vs/platform/contextview/browser/contextMenuHandler": [],
+		"vs/editor/common/model/editableTextModel": [
+			"require",
+			"exports",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/model/editStack",
+			"vs/editor/common/model/modelLine",
+			"vs/editor/common/model/textModelWithDecorations",
+			"vs/base/common/strings"
+		],
 		"vs/workbench/browser/parts/compositePart": [
 			"require",
 			"exports",
@@ -5866,6 +5866,51 @@
 			"vs/css!vs/workbench/browser/parts/media/compositepart"
 		],
 		"vs/css!vs/workbench/browser/parts/media/compositepart": [],
+		"vs/base/common/uuid": [
+			"require",
+			"exports"
+		],
+		"vs/workbench/services/progress/browser/progressService": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/types",
+			"vs/workbench/common/events"
+		],
+		"vs/base/parts/quickopen/browser/quickOpenWidget": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/winjs.base",
+			"vs/base/common/platform",
+			"vs/base/browser/browser",
+			"vs/base/common/events",
+			"vs/base/common/types",
+			"vs/base/common/errors",
+			"vs/base/common/uuid",
+			"vs/base/parts/quickopen/common/quickOpen",
+			"vs/base/parts/quickopen/browser/quickOpenViewer",
+			"vs/base/browser/builder",
+			"vs/base/browser/ui/inputbox/inputBox",
+			"vs/base/common/severity",
+			"vs/base/parts/tree/browser/treeImpl",
+			"vs/base/browser/ui/progressbar/progressbar",
+			"vs/base/browser/keyboardEvent",
+			"vs/base/parts/tree/browser/treeDefaults",
+			"vs/base/browser/dom",
+			"vs/base/common/keyCodes",
+			"vs/base/common/lifecycle",
+			"vs/base/common/scrollable",
+			"vs/css!vs/base/parts/quickopen/browser/quickopen"
+		],
+		"vs/css!vs/base/parts/quickopen/browser/quickopen": [],
+		"vs/workbench/browser/parts/statusbar/statusbar": [
+			"require",
+			"exports",
+			"vs/platform/platform",
+			"vs/platform/statusbar/common/statusbar",
+			"vs/platform/instantiation/common/descriptors"
+		],
 		"vs/workbench/browser/parts/editor/editor.contribution": [
 			"require",
 			"exports",
@@ -5933,51 +5978,15 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/sidebyside"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/sidebyside": [],
-		"vs/workbench/services/progress/browser/progressService": [
+		"vs/base/common/http": [
 			"require",
 			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types",
-			"vs/workbench/common/events"
+			"vs/nls"
 		],
-		"vs/workbench/browser/parts/statusbar/statusbar": [
-			"require",
-			"exports",
-			"vs/platform/platform",
-			"vs/platform/statusbar/common/statusbar",
-			"vs/platform/instantiation/common/descriptors"
-		],
-		"vs/base/common/uuid": [
+		"vs/base/node/flow": [
 			"require",
 			"exports"
 		],
-		"vs/base/parts/quickopen/browser/quickOpenWidget": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/winjs.base",
-			"vs/base/common/platform",
-			"vs/base/browser/browser",
-			"vs/base/common/events",
-			"vs/base/common/types",
-			"vs/base/common/errors",
-			"vs/base/common/uuid",
-			"vs/base/parts/quickopen/common/quickOpen",
-			"vs/base/parts/quickopen/browser/quickOpenViewer",
-			"vs/base/browser/builder",
-			"vs/base/browser/ui/inputbox/inputBox",
-			"vs/base/common/severity",
-			"vs/base/parts/tree/browser/treeImpl",
-			"vs/base/browser/ui/progressbar/progressbar",
-			"vs/base/browser/keyboardEvent",
-			"vs/base/parts/tree/browser/treeDefaults",
-			"vs/base/browser/dom",
-			"vs/base/common/keyCodes",
-			"vs/base/common/lifecycle",
-			"vs/base/common/scrollable",
-			"vs/css!vs/base/parts/quickopen/browser/quickopen"
-		],
-		"vs/css!vs/base/parts/quickopen/browser/quickopen": [],
 		"vs/workbench/parts/files/common/textFileServices": [
 			"require",
 			"exports",
@@ -6006,14 +6015,17 @@
 			"vs/editor/common/model/indentationGuesser",
 			"vs/base/common/winjs.base"
 		],
-		"vs/base/node/flow": [
-			"require",
-			"exports"
-		],
-		"vs/base/common/http": [
+		"vs/base/browser/globalMouseMoveMonitor": [
 			"require",
 			"exports",
-			"vs/nls"
+			"vs/base/common/lifecycle",
+			"vs/base/browser/dom",
+			"vs/base/browser/iframe",
+			"vs/base/browser/mouseEvent"
+		],
+		"vs/editor/common/viewLayout/viewLinesViewportData": [
+			"require",
+			"exports"
 		],
 		"vs/editor/common/commands/shiftCommand": [
 			"require",
@@ -6024,72 +6036,11 @@
 			"vs/editor/common/core/selection",
 			"vs/editor/common/modes/languageConfigurationRegistry"
 		],
-		"vs/editor/browser/controller/mouseTarget": [
-			"require",
-			"exports",
-			"vs/editor/common/core/position",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon",
-			"vs/editor/browser/editorBrowser",
-			"vs/base/browser/dom"
-		],
 		"vs/editor/common/commands/surroundSelectionCommand": [
 			"require",
 			"exports",
 			"vs/editor/common/core/range",
 			"vs/editor/common/core/selection"
-		],
-		"vs/base/browser/globalMouseMoveMonitor": [
-			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/browser/dom",
-			"vs/base/browser/iframe",
-			"vs/base/browser/mouseEvent"
-		],
-		"vs/editor/common/viewLayout/verticalObjects": [
-			"require",
-			"exports",
-			"vs/editor/common/viewLayout/whitespaceComputer"
-		],
-		"vs/editor/common/viewLayout/viewLinesViewportData": [
-			"require",
-			"exports"
-		],
-		"vs/editor/browser/viewParts/lines/rangeUtil": [
-			"require",
-			"exports",
-			"vs/editor/common/view/renderingContext"
-		],
-		"vs/editor/common/view/overviewZoneManager": [
-			"require",
-			"exports",
-			"vs/editor/common/editorCommon"
-		],
-		"vs/editor/common/model/editStack": [
-			"require",
-			"exports",
-			"vs/base/common/errors"
-		],
-		"vs/editor/common/model/textModelWithDecorations": [
-			"require",
-			"exports",
-			"vs/base/common/errors",
-			"vs/base/common/htmlContent",
-			"vs/base/common/strings",
-			"vs/base/common/idGenerator",
-			"vs/editor/common/core/range",
-			"vs/editor/common/editorCommon",
-			"vs/editor/common/model/textModelWithTrackedRanges"
-		],
-		"vs/base/browser/ui/list/rangeMap": [
-			"require",
-			"exports"
-		],
-		"vs/base/browser/ui/list/rowCache": [
-			"require",
-			"exports",
-			"vs/base/browser/dom"
 		],
 		"vs/base/browser/ui/scrollbar/abstractScrollbar": [
 			"require",
@@ -6114,6 +6065,20 @@
 			"vs/base/browser/ui/widget",
 			"vs/base/common/async"
 		],
+		"vs/base/browser/ui/list/rangeMap": [
+			"require",
+			"exports"
+		],
+		"vs/base/browser/ui/list/rowCache": [
+			"require",
+			"exports",
+			"vs/base/browser/dom"
+		],
+		"vs/editor/common/viewLayout/verticalObjects": [
+			"require",
+			"exports",
+			"vs/editor/common/viewLayout/whitespaceComputer"
+		],
 		"vs/base/browser/ui/menu/menu": [
 			"require",
 			"exports",
@@ -6123,6 +6088,20 @@
 			"vs/css!vs/base/browser/ui/menu/menu"
 		],
 		"vs/css!vs/base/browser/ui/menu/menu": [],
+		"vs/editor/common/view/overviewZoneManager": [
+			"require",
+			"exports",
+			"vs/editor/common/editorCommon"
+		],
+		"vs/editor/browser/controller/mouseTarget": [
+			"require",
+			"exports",
+			"vs/editor/common/core/position",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon",
+			"vs/editor/browser/editorBrowser",
+			"vs/base/browser/dom"
+		],
 		"vs/base/browser/ui/progressbar/progressbar": [
 			"require",
 			"exports",
@@ -6134,6 +6113,11 @@
 			"vs/base/common/uuid",
 			"vs/base/common/lifecycle",
 			"vs/css!vs/base/browser/ui/progressbar/progressbar"
+		],
+		"vs/editor/browser/viewParts/lines/rangeUtil": [
+			"require",
+			"exports",
+			"vs/editor/common/view/renderingContext"
 		],
 		"vs/workbench/browser/parts/editor/stringEditor": [
 			"require",
@@ -6155,6 +6139,12 @@
 			"vs/workbench/services/editor/common/editorService",
 			"vs/editor/common/services/modeService",
 			"vs/workbench/services/themes/common/themeService"
+		],
+		"vs/base/parts/quickopen/browser/quickOpenViewer": [
+			"require",
+			"exports",
+			"vs/base/common/winjs.base",
+			"vs/base/common/types"
 		],
 		"vs/workbench/browser/parts/editor/textDiffEditor": [
 			"require",
@@ -6189,6 +6179,17 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/textdiffeditor"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/textdiffeditor": [],
+		"vs/editor/common/model/textModelWithDecorations": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/common/htmlContent",
+			"vs/base/common/strings",
+			"vs/base/common/idGenerator",
+			"vs/editor/common/core/range",
+			"vs/editor/common/editorCommon",
+			"vs/editor/common/model/textModelWithTrackedRanges"
+		],
 		"vs/workbench/browser/parts/editor/binaryDiffEditor": [
 			"require",
 			"exports",
@@ -6206,6 +6207,11 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/binarydiffeditor"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/binarydiffeditor": [],
+		"vs/editor/common/model/editStack": [
+			"require",
+			"exports",
+			"vs/base/common/errors"
+		],
 		"vs/workbench/browser/parts/editor/editorStatus": [
 			"require",
 			"exports",
@@ -6241,20 +6247,6 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/editorstatus"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/editorstatus": [],
-		"vs/workbench/browser/parts/editor/editorCommands": [
-			"require",
-			"exports",
-			"vs/nls",
-			"vs/base/common/types",
-			"vs/platform/keybinding/common/keybindingsRegistry",
-			"vs/platform/configuration/common/configuration",
-			"vs/workbench/services/group/common/groupService",
-			"vs/workbench/common/editor",
-			"vs/workbench/services/editor/common/editorService",
-			"vs/editor/common/editorCommon",
-			"vs/platform/keybinding/common/keybinding",
-			"vs/platform/editor/common/editor"
-		],
 		"vs/workbench/browser/parts/editor/tabsTitleControl": [
 			"require",
 			"exports",
@@ -6286,6 +6278,29 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/tabstitle"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/tabstitle": [],
+		"vs/workbench/browser/parts/editor/editorCommands": [
+			"require",
+			"exports",
+			"vs/nls",
+			"vs/base/common/types",
+			"vs/platform/keybinding/common/keybindingsRegistry",
+			"vs/platform/configuration/common/configuration",
+			"vs/workbench/services/group/common/groupService",
+			"vs/workbench/common/editor",
+			"vs/workbench/services/editor/common/editorService",
+			"vs/editor/common/editorCommon",
+			"vs/platform/keybinding/common/keybinding",
+			"vs/platform/editor/common/editor"
+		],
+		"vs/workbench/browser/parts/editor/noTabsTitleControl": [
+			"require",
+			"exports",
+			"vs/base/common/errors",
+			"vs/base/browser/dom",
+			"vs/workbench/browser/parts/editor/titleControl",
+			"vs/css!vs/workbench/browser/parts/editor/media/notabstitle"
+		],
+		"vs/css!vs/workbench/browser/parts/editor/media/notabstitle": [],
 		"vs/workbench/browser/parts/editor/titleControl": [
 			"require",
 			"exports",
@@ -6320,24 +6335,12 @@
 			"vs/css!vs/workbench/browser/parts/editor/media/titlecontrol"
 		],
 		"vs/css!vs/workbench/browser/parts/editor/media/titlecontrol": [],
-		"vs/workbench/browser/parts/editor/noTabsTitleControl": [
+		"vs/base/browser/ui/scrollbar/scrollbarVisibilityController": [
 			"require",
 			"exports",
-			"vs/base/common/errors",
-			"vs/base/browser/dom",
-			"vs/workbench/browser/parts/editor/titleControl",
-			"vs/css!vs/workbench/browser/parts/editor/media/notabstitle"
-		],
-		"vs/css!vs/workbench/browser/parts/editor/media/notabstitle": [],
-		"vs/base/parts/quickopen/browser/quickOpenViewer": [
-			"require",
-			"exports",
-			"vs/base/common/winjs.base",
-			"vs/base/common/types"
-		],
-		"vs/editor/common/viewLayout/whitespaceComputer": [
-			"require",
-			"exports"
+			"vs/base/common/lifecycle",
+			"vs/base/common/async",
+			"vs/base/common/scrollable"
 		],
 		"vs/editor/common/model/textModelWithTrackedRanges": [
 			"require",
@@ -6348,12 +6351,9 @@
 			"vs/editor/common/model/textModelWithMarkers",
 			"vs/editor/common/model/textModelWithTokens"
 		],
-		"vs/base/browser/ui/scrollbar/scrollbarVisibilityController": [
+		"vs/editor/common/viewLayout/whitespaceComputer": [
 			"require",
-			"exports",
-			"vs/base/common/lifecycle",
-			"vs/base/common/async",
-			"vs/base/common/scrollable"
+			"exports"
 		],
 		"vs/editor/common/model/textModelWithMarkers": [
 			"require",
