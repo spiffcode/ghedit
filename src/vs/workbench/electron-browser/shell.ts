@@ -269,16 +269,27 @@ export function enableBrowserHack(hack: BrowserHack) {
 		break;
 
 	case BrowserHack.TAB_LABEL:
-		if (isIE) {
+		if (isIE || isEdge) {
 			// Add new css rules / override existing ones. First create a style sheet.
 			// https://davidwalsh.name/add-rules-stylesheets
 			let style = document.createElement("style");
 			style.appendChild(document.createTextNode(""));
 			document.head.appendChild(style);
 
-			// margin-top: auto doesn't work for vertical center alignment on IE.
-			(<any>style.sheet).insertRule(".tab-label { margin-top: 6% !important; }", 0);
-			(<any>style.sheet).insertRule(".tab-close { margin-top: 8% !important; }", 0);
+			// min-width: fit-content doesn't work on IE or Edge
+			(<any>style.sheet).insertRule(".monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab { width: auto !important; }", 0);
+
+			if (isIE) {
+				// min-width: fit-content doesn't work on IE or Edge
+				(<any>style.sheet).insertRule(".monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab { display: inline-block !important; }", 0);
+
+				// margin-top: auto doesn't work for vertical center alignment on IE.
+				// display: inline-block needed for horizontal layout
+				if (isIE) {
+					(<any>style.sheet).insertRule(".tab-label { margin-top: 6% !important; display: inline-block !important; }", 0);
+					(<any>style.sheet).insertRule(".tab-close { margin-top: 8% !important; display: inline-block !important; }", 0);
+				}
+			}
 		}
 	}
 }
