@@ -353,6 +353,7 @@ export interface IProductConfiguration {
 	documentationUrl: string;
 	releaseNotesUrl: string;
 	twitterUrl: string;
+	sendFeedbackUrl: string;
 	requestFeatureUrl: string;
 	reportIssueUrl: string;
 	licenseUrl: string;

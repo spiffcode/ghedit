@@ -85,7 +85,8 @@ export class VSCodeMenu {
 				documentationUrl: 'https://spiffcode.github.io/ghedit/documentation.html',
 				releaseNotesUrl: 'https://spiffcode.github.io/ghedit/releasenotes.html',
 				twitterUrl: null,
-				requestFeatureUrl: 'https://github.com/spiffcode/ghedit/issues',
+				sendFeedbackUrl: 'https://github.com/spiffcode/ghedit/issues/new?labels=feedback',
+				requestFeatureUrl: 'https://github.com/spiffcode/ghedit/labels/feedback',
 				reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues',
 				licenseUrl: 'https://github.com/spiffcode/ghedit/blob/master/LICENSE.txt',
 				privacyStatementUrl: null,
@@ -770,8 +771,9 @@ export class VSCodeMenu {
 			this.envService.product.releaseNotesUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReleaseNotes', comment: ['&& denotes a mnemonic'] }, "&&Release Notes")), click: () => this.openUrl(this.envService.product.releaseNotesUrl, 'openReleaseNotesUrl') }) : null,
 			(this.envService.product.documentationUrl || this.envService.product.releaseNotesUrl) ? __separator__() : null,
 			this.envService.product.twitterUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join us on Twitter")), click: () => this.openUrl(this.envService.product.twitterUrl, 'openTwitterUrl') }) : null,
+			this.envService.product.sendFeedbackUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miFeedkback', comment: ['&& denotes a mnemonic'] }, "Send &&Feedback")), click: () => this.openUrl(this.envService.product.sendFeedbackUrl, 'openFeedbackUrl') }) : null,
 			this.envService.product.requestFeatureUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Discussion")), click: () => this.openUrl(this.envService.product.requestFeatureUrl, 'openUserVoiceUrl') }) : null,
-			// TODO: this.envService.product.reportIssueUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReportIssues', comment: ['&& denotes a mnemonic'] }, "Report &&Issues")), click: () => this.openUrl(issueUrl, 'openReportIssues') }) : null,
+			this.envService.product.reportIssueUrl ? new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miReportIssues', comment: ['&& denotes a mnemonic'] }, "Report &&Issues")), click: () => this.openUrl(this.envService.product.reportIssueUrl, 'openReportIssues') }) : null,
 			(this.envService.product.twitterUrl || this.envService.product.requestFeatureUrl || this.envService.product.reportIssueUrl) ? __separator__() : null,
 			this.envService.product.licenseUrl ? new MenuItem({
 				label: mnemonicLabel(nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "&&View License")), click: () => {
