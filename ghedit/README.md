@@ -13,7 +13,7 @@ learn about web-based development environments and think it is useful enough to 
 # Features
 
 <ul>
-	<li>GitHub integration (view and edit repositories and files, in place)</li>
+	<li>GitHub integration (view and edit repositories and files, <i>in place</i>)</li>
 	<li>Complete project explorer and text editor</li>
 	<li>Syntax highlighting and auto-complete for all major programming and markup languages</li>
 	<li>IntelliSense for Javascript, TypeScript, JSON</li>
