@@ -285,10 +285,8 @@ export function enableBrowserHack(hack: BrowserHack) {
 
 				// margin-top: auto doesn't work for vertical center alignment on IE.
 				// display: inline-block needed for horizontal layout
-				if (isIE) {
-					(<any>style.sheet).insertRule(".tab-label { margin-top: 6% !important; display: inline-block !important; }", 0);
-					(<any>style.sheet).insertRule(".tab-close { margin-top: 8% !important; display: inline-block !important; }", 0);
-				}
+				(<any>style.sheet).insertRule(".tab-label { margin-top: 6% !important; display: inline-block !important; }", 0);
+				(<any>style.sheet).insertRule(".tab-close { margin-top: 8% !important; display: inline-block !important; }", 0);
 			}
 		}
 	}
