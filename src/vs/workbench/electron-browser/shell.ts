@@ -88,7 +88,6 @@ import {Registry} from 'vs/platform/platform';
 
 import {ensureStaticPlatformServices} from 'vs/editor/browser/standalone/standaloneServices';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
-
 import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'ghedit/navbarPart';
 import {INavbarService, NavbarAlignment, INavbarEntry} from 'ghedit/navbarService';
@@ -229,7 +228,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 
 	switch (hack) {
 	case BrowserHack.EDITOR_MOUSE_CLICKS:
-		if (isIE && isEdge) {
+		if (isIE || isEdge) {
 			// IE/Edge have a buggy caretRangeFromPoint implementation (e.g. https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4471321/)
 			// This causes in-editor mouse events to be improperly targeted. The crazy workaround is to
 			// size the document body larger than any of the elements it contains (https://github.com/Microsoft/monaco-editor/issues/80).
@@ -240,7 +239,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 		break;
 
 	case BrowserHack.MESSAGE_BOX_TEXT:
-		if (isIE && isEdge) {
+		if (isIE || isEdge) {
 			// Add new css rules / override existing ones. First create a style sheet.
 			// https://davidwalsh.name/add-rules-stylesheets
 			let style = document.createElement("style");
@@ -257,7 +256,7 @@ export function enableBrowserHack(hack: BrowserHack) {
 		break;
 
 	case BrowserHack.TAB_DRAGGING:
-		if (isIE && isEdge) {
+		if (isIE || isEdge) {
 			// Custom scrollbars get created when dragging tabs so that the tab container can scroll.
 			// On IE / Edge the actual scrollbars show instead. For now just forcefully deny overflow: scroll
 			// so the scrollbar doesn't appear.
