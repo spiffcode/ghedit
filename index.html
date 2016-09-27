@@ -242,7 +242,7 @@
 			}
 
 			function startup2(args) {
-				args.config = '{ "userEnv": {}, "appSettingsPath": "/$gist/GHEdit Settings/settings.json", "appKeybindingsPath": "/$gist/GHEdit Settings/keybindings.json", "appSettingsHome": "/$gist/GHEdit Settings" }';
+				args.config = '{ "appName": "GHEdit", "userEnv": {}, "appSettingsPath": "/$gist/GHEdit Settings/settings.json", "appKeybindingsPath": "/$gist/GHEdit Settings/keybindings.json", "appSettingsHome": "/$gist/GHEdit Settings" }';
 				var configuration = JSON.parse(args['config']);
 				configuration.gistRegEx = /^\/\$gist\/.+.*\/.+.*$/;
 				configuration.workspacePath = args.workspacePath;
