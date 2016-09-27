@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 gcloud alpha functions deploy github-auth --trigger-http --timeout 120 \
---source-url https://source.developers.google.com/p/ghcodex/r/default \
---source-path /auth-server --source-branch master --entry-point auth
+--source-url https://source.developers.google.com/p/ghcodex/r/ghedit \
+--source-path /ghedit/auth-server --source-branch master --entry-point auth
