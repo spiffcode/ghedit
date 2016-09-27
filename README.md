@@ -30,7 +30,7 @@ learn about web-based development environments and think it is useful enough to 
 
 # Documentation
 
-Read the documentation and FAQ [here](https://spiffcode.github.io/ghedit/documentation.html).
+Read the [documentation and FAQ](https://spiffcode.github.io/ghedit/documentation.html).
 
 # Developing
 
@@ -60,7 +60,7 @@ npm run build
 npm run http-server
 ```
 
-Now browse to http://localhost:8000
+Now browse to [http://localhost:8000](http://localhost:8000)
 
 #### PUSHING TO GITHUB.IO
 ```bash
