@@ -90,7 +90,7 @@
             data: data ? data : {},
             url: getURL()
          };
-         
+
          if (raw_response) {
            config.transformResponse = [function(data) { return data; }];
          }
@@ -830,14 +830,14 @@
          // Remove a file
          // -------
 
-         this.remove = function (branch, path, cb) {
+         this.remove = function (branch, path, message, cb) {
             that.getSha(branch, path, function (err, sha) {
                if (err) {
                   return cb(err);
                }
 
                _request('DELETE', repoPath + '/contents/' + path, {
-                  message: path + ' is removed',
+                  message: message || path + ' is removed',
                   sha: sha,
                   branch: branch
                }, cb);

@@ -672,7 +672,8 @@ export class BaseDeleteFileAction extends BaseFileAction {
 		@IFileService fileService: IFileService,
 		@IMessageService messageService: IMessageService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEventService eventService: IEventService
+		@IEventService eventService: IEventService,
+		@IQuickOpenService private quickOpenService: IQuickOpenService
 	) {
 		super(id, label, contextService, editorService, fileService, messageService, textFileService, eventService);
 
@@ -712,34 +713,48 @@ export class BaseDeleteFileAction extends BaseFileAction {
 			}
 		}
 
-		// Since a delete operation can take a while we want to emit the event proactively to avoid issues
-		// with stale entries in the explorer tree.
-		this.eventService.emit('files.internal:fileChanged', new LocalFileChangeEvent(this.element.clone(), null));
-
-		// Call function
-		let servicePromise = this.fileService.del(this.element.resource, this.useTrash).then(() => {
-			if (this.element.parent) {
-				this.tree.setFocus(this.element.parent); // move focus to parent
+		return this.quickOpenService.input({ prompt: 'Enter a commit message.', placeHolder: 'Commit message'}).then((result) => {
+			// If user canceled the input box.
+			if (!result) {
+				return TPromise.as(null);
 			}
+
+			// This hack gets the commit message from here to the bowels of the githubFileService where
+			// it is needed at updateContent time. Ideally it would be passed through IUpdateContentOptions
+			// but that would involve forking a number of VSC source files.
+			this.fileService.updateOptions({ commitMessage: result });
+
+			// Since a delete operation can take a while we want to emit the event proactively to avoid issues
+			// with stale entries in the explorer tree.
+			this.eventService.emit('files.internal:fileChanged', new LocalFileChangeEvent(this.element.clone(), null));
+
+			// Call function
+			let servicePromise = this.fileService.del(this.element.resource, this.useTrash).then(() => {
+				if (this.element.parent) {
+					this.tree.setFocus(this.element.parent); // move focus to parent
+				}
+			}, (error: any) => {
+
+				// Allow to retry
+				let extraAction: Action;
+				if (this.useTrash) {
+					extraAction = new Action('permanentDelete', nls.localize('permDelete', "Delete Permanently"), null, true, () => { this.useTrash = false; this.skipConfirm = true; return this.run(); });
+				}
+
+				this.onErrorWithRetry(error, () => this.run(), extraAction);
+
+				// Since the delete failed, best we can do is to refresh the explorer from the root to show the current state of files.
+				let event = new LocalFileChangeEvent(new FileStat(this.contextService.getWorkspace().resource, true, true), new FileStat(this.contextService.getWorkspace().resource, true, true));
+				this.eventService.emit('files.internal:fileChanged', event);
+
+				// Focus back to tree
+				this.tree.DOMFocus();
+			});
+
+			return servicePromise;
 		}, (error: any) => {
-
-			// Allow to retry
-			let extraAction: Action;
-			if (this.useTrash) {
-				extraAction = new Action('permanentDelete', nls.localize('permDelete', "Delete Permanently"), null, true, () => { this.useTrash = false; this.skipConfirm = true; return this.run(); });
-			}
-
-			this.onErrorWithRetry(error, () => this.run(), extraAction);
-
-			// Since the delete failed, best we can do is to refresh the explorer from the root to show the current state of files.
-			let event = new LocalFileChangeEvent(new FileStat(this.contextService.getWorkspace().resource, true, true), new FileStat(this.contextService.getWorkspace().resource, true, true));
-			this.eventService.emit('files.internal:fileChanged', event);
-
-			// Focus back to tree
-			this.tree.DOMFocus();
+			return TPromise.as(null);
 		});
-
-		return servicePromise;
 	}
 }
 
@@ -755,9 +770,10 @@ export class MoveFileToTrashAction extends BaseDeleteFileAction {
 		@IFileService fileService: IFileService,
 		@IMessageService messageService: IMessageService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEventService eventService: IEventService
+		@IEventService eventService: IEventService,
+		@IQuickOpenService quickOpenService: IQuickOpenService
 	) {
-		super(MoveFileToTrashAction.ID, nls.localize('delete', "Delete"), tree, element, true, contextService, editorService, fileService, messageService, textFileService, eventService);
+		super(MoveFileToTrashAction.ID, nls.localize('delete', "Delete"), tree, element, true, contextService, editorService, fileService, messageService, textFileService, eventService, quickOpenService);
 	}
 }
 
@@ -773,9 +789,10 @@ export class DeleteFileAction extends BaseDeleteFileAction {
 		@IFileService fileService: IFileService,
 		@IMessageService messageService: IMessageService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEventService eventService: IEventService
+		@IEventService eventService: IEventService,
+		@IQuickOpenService quickOpenService: IQuickOpenService
 	) {
-		super(DeleteFileAction.ID, nls.localize('delete', "Delete"), tree, element, false, contextService, editorService, fileService, messageService, textFileService, eventService);
+		super(DeleteFileAction.ID, nls.localize('delete', "Delete"), tree, element, false, contextService, editorService, fileService, messageService, textFileService, eventService, quickOpenService);
 	}
 }
 

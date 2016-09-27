@@ -462,6 +462,7 @@ export class FileService implements IFileService {
 						let path = resource.path.slice(1);
 						let commitMessage = this.options.commitMessage || 'Update ' + path;
 						this.repo.write(this.ref, path, value, commitMessage, { encode: true }, (err: GithubError) => {
+							this.options.commitMessage = undefined;
 							err ? e(err) : c(null);
 						});
 					}).then(() => {
@@ -553,7 +554,9 @@ export class FileService implements IFileService {
 
 	private deleteGithubFile(sourcePath: string) : TPromise<boolean> {
 		return new TPromise<void>((c, e) => {
-			this.repo.delete(this.ref, sourcePath, (err: GithubError) => {
+			let commitMessage = this.options.commitMessage || 'Deleted ' + sourcePath;
+			this.repo.delete(this.ref, sourcePath, commitMessage, (err: GithubError) => {
+				this.options.commitMessage = undefined;
 				err ? e(err) : c(null);
 			});
 		}).then(() => {

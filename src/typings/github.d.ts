@@ -4,7 +4,7 @@ declare module "github" {
 		request: any;
 		error: string;
 	}
-	
+
 	class Github {
 		repo: string;
 		ref: string;
@@ -13,18 +13,18 @@ declare module "github" {
 		getUser(): User;
 		getRepo(usernameOrFullname: string, repo?: string): Repository;
 	}
-	
+
 	interface IWriteOptions {
 		encode?: boolean,
 		committer?: ICommitter,
 		author?: IAuthor,
 	}
-	
+
 	interface IAuthor {
 		name: string,
 		email: string,
 	}
-	
+
 	interface ICommitter {
 		name: string,
 		email: string,
@@ -47,14 +47,14 @@ declare module "github" {
 		write(branch: string, path: string, content: string, message: string, options: any, cb: (err: Error, response?: any, xhr?: any) => void);
 		listBranches(cb: (err: Error, heads?: string[], xhr?: any) => void);
 		listTags(cb: (err: Error, tags?: TagInfo[], xhr?: any) => void);
-		delete(branch: string, path: string, cb: (err: Error, contents?: any, xhr?: any) => void);
+		delete(branch: string, path: string, message: string, cb: (err: Error, contents?: any, xhr?: any) => void);
 		move(branch: string, path: string, newPath: string, cb: (err: Error, contents?: any, xhr?: any) => void);
 		getRef(ref: string, cb: (err: Error, sha?: string, xhr?: any) => void);
 		getTreeRecursive(sha: string, cb: (err: Error, items?: TreeItem[], xhr?: any) => void);
 		getBlob(sha: string, cb: (err: Error, content?: string, xhr?: any) => void);
 		getBlobRaw(sha: string, cb: (err: Error, content?: string, xhr?: any) => void);
 	}
-	
+
 	class Gist {
 		constructor(options: any);
 		description: string;
@@ -66,13 +66,13 @@ declare module "github" {
 		read(cb: (err: Error, content?: any, xhr?: any) => void);
 		create(options: any, cb: (err: Error, gist?: Gist, xhr?: any) => void);
 		delete(cb: (err: Error) => void);
-		update(options: any, cb: (err:Error, gist?: Gist, xhr?: any) => void);   
+		update(options: any, cb: (err:Error, gist?: Gist, xhr?: any) => void);
 	}
 
 	class User {
 		repos(cb: (err: Error, repos?: any, xhr?: any) => void);
 		repos(options: any, cb: (err: Error, repos?: any, xhr?: any) => void);
-		gists(cb: (err: Error, gists?: Gist[], xhr?: any) => void);		
+		gists(cb: (err: Error, gists?: Gist[], xhr?: any) => void);
 		show(username: string, cb: (err: Error, info?: UserInfo, xhr?: any) => void);
 	}
 
