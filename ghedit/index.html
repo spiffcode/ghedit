@@ -28,6 +28,8 @@
 
 				ga('create', 'UA-81752237-1', {'siteSpeedSampleRate': 100});
 				ga('send', 'pageview');
+			} else {
+				ga = null;
 			}
 
 			function timeoutCallback(callback) {
@@ -43,7 +45,7 @@
 			}
 
 			function sendGa(path, callback) {
-				if (window.ga) {
+				if (ga) {
 					if (!callback) {
 						ga('send', 'pageview', path);
 					} else {
