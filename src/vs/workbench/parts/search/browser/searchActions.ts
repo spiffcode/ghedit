@@ -200,6 +200,7 @@ export class ReplaceAllAction extends AbstractSearchAndReplaceAction {
 		this.telemetryService.publicLog('replaceAll.action.selected');
 		let nextFocusElement= this.getNextFocusElement(this.viewer, this.fileMatch);
 		return this.fileMatch.parent().replace(this.fileMatch).then(() => {
+			(<any>window).sendGa('/workbench/replace/all');
 			if (nextFocusElement) {
 				this.viewer.setFocus(nextFocusElement);
 			}
@@ -229,6 +230,7 @@ export class ReplaceAction extends AbstractSearchAndReplaceAction {
 		let elementToOpen= nextFocusElement && nextFocusElement instanceof Match ? nextFocusElement : this.element.parent();
 
 		return this.element.parent().replace(this.element).then(() => {
+			(<any>window).sendGa('/workbench/replace');
 			if (nextFocusElement) {
 				this.viewer.setFocus(nextFocusElement);
 			}

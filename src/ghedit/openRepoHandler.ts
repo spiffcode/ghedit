@@ -13,7 +13,7 @@ import {QuickOpenHandler} from 'vs/workbench/browser/quickopen';
 import {Mode, IEntryRunContext, IAutoFocus, IModel, IQuickNavigateConfiguration} from 'vs/base/parts/quickopen/common/quickOpen';
 import {QuickOpenEntry, IContext, IHighlight, QuickOpenEntryGroup, QuickOpenModel} from 'vs/base/parts/quickopen/browser/quickOpenModel';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
-import {IGithubService, openRepository} from 'ghedit/githubService'; 
+import {IGithubService, openRepository} from 'ghedit/githubService';
 import {ITree, IElementCallback} from 'vs/base/parts/tree/browser/tree';
 import {Builder, $} from 'vs/base/browser/builder';
 import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
@@ -27,7 +27,7 @@ enum Group {
 
 class Info {
 	login: string;
-	name: string;	
+	name: string;
 	full_name: string;
 	description: string;
 	duplicate: boolean;
@@ -36,7 +36,7 @@ class Info {
 }
 
 class RepoQuickOpenEntry extends QuickOpenEntryGroup {
-	constructor(public info: Info, private contextService: IWorkspaceContextService, private githubService: IGithubService, private messageService:IMessageService) {		
+	constructor(public info: Info, private contextService: IWorkspaceContextService, private githubService: IGithubService, private messageService:IMessageService) {
 		super();
 	}
 
@@ -57,18 +57,21 @@ class RepoQuickOpenEntry extends QuickOpenEntryGroup {
 	}
 
 	private openRepo(): void {
-		if (this.info.full_name !== this.githubService.repoName)
-			openRepository(this.info.full_name, <IMainEnvironment>this.contextService.getConfiguration().env);
+		if (this.info.full_name !== this.githubService.repoName) {
+			(<any>window).sendGa('/workbench/repo/open', () => {
+				openRepository(this.info.full_name, <IMainEnvironment>this.contextService.getConfiguration().env);
+			});
+		}
 	}
 
 	public updateFullName(fullName: string) {
-		this.info.full_name = fullName;		
+		this.info.full_name = fullName;
 		try {
 			this.info.login = fullName.split('/')[0];
 			this.info.name = fullName.split('/')[1];
 		} catch (error) {
 			this.info.login = '';
-			this.info.name = '';			
+			this.info.name = '';
 		}
 	}
 
@@ -77,7 +80,7 @@ class RepoQuickOpenEntry extends QuickOpenEntryGroup {
 			return false;
 		}
 
-		// If validated already, open the repo now 
+		// If validated already, open the repo now
 		if (this.info.validated) {
 			this.openRepo();
 			return true;
@@ -115,7 +118,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 	}
 
 	private getInfoFromRepoInfo(info: RepositoryInfo): Info {
-		let group: Group;		
+		let group: Group;
 		if (info.owner.type === 'User' && info.owner.login === this.githubService.getAuthenticatedUserInfo().login) {
 			group = Group.User;
 		} else if (info.owner.type === 'Organization') {
@@ -158,7 +161,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 			// This repo isn't in the infos we have; try to load it.
 			// This is in an exception handler in case name is garbage, since
 			// it was loaded from local storage.
-			let parts: string[];			
+			let parts: string[];
 			try {
 				parts = name.split('/');
 			} catch (error) {
@@ -247,7 +250,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 		return new TPromise<QuickOpenModel>((c, e) => {
 			this.getModel().then((model: QuickOpenModel) => {
 				// Add in the repos associated with this user
-				let entries: RepoQuickOpenEntry[] = <RepoQuickOpenEntry[]>model.getEntries();				
+				let entries: RepoQuickOpenEntry[] = <RepoQuickOpenEntry[]>model.getEntries();
 
 				// Fuzzy match and filter. Just hide/show entries
 				let indexLastVisible = -1;
@@ -263,7 +266,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 					}
 
 					// Only hide regular entries if there is a searchValue
-					if (searchValue) { 
+					if (searchValue) {
 						// Some items are duplicates so they can appear in Recents before the user types anything
 						if (searchValue && e.info.duplicate) {
 							e.setHidden(true);
@@ -279,7 +282,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 					e.setHidden(false);
 					if (searchValue) {
 						const {labelHighlights, descriptionHighlights} = QuickOpenEntry.highlight(e, searchValue, true);
-						e.setHighlights(labelHighlights, descriptionHighlights);						
+						e.setHighlights(labelHighlights, descriptionHighlights);
 					} else {
 						e.setHighlights([], []);
 					}
@@ -309,5 +312,5 @@ export class OpenRepoHandler extends QuickOpenHandler {
 		return {
 			autoFocusFirstEntry: true
 		};
-	}	
+	}
 }

@@ -142,7 +142,10 @@ export class ChooseReferenceAction extends Action {
 
 		return this.quickOpenService.pick(promise, options).then((result) => {
 			if (result && result.label !== this.githubService.ref) {
+				let s = (result.id === 'tag') ? 'tag/open' : 'branch/open';
+				(<any>window).sendGa('/workbench/' + s, () => {
 					openRepository(this.githubService.repoName, <IMainEnvironment>this.contextService.getConfiguration().env, result.label, result.id === 'tag');
+				});
 			}
 		});
 	}

@@ -208,9 +208,11 @@ export class SearchService implements ISearchService {
 class GithubSearch {
 	private fakeLineNumber: number;
 	private editorService: IEditorService;
+	private sentGa: boolean;
 
 	constructor(private githubService: IGithubService) {
 		this.fakeLineNumber = 1;
+		this.sentGa = false;
 	}
 
 	public setEditorService(editorService: IEditorService) {
@@ -331,8 +333,14 @@ class GithubSearch {
 
 	public search(query: ISearchQuery): PPromise<ISearchComplete, ISearchProgressItem> {
 		if (query.type === QueryType.File) {
+			if (!this.sentGa) {
+				this.sentGa = true;
+				setTimeout(() => { this.sentGa = false }, 30);
+				(<any>window).sendGa('/workbench/search/filename');
+			}
 			return this.fileSearch(query);
 		} else {
+			(<any>window).sendGa('/workbench/search/text');
 			return this.textSearch(query);
 		}
 	}
