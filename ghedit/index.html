@@ -43,7 +43,7 @@
 			}
 
 			function sendGa(path, callback) {
-				if (ga) {
+				if (window.ga) {
 					if (!callback) {
 						ga('send', 'pageview', path);
 					} else {
