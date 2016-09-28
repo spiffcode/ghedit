@@ -87,7 +87,7 @@ export class VSCodeMenu {
 				twitterUrl: null,
 				sendFeedbackUrl: 'https://github.com/spiffcode/ghedit/issues/new?labels=feedback',
 				requestFeatureUrl: 'https://github.com/spiffcode/ghedit/labels/feedback',
-				reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues',
+				reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues?q=is%3Aissue%20is%3Aopen%20-label%3Afeedback',
 				licenseUrl: 'https://github.com/spiffcode/ghedit/blob/master/LICENSE.txt',
 				privacyStatementUrl: null,
 				npsSurveyUrl: null
