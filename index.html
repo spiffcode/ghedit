@@ -29,6 +29,34 @@
 				ga('create', 'UA-81752237-1', {'siteSpeedSampleRate': 100});
 				ga('send', 'pageview');
 			}
+
+			function timeoutCallback(callback) {
+				var called = false;
+				function fn() {
+					if (!called) {
+						called = true;
+						callback();
+					}
+				}
+				setTimeout(fn, 1000);
+				return fn;
+			}
+
+			function sendGa(path, callback) {
+				if (ga) {
+					if (!callback) {
+						ga('send', 'pageview', path);
+					} else {
+						ga('send', 'pageview', path, {
+							hitCallback: timeoutCallback(callback)
+						});
+					}
+				} else {
+					if (callback) {
+						callback();
+					}
+				}
+			}
 		</script>
 
 		<!-- Helpers -->
