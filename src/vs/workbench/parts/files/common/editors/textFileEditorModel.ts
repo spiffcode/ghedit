@@ -211,7 +211,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements IEncodin
 		return this.textFileService.resolveTextContent(this.resource, { acceptTextOnly: true, etag: etag, encoding: this.preferredEncoding }).then((content) => {
 			diag('load() - resolved content', this.resource, new Date());
 
-			(<any>window).sendGa('/editor/file/text/load');
+			(<any>window).sendGa('/editor/file/load');
 
 			// Telemetry
 			this.telemetryService.publicLog('fileGet', { mimeType: content.mime, ext: paths.extname(this.resource.fsPath), path: anonymize(this.resource.fsPath) });
@@ -463,7 +463,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements IEncodin
 		}).then((stat: IFileStat) => {
 			diag('doSave(' + versionId + ') - after updateContent()', this.resource, new Date());
 
-			(<any>window).sendGa('/editor/file/text/save');
+			(<any>window).sendGa('/editor/file/save');
 
 			// Telemetry
 			this.telemetryService.publicLog('filePUT', { mimeType: stat.mime, ext: paths.extname(this.versionOnDiskStat.resource.fsPath) });

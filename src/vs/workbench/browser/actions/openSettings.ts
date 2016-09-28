@@ -166,7 +166,7 @@ export class OpenGlobalSettingsAction extends BaseOpenSettingsAction {
 		}
 
 		// Send to GA
-		(<any>window).sendGa('/workbench/settings/global/open');
+		(<any>window).sendGa('/workbench/settings/open/global');
 
 		// Open settings
 		let emptySettingsHeader = nls.localize('emptySettingsHeader', "Place your settings in this file to overwrite the default settings");
@@ -200,7 +200,7 @@ export class OpenGlobalKeybindingsAction extends BaseTwoEditorsAction {
 		let emptyContents = '// ' + nls.localize('emptyKeybindingsHeader', "Place your key bindings in this file to overwrite the defaults") + '\n[\n]';
 
 		// Send to GA
-		(<any>window).sendGa('/workbench/keybindings/global/open');
+		(<any>window).sendGa('/workbench/keybindings/open/global');
 
 		return this.openTwoEditors(DefaultKeybindingsInput.getInstance(this.instantiationService, this.keybindingService), URI.file(this.contextService.getConfiguration().env.appKeybindingsPath), emptyContents);
 	}
@@ -225,7 +225,7 @@ export class OpenWorkspaceSettingsAction extends BaseOpenSettingsAction {
 		].join('\n');
 
 		// Send to GA
-		(<any>window).sendGa('/workbench/settings/workspace/open');
+		(<any>window).sendGa('/workbench/settings/open/workspace');
 
 		return this.open(emptySettingsHeader, this.contextService.toResource('.vscode/settings.json'));
 	}
