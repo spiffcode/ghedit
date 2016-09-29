@@ -25,7 +25,7 @@ learn about web-based development environments and think it is useful enough to 
 	<li>Themes</li>
 	<li>Customizable Keyboard Shortcuts</li>
 	<li>Per-user, per-project customizable editor settings</li>
-	<li><a href='https://github.com/spiffcode/ghedit'>Open Source!</a></li>
+	<li>Free and <a href='https://github.com/spiffcode/ghedit'>Open Source!</a></li>
 </ul>
 
 # Documentation
