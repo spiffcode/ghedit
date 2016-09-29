@@ -308,22 +308,20 @@
 				}
 
 				// Clear "code=" and any other unneeded args out of the URL and show the active repo and branch/tag.
-				var urlReplace = location.origin + location.pathname;
+				var query = '';
 				if (args.repo) {
-					urlReplace += '?repo=' + args.repo;
+					query += '?repo=' + args.repo;
 					if (args.branch) {
-						urlReplace += '&branch=' + args.branch;
+						query += '&branch=' + args.branch;
 					} else if (args.tag) {
-						urlReplace += '&tag=' + args.tag;
+						query += '&tag=' + args.tag;
 					}
 				}
 				if (args.b) {
-					urlReplace += '&b=' + args.b;
+					query += '&b=' + args.b;
 				}
-				window.history.replaceState(null, '', urlReplace);
-
-				// Send analytics this replaced url
-				window.sendGa(urlReplace);
+				window.history.replaceState(null, '', location.origin + location.pathname + query);
+				window.sendGa(location.pathname + query);
 
 				// If a repo is specified and the user has been authorized, configure the workspace
 				// to use it and persist in local/session storage for parameterless reloads.
