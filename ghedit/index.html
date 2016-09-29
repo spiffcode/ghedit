@@ -27,7 +27,6 @@
 				})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 				ga('create', 'UA-81752237-1', {'siteSpeedSampleRate': 100});
-				ga('send', 'pageview');
 			} else {
 				ga = undefined;
 			}
@@ -322,6 +321,9 @@
 					urlReplace += '&b=' + args.b;
 				}
 				window.history.replaceState(null, '', urlReplace);
+
+				// Send analytics this replaced url
+				window.sendGa(urlReplace);
 
 				// If a repo is specified and the user has been authorized, configure the workspace
 				// to use it and persist in local/session storage for parameterless reloads.
