@@ -12,6 +12,7 @@ import paths = require('vs/base/common/paths');
 import strings = require('vs/base/common/strings');
 import {isWindows, isLinux} from 'vs/base/common/platform';
 import URI from 'vs/base/common/uri';
+import errors = require('vs/base/common/errors');
 import {UntitledEditorModel} from 'vs/workbench/common/editor/untitledEditorModel';
 import {ConfirmResult} from 'vs/workbench/common/editor';
 import {IEventService} from 'vs/platform/event/common/event';
@@ -22,7 +23,7 @@ import {IUntitledEditorService} from 'vs/workbench/services/untitled/common/unti
 import {IFileService, IResolveContentOptions} from 'vs/platform/files/common/files';
 import {BinaryEditorModel} from 'vs/workbench/common/editor/binaryEditorModel';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
-import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {ILifecycleService} from 'vs/platform/lifecycle/common/lifecycle';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
@@ -34,7 +35,10 @@ import {IModelService} from 'vs/editor/common/services/modelService';
 import {ModelBuilder} from 'vs/editor/node/model/modelBuilder';
 import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
 import {QuickOpenController} from 'vs/workbench/browser/parts/quickopen/quickOpenController';
-import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
+// TODO: import product from 'vs/platform/product';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
+// DESKTOP: import {IEnvService} from 'vs/code/electron-main/env';
 
 export class TextFileService extends AbstractTextFileService {
 	private instService: IInstantiationService;
@@ -52,11 +56,12 @@ export class TextFileService extends AbstractTextFileService {
 		@IEventService eventService: IEventService,
 		@IModeService private modeService: IModeService,
 		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
-		@IEditorGroupService editorGroupService: IEditorGroupService,
+		@IEditorGroupService private editorGroupService: IEditorGroupService,
 		@IWindowService private windowService: IWindowService,
-		@IModelService modelService: IModelService
+		@IModelService modelService: IModelService,
+		@IEnvironmentService private environmentService: IEnvironmentService
 	) {
-		super(contextService, instantiationService, configurationService, telemetryService, editorService, editorGroupService, eventService, fileService, modelService);
+		super(contextService, instantiationService, configurationService, telemetryService, editorService, eventService, fileService, modelService);
 		this.instService = instantiationService;
 
 		this.modeService = modeService;
@@ -70,6 +75,23 @@ export class TextFileService extends AbstractTextFileService {
 		// Lifecycle
 		this.lifecycleService.onWillShutdown(event => event.veto(this.beforeShutdown()));
 		this.lifecycleService.onShutdown(this.onShutdown, this);
+
+		// Application & Editor focus change
+		window.addEventListener('blur', () => this.onWindowFocusLost());
+		window.addEventListener('blur', () => this.onEditorFocusChanged(), true);
+		this.listenerToUnbind.push(this.editorGroupService.onEditorsChanged(() => this.onEditorFocusChanged()));
+	}
+
+	private onWindowFocusLost(): void {
+		if (this.configuredAutoSaveOnWindowChange && this.isDirty()) {
+			this.saveAll().done(null, errors.onUnexpectedError);
+		}
+	}
+
+	private onEditorFocusChanged(): void {
+		if (this.configuredAutoSaveOnFocusChange && this.isDirty()) {
+			this.saveAll().done(null, errors.onUnexpectedError);
+		}
 	}
 
 	public resolveTextContent(resource: URI, options?: IResolveContentOptions): TPromise<IRawTextContent> {
@@ -180,7 +202,7 @@ export class TextFileService extends AbstractTextFileService {
 	}
 
 	public confirmSave(resources?: URI[]): ConfirmResult {
-		if (!!this.contextService.getConfiguration().env.extensionDevelopmentPath) {
+		if (!!this.environmentService.extensionDevelopmentPath) {
 			return ConfirmResult.DONT_SAVE; // no veto when we are in extension dev mode because we cannot assum we run interactive (e.g. tests)
 		}
 
@@ -227,7 +249,7 @@ export class TextFileService extends AbstractTextFileService {
 		}
 
 		let opts: Electron.ShowMessageBoxOptions = {
-			title: this.contextService.getConfiguration().env.appName,
+			title: (<any>this.environmentService).product.nameLong,
 			message: message.join('\n'),
 			type: 'warning',
 			detail: nls.localize('saveChangesDetail', "Your changes will be lost if you don't save them."),
@@ -354,7 +376,7 @@ export class TextFileService extends AbstractTextFileService {
 		let needsCommitMessage: boolean = false;
 		let resources: URI[] = [...fileResources, ...targetsForUntitled];
 		for (let i = 0; i < resources.length; i++) {
-			let gistRegEx = (<IMainEnvironment>this.contextService.getConfiguration().env).gistRegEx;
+			let gistRegEx = (<IWindowConfiguration><any>this.environmentService).gistRegEx;
 			if (!gistRegEx || !gistRegEx.test(paths.normalize(resources[i].fsPath))) {
 				needsCommitMessage = true;
 				break;

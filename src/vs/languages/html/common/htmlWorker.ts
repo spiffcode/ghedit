@@ -18,6 +18,7 @@ import {isTag, DELIM_END, DELIM_START, DELIM_ASSIGN, ATTRIB_NAME, ATTRIB_VALUE} 
 import {isEmptyElement} from 'vs/languages/html/common/htmlEmptyTagsShared';
 import {filterSuggestions} from 'vs/editor/common/modes/supports/suggestSupport';
 import paths = require('vs/base/common/paths');
+import {IHTMLConfiguration, IHTMLFormatConfiguration} from 'vs/languages/html/common/html.contribution';
 
 enum LinkDetectionState {
 	LOOKING_FOR_HREF_OR_SRC = 1,
@@ -34,7 +35,8 @@ export class HTMLWorker {
 	private resourceService:IResourceService;
 	private _modeId: string;
 	private _tagProviders: htmlTags.IHTMLTagProvider[];
-	private formatSettings: any;
+	private _formatSettings: IHTMLFormatConfiguration;
+	private _providerConfiguration: {[providerId:string]:boolean};
 
 	constructor(
 		modeId: string,
@@ -48,11 +50,20 @@ export class HTMLWorker {
 		this._tagProviders.push(htmlTags.getHTML5TagProvider());
 
 		this.addCustomTagProviders(this._tagProviders);
+
+		this._providerConfiguration = null;
 	}
 
 	protected addCustomTagProviders(providers: htmlTags.IHTMLTagProvider[]): void {
 		providers.push(htmlTags.getAngularTagProvider());
 		providers.push(htmlTags.getIonicTagProvider());
+	}
+
+	private getTagProviders(): htmlTags.IHTMLTagProvider[] {
+		if (this._modeId !== 'html' || !this._providerConfiguration) {
+			return this._tagProviders;
+		}
+		return this._tagProviders.filter(p => !!this._providerConfiguration[p.getId()]);
 	}
 
 	public provideDocumentRangeFormattingEdits(resource: URI, range: editorCommon.IRange, options: modes.FormattingOptions): winjs.TPromise<editorCommon.ISingleEditOperation[]> {
@@ -85,8 +96,8 @@ export class HTMLWorker {
 	}
 
 	private getFormatOption(key: string, dflt: any): any {
-		if (this.formatSettings && this.formatSettings.hasOwnProperty(key)) {
-			let value = this.formatSettings[key];
+		if (this._formatSettings && this._formatSettings.hasOwnProperty(key)) {
+			let value = this._formatSettings[key];
 			if (value !== null) {
 				return value;
 			}
@@ -105,8 +116,11 @@ export class HTMLWorker {
 		return dflt;
 	}
 
-	_doConfigure(options: any): winjs.TPromise<void> {
-		this.formatSettings = options && options.format;
+	_doConfigure(options: IHTMLConfiguration): winjs.TPromise<void> {
+		this._formatSettings = options && options.format;
+		if (options && options.suggest) {
+			this._providerConfiguration = options.suggest;
+		}
 		return winjs.TPromise.as(null);
 	}
 
@@ -145,7 +159,7 @@ export class HTMLWorker {
 			if (matchingTag) {
 				let suggestion : modes.ISuggestion = {
 					label: '/' + matchingTag,
-					codeSnippet: '/' + matchingTag + closeTag,
+					insertText: '/' + matchingTag + closeTag,
 					overwriteBefore: overwriteBefore,
 					type: 'property'
 				};
@@ -158,7 +172,7 @@ export class HTMLWorker {
 					let endIndent = model.getLineContent(endPosition.lineNumber).substring(0, endPosition.column - 1);
 					if (isWhiteSpace(startIndent) && isWhiteSpace(endIndent)) {
 						suggestion.overwriteBefore = position.column - 1; // replace from start of line
-						suggestion.codeSnippet = startIndent + '</' + matchingTag + closeTag;
+						suggestion.insertText = startIndent + '</' + matchingTag + closeTag;
 						suggestion.filterText = endIndent + '</' + matchingTag + closeTag;
 					}
 				}
@@ -171,14 +185,14 @@ export class HTMLWorker {
 		if (scanner.getTokenType() === DELIM_END && scanner.getTokenRange().endColumn === position.column) {
 			let hasClose = collectClosingTagSuggestion(suggestions.currentWord.length + 1);
 			if (!hasClose) {
-				this._tagProviders.forEach((provider) => {
+				this.getTagProviders().forEach((provider) => {
 					provider.collectTags((tag, label) => {
 						suggestions.suggestions.push({
 							label: '/' + tag,
 							overwriteBefore: suggestions.currentWord.length + 1,
-							codeSnippet: '/' + tag + closeTag,
+							insertText: '/' + tag + closeTag,
 							type: 'property',
-							documentationLabel: label,
+							documentation: label,
 							filterText: '</' + tag + closeTag
 						});
 					});
@@ -187,13 +201,13 @@ export class HTMLWorker {
 		} else {
 			collectClosingTagSuggestion(suggestions.currentWord.length);
 
-			this._tagProviders.forEach((provider) => {
+			this.getTagProviders().forEach((provider) => {
 				provider.collectTags((tag, label) => {
 					suggestions.suggestions.push({
 						label: tag,
-						codeSnippet: tag,
+						insertText: tag,
 						type: 'property',
-						documentationLabel: label,
+						documentation: label,
 						overwriteBefore: suggestions.currentWord.length
 					});
 				});
@@ -218,7 +232,7 @@ export class HTMLWorker {
 			}
 		} while (scanner.scanBack());
 
-		this._tagProviders.forEach((provider) => {
+		this.getTagProviders().forEach((provider) => {
 			provider.collectAttributes(parentTag,(attribute, type) => {
 				let codeSnippet = attribute;
 				if (type !== 'v') {
@@ -226,7 +240,7 @@ export class HTMLWorker {
 				}
 				suggestions.suggestions.push({
 					label: attribute,
-					codeSnippet: codeSnippet,
+					insertText: codeSnippet,
 					type: type === 'handler' ? 'function' : 'value',
 					overwriteBefore: suggestions.currentWord.length
 				});
@@ -255,11 +269,11 @@ export class HTMLWorker {
 			}
 		}
 
-		this._tagProviders.forEach((provider) => {
+		this.getTagProviders().forEach((provider) => {
 			provider.collectValues(parentTag, attribute,(value) => {
 				suggestions.suggestions.push({
 					label: value,
-					codeSnippet: needsQuotes ? '"' + value + '"' : value,
+					insertText: needsQuotes ? '"' + value + '"' : value,
 					type: 'unit',
 					overwriteBefore: suggestions.currentWord.length
 				});
@@ -267,17 +281,15 @@ export class HTMLWorker {
 		});
 	}
 
-	public provideCompletionItems(resource:URI, position:editorCommon.IPosition):winjs.TPromise<modes.ISuggestResult[]> {
+	public provideCompletionItems(resource:URI, position:editorCommon.IPosition):winjs.TPromise<modes.ISuggestResult> {
 		let model = this.resourceService.get(resource);
 		let modeIdAtPosition = model.getModeIdAtPosition(position.lineNumber, position.column);
 		if (modeIdAtPosition === this._modeId) {
 			return this.suggestHTML(resource, position);
-		} else {
-			return winjs.TPromise.as([]);
 		}
 	}
 
-	private suggestHTML(resource:URI, position:editorCommon.IPosition):winjs.TPromise<modes.ISuggestResult[]> {
+	private suggestHTML(resource:URI, position:editorCommon.IPosition):winjs.TPromise<modes.ISuggestResult> {
 		return this.doSuggest(resource, position).then(value => filterSuggestions(value));
 	}
 

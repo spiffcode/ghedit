@@ -15,8 +15,8 @@ import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workb
 import {IGithubService, openRepository} from 'ghedit/githubService';
 import {RepositoryInfo, TagInfo, Error} from 'github';
 import {IMessageService, IMessageWithAction, Severity} from 'vs/platform/message/common/message';
-import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
 import {KeyMod, KeyCode} from 'vs/base/common/keyCodes';
 import {QuickOpenAction} from 'vs/workbench/browser/quickopen';
 
@@ -68,7 +68,7 @@ export class ChooseReferenceAction extends Action {
 		actionLabel: string,
 		@IQuickOpenService private quickOpenService: IQuickOpenService,
 		@IGithubService private githubService: IGithubService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService
+		@IEnvironmentService private environmentService: IEnvironmentService
 	) {
 		super(actionId, actionLabel);
 	}
@@ -144,7 +144,7 @@ export class ChooseReferenceAction extends Action {
 			if (result && result.label !== this.githubService.ref) {
 				let s = (result.id === 'tag') ? 'tag/open' : 'branch/open';
 				(<any>window).sendGa('/workbench/' + s, () => {
-					openRepository(this.githubService.repoName, <IMainEnvironment>this.contextService.getConfiguration().env, result.label, result.id === 'tag');
+					openRepository(this.githubService.repoName, <IWindowConfiguration><any>this.environmentService, result.label, result.id === 'tag');
 				});
 			}
 		});

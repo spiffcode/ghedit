@@ -153,6 +153,8 @@ gulp.task('pre-build', shell.task([
 	'find out-build -iname "*exe" | xargs rm -f',
 	'mkdir -p out-build/themes',
 	'cp src/themes/*.* out-build/themes',
+	'mkdir -p out-build/icons',
+	'cp -r src/icons/* out-build/icons',
 	'cp index.html out-build',
 	'cp favicon.* out-build',
 	'cp demo.gif out-build',

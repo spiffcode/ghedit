@@ -26,10 +26,11 @@ import { ITelemetryService, combinedAppender, NullTelemetryService } from 'vs/pl
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
 import { IRequestService } from 'vs/platform/request/common/request';
-import { NodeRequestService } from 'vs/platform/request/node/nodeRequestService';
+import { RequestService } from 'vs/platform/request/node/requestService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { NodeConfigurationService } from 'vs/platform/configuration/node/nodeConfigurationService';
+import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
+import {mkdirp} from 'vs/base/node/pfs';
 
 const notFound = id => localize('notFound', "Extension '{0}' not found.", id);
 const notInstalled = id => localize('notInstalled', "Extension '{0}' is not installed.", id);
@@ -113,9 +114,8 @@ class Main {
 							console.log(localize('foundExtension', "Found '{0}' in the marketplace.", id));
 							console.log(localize('installing', "Installing..."));
 
-							return this.extensionManagementService.install(extension).then(() => {
-								console.log(localize('successInstall', "Extension '{0}' v{1} was successfully installed!", id, extension.versions[0].version));
-							});
+							return this.extensionManagementService.installFromGallery(extension)
+								.then(() => console.log(localize('successInstall', "Extension '{0}' v{1} was successfully installed!", id, extension.version)));
 						});
 				});
 			});
@@ -125,19 +125,16 @@ class Main {
 
 	private uninstallExtension(ids: string[]): TPromise<any> {
 		return sequence(ids.map(id => () => {
-			return this.extensionManagementService.getInstalled(true).then(installed => {
-				const extensions = installed.filter(e => getId(e.manifest) === id);
+			return this.extensionManagementService.getInstalled().then(installed => {
+				const [extension] = installed.filter(e => getId(e.manifest) === id);
 
-				if (extensions.length === 0) {
+				if (!extension) {
 					return TPromise.wrapError(`${ notInstalled(id) }\n${ useId }`);
 				}
 
 				console.log(localize('uninstalling', "Uninstalling {0}...", id));
 
-				const promises = extensions
-					.map(extension => this.extensionManagementService.uninstall(extension));
-
-				return TPromise.join(promises)
+				return this.extensionManagementService.uninstall(extension)
 					.then(() => console.log(localize('successUninstall', "Extension '{0}' was successfully uninstalled!", id)));
 			});
 		}));
@@ -148,20 +145,20 @@ const eventPrefix = 'monacoworkbench';
 
 export function main(argv: ParsedArgs): TPromise<void> {
 	const services = new ServiceCollection();
-	services.set(IEnvironmentService, new SyncDescriptor(EnvironmentService));
+	services.set(IEnvironmentService, new SyncDescriptor(EnvironmentService, argv, process.execPath));
 
 	const instantiationService: IInstantiationService = new InstantiationService(services);
 
 	return instantiationService.invokeFunction(accessor => {
 		const envService = accessor.get(IEnvironmentService);
 
-		return envService.createPaths().then(() => {
+		return TPromise.join([envService.appSettingsHome, envService.userHome, envService.extensionsPath].map(p => mkdirp(p))).then(() => {
 			const { appRoot, extensionsPath, extensionDevelopmentPath, isBuilt } = envService;
 
 			const services = new ServiceCollection();
 			services.set(IEventService, new SyncDescriptor(EventService));
-			services.set(IConfigurationService, new SyncDescriptor(NodeConfigurationService));
-			services.set(IRequestService, new SyncDescriptor(NodeRequestService));
+			services.set(IConfigurationService, new SyncDescriptor(ConfigurationService));
+			services.set(IRequestService, new SyncDescriptor(RequestService));
 			services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
 			services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
 

@@ -5,11 +5,12 @@
 
 'use strict';
 
-import strings = require('vs/base/common/strings');
+import * as strings from 'vs/base/common/strings';
 
-import fs = require('fs');
+import * as fs from 'fs';
+import * as path from 'path';
 
-import baseMime = require('vs/base/common/mime');
+import * as baseMime from 'vs/base/common/mime';
 import {ILineMatch, IProgress} from 'vs/platform/search/common/search';
 import {detectMimeAndEncodingFromBuffer} from 'vs/base/node/mime';
 import {FileWalker} from 'vs/workbench/services/search/node/fileSearch';
@@ -21,7 +22,7 @@ interface ReadLinesOptions {
 	encoding: string;
 }
 
-export class Engine implements ISearchEngine {
+export class Engine implements ISearchEngine<ISerializedFileMatch> {
 
 	private static PROGRESS_FLUSH_CHUNK_SIZE = 50; // optimization: number of files to process before emitting progress event
 
@@ -88,8 +89,8 @@ export class Engine implements ISearchEngine {
 		};
 
 		// Walk over the file system
-		this.walker.walk(this.rootFolders, this.extraFiles, (result, size) => {
-			size = size ||  1;
+		this.walker.walk(this.rootFolders, this.extraFiles, result => {
+			const size = result.size ||  1;
 			this.total += size;
 
 			// If the result is empty or we have reached the limit or we are canceled, ignore it
@@ -110,6 +111,7 @@ export class Engine implements ISearchEngine {
 				return unwind(size);
 			};
 
+			const absolutePath = result.base ? [result.base, result.relativePath].join(path.sep) : result.relativePath;
 			let perLineCallback = (line: string, lineNumber: number) => {
 				if (this.limitReached || this.isCanceled) {
 					return; // return early if canceled or limit reached
@@ -129,7 +131,7 @@ export class Engine implements ISearchEngine {
 						// Cast to <any> because this code depends on ISerializedFileMatch
 						// which isn't used in GHEdit. This code isn't used in GHEdit either
 						// so this is a no-op to make the typescript compiler happy.
-						fileMatch = new FileMatch((<any>result).path);
+						fileMatch = new FileMatch(<any>absolutePath);
 					}
 
 					if (lineMatch === null) {
@@ -144,7 +146,7 @@ export class Engine implements ISearchEngine {
 			};
 
 			// Read lines buffered to support large files
-			this.readlinesAsync((<any>result).path, perLineCallback, { bufferLength: 8096, encoding: this.fileEncoding }, doneCallback);
+			this.readlinesAsync(absolutePath, perLineCallback, { bufferLength: 8096, encoding: this.fileEncoding }, doneCallback);
 		}, (error, isLimitHit) => {
 			this.walkerIsDone = true;
 			this.walkerError = error;

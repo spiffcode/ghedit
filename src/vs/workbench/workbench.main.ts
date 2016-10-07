@@ -13,6 +13,8 @@ import 'vs/base/common/strings';
 import 'vs/base/common/errors';
 
 // Editor
+import 'vs/editor/contrib/accessibility/browser/accessibility';
+import 'vs/editor/contrib/defineKeybinding/browser/defineKeybinding';
 // DESKTOP: import 'vs/editor/contrib/selectionClipboard/electron-browser/selectionClipboard';
 // DESKTOP: import 'vs/editor/contrib/suggest/electron-browser/snippetCompletion';
 import 'vs/editor/browser/editor.all';
@@ -47,6 +49,7 @@ import 'vs/workbench/parts/git/browser/gitQuickOpen';
 // DESKTOP: import 'vs/workbench/parts/git/browser/gitActions.contribution';
 
 // DESKTOP: import 'vs/workbench/parts/debug/electron-browser/debug.contribution';
+// DESKTOP: import 'vs/workbench/parts/debug/electron-browser/repl';
 
 import 'vs/workbench/parts/markers/markers.contribution';
 
@@ -54,7 +57,6 @@ import 'vs/workbench/parts/html/browser/html.contribution';
 
 // DESKTOP: import 'vs/workbench/parts/extensions/electron-browser/extensions.contribution';
 // DESKTOP: import 'vs/workbench/parts/extensions/electron-browser/extensionsQuickOpen';
-
 
 import 'vs/workbench/parts/output/browser/output.contribution';
 
@@ -82,11 +84,12 @@ import 'vs/workbench/parts/themes/electron-browser/themes.contribution';
 // DESKTOP: import 'vs/workbench/parts/update/electron-browser/update.contribution';
 
 // DESKTOP: import 'vs/workbench/electron-browser/darwin/cli.contribution';
+
 // DESKTOP: import 'vs/workbench/electron-browser/nps.contribution';
 
 // DESKTOP: import 'vs/workbench/api/node/extHost.contribution';
 
-// DESKTOP: import 'vs/workbench/electron-browser/main.contribution';
+import 'vs/workbench/electron-browser/main.contribution';
 import 'vs/editor/editor.main';
 import 'vs/workbench/electron-browser/main';
 

@@ -165,7 +165,36 @@ declare module DebugProtocol {
 		}
 	}
 
-	//---- Requests
+	//---- Frontend Requests
+
+	/** runInTerminal request; value of command field is "runInTerminal".
+		With this request a debug adapter can run a command in a terminal.
+	*/
+	export interface RunInTerminalRequest extends Request {
+		arguments: RunInTerminalRequestArguments;
+	}
+	/** Arguments for "runInTerminal" request. */
+	export interface RunInTerminalRequestArguments {
+		/** What kind of terminal to launch. */
+		kind?: 'integrated' | 'external';
+		/** Optional title of the terminal. */
+		title?: string;
+		/** Working directory of the command. */
+		cwd: string;
+		/** List of arguments. The first argument is the command to run. */
+		args: string[];
+		/** Environment key-value pairs that are added to the default environment. */
+		env?: { [key: string]: string; }
+	}
+	/** Response to Initialize request. */
+	export interface RunInTerminalResponse extends Response {
+		body: {
+			/** The process ID */
+			processId?: number;
+		};
+	}
+
+	//---- Debug Adapter Requests
 
 	/** On error that is whenever 'success' is false, the body can provide more details.
 	 */
@@ -196,6 +225,8 @@ declare module DebugProtocol {
 		supportsVariableType?: boolean;
 		/** Client supports the paging of variables. */
 		supportsVariablePaging?: boolean;
+		/** Client supports the runInTerminal request. */
+		supportsRunInTerminalRequest?: boolean;
 	}
 	/** Response to Initialize request. */
 	export interface InitializeResponse extends Response {
@@ -708,6 +739,8 @@ declare module DebugProtocol {
 	}
 	/** Arguments for "completions" request. */
 	export interface CompletionsArguments {
+		/** Returns completions in the scope of this stack frame. If not specified, the completions are returned for the global scope. */
+		frameId?: number;
 		/** One or more source lines. Typically this is the text a user has typed into the debug console before he asked for completion. */
 		text: string;
 		/** The character position for which to determine the completion proposals. */
@@ -721,17 +754,6 @@ declare module DebugProtocol {
 			/** The possible completions for . */
 			targets: CompletionItem[];
 		};
-	}
-
-	export interface CompletionItem {
-		/** The label of this completion item. By default this is also the text that is inserted when selecting this completion. */
-		label: string;
-		/** If text is not falsy then it is inserted instead of the label. */
-		text?: string;
-		/** When a completion is selected it replaces 'length' characters starting at 'start' in the text passed to the CompletionsRequest.
-			If missing the frontend will try to determine these values heuristically. */
-		start?: number;
-		length?: number;
 	}
 
 	//---- Types
@@ -1001,4 +1023,41 @@ declare module DebugProtocol {
 		/** An optional end column of the range covered by the goto target. */
 		endColumn?: number;
 	}
+
+	/** CompletionItems are the suggestions returned from the CompletionsRequest.
+	 */
+	export interface CompletionItem {
+		/** The label of this completion item. By default this is also the text that is inserted when selecting this completion. */
+		label: string;
+		/** If text is not falsy then it is inserted instead of the label. */
+		text?: string;
+        /** The item's type. Typically the client uses this information to render the item in the UI with an icon. */
+        type?: CompletionItemType;
+		/** When a completion is selected it replaces 'length' characters starting at 'start' in the text passed to the CompletionsRequest.
+			If missing the frontend will try to determine these values heuristically. */
+		start?: number;
+		length?: number;
+	}
+
+	/** Some predefined types for the CompletionItem. Please note that not all clients have specific icons for all of them.
+	 */
+	export type CompletionItemType = 'method'
+		| 'function'
+		| 'constructor'
+		| 'field'
+		| 'variable'
+		| 'class'
+		| 'interface'
+		| 'module'
+		| 'property'
+		| 'unit'
+		| 'value'
+		| 'enum'
+		| 'keyword'
+		| 'snippet'
+		| 'text'
+		| 'color'
+		| 'file'
+		| 'reference'
+		| 'customcolor';
 }

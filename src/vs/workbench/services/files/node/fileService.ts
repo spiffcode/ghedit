@@ -6,7 +6,7 @@
 
 'use strict';
 
-import paths = require('vs/base/common/paths');
+// TODO: import paths = require('vs/base/common/paths');
 // TODO: import fs = require('fs');
 // TODO: import os = require('os');
 // TODO: import crypto = require('crypto');
@@ -21,6 +21,7 @@ import strings = require('vs/base/common/strings');
 import arrays = require('vs/base/common/arrays');
 import baseMime = require('vs/base/common/mime');
 import basePaths = require('vs/base/common/paths');
+const paths = basePaths;
 import {TPromise} from 'vs/base/common/winjs.base';
 import types = require('vs/base/common/types');
 import objects = require('vs/base/common/objects');
@@ -29,7 +30,7 @@ import {nfcall, Limiter, ThrottledDelayer} from 'vs/base/common/async';
 import uri from 'vs/base/common/uri';
 import nls = require('vs/nls');
 import http = require('vs/base/common/http');
-import {IRequestService} from 'vs/platform/request/common/request';
+import {xhr} from 'vs/base/common/network';
 var github = require('ghedit/lib/github');
 
 // TODO: import pfs = require('vs/base/node/pfs');
@@ -73,7 +74,6 @@ export interface IFileServiceOptions {
 	disableWatcher?: boolean;
 	verboseLogging?: boolean;
 	commitMessage?: string;
-	debugBrkFileWatcherPort?: number;
 	settingsNotificationPaths?: string[];
 	gistRegEx?: RegExp;
 }
@@ -131,7 +131,7 @@ export class FileService implements IFileService {
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	// TODO: private undeliveredRawFileChangesEvents: IRawFileChange[];
 
-	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private requestService: IRequestService, private githubService: IGithubService, private contextService: IWorkspaceContextService) {
+	constructor(basePath: string, options: IFileServiceOptions, private eventEmitter: IEventService, private githubService: IGithubService, private contextService: IWorkspaceContextService) {
 		this.basePath = basePath ? paths.normalize(basePath) : void 0;
 
 		this.options = options || Object.create(null);
@@ -173,7 +173,7 @@ export class FileService implements IFileService {
 
 	private setupUnixWorkspaceWatching(): void {
 		/* TODO:
-		this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging, this.options.debugBrkFileWatcherPort).startWatching();
+		this.workspaceWatcherToDispose = new UnixWatcherService(this.basePath, this.options.watcherIgnoredPatterns, this.eventEmitter, this.options.errorLogger, this.options.verboseLogging).startWatching();
 		*/
 	}
 
@@ -211,6 +211,14 @@ export class FileService implements IFileService {
 		/* TODO:
 		let absolutePath = this.toAbsolutePath(resource);
 
+		// Guard early against attempts to resolve an invalid file path
+		if (resource.scheme !== 'file' || !resource.fsPath) {
+			return TPromise.wrapError(<IFileOperationResult>{
+				message: nls.localize('fileInvalidPath', "Invalid file resource ({0})", resource.toString()),
+				fileOperationResult: FileOperationResult.FILE_INVALID_PATH
+			});
+		}
+
 		// 1.) detect mimes
 		return nfcall(mime.detectMimesFromFile, absolutePath).then((detected: mime.IMimeAndEncoding): TPromise<T> => {
 			let isText = detected.mimes.indexOf(baseMime.MIME_BINARY) === -1;
@@ -241,7 +249,7 @@ export class FileService implements IFileService {
 			}
 
 			// 2.) get content
-			return contentResolver(resource, options && options.etag, preferredEncoding).then((content) => {
+			return contentResolver(resource, options && options.etag, preferredEncoding).then(content => {
 
 				// set our knowledge about the mime on the content obj
 				content.mime = detected.mimes.join(', ');
@@ -256,7 +264,7 @@ export class FileService implements IFileService {
 			}
 
 			// on error check if the file does not exist or is a folder and return with proper error result
-			return pfs.exists(absolutePath).then((exists) => {
+			return pfs.exists(absolutePath).then(exists => {
 
 				// Return if file not found
 				if (!exists) {
@@ -267,7 +275,7 @@ export class FileService implements IFileService {
 				}
 
 				// Otherwise check for file being a folder?
-				return pfs.stat(absolutePath).then((stat) => {
+				return pfs.stat(absolutePath).then(stat => {
 					if (stat.isDirectory()) {
 						return TPromise.wrapError(<IFileOperationResult>{
 							message: nls.localize('fileIsDirectoryError', "File is directory ({0})", absolutePath),
@@ -287,11 +295,11 @@ export class FileService implements IFileService {
 		let limiter = new Limiter(FileService.MAX_DEGREE_OF_PARALLEL_FS_OPS);
 
 		let contentPromises = <TPromise<IContent>[]>[];
-		resources.forEach((resource) => {
-			contentPromises.push(limiter.queue(() => this.resolveFileContent(resource).then((content) => content, (error) => TPromise.as(null /* ignore errors gracefully */))));
+		resources.forEach(resource => {
+			contentPromises.push(limiter.queue(() => this.resolveFileContent(resource).then(content => content, error => TPromise.as(null /* ignore errors gracefully */))));
 		});
 
-		return TPromise.join(contentPromises).then((contents) => {
+		return TPromise.join(contentPromises).then(contents => {
 			return arrays.coalesce(contents);
 		});
 	}
@@ -363,9 +371,9 @@ export class FileService implements IFileService {
 		let parts = absolutePath.split('/');
 
 		return new TPromise<IFileStat>((c, e) => {
-			this.findGist(resource).then((info) => {
+			this.githubService.findGist(resource).then((info) => {
 				// 1.) check file
-				return this.checkFile(absolutePath, options).then((exists) => {
+				return this.checkFile(absolutePath, options).then(exists => {
 					let encodingToWrite = this.getEncoding(resource, options.encoding);
 					let addBomPromise: TPromise<boolean> = TPromise.as(false);
 
@@ -446,18 +454,18 @@ export class FileService implements IFileService {
 				if (options.overwriteEncoding) {
 					addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
 				} else {
-					addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then((enc) => enc === encoding.UTF8); // otherwise preserve it if found
+					addBomPromise = nfcall(encoding.detectEncodingByBOM, absolutePath).then(enc => enc === encoding.UTF8); // otherwise preserve it if found
 				}*/
 				addBomPromise = TPromise.as(false);
 			}
 
 			// 3.) check to add UTF BOM
-			return addBomPromise.then((addBom) => {
+			return addBomPromise.then(addBom => {
 				let writeFilePromise: TPromise<void>;
 
 				// Write fast if we do UTF 8 without BOM
 				if (!addBom && encodingToWrite === encoding.UTF8) {
-// TODO:			writeFilePromise = pfs.writeFile(absolutePath, value, encoding.UTF8);
+// TODO:			writeFilePromise = pfs.writeFileAndFlush(absolutePath, value, encoding.UTF8);
 					writeFilePromise = new TPromise<void>((c, e) => {
 						let path = resource.path.slice(1);
 						let commitMessage = this.options.commitMessage || 'Update ' + path;
@@ -479,7 +487,7 @@ export class FileService implements IFileService {
 					throw new Error('githubFileService.updateContent with non-UTF8 encoding not implemented yet');
 					/* TODO:
 					let encoded = encoding.encode(value, encodingToWrite, { addBOM: addBom });
-					writeFilePromise = pfs.writeFile(absolutePath, encoded);
+					writeFilePromise = pfs.writeFileAndFlush(absolutePath, encoded);
 					*/
 				}
 
@@ -649,7 +657,7 @@ export class FileService implements IFileService {
 
 		/* TODO:
 		// 1.) check if target exists
-		return pfs.exists(targetPath).then((exists) => {
+		return pfs.exists(targetPath).then(exists => {
 			let isCaseRename = sourcePath.toLowerCase() === targetPath.toLowerCase();
 			let isSameFile = sourcePath === targetPath;
 
@@ -700,16 +708,16 @@ export class FileService implements IFileService {
 		let targetPath = this.toAbsolutePath(targetResource);
 
 		// 1.) resolve
-		return pfs.stat(sourcePath).then((stat) => {
+		return pfs.stat(sourcePath).then(stat => {
 			if (stat.isDirectory()) {
 				return TPromise.wrapError(nls.localize('foldersCopyError', "Folders cannot be copied into the workspace. Please select individual files to copy them.")); // for now we do not allow to import a folder into a workspace
 			}
 
 			// 2.) copy
-			return this.doMoveOrCopyFile(sourcePath, targetPath, true, true).then((exists) => {
+			return this.doMoveOrCopyFile(sourcePath, targetPath, true, true).then(exists => {
 
 				// 3.) resolve
-				return this.resolve(targetResource).then((stat) => <IImportResult>{ isNew: !exists, stat: stat });
+				return this.resolve(targetResource).then(stat => <IImportResult>{ isNew: !exists, stat: stat });
 			});
 		});
 		*/
@@ -760,88 +768,13 @@ export class FileService implements IFileService {
 		});
 	}
 
-	private isGistPath(resource: uri) : boolean
-	{
+	private isGistPath(resource: uri): boolean {
 		// /$gist/<gist description property>/<filename>
 		return this.options.gistRegEx && this.options.gistRegEx.test(this.toAbsolutePath(resource));
 	}
 
-	private findGist(resource: uri) : TPromise<GistInfo> {
-		return new TPromise<GistInfo>((c, e) => {
-			if (!this.githubService.isAuthenticated()) {
-				// We don't have access to the current paths.makeAbsoluteuser's Gists.
-				e({ path: resource.path, error: "not authenticated" });
-				return;
-			}
-
-			let user: User = this.githubService.github.getUser();
-			user.gists((err: GithubError, gists?: Gist[]) => {
-				// Github api error
-				if (err) {
-					console.log('Error user.gists api ' + resource.path + ": " + err);
-					e(err);
-					return;
-				}
-
-				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
-				let parts = this.toAbsolutePath(resource).split('/');
-
-				// Find the raw url referenced by the path
-				for (let i = 0; i < gists.length; i++) {
-					let gist = gists[i];
-					if (gist.description !== parts[2]) {
-						continue;
-					}
-					for (let filename in gist.files) {
-						if (filename === parts[3]) {
-							c({gist: gist, fileExists: true});
-							return;
-						}
-					}
-					c({gist: gist, fileExists: false});
-					return;
-				}
-				c({gist: null, fileExists: false});
-			});
-		});
-    }
-
 	private resolveGistFile(resource: uri, options: IResolveFileOptions): TPromise<IFileStat> {
-		return new TPromise<IFileStat>((c, e) => {
-			this.findGist(resource).then((info) => {
-				// Gist found but if file doesn't exist, error.
-				if (!info.gist || !info.fileExists) {
-					e(FileOperationResult.FILE_NOT_FOUND);
-					return;
-				}
-
-				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
-				let parts = this.toAbsolutePath(resource).split('/');
-
-				// Github is not returning Access-Control-Expose-Headers: ETag, so we
-				// don't have access to that header in the response. Make
-				// up an ETag. ETags don't have format dependencies.
-				let size = info.gist.files[parts[3]].size;
-				let etag: string = info.gist.updated_at + size;
-				let stat: IFileStat = {
-					resource: uri.file(resource.path),
-					isDirectory: false,
-					hasChildren: false,
-					name: parts[2],
-					mtime: Date.parse(info.gist.updated_at),
-					etag: etag,
-					size: size,
-					mime: info.gist.files[parts[3]].type
-				};
-
-				// Extra data to return to the caller, for getting content
-				(<any>stat).url = info.gist.files[parts[3]].raw_url;
-				c(stat);
-
-			}, (error: GithubError) => {
-				e(FileOperationResult.FILE_NOT_FOUND);
-			});
-		});
+		return this.githubService.resolveGistFile(resource);
 	}
 
 	private resolveFileContent(resource: uri, etag?: string, enc?: string): TPromise<IContent> {
@@ -882,12 +815,12 @@ export class FileService implements IFileService {
 				} else if (this.isGistPath(resource)) {
 					// Gist urls don't require authentication
 					let url = (<any>model).url;
-					this.requestService.makeRequest({ url }).then((res: http.IXHRResponse) => {
-						if (res.status == 200) {
-							result.value = res.responseText;
+					xhr({ type: 'GET', url: url }).then((xhr: XMLHttpRequest) => {
+						if (xhr.status == 200) {
+							result.value = xhr.responseText;
 							c(result);
 						} else {
-							console.log('Http error: ' + http.getErrorStatusDescription(res.status) + ' url: ' + url);
+							console.log('Http error: ' + http.getErrorStatusDescription(xhr.status) + ' url: ' + url);
 							e(FileOperationResult.FILE_NOT_FOUND);
 						}
 					});
@@ -958,11 +891,11 @@ export class FileService implements IFileService {
 				let done = false;
 				let chunks: string[] = [];
 
-				streamContent.value.on('data', (buf) => {
+				streamContent.value.on('data', buf => {
 					chunks.push(buf);
 				});
 
-				streamContent.value.on('error', (error) => {
+				streamContent.value.on('error', error => {
 					if (!done) {
 						done = true;
 						e(error);
@@ -1024,9 +957,9 @@ export class FileService implements IFileService {
 		return TPromise.as(true);
 
 		/* TODO: full implementation
-		return pfs.exists(absolutePath).then((exists) => {
+		return pfs.exists(absolutePath).then(exists => {
 			if (exists) {
-				return pfs.stat(absolutePath).then((stat: fs.Stats) => {
+				return pfs.stat(absolutePath).then(stat => {
 					if (stat.isDirectory()) {
 						return TPromise.wrapError(new Error('Expected file is actually a directory'));
 					}
@@ -1162,7 +1095,7 @@ export class StatResolver {
 		this.isDirectory = stat.isDirectory();
 		this.mtime = this.cache.getFakeMtime();
 		this.name = paths.basename(resource.fsPath);
-		this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : null;
+		this.mime = !this.isDirectory ? baseMime.guessMimeTypes(resource.fsPath).join(', ') : void 0;
 		// this.etag = etag(size, mtime);
 		this.etag = stat.sha;
 		this.size = stat.size;
@@ -1207,7 +1140,7 @@ export class StatResolver {
 			let absoluteTargetPaths: string[] = null;
 			if (options && options.resolveTo) {
 				absoluteTargetPaths = [];
-				options.resolveTo.forEach((resource) => {
+				options.resolveTo.forEach(resource => {
 					absoluteTargetPaths.push(resource.fsPath);
 				});
 			}
@@ -1284,7 +1217,7 @@ export class StatResolver {
 							mtime: $this.cache.getFakeMtime(),
 							etag: fileStat.sha,
 							size: fileStat.size,
-							mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : undefined
+							mime: !fileStat.isDirectory() ? baseMime.guessMimeTypes(fileResource.fsPath).join(', ') : void 0
 						};
 
 						// Add github fields
@@ -1299,13 +1232,13 @@ export class StatResolver {
 						let resolveFolderChildren = false;
 						if (files.length === 1 && resolveSingleChildDescendants) {
 							resolveFolderChildren = true;
-						} else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some((targetPath) => paths.isEqualOrParent(targetPath, fileResource.fsPath))) {
+						} else if (childCount > 0 && absoluteTargetPaths && absoluteTargetPaths.some(targetPath => basePaths.isEqualOrParent(targetPath, fileResource.fsPath))) {
 							resolveFolderChildren = true;
 						}
 
 						// Continue resolving children based on condition
 						if (resolveFolderChildren) {
-							$this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, (children) => {
+							$this.resolveChildren(fileResource.fsPath, absoluteTargetPaths, resolveSingleChildDescendants, children => {
 								children = arrays.coalesce(children);  // we don't want those null children
 								childStat.hasChildren = children && children.length > 0;
 								childStat.children = children || [];

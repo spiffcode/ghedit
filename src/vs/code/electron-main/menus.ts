@@ -10,17 +10,18 @@ import * as nls from 'vs/nls';
 // DESKTOP: import * as os from 'os';
 import * as underlyingPlatform from 'vs/base/common/platform';
 import * as arrays from 'vs/base/common/arrays';
-// DESKTOP: import * as env from 'vs/code/electron-main/env';
+import * as env from 'vs/code/electron-main/env';
 // DESKTOP: import { ipcMain as ipc, app, shell, dialog, Menu, MenuItem } from 'electron';
-import { IWindowsService, IEnvironmentService, IPath, Menu, MenuItem } from 'ghedit/fakeElectron';
+import { IWindowsService, Menu, MenuItem } from 'ghedit/fakeElectron';
 import * as Electron from 'ghedit/fakeElectron';
 
 // DESKTOP: import { IWindowsService, WindowsManager, IOpenedPathsList } from 'vs/code/electron-main/windows';
 // DESKTOP: import { IPath, VSCodeWindow } from 'vs/code/electron-main/window';
+import { IPath } from 'vs/code/electron-main/window';
 // TODO: import { IStorageService } from 'vs/code/electron-main/storage';
 // DESKTOP: import { IUpdateService, State as UpdateState } from 'vs/code/electron-main/update-manager';
 import { Keybinding } from 'vs/base/common/keyCodes';
-import product from 'vs/platform/product';
+// DESKTOP: import product from 'vs/platform/product';
 import pkg from 'vs/platform/package';
 import {AboutGHEditAction} from 'ghedit/githubActions';
 
@@ -63,47 +64,14 @@ export class VSCodeMenu {
 	private mapLastKnownKeybindingToActionId: { [id: string]: string; };
 	private mapResolvedKeybindingToActionId: { [id: string]: string; };
 	private keybindingsResolved: boolean;
+	private windowsService: IWindowsService;
 
 	constructor(
-		// TODO: @IStorageService private storageService: IStorageService,
+// DESKTOP:		@IStorageService private storageService: IStorageService,
 // DESKTOP:		@IUpdateService private updateService: IUpdateService,
 // DESKTOP:		@IWindowsService private windowsService: IWindowsService,
-		private windowsService: IWindowsService,
-// DESKTOP:		@env.IEnvironmentService private envService: env.IEnvironmentService,
-		private envService: IEnvironmentService
+		@env.IEnvService private envService: env.IEnvService
 	) {
-		// TODO: Fill this in as best as we can
-		this.envService = {
-			_serviceBrand: null,
-			cliArgs: null,
-			userExtensionsHome: '',
-			isTestingFromCli: false,
-			isBuilt: false,
-			product: {
-				nameShort: 'GHEdit',
-				nameLong: 'GHEdit',
-				documentationUrl: 'https://spiffcode.github.io/ghedit/documentation.html',
-				releaseNotesUrl: 'https://spiffcode.github.io/ghedit/releasenotes.html',
-				twitterUrl: null,
-				sendFeedbackUrl: 'https://github.com/spiffcode/ghedit/issues/new?labels=feedback',
-				requestFeatureUrl: 'https://github.com/spiffcode/ghedit/labels/feedback',
-				reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues?q=is%3Aissue%20is%3Aopen%20-label%3Afeedback',
-				licenseUrl: 'https://github.com/spiffcode/ghedit/blob/master/LICENSE.txt',
-				privacyStatementUrl: null,
-				npsSurveyUrl: null
-			},
-			updateUrl: '',
-			quality: '',
-			userHome: '',
-			appRoot: '',
-			currentWorkingDirectory: '',
-			appHome: '',
-			appSettingsHome: '',
-			appSettingsPath: '',
-			appKeybindingsPath: '',
-			mainIPCHandle: '',
-			sharedIPCHandle: ''
-		}
 
 		this.windowsService = {
 			sendToFocused: (channel: string, ...args: any[]): void => { console.log('not implemented: sendToFocused(' + channel + ', ' + args + ')') },
@@ -454,7 +422,8 @@ export class VSCodeMenu {
 		let workspaceSettings = this.createMenuItem(nls.localize({ key: 'miOpenWorkspaceSettings', comment: ['&& denotes a mnemonic'] }, "&&Workspace Settings"), 'workbench.action.openWorkspaceSettings');
 		let kebindingSettings = this.createMenuItem(nls.localize({ key: 'miOpenKeymap', comment: ['&& denotes a mnemonic'] }, "&&Keyboard Shortcuts"), 'workbench.action.openGlobalKeybindings');
 		let snippetsSettings = this.createMenuItem(nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets"), 'workbench.action.openSnippets');
-		let themeSelection = this.createMenuItem(nls.localize({ key: 'miSelectTheme', comment: ['&& denotes a mnemonic'] }, "&&Color Theme"), 'workbench.action.selectTheme');
+		let colorThemeSelection = this.createMenuItem(nls.localize({ key: 'miSelectColorTheme', comment: ['&& denotes a mnemonic'] }, "&&Color Theme"), 'workbench.action.selectTheme');
+		let iconThemeSelection = this.createMenuItem(nls.localize({ key: 'miSelectIconTheme', comment: ['&& denotes a mnemonic'] }, "File &&Icon Theme"), 'workbench.action.selectIconTheme');
 
 		let preferencesMenu = new Menu();
 		preferencesMenu.append(userSettings);
@@ -466,7 +435,8 @@ export class VSCodeMenu {
 		preferencesMenu.append(snippetsSettings);
 		*/
 		preferencesMenu.append(__separator__());
-		preferencesMenu.append(themeSelection);
+		preferencesMenu.append(colorThemeSelection);
+		preferencesMenu.append(iconThemeSelection);
 
 		return new MenuItem({ label: mnemonicLabel(nls.localize({ key: 'miPreferences', comment: ['&& denotes a mnemonic'] }, "&&Preferences")), submenu: preferencesMenu });
 	}
@@ -530,7 +500,7 @@ export class VSCodeMenu {
 
 	private createOpenRecentMenuItem(path: string): Electron.MenuItem {
 		return new MenuItem({
-			label: path, click: () => {
+			label: unMnemonicLabel(path), click: () => {
 				let success = !!this.windowsService.open({ cli: this.envService.cliArgs, pathsToOpen: [path] });
 				if (!success) {
 					this.removeFromOpenedPathsList(path);
@@ -645,7 +615,6 @@ export class VSCodeMenu {
 			problems,
 			// DESKTOP: debugConsole,
 			// DESKTOP: integratedTerminal,
-			__separator__(),
 			// TODO: fullscreen,
 			// DESKTOP: platform.isWindows || platform.isLinux ? toggleMenuBar : void 0,
 			// __separator__(),
@@ -691,7 +660,7 @@ export class VSCodeMenu {
 		let switchGroupMenu = new Menu();
 
 		let focusFirstGroup = this.createMenuItem(nls.localize({ key: 'miFocusFirstGroup', comment: ['&& denotes a mnemonic'] }, "&&Left Group"), 'workbench.action.focusFirstEditorGroup');
-		let focusSecondGroup = this.createMenuItem(nls.localize({ key: 'miFocusSecondGroup', comment: ['&& denotes a mnemonic'] }, "&&Side Group"), 'workbench.action.focusSecondEditorGroup');
+		let focusSecondGroup = this.createMenuItem(nls.localize({ key: 'miFocusSecondGroup', comment: ['&& denotes a mnemonic'] }, "&&Center Group"), 'workbench.action.focusSecondEditorGroup');
 		let focusThirdGroup = this.createMenuItem(nls.localize({ key: 'miFocusThirdGroup', comment: ['&& denotes a mnemonic'] }, "&&Right Group"), 'workbench.action.focusThirdEditorGroup');
 		let nextGroup = this.createMenuItem(nls.localize({ key: 'miNextGroup', comment: ['&& denotes a mnemonic'] }, "&&Next Group"), 'workbench.action.focusNextGroup');
 		let previousGroup = this.createMenuItem(nls.localize({ key: 'miPreviousGroup', comment: ['&& denotes a mnemonic'] }, "&&Previous Group"), 'workbench.action.focusPreviousGroup');
@@ -967,8 +936,16 @@ function __separator__(): Electron.MenuItem {
 
 function mnemonicLabel(label: string): string {
 	if (platform.isMacintosh) {
-		return label.replace(/\(&&\w\)|&&/g, ''); // no mnemonic support on mac/linux
+		return label.replace(/\(&&\w\)|&&/g, ''); // no mnemonic support on mac
 	}
 
 	return label.replace(/&&/g, '&');
+}
+
+function unMnemonicLabel(label: string): string {
+	if (platform.isMacintosh) {
+		return label; // no mnemonic support on mac
+	}
+
+	return label.replace(/&/g, '&&');
 }

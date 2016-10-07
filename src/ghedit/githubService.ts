@@ -6,13 +6,21 @@
 'use strict';
 
 var github = require('ghedit/lib/github');
-import {Github, Repository, UserInfo, Error as GithubError} from 'github';
+import {User, Gist, Github, Repository, UserInfo, Error as GithubError} from 'github';
 import {createDecorator, ServiceIdentifier} from 'vs/platform/instantiation/common/instantiation';
 import {TPromise} from 'vs/base/common/winjs.base';
 import {GithubTreeCache, IGithubTreeCache} from 'ghedit/githubTreeCache';
-import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
+import uri from 'vs/base/common/uri';
+import {IFileStat, FileOperationResult} from 'vs/platform/files/common/files';
+import paths = require('vs/base/common/paths');
 
 const RECENT_REPOS_COUNT = 4;
+
+export interface GistInfo {
+	gist: Gist;
+	fileExists: boolean;
+}
 
 export var IGithubService = createDecorator<IGithubService>('githubService');
 
@@ -37,6 +45,8 @@ export interface IGithubService {
 	openRepository(repo: string, ref?: string, isTag?: boolean): TPromise<any>;
 	getRecentRepos(): string[];
 	signOut(): void;
+	findGist(resource: uri): TPromise<GistInfo>;
+	resolveGistFile(resource: uri): TPromise<IFileStat>;
 }
 
 export class GithubService implements IGithubService {
@@ -190,9 +200,99 @@ export class GithubService implements IGithubService {
 		// Refresh to the page to fully present the signed out state.
 		location.href = location.origin + location.pathname;
 	}
+
+	public findGist(resource: uri): TPromise<GistInfo> {
+		return new TPromise<GistInfo>((c, e) => {
+			if (!this.isAuthenticated()) {
+				// We don't have access to the current paths.makeAbsoluteuser's Gists.
+				e({ path: resource.path, error: "not authenticated" });
+				return;
+			}
+
+			let user: User = this.github.getUser();
+			user.gists((err: GithubError, gists?: Gist[]) => {
+				// Github api error
+				if (err) {
+					console.log('Error user.gists api ' + resource.path + ": " + err);
+					e(err);
+					return;
+				}
+
+				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
+				let parts = this.toAbsolutePath(resource).split('/');
+
+				// Find the raw url referenced by the path
+				for (let i = 0; i < gists.length; i++) {
+					let gist = gists[i];
+					if (gist.description !== parts[2]) {
+						continue;
+					}
+					for (let filename in gist.files) {
+						if (filename === parts[3]) {
+							c({gist: gist, fileExists: true});
+							return;
+						}
+					}
+					c({gist: gist, fileExists: false});
+					return;
+				}
+				c({gist: null, fileExists: false});
+			});
+		});
+    }
+
+	public resolveGistFile(resource: uri): TPromise<IFileStat> {
+		return new TPromise<IFileStat>((c, e) => {
+			this.findGist(resource).then((info) => {
+				// Gist found but if file doesn't exist, error.
+				if (!info.gist || !info.fileExists) {
+					e(FileOperationResult.FILE_NOT_FOUND);
+					return;
+				}
+
+				// 0 = '', 1 = '$gist', 2 = description, 3 = filename
+				let parts = this.toAbsolutePath(resource).split('/');
+
+				// Github is not returning Access-Control-Expose-Headers: ETag, so we
+				// don't have access to that header in the response. Make
+				// up an ETag. ETags don't have format dependencies.
+				let size = info.gist.files[parts[3]].size;
+				let etag: string = info.gist.updated_at + size;
+				let stat: IFileStat = {
+					resource: uri.file(resource.path),
+					isDirectory: false,
+					hasChildren: false,
+					name: parts[2],
+					mtime: Date.parse(info.gist.updated_at),
+					etag: etag,
+					size: size,
+					mime: info.gist.files[parts[3]].type
+				};
+
+				// Extra data to return to the caller, for getting content
+				(<any>stat).url = info.gist.files[parts[3]].raw_url;
+				c(stat);
+
+			}, (error: GithubError) => {
+				e(FileOperationResult.FILE_NOT_FOUND);
+			});
+		});
+	}
+
+	private toAbsolutePath(arg1: uri | IFileStat): string {
+		let resource: uri;
+		if (arg1 instanceof uri) {
+			resource = <uri>arg1;
+		} else {
+			resource = (<IFileStat>arg1).resource;
+		}
+
+		return paths.normalize(resource.fsPath);
+	}
+
 }
 
-export function openRepository(repo: string, env: IMainEnvironment, ref?: string, isTag?: boolean) {
+export function openRepository(repo: string, env: IWindowConfiguration, ref?: string, isTag?: boolean) {
 	let url = window.location.origin + window.location.pathname + '?repo=' + repo;
 	if (ref) {
 		url += (isTag ? '&tag=' : '&branch=') + ref;

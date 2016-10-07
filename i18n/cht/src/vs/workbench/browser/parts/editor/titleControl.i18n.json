@@ -10,6 +10,5 @@
 	"closeOthers": "關閉其他",
 	"closeRight": "關到右側",
 	"keepOpen": "保持開啟",
-	"moveLeft": "左移",
-	"moveRight": "右移"
+	"showOpenedEditors": "顯示開啟的編輯器"
 }

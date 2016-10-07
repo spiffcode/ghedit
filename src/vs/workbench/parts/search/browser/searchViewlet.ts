@@ -33,7 +33,7 @@ import {FileChangeType, FileChangesEvent, EventType as FileEventType} from 'vs/p
 import {Viewlet} from 'vs/workbench/browser/viewlet';
 import {Match, FileMatch, SearchModel, FileMatchOrMatch, IChangeEvent} from 'vs/workbench/parts/search/common/searchModel';
 import {getExcludes, QueryBuilder} from 'vs/workbench/parts/search/common/searchQuery';
-import {VIEWLET_ID} from 'vs/workbench/parts/search/common/constants';
+import {VIEWLET_ID, SearchViewletVisible} from 'vs/workbench/parts/search/common/constants';
 import {MessageType, InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import {ISearchProgressItem, ISearchComplete, ISearchQuery, IQueryOptions, ISearchConfiguration} from 'vs/platform/search/common/search';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
@@ -46,7 +46,8 @@ import {IMessageService} from 'vs/platform/message/common/message';
 import {ISearchService} from 'vs/platform/search/common/search';
 import {IProgressService} from 'vs/platform/progress/common/progress';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import {IKeybindingService, IKeybindingContextKey} from 'vs/platform/keybinding/common/keybinding';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
+import {IContextKeyService, IContextKey} from 'vs/platform/contextkey/common/contextkey';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {KeyCode, CommonKeybindings} from 'vs/base/common/keyCodes';
 import { PatternInputWidget } from 'vs/workbench/parts/search/browser/patternInputWidget';
@@ -69,7 +70,7 @@ export class SearchViewlet extends Viewlet {
 	private viewModel: SearchModel;
 	private callOnModelChange: lifecycle.IDisposable[];
 
-	private viewletVisible: IKeybindingContextKey<boolean>;
+	private viewletVisible: IContextKey<boolean>;
 	private actionRegistry: { [key: string]: Action; };
 	private tree: ITree;
 	private viewletSettings: any;
@@ -100,13 +101,14 @@ export class SearchViewlet extends Viewlet {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@ISearchService private searchService: ISearchService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IKeybindingService private keybindingService: IKeybindingService,
 		@IReplaceService private replaceService: IReplaceService
 	) {
 		super(VIEWLET_ID, telemetryService);
 
 		this.toDispose = [];
-		this.viewletVisible = keybindingService.createKey<boolean>('searchViewletVisible', true);
+		this.viewletVisible = SearchViewletVisible.bindTo(contextKeyService);
 		this.callOnModelChange = [];
 
 		this.queryBuilder = this.instantiationService.createInstance(QueryBuilder);
@@ -143,14 +145,6 @@ export class SearchViewlet extends Viewlet {
 		let includesUsePattern = this.viewletSettings['query.includesUsePattern'];
 		let patternIncludes = this.viewletSettings['query.folderIncludes'] || '';
 
-		let onKeyUp = (e: KeyboardEvent) => {
-			if (e.keyCode === KeyCode.Enter) {
-				this.onQueryChanged(true);
-			} else if (e.keyCode === KeyCode.Escape) {
-				this.cancelSearch();
-			}
-		};
-
 		this.queryDetails = this.searchWidgetsContainer.div({ 'class': ['query-details'] }, (builder) => {
 /*
 			builder.div({ 'class': 'more', 'tabindex': 0, 'role': 'button', 'title': nls.localize('moreSearch', "Toggle Search Details") })
@@ -180,7 +174,6 @@ export class SearchViewlet extends Viewlet {
 				this.inputPatternIncludes.setValue(patternIncludes);
 
 				this.inputPatternIncludes
-					.on(dom.EventType.KEY_UP, onKeyUp)
 					.on(dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 						let keyboardEvent = new StandardKeyboardEvent(e);
 						if (keyboardEvent.equals(CommonKeybindings.UP_ARROW)) {
@@ -211,7 +204,6 @@ export class SearchViewlet extends Viewlet {
 				this.inputPatternExclusions.setValue(patternExclusions);
 
 				this.inputPatternExclusions
-					.on(dom.EventType.KEY_UP, onKeyUp)
 					.on(dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 						let keyboardEvent = new StandardKeyboardEvent(e);
 						if (keyboardEvent.equals(CommonKeybindings.UP_ARROW)) {
@@ -284,7 +276,7 @@ export class SearchViewlet extends Viewlet {
 			isRegex: isRegex,
 			isCaseSensitive: isCaseSensitive,
 			isWholeWords: isWholeWords
-		}, this.keybindingService, this.instantiationService);
+		}, this.contextKeyService, this.keybindingService, this.instantiationService);
 
 		if (this.storageService.getBoolean(SearchViewlet.SHOW_REPLACE_STORAGE_KEY, StorageScope.WORKSPACE, true)) {
 			this.searchWidget.toggleReplace(true);

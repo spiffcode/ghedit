@@ -20,15 +20,16 @@ import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 // TODO: import {IRawSearch, ISerializedSearchComplete, ISerializedSearchProgressItem, ISerializedFileMatch, IRawSearchService} from './search';
 // TODO: import {ISearchChannel, SearchChannelClient} from './searchIpc';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 import {IGithubService} from 'ghedit/githubService';
 var github = require('ghedit/lib/github');
 import {Github, SearchResult, ResultItem, TextMatch, FragmentMatch, SearchOptions, Search as GithubApiSearch, Error as GithubError} from 'github';
 import {IRawSearch} from 'vs/workbench/services/search/node/search';
 import {Engine as GithubFileSearchEngine} from 'vs/workbench/services/search/node/fileSearch';
-import {IEditorService} from 'vs/platform/editor/common/editor';
 import {Limiter} from 'vs/base/common/async';
 import {ITextEditorModel} from 'vs/platform/editor/common/editor';
 import {IModel} from 'vs/editor/common/editorCommon';
+import {IEditorService} from 'vs/platform/editor/common/editor';
 
 export class SearchService implements ISearchService {
 	public _serviceBrand: any;
@@ -39,16 +40,16 @@ export class SearchService implements ISearchService {
 	constructor(
 		@IModelService private modelService: IModelService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
+		@IEnvironmentService private environmentService: IEnvironmentService,
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IGithubService private githubService: IGithubService
 	) {
-		let config = contextService.getConfiguration();
 		// this.diskSearch = new DiskSearch(!config.env.isBuilt || config.env.verboseLogging);
 		this.githubSearch = new GithubSearch(this.githubService);
 	}
 
-	public search(query: ISearchQuery): PPromise<ISearchComplete, ISearchProgressItem> {
+	public extendQuery(query: ISearchQuery): void {
 		const configuration = this.configurationService.getConfiguration<ISearchConfiguration>();
 
 		// Configuration: Encoding
@@ -66,6 +67,10 @@ export class SearchService implements ISearchService {
 				objects.mixin(query.excludePattern, fileExcludes, false /* no overwrite */);
 			}
 		}
+	}
+
+	public search(query: ISearchQuery): PPromise<ISearchComplete, ISearchProgressItem> {
+		this.extendQuery(query);
 
 		let rawSearchQuery: PPromise<void, ISearchProgressItem>;
 		return new PPromise<ISearchComplete, ISearchProgressItem>((onComplete, onError, onProgress) => {
@@ -203,6 +208,11 @@ export class SearchService implements ISearchService {
 
 		return true;
 	}
+
+	public clearCache(cacheKey: string): TPromise<void> {
+		//return this.diskSearch.clearCache(cacheKey);
+		return TPromise.as(null);
+	}
 }
 
 class GithubSearch {
@@ -254,7 +264,7 @@ class GithubSearch {
 				// are not complete and don't have line numbers.
 				this.modelSearch(query.contentPattern.pattern, result.items.map((item) => uri.file(item.path))).then((matches) => {
 					c({ limitHit: result.incomplete_results, results: matches,
-						stats: { fileWalkStartTime: fileWalkStartTime, fileWalkResultTime: Date.now(), directoriesWalked: 1, filesWalked: 1 } });
+						stats: { fromCache: false, resultCount: matches.length, unsortedResultTime: Date.now() - fileWalkStartTime } });
 				}, () => {
 					e('Github error performing search.')
 				});
@@ -356,7 +366,7 @@ export class DiskSearch {
 			uri.parse(require.toUrl('bootstrap')).fsPath,
 			{
 				serverName: 'Search',
-				timeout: 60 * 1000,
+				timeout: 60 * 60 * 1000,
 				args: ['--type=searchService'],
 				env: {
 					AMD_ENTRYPOINT: 'vs/workbench/services/search/node/searchApp',
@@ -379,7 +389,9 @@ export class DiskSearch {
 			filePattern: query.filePattern,
 			excludePattern: query.excludePattern,
 			includePattern: query.includePattern,
-			maxResults: query.maxResults
+			maxResults: query.maxResults,
+			sortByScore: query.sortByScore,
+			cacheKey: query.cacheKey
 		};
 
 		if (query.type === QueryType.Text) {
@@ -416,7 +428,7 @@ export class DiskSearch {
 
 				// Match
 				else if ((<ISerializedFileMatch>data).path) {
-					const fileMatch = this.createFileMatch(data);
+					const fileMatch = this.createFileMatch(<ISerializedFileMatch>data);
 					result.push(fileMatch);
 					p(fileMatch);
 				}
@@ -437,6 +449,10 @@ export class DiskSearch {
 			}
 		}
 		return fileMatch;
+	}
+
+	public clearCache(cacheKey: string): TPromise<void> {
+		return this.raw.clearCache(cacheKey);
 	}
 }
 */
