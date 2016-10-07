@@ -33,6 +33,7 @@ import {IInstantiationService} from 'vs/platform/instantiation/common/instantiat
 import {IMessageService, CancelAction} from 'vs/platform/message/common/message';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 
 const TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'textEditorViewState';
 
@@ -60,9 +61,10 @@ export class TextFileEditor extends BaseTextEditor {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IEventService eventService: IEventService,
 		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IEnvironmentService environmentService: IEnvironmentService
 	) {
-		super(TextFileEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService);
+		super(TextFileEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService, environmentService);
 
 		// Since we are the one providing save-support for models, we hook up the error handler for saving
 		TextFileEditorModel.setSaveErrorHandler(instantiationService.createInstance(SaveErrorHandler));

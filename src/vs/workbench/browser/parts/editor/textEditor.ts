@@ -25,6 +25,8 @@ import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
 import {Selection} from 'vs/editor/common/core/selection';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
 
 /**
  * The base class of editors that leverage the text editor for the editing experience. This class is only intended to
@@ -45,7 +47,8 @@ export abstract class BaseTextEditor extends BaseEditor {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IEventService private _eventService: IEventService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IThemeService private themeService: IThemeService
+		@IThemeService private themeService: IThemeService,
+		@IEnvironmentService private environmentService: IEnvironmentService
 	) {
 		super(id, telemetryService);
 
@@ -120,7 +123,8 @@ export abstract class BaseTextEditor extends BaseEditor {
 			overviewRulerLanes: 3,
 			glyphMargin: true,
 			lineNumbersMinChars: 3,
-			theme: this.themeService.getColorTheme()
+			theme: this.themeService.getColorTheme(),
+			readOnly: (<IWindowConfiguration><any>this.environmentService).readOnly
 		};
 	}
 

@@ -23,6 +23,7 @@ import {IInstantiationService} from 'vs/platform/instantiation/common/instantiat
 import {IMessageService} from 'vs/platform/message/common/message';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 
 /**
  * An editor implementation that is capable of showing string inputs or promise inputs that resolve to a string.
@@ -43,9 +44,10 @@ export class StringEditor extends BaseTextEditor {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IEventService eventService: IEventService,
 		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IEnvironmentService environmentService: IEnvironmentService
 	) {
-		super(StringEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService);
+		super(StringEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService, environmentService);
 
 		this.mapResourceToEditorViewState = Object.create(null);
 

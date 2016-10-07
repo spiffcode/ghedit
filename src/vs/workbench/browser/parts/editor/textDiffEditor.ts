@@ -36,6 +36,7 @@ import {IMessageService} from 'vs/platform/message/common/message';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
 import {RawContextKey, IContextKeyService, IContextKey} from 'vs/platform/contextkey/common/contextkey';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 
@@ -62,9 +63,10 @@ export class TextDiffEditor extends BaseTextEditor {
 		@IEventService eventService: IEventService,
 		@IWorkbenchEditorService editorService: IWorkbenchEditorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IEnvironmentService environmentService: IEnvironmentService
 	) {
-		super(TextDiffEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService);
+		super(TextDiffEditor.ID, telemetryService, instantiationService, contextService, storageService, messageService, configurationService, eventService, editorService, themeService, environmentService);
 
 		this.textDiffEditorVisible = TextCompareEditorVisible.bindTo(contextKeyService);
 	}
