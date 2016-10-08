@@ -105,7 +105,7 @@ export class WorkspaceConfigurationService implements IWorkspaceConfigurationSer
 		this.toDispose.push(this.eventService.addListener2(FileEventType.FILE_CHANGES, events => this.handleWorkspaceFileEvents(events)));
 		this.toDispose.push(this.baseConfigurationService.onDidUpdateConfiguration(() => this.onBaseConfigurationChanged()));
 		this.toDispose.push(this.eventService.addListener2('settingsFileChanged', events => {
-			this.doLoadConfiguration().then(() => this.onBaseConfigurationChanged());
+			this.reloadConfiguration().then(() => this._onDidUpdateConfiguration.fire({ config: this.cachedConfig }));
 		}));
 	}
 
