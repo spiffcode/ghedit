@@ -11,6 +11,7 @@ import glob = require('vs/base/common/glob');
 import objects = require('vs/base/common/objects');
 import scorer = require('vs/base/common/scorer');
 import strings = require('vs/base/common/strings');
+import paths = require('vs/base/common/paths');
 // TODO: import {getNextTickChannel} from 'vs/base/parts/ipc/common/ipc';
 // TODO: import {Client} from 'vs/base/parts/ipc/node/ipc.cp';
 import {IProgress, LineMatch, FileMatch, ISearchComplete, ISearchProgressItem, QueryType, IFileMatch, ISearchQuery, ISearchConfiguration, ISearchService} from 'vs/platform/search/common/search';
@@ -24,7 +25,7 @@ import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 import {IGithubService} from 'ghedit/githubService';
 var github = require('ghedit/lib/github');
 import {Github, SearchResult, ResultItem, TextMatch, FragmentMatch, SearchOptions, Search as GithubApiSearch, Error as GithubError} from 'github';
-import {IRawSearch} from 'vs/workbench/services/search/node/search';
+import {IRawFileMatch, IRawSearch} from 'vs/workbench/services/search/node/search';
 import {Engine as GithubFileSearchEngine} from 'vs/workbench/services/search/node/fileSearch';
 import {Limiter} from 'vs/base/common/async';
 import {ITextEditorModel} from 'vs/platform/editor/common/editor';
@@ -324,8 +325,9 @@ class GithubSearch {
 
 		let matches: IFileMatch[] = [];
 		return new PPromise<ISearchComplete, ISearchProgressItem>((c, e, p) => {
-			engine.search((match) => {
-				if (match) {
+			engine.search(m => {
+				if (m) {
+					let match = this.fileMatchFromRawMatch(m);
 					matches.push(match);
 					p(match);
 				}
@@ -353,6 +355,11 @@ class GithubSearch {
 			(<any>window).sendGa('/workbench/search/text');
 			return this.textSearch(query);
 		}
+	}
+
+	private fileMatchFromRawMatch(match: IRawFileMatch): FileMatch {
+		let path = match.base ? paths.join(match.base, match.relativePath) : match.relativePath;
+		return new FileMatch(uri.file(path));
 	}
 }
 
