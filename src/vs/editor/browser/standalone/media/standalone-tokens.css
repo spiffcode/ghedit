@@ -10,9 +10,10 @@
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "HelveticaNeue-Light", "Ubuntu", "Droid Sans", sans-serif;
 }
 
-.monaco-menu .monaco-action-bar.vertical .action-item [tabindex="0"]:focus {
-	color: deepskyblue;
-}
+// Turn off for GHEdit
+//.monaco-menu .monaco-action-bar.vertical .action-item [tabindex="0"]:focus {
+//	color: deepskyblue;
+//}
 
 .monaco-editor-hover p {
 	margin: 0;
