@@ -28,9 +28,9 @@ import timer = require('vs/base/common/timer');
 import {Workbench} from 'vs/workbench/electron-browser/workbench';
 import {Storage, inMemoryLocalStorageInstance} from 'vs/workbench/common/storage';
 import {ITelemetryService, NullTelemetryService} from 'vs/platform/telemetry/common/telemetry';
-import {ITelemetryAppenderChannel, TelemetryAppenderClient} from 'vs/platform/telemetry/common/telemetryIpc';
-import {IdleMonitor, UserStatus} from  'vs/platform/telemetry/browser/idleMonitor';
-import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
+// DESKTOP: import {ITelemetryAppenderChannel, TelemetryAppenderClient} from 'vs/platform/telemetry/common/telemetryIpc';
+// DESKTOP: import {IdleMonitor, UserStatus} from  'vs/platform/telemetry/browser/idleMonitor';
+// DESKTOP: import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 // DESKTOP: import {resolveWorkbenchCommonProperties} from 'vs/platform/telemetry/node/workbenchCommonProperties';
 // TODO: import {ElectronIntegration} from 'vs/workbench/electron-browser/integration';
 // TODO: import {Update} from 'vs/workbench/electron-browser/update';
@@ -69,7 +69,7 @@ import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 import {IEnvService} from 'vs/code/electron-main/env';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 import {ISearchService} from 'vs/platform/search/common/search';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
+// DESKTOP: import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
 import {ICommandService} from 'vs/platform/commands/common/commands';
 import {CommandService} from 'vs/platform/commands/common/commandService';
 import {IWorkspaceContextService, IWorkspace} from 'vs/platform/workspace/common/workspace';
@@ -81,27 +81,25 @@ import {IUntitledEditorService, UntitledEditorService} from 'vs/workbench/servic
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
 // TODO: import {ThemeService} from 'vs/workbench/services/themes/electron-browser/themeService';
 import {ThemeService} from 'vs/workbench/services/themes/electron-browser/themeService';
-import {getDelayedChannel} from 'vs/base/parts/ipc/common/ipc';
+// DESKTOP: import {getDelayedChannel} from 'vs/base/parts/ipc/common/ipc';
 // DESKTOP: import {connect as connectNet} from 'vs/base/parts/ipc/node/ipc.net';
 // DESKTOP: import {Client as ElectronIPCClient} from 'vs/base/parts/ipc/common/ipc.electron';
 // DESKTOP: import {ipcRenderer} from 'electron';
-import {IExtensionManagementChannel, ExtensionManagementChannelClient} from 'vs/platform/extensionManagement/common/extensionManagementIpc';
-import {IExtensionManagementService} from 'vs/platform/extensionManagement/common/extensionManagement';
+// DEKSTOP: import {IExtensionManagementChannel, ExtensionManagementChannelClient} from 'vs/platform/extensionManagement/common/extensionManagementIpc';
+// DESKTOP: import {IExtensionManagementService} from 'vs/platform/extensionManagement/common/extensionManagement';
 // DESKTOP: import {URLChannelClient} from 'vs/platform/url/common/urlIpc';
-import {IURLService} from 'vs/platform/url/common/url';
+// DESKTOP: import {IURLService} from 'vs/platform/url/common/url';
 // DESKTOP: import {ReloadWindowAction} from 'vs/workbench/electron-browser/actions';
 import {Registry} from 'vs/platform/platform';
 
 import {ensureStaticPlatformServices} from 'vs/editor/browser/standalone/standaloneServices';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
-import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'ghedit/navbarPart';
-import {INavbarService, NavbarAlignment, INavbarEntry} from 'ghedit/navbarService';
+import {INavbarService, NavbarAlignment} from 'ghedit/navbarService';
 import {UserNavbarItem} from 'ghedit/userNavbarItem';
 import {MenusNavbarItem} from 'ghedit/menusNavbarItem';
 import {IGithubService} from 'ghedit/githubService';
 import {WelcomePart} from 'ghedit/welcomePart';
-import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbench/browser/actions/openSettings';
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'ghedit/githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {Action, IAction} from 'vs/base/common/actions';
@@ -130,13 +128,13 @@ export interface ICoreServices {
 // Do this directly to prevent forking fileActions.ts which many other files import.
 var fileActionsReadOnly = false;
 var updateEnablementPrev = fileActions.BaseFileAction.prototype._updateEnablement;
-fileActions.BaseFileAction.prototype._updateEnablement = function() {
+fileActions.BaseFileAction.prototype._updateEnablement = function () {
 	if (fileActionsReadOnly) {
 		this.enabled = false;
 	} else {
-		updateEnablementPrev.call(this);
+		updateEnablementPrev.apply(this, arguments);
 	}
-}
+};
 
 function getKeyValue(key: string) {
 	let value = window.localStorage.getItem(key);
@@ -145,11 +143,11 @@ function getKeyValue(key: string) {
 		var ca = document.cookie.split(';');
 		for (var i = 0; i < ca.length; i++) {
 			var c = ca[i];
-			while (c.charAt(0)==' ') {
+			while (c.charAt(0) === ' ') {
 				c = c.substring(1);
 			}
-			if (c.indexOf(name) == 0) {
-				value = c.substring(name.length,c.length);
+			if (c.indexOf(name) === 0) {
+				value = c.substring(name.length, c.length);
 				break;
 			}
 		}
@@ -178,16 +176,16 @@ function showTip(key: string, message: string) {
 }
 
 var definitionActionRunPrev = goToDeclaration.DefinitionAction.prototype.run;
-goToDeclaration.DefinitionAction.prototype.run = function() {
+goToDeclaration.DefinitionAction.prototype.run = function () {
 	showTip('definitionActionTip', 'Note: Go To and Peek Definition only work within opened files in GHEdit.');
-	return definitionActionRunPrev.call(this);
-}
+	return definitionActionRunPrev.apply(this, arguments);
+};
 
 var referenceSearchRunPrev = referenceSearch.ReferenceAction.prototype.run;
-referenceSearch.ReferenceAction.prototype.run = function() {
+referenceSearch.ReferenceAction.prototype.run = function () {
 	showTip('referenceSearchTip', 'Note: Find All References only works within opened files in GHEdit.');
-	return referenceSearchRunPrev.call(this);
-}
+	return referenceSearchRunPrev.apply(this, arguments);
+};
 
 const CloseAction = new Action('welcome.close', nls.localize('close', "Close"), '', true, () => null);
 const ShowDocumentationAction = new Action(
@@ -313,11 +311,6 @@ export class WorkbenchShell {
 	private contextService: IWorkspaceContextService;
 	private telemetryService: ITelemetryService;
 	private githubService: IGithubService;
-	private modeService: IModeService;
-
-	// DWM: These are dependency injected into various modules. Normally they would
-	// be provided by Electron-dependent modules.
-	private editorWorkerService: IEditorWorkerService;
 
 	private container: HTMLElement;
 	private toUnbind: IDisposable[];
@@ -333,8 +326,9 @@ export class WorkbenchShell {
 	private welcomePart: WelcomePart;
 
 	constructor(container: HTMLElement, workspace: IWorkspace, services: ICoreServices, options: IOptions) {
-		if (!container)
+		if (!container) {
 			throw 'WorkbenchShell container == null?!';
+		}
 		this.container = container;
 
 		this.workspace = workspace;
@@ -422,8 +416,9 @@ export class WorkbenchShell {
 				enableBrowserHack(BrowserHack.TAB_DRAGGING);
 
 				// Show a first timer welcome tip
-				if (!this.isWelcomeMode())
+				if (!this.isWelcomeMode()) {
 					showWelcomeTip();
+				}
 			},
 
 			onServicesCreated: () => {
@@ -735,8 +730,9 @@ export class WorkbenchShell {
 		this.contentsContainer = this.createContents($(this.content));
 
 		// If the user isn't authenticated show a special welcome to help them get started.
-		if (!this.githubService.isAuthenticated())
+		if (!this.githubService.isAuthenticated()) {
 			this.createWelcomePart();
+		}
 
 		// Layout
 		this.layout();
