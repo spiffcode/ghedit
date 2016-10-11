@@ -15,7 +15,6 @@ import {IContextViewProvider} from 'vs/base/browser/ui/contextview/contextview';
 import {Widget} from 'vs/base/browser/ui/widget';
 import Event, {Emitter} from 'vs/base/common/event';
 import {IKeyboardEvent} from 'vs/base/browser/keyboardEvent';
-import {IMouseEvent} from 'vs/base/browser/mouseEvent';
 import {CommonKeybindings} from 'vs/base/common/keyCodes';
 
 export interface IFindInputOptions {
@@ -27,12 +26,6 @@ export interface IFindInputOptions {
 	appendCaseSensitiveLabel?: string;
 	appendWholeWordsLabel?: string;
 	appendRegexLabel?: string;
-}
-
-export interface IMatchCountState {
-	count: string;
-	isVisible: boolean;
-	title: string;
 }
 
 const NLS_REGEX_CHECKBOX_LABEL = nls.localize('regexDescription', "Use Regular Expression");
@@ -53,7 +46,6 @@ export class FindInput extends Widget {
 	private regex:Checkbox;
 	private wholeWords:Checkbox;
 	private caseSensitive:Checkbox;
-	private matchCount: MatchCount;
 	public domNode: HTMLElement;
 	public inputBox:InputBox;
 
@@ -144,11 +136,6 @@ export class FindInput extends Widget {
 		}
 	}
 
-	public setMatchCountState(state:IMatchCountState): void {
-		this.matchCount.setState(state);
-		this.setInputWidth();
-	}
-
 	public select(): void {
 		this.inputBox.select();
 	}
@@ -189,7 +176,7 @@ export class FindInput extends Widget {
 	}
 
 	private setInputWidth(): void {
-		let w = this.width - this.matchCount.width(); // - this.caseSensitive.width() - this.wholeWords.width() - this.regex.width();
+		let w = this.width; // - this.caseSensitive.width() - this.wholeWords.width() - this.regex.width();
 		this.inputBox.width = w;
 	}
 
@@ -255,12 +242,6 @@ export class FindInput extends Widget {
 		}));
 		this.caseSensitive.domNode.style.visibility = 'hidden';
 
-		this.matchCount = this._register(new MatchCount({
-			onClick: (e) => {
-				this.inputBox.focus();
-				e.preventDefault();
-			}
-		}));
 
 /*
 		// Arrow-Key support to navigate between options
@@ -296,7 +277,6 @@ export class FindInput extends Widget {
 
 		let controls = document.createElement('div');
 		controls.className = 'controls';
-		controls.appendChild(this.matchCount.domNode);
 		controls.appendChild(this.caseSensitive.domNode);
 		controls.appendChild(this.wholeWords.domNode);
 		controls.appendChild(this.regex.domNode);
@@ -322,45 +302,5 @@ export class FindInput extends Widget {
 
 	public dispose(): void {
 		super.dispose();
-	}
-}
-
-interface IMatchCountOpts {
-	onClick: (e:IMouseEvent) => void;
-}
-
-class MatchCount extends Widget {
-
-	public domNode: HTMLElement;
-	private isVisible: boolean;
-
-	constructor(opts:IMatchCountOpts) {
-		super();
-		this.domNode = document.createElement('div');
-		this.domNode.className = 'matchCount';
-
-		this.setState({
-			isVisible: false,
-			count: '0',
-			title: ''
-		});
-		this.onclick(this.domNode, opts.onClick);
-	}
-
-	public width(): number {
-		return this.isVisible ? 30 : 0;
-	}
-
-	public setState(state:IMatchCountState): void {
-		dom.clearNode(this.domNode);
-		this.domNode.appendChild(document.createTextNode(state.count));
-		this.domNode.title = state.title;
-
-		this.isVisible = state.isVisible;
-		if (this.isVisible) {
-			this.domNode.style.display = 'block';
-		} else {
-			this.domNode.style.display = 'none';
-		}
 	}
 }

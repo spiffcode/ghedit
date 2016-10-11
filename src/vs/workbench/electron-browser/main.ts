@@ -6,29 +6,32 @@
 
 'use strict';
 
-import winjs = require('vs/base/common/winjs.base');
+import {TPromise} from 'vs/base/common/winjs.base';
 import {WorkbenchShell, enableBrowserHack, BrowserHack} from 'vs/workbench/electron-browser/shell';
-import {IOptions, IGlobalSettings} from 'vs/workbench/common/options';
+import {IOptions} from 'vs/workbench/common/options';
+import {domContentLoaded} from 'vs/base/browser/dom';
 import errors = require('vs/base/common/errors');
 import platform = require('vs/base/common/platform');
 import paths = require('vs/base/common/paths');
 import timer = require('vs/base/common/timer');
-// TODO: import {assign} from 'vs/base/common/objects';
+import {assign} from 'vs/base/common/objects';
 import uri from 'vs/base/common/uri';
 import strings = require('vs/base/common/strings');
 import {IResourceInput} from 'vs/platform/editor/common/editor';
-// TODO: import {IEnv} from 'vs/base/node/env';
-export interface IEnv {
-	[key: string]: string;
-}
 import {EventService} from 'vs/platform/event/common/eventService';
-import {WorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
-import {IWorkspace, IConfiguration, IEnvironment} from 'vs/platform/workspace/common/workspace';
-import {ConfigurationService} from 'vs/workbench/services/configuration/node/configurationService';
+import {LegacyWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
+import {IWorkspace} from 'vs/platform/workspace/common/workspace';
+import {WorkspaceConfigurationService} from 'vs/workbench/services/configuration/node/configurationService';
 import {Github, Repository, Error as GithubError, UserInfo} from 'github';
 import {GithubService, IGithubService} from 'ghedit/githubService';
-
-// TODO: import path = require('path');
+import {IProcessEnvironment} from 'vs/code/electron-main/env';
+import {ParsedArgs} from 'vs/code/node/argv';
+// DESKTOP: import {realpath} from 'vs/base/node/pfs';
+// DESKTOP: import {EnvironmentService} from 'vs/platform/environment/node/environmentService';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+// DESKTOP: import {IEnvService} from 'vs/code/electron-main/env';
+// DESKTOP: import {IProductConfiguration} from 'vs/platform/product';
+// DESKTOP: import path = require('path');
 var path = {
 	normalize: function (_path) {
 		console.log('path.normalize(\'' + _path + '\')');
@@ -47,23 +50,11 @@ var fs = {
 		return _path;
 	}
 };
+// DESKTOP: import gracefulFs = require('graceful-fs');
 
-// TODO: import gracefulFs = require('graceful-fs');
-// TODO: gracefulFs.gracefulify(fs);
+// DESKTOP: gracefulFs.gracefulify(fs); // enable gracefulFs
 
 const timers = (<any>window).MonacoEnvironment.timers;
-
-function domContentLoaded(): winjs.Promise {
-	return new winjs.Promise((c, e) => {
-		const readyState = document.readyState;
-		if (readyState === 'complete' || (document && document.body !== null)) {
-			// DESKTOP: window.setImmediate(c);
-			window.setTimeout(c);
-		} else {
-			window.addEventListener('DOMContentLoaded', c, false);
-		}
-	});
-}
 
 export interface IPath {
 	filePath: string;
@@ -72,93 +63,172 @@ export interface IPath {
 }
 
 // TODO: Perhaps move these into IEnvironment? Then accessing them would be easier from IConfiguration.
-export interface IMainEnvironment extends IEnvironment {
+export interface IWindowConfiguration extends ParsedArgs {
+	appRoot: string;
+	execPath: string;
+
+	userEnv: IProcessEnvironment;
+
 	workspacePath?: string;
+
 	filesToOpen?: IPath[];
 	filesToCreate?: IPath[];
 	filesToDiff?: IPath[];
+
 	extensionsToInstall?: string[];
 	github?: Github;
-	userEnv: { [key: string]: string; };
 	githubRepo?: string;
 	githubBranch?: string;
 	githubTag?: string;
 	gistRegEx?: RegExp;
 	rootPath?: string;
 	buildType?: string;
+	readOnly?: boolean;
 }
 
-export function startup(environment: IMainEnvironment, globalSettings: IGlobalSettings): winjs.TPromise<void> {
+class EnvironmentService implements IEnvironmentService {
+	// IEnvironmentService implementation
 
-	// Inherit the user environment
-    /* TODO:
-	// TODO@Joao: this inheritance should **not** happen here!
-	if (process.env['VSCODE_CLI'] !== '1') {
-		assign(process.env, environment.userEnv);
-	}
-    */
+	_serviceBrand = null;
 
-	// Shell Configuration
-	let shellConfiguration: IConfiguration = {
-		env: environment
+	execPath = '';
+	appRoot = '';
+
+	userHome = '';
+	userDataPath = '';
+
+	appSettingsHome = '';
+	appSettingsPath = '';
+	appKeybindingsPath = '';
+
+	disableExtensions = true;
+	extensionsPath = '';
+	extensionDevelopmentPath = '';
+	extensionTestsPath = '';
+
+	debugExtensionHost = { port: 0, break: false };
+
+	logExtensionHostCommunication = false;
+
+	isBuilt = false;
+	verbose = false;
+	performance = false;
+
+	mainIPCHandle = '';
+	sharedIPCHandle = '';
+
+	// IEnvService implementation (overlaps with IEnvironmentService)
+
+	cliArgs = null;
+	product = {
+		nameShort: 'GHEdit',
+		nameLong: 'GHEdit',
+		applicationName: 'applicationName',
+		win32AppUserModelId: 'win32AppUserModelId',
+		win32MutexName: 'win32MutexName',
+		darwinBundleIdentifier: 'darwinBundleIdentifier',
+		urlProtocol: 'urlProtocol',
+		dataFolderName: 'dataFolderName',
+		downloadUrl: 'downloadUrl',
+		// updateUrl?: string;
+		// quality?: string;
+		commit: 'commit',
+		date: 'date',
+		extensionsGallery: {
+			serviceUrl: 'extensionsGallery.surviceUrl',
+			itemUrl: 'extensionsGallery.itemUrl',
+		},
+		extensionTips: null,
+		extensionImportantTips: null,
+		crashReporter: null,
+		welcomePage: 'welcomePage',
+		enableTelemetry: false,
+		aiConfig: {
+			key: 'aiConfig.key',
+			asimovKey: 'aiConfig.asmiovKey'
+		},
+		sendASmile: {
+			reportIssueUrl: 'sendASmile.reportIssueUrl',
+			requestFeatureUrl: 'sendASmile.requestFeatureUrl'
+		},
+		documentationUrl: 'https://spiffcode.github.io/ghedit/documentation.html',
+		releaseNotesUrl: 'https://spiffcode.github.io/ghedit/releasenotes.html',
+		twitterUrl: null,
+		requestFeatureUrl: 'https://github.com/spiffcode/ghedit/labels/feedback',
+		reportIssueUrl: 'https://github.com/spiffcode/ghedit/issues?q=is%3Aissue%20is%3Aopen%20-label%3Afeedback',
+		licenseUrl: 'https://github.com/spiffcode/ghedit/blob/master/LICENSE.txt',
+		privacyStatementUrl: null,
+		npsSurveyUrl: null,
+
+		// GHEdit fields
+
+		sendFeedbackUrl: 'https://github.com/spiffcode/ghedit/issues/new?labels=feedback'
 	};
+	updateUrl = '';
+	quality = '';
+	currentWorkingDirectory = '';
+	appHome = '';
 
+	constructor(environment: IWindowConfiguration) {
+		assign(this, environment);
+	}
+}
+
+export function startup(configuration: IWindowConfiguration): TPromise<void> {
 
 	// Shell Options
-	let filesToOpen = environment.filesToOpen && environment.filesToOpen.length ? toInputs(environment.filesToOpen) : null;
-	let filesToCreate = environment.filesToCreate && environment.filesToCreate.length ? toInputs(environment.filesToCreate) : null;
-	let filesToDiff = environment.filesToDiff && environment.filesToDiff.length ? toInputs(environment.filesToDiff) : null;
-	let shellOptions: IOptions = {
-		singleFileMode: !environment.workspacePath,
-		filesToOpen: filesToOpen,
-		filesToCreate: filesToCreate,
-		filesToDiff: filesToDiff,
-		extensionsToInstall: environment.extensionsToInstall,
-		globalSettings: globalSettings,
-		editor: { readOnly: false }
+	const filesToOpen = configuration.filesToOpen && configuration.filesToOpen.length ? toInputs(configuration.filesToOpen) : null;
+	const filesToCreate = configuration.filesToCreate && configuration.filesToCreate.length ? toInputs(configuration.filesToCreate) : null;
+	const filesToDiff = configuration.filesToDiff && configuration.filesToDiff.length ? toInputs(configuration.filesToDiff) : null;
+	const shellOptions: IOptions = {
+		filesToOpen,
+		filesToCreate,
+		filesToDiff,
+		extensionsToInstall: configuration.extensionsToInstall
 	};
 
-	if (environment.enablePerformance) {
+	if (configuration.performance) {
 		timer.ENABLE_TIMER = true;
 	}
 
 	var options = {};
-	if (environment.userEnv['githubToken']) {
-		options['token'] = environment.userEnv['githubToken'];
-	} else if (environment.userEnv['githubUsername'] && environment.userEnv['githubPassword']) {
-		options['username'] = environment.userEnv['githubUsername'];
-		options['password'] = environment.userEnv['githubPassword'];
+	if (configuration.userEnv['githubToken']) {
+		options['token'] = configuration.userEnv['githubToken'];
+	} else if (configuration.userEnv['githubUsername'] && configuration.userEnv['githubPassword']) {
+		options['username'] = configuration.userEnv['githubUsername'];
+		options['password'] = configuration.userEnv['githubPassword'];
 	}
 	let githubService = new GithubService(options);
 
 	// TODO: indeterminate progress indicator
 	return githubService.authenticateUser().then((userInfo: UserInfo) => {
-		if (!environment.githubRepo)
+		if (!configuration.githubRepo)
 			// Open workbench without a workspace.
-			return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+			return openWorkbench(configuration, null, shellOptions, githubService);
 
-		return githubService.openRepository(environment.githubRepo, environment.githubBranch ? environment.githubBranch : environment.githubTag, !environment.githubBranch).then((repoInfo: any) => {
+		return githubService.openRepository(configuration.githubRepo, configuration.githubBranch ? configuration.githubBranch : configuration.githubTag, !configuration.githubBranch).then((repoInfo: any) => {
 			// Tags aren't editable.
-			if (!environment.githubBranch)
-				shellOptions.editor.readOnly = true;
-			let workspace = getWorkspace(environment, repoInfo);
-			return openWorkbench(workspace, shellConfiguration, shellOptions, githubService);
-		}, (err: Error) => {
-			// TODO: Welcome experience and/or error message (invalid repo, permissions, ...)
-			// Open workbench without a workspace.
-			return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+			if (!configuration.githubBranch)
+				configuration.readOnly = true;
+			return getWorkspace(configuration, repoInfo).then(workspace => {
+				return openWorkbench(configuration, workspace, shellOptions, githubService);
+			}, (err: Error) => {
+				// TODO: Welcome experience and/or error message (invalid repo, permissions, ...)
+				// Open workbench without a workspace.
+				return openWorkbench(configuration, null, shellOptions, githubService);
+			});
 		});
 	}, (err: Error) => {
 		// No user credentials or otherwise unable to authenticate them.
 		// TODO: Welcome experience and/or error message (bad credentials, ...)
 		// Open workbench without a workspace.
-		return openWorkbench(null, shellConfiguration, shellOptions, githubService);
+		return openWorkbench(configuration, null, shellOptions, githubService);
 	});
 }
 
 function toInputs(paths: IPath[]): IResourceInput[] {
 	return paths.map(p => {
-		let input = <IResourceInput>{
+		const input = <IResourceInput>{
 			resource: uri.file(p.filePath)
 		};
 
@@ -175,27 +245,27 @@ function toInputs(paths: IPath[]): IResourceInput[] {
 	});
 }
 
-function getWorkspace(environment: IMainEnvironment, repoInfo: any): IWorkspace {
-	if (!environment.workspacePath) {
-		return null;
+function getWorkspace(configuration: IWindowConfiguration, repoInfo: any): TPromise<IWorkspace> {
+	if (!configuration.workspacePath) {
+		return TPromise.as(null);
 	}
 
-	let workspaceResource = uri.file(environment.workspacePath);
+	let workspaceResource = uri.file(configuration.workspacePath);
 
 	let workspace: IWorkspace = {
 		'resource': workspaceResource,
-		'id': environment.githubRepo,
-		'name': environment.githubRepo.split('/')[1], // Repository name minus the user name.
-		'uid': Date.parse(repoInfo.created_at),
-		'mtime': Date.parse(repoInfo.updated_at),
+		'name': configuration.githubRepo.split('/')[1], // Repository name minus the user name.
+		'uid': Date.parse(repoInfo.created_at)
 	};
-	return workspace;
+	return TPromise.as(workspace);
 }
 
-function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, options: IOptions, githubService: IGithubService): winjs.TPromise<void> {
-	let eventService = new EventService();
-	let contextService = new WorkspaceContextService(eventService, workspace, configuration, options);
-	let configurationService = new ConfigurationService(contextService, eventService, githubService);
+function openWorkbench(environment: IWindowConfiguration, workspace: IWorkspace, options: IOptions, githubService: IGithubService): TPromise<void> {
+	const eventService = new EventService();
+// DESKTOP:	const environmentService = new EnvironmentService(environment, environment.execPath);
+	const environmentService = new EnvironmentService(environment);
+	const contextService = new LegacyWorkspaceContextService(workspace, options);
+	const configurationService = new WorkspaceConfigurationService(contextService, eventService, environmentService, githubService);
 
 	// Since the configuration service is one of the core services that is used in so many places, we initialize it
 	// right before startup of the workbench shell to have its data ready for consumers
@@ -211,13 +281,14 @@ function openWorkbench(workspace: IWorkspace, configuration: IConfiguration, opt
 			enableBrowserHack(BrowserHack.TAB_LABEL);
 
 			// Open Shell
-			let beforeOpen = new Date();
-			let shell = new WorkbenchShell(document.body, workspace, {
+			const beforeOpen = new Date();
+			const shell = new WorkbenchShell(document.body, workspace, {
 				configurationService,
 				eventService,
 				contextService,
-				githubService,
-			}, configuration, options);
+				environmentService,
+				githubService
+			}, options);
 			shell.open();
 
 			shell.joinCreation().then(() => {

@@ -16,8 +16,8 @@ import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpe
 import {IGithubService, openRepository} from 'ghedit/githubService';
 import {ITree, IElementCallback} from 'vs/base/parts/tree/browser/tree';
 import {Builder, $} from 'vs/base/browser/builder';
-import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
-import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
 import {Limiter} from 'vs/base/common/async';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 
@@ -36,7 +36,7 @@ class Info {
 }
 
 class RepoQuickOpenEntry extends QuickOpenEntryGroup {
-	constructor(public info: Info, private contextService: IWorkspaceContextService, private githubService: IGithubService, private messageService:IMessageService) {
+	constructor(public info: Info, private environmentService: IEnvironmentService, private githubService: IGithubService, private messageService:IMessageService) {
 		super();
 	}
 
@@ -59,7 +59,7 @@ class RepoQuickOpenEntry extends QuickOpenEntryGroup {
 	private openRepo(): void {
 		if (this.info.full_name !== this.githubService.repoName) {
 			(<any>window).sendGa('/workbench/repo/open', () => {
-				openRepository(this.info.full_name, <IMainEnvironment>this.contextService.getConfiguration().env);
+				openRepository(this.info.full_name, <IWindowConfiguration><any>this.environmentService);
 			});
 		}
 	}
@@ -111,7 +111,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 
 	constructor(
 		@IGithubService private githubService: IGithubService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IEnvironmentService private environmentService: IEnvironmentService,
 		@IMessageService private messageService: IMessageService
 	) {
 		super();
@@ -239,7 +239,7 @@ export class OpenRepoHandler extends QuickOpenHandler {
 					});
 
 					// Create a model from all these infos.
-					this.model = new QuickOpenModel([...[infoTyped], ...infosRecent, ...infosSorted].map(info => new RepoQuickOpenEntry(info, this.contextService, this.githubService, this.messageService)));
+					this.model = new QuickOpenModel([...[infoTyped], ...infosRecent, ...infosSorted].map(info => new RepoQuickOpenEntry(info, this.environmentService, this.githubService, this.messageService)));
 					c(this.model);
 				});
 			});

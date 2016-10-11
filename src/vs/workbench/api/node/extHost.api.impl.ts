@@ -9,6 +9,8 @@ import {score} from 'vs/editor/common/modes/languageSelector';
 import * as Platform from 'vs/base/common/platform';
 import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
 import * as errors from 'vs/base/common/errors';
+import product from 'vs/platform/product';
+import pkg from 'vs/platform/package';
 import {ExtHostFileSystemEventService} from 'vs/workbench/api/node/extHostFileSystemEventService';
 import {ExtHostDocuments} from 'vs/workbench/api/node/extHostDocuments';
 import {ExtHostConfiguration} from 'vs/workbench/api/node/extHostConfiguration';
@@ -18,6 +20,7 @@ import {ExtHostQuickOpen} from 'vs/workbench/api/node/extHostQuickOpen';
 import {ExtHostStatusBar} from 'vs/workbench/api/node/extHostStatusBar';
 import {ExtHostCommands} from 'vs/workbench/api/node/extHostCommands';
 import {ExtHostOutputService} from 'vs/workbench/api/node/extHostOutputService';
+import {ExtHostTerminalService} from 'vs/workbench/api/node/extHostTerminalService';
 import {ExtHostMessageService} from 'vs/workbench/api/node/extHostMessageService';
 import {ExtHostEditors} from 'vs/workbench/api/node/extHostEditors';
 import {ExtHostLanguages} from 'vs/workbench/api/node/extHostLanguages';
@@ -80,6 +83,7 @@ export class ExtHostAPIImplementation {
 	TextEditorRevealType: typeof vscode.TextEditorRevealType;
 	EndOfLine: typeof vscode.EndOfLine;
 	TextEditorCursorStyle: typeof vscode.TextEditorCursorStyle;
+	TextEditorSelectionChangeKind: typeof vscode.TextEditorSelectionChangeKind;
 	commands: typeof vscode.commands;
 	window: typeof vscode.window;
 	workspace: typeof vscode.workspace;
@@ -98,7 +102,7 @@ export class ExtHostAPIImplementation {
 		const extHostDocuments = col.define(ExtHostContext.ExtHostDocuments).set<ExtHostDocuments>(new ExtHostDocuments(threadService));
 		const extHostEditors = col.define(ExtHostContext.ExtHostEditors).set<ExtHostEditors>(new ExtHostEditors(threadService, extHostDocuments));
 		const extHostCommands = col.define(ExtHostContext.ExtHostCommands).set<ExtHostCommands>(new ExtHostCommands(threadService, extHostEditors));
-		const extHostConfiguration = col.define(ExtHostContext.ExtHostConfiguration).set<ExtHostConfiguration>(new ExtHostConfiguration());
+		const extHostConfiguration = col.define(ExtHostContext.ExtHostConfiguration).set<ExtHostConfiguration>(new ExtHostConfiguration(threadService.get(MainContext.MainThreadConfiguration)));
 		const extHostDiagnostics = col.define(ExtHostContext.ExtHostDiagnostics).set<ExtHostDiagnostics>(new ExtHostDiagnostics(threadService));
 		const languageFeatures = col.define(ExtHostContext.ExtHostLanguageFeatures).set<ExtHostLanguageFeatures>(new ExtHostLanguageFeatures(threadService, extHostDocuments, extHostCommands, extHostDiagnostics));
 		const extHostFileSystemEvent = col.define(ExtHostContext.ExtHostFileSystemEventService).set<ExtHostFileSystemEventService>(new ExtHostFileSystemEventService());
@@ -116,6 +120,7 @@ export class ExtHostAPIImplementation {
 		const extHostMessageService = new ExtHostMessageService(threadService);
 		const extHostStatusBar = new ExtHostStatusBar(threadService);
 		const extHostOutputService = new ExtHostOutputService(threadService);
+		const extHostTerminalService = new ExtHostTerminalService(threadService);
 		const workspacePath = contextService.getWorkspace() ? contextService.getWorkspace().resource.fsPath : undefined;
 		const extHostWorkspace = new ExtHostWorkspace(threadService, workspacePath);
 		const languages = new ExtHostLanguages(threadService);
@@ -126,7 +131,7 @@ export class ExtHostAPIImplementation {
 		registerApiCommands(extHostCommands);
 
 
-		this.version = contextService.getConfiguration().env.version;
+		this.version = pkg.version;
 		this.Uri = URI;
 		this.Location = extHostTypes.Location;
 		this.Diagnostic = extHostTypes.Diagnostic;
@@ -159,6 +164,7 @@ export class ExtHostAPIImplementation {
 		this.TextEditorRevealType = extHostTypes.TextEditorRevealType;
 		this.EndOfLine = extHostTypes.EndOfLine;
 		this.TextEditorCursorStyle = EditorCommon.TextEditorCursorStyle;
+		this.TextEditorSelectionChangeKind = extHostTypes.TextEditorSelectionChangeKind;
 
 		// env namespace
 		let telemetryInfo: ITelemetryInfo;
@@ -166,7 +172,7 @@ export class ExtHostAPIImplementation {
 			get machineId() { return telemetryInfo.machineId; },
 			get sessionId() { return telemetryInfo.sessionId; },
 			get language() { return Platform.language; },
-			get appName() { return contextService.getConfiguration().env.appName; }
+			get appName() { return product.nameLong; }
 		});
 		telemetryService.getTelemetryInfo().then(info => telemetryInfo = info, errors.onUnexpectedError);
 
@@ -236,11 +242,11 @@ export class ExtHostAPIImplementation {
 			showErrorMessage: (message, ...items) => {
 				return extHostMessageService.showMessage(Severity.Error, message, items);
 			},
-			showQuickPick: (items: any, options: vscode.QuickPickOptions) => {
-				return extHostQuickOpen.show(items, options);
+			showQuickPick: (items: any, options: vscode.QuickPickOptions, token?: vscode.CancellationToken) => {
+				return extHostQuickOpen.showQuickPick(items, options, token);
 			},
-			showInputBox(options?: vscode.InputBoxOptions) {
-				return extHostQuickOpen.input(options);
+			showInputBox(options?: vscode.InputBoxOptions, token?: vscode.CancellationToken) {
+				return extHostQuickOpen.showInput(options, token);
 			},
 
 			createStatusBarItem(position?: vscode.StatusBarAlignment, priority?: number): vscode.StatusBarItem {
@@ -251,6 +257,9 @@ export class ExtHostAPIImplementation {
 			},
 			createOutputChannel(name: string): vscode.OutputChannel {
 				return extHostOutputService.createOutputChannel(name);
+			},
+			createTerminal(name?: string): vscode.Terminal {
+				return extHostTerminalService.createTerminal(name);
 			}
 		};
 

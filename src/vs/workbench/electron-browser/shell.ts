@@ -21,14 +21,16 @@ import dom = require('vs/base/browser/dom');
 import aria = require('vs/base/browser/ui/aria/aria');
 import {dispose, IDisposable, Disposables} from 'vs/base/common/lifecycle';
 import errors = require('vs/base/common/errors');
+// DESKTOP: import product from 'vs/platform/product';
+// DESKTOP: import pkg from 'vs/platform/package';
 import {ContextViewService} from 'vs/platform/contextview/browser/contextViewService';
 import timer = require('vs/base/common/timer');
 import {Workbench} from 'vs/workbench/electron-browser/workbench';
 import {Storage, inMemoryLocalStorageInstance} from 'vs/workbench/common/storage';
 import {ITelemetryService, NullTelemetryService} from 'vs/platform/telemetry/common/telemetry';
-import {ITelemetryAppenderChannel, TelemetryAppenderClient} from 'vs/platform/telemetry/common/telemetryIpc';
-import {IdleMonitor, UserStatus} from  'vs/platform/telemetry/browser/idleMonitor';
-import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
+// DESKTOP: import {ITelemetryAppenderChannel, TelemetryAppenderClient} from 'vs/platform/telemetry/common/telemetryIpc';
+// DESKTOP: import {IdleMonitor, UserStatus} from  'vs/platform/telemetry/browser/idleMonitor';
+// DESKTOP: import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 // DESKTOP: import {resolveWorkbenchCommonProperties} from 'vs/platform/telemetry/node/workbenchCommonProperties';
 // TODO: import {ElectronIntegration} from 'vs/workbench/electron-browser/integration';
 // TODO: import {Update} from 'vs/workbench/electron-browser/update';
@@ -36,8 +38,8 @@ import {WorkspaceStats} from 'vs/workbench/services/telemetry/common/workspaceSt
 import {IWindowService, WindowService} from 'vs/workbench/services/window/electron-browser/windowService';
 // TODO: import {MessageService} from 'vs/workbench/services/message/electron-browser/messageService';
 import {WorkbenchMessageService as MessageService} from 'vs/workbench/services/message/browser/messageService';
-// TODO: import {RequestService} from 'vs/workbench/services/request/node/requestService';
-import {BaseRequestService as RequestService} from 'vs/platform/request/common/baseRequestService';
+// DESKTOP: import {IRequestService} from 'vs/platform/request/common/request';
+// DESKTOP: import {RequestService} from 'vs/workbench/services/request/node/requestService';
 import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {FileService} from 'vs/workbench/services/files/electron-browser/fileService';
 import {SearchService} from 'vs/workbench/services/search/node/searchService';
@@ -63,14 +65,14 @@ import {IEventService} from 'vs/platform/event/common/event';
 import {IFileService} from 'vs/platform/files/common/files';
 import {ILifecycleService, NullLifecycleService} from 'vs/platform/lifecycle/common/lifecycle';
 import {IMarkerService} from 'vs/platform/markers/common/markers';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IEnvService} from 'vs/code/electron-main/env';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
-import {IRequestService} from 'vs/platform/request/common/request';
 import {ISearchService} from 'vs/platform/search/common/search';
-import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
+// DESKTOP: import {IThreadService} from 'vs/workbench/services/thread/common/threadService';
 import {ICommandService} from 'vs/platform/commands/common/commands';
 import {CommandService} from 'vs/platform/commands/common/commandService';
-import {IWorkspaceContextService, IConfiguration, IWorkspace} from 'vs/platform/workspace/common/workspace';
-//import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
+import {IWorkspaceContextService, IWorkspace} from 'vs/platform/workspace/common/workspace';
 import {IExtensionService} from 'vs/platform/extensions/common/extensions';
 import {MainThreadModeServiceImpl} from 'vs/editor/common/services/modeServiceImpl';
 import {IModeService} from 'vs/editor/common/services/modeService';
@@ -79,29 +81,30 @@ import {IUntitledEditorService, UntitledEditorService} from 'vs/workbench/servic
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
 // TODO: import {ThemeService} from 'vs/workbench/services/themes/electron-browser/themeService';
 import {ThemeService} from 'vs/workbench/services/themes/electron-browser/themeService';
-import {getDelayedChannel} from 'vs/base/parts/ipc/common/ipc';
-// TODO: import {connect} from 'vs/base/parts/ipc/node/ipc.net';
-import {IExtensionManagementChannel, ExtensionManagementChannelClient} from 'vs/platform/extensionManagement/common/extensionManagementIpc';
-import {IExtensionManagementService} from 'vs/platform/extensionManagement/common/extensionManagement';
-// TODO: import {ReloadWindowAction} from 'vs/workbench/electron-browser/actions';
+// DESKTOP: import {getDelayedChannel} from 'vs/base/parts/ipc/common/ipc';
+// DESKTOP: import {connect as connectNet} from 'vs/base/parts/ipc/node/ipc.net';
+// DESKTOP: import {Client as ElectronIPCClient} from 'vs/base/parts/ipc/common/ipc.electron';
+// DESKTOP: import {ipcRenderer} from 'electron';
+// DEKSTOP: import {IExtensionManagementChannel, ExtensionManagementChannelClient} from 'vs/platform/extensionManagement/common/extensionManagementIpc';
+// DESKTOP: import {IExtensionManagementService} from 'vs/platform/extensionManagement/common/extensionManagement';
+// DESKTOP: import {URLChannelClient} from 'vs/platform/url/common/urlIpc';
+// DESKTOP: import {IURLService} from 'vs/platform/url/common/url';
+// DESKTOP: import {ReloadWindowAction} from 'vs/workbench/electron-browser/actions';
 import {Registry} from 'vs/platform/platform';
 
 import {ensureStaticPlatformServices} from 'vs/editor/browser/standalone/standaloneServices';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
-import {Github, Repository, Error as GithubError} from 'github';
 import {NavbarPart} from 'ghedit/navbarPart';
-import {INavbarService, NavbarAlignment, INavbarEntry} from 'ghedit/navbarService';
-import {UserSettings} from 'vs/base/node/userSettings';
+import {INavbarService, NavbarAlignment} from 'ghedit/navbarService';
 import {UserNavbarItem} from 'ghedit/userNavbarItem';
 import {MenusNavbarItem} from 'ghedit/menusNavbarItem';
 import {IGithubService} from 'ghedit/githubService';
-import {IMainEnvironment} from 'vs/workbench/electron-browser/main';
 import {WelcomePart} from 'ghedit/welcomePart';
-import {OpenGlobalSettingsAction, OpenGlobalKeybindingsAction} from 'vs/workbench/browser/actions/openSettings';
 import {ChooseRepositoryAction, ChooseReferenceAction, AboutGHEditAction} from 'ghedit/githubActions';
 import {IWorkbenchActionRegistry, Extensions as ActionExtensions} from 'vs/workbench/common/actionRegistry';
 import {Action, IAction} from 'vs/base/common/actions';
 import {VSCodeMenu} from 'vs/code/electron-main/menus';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
 
 const Identifiers = {
 	NAVBAR_PART: 'workbench.parts.navbar',
@@ -109,8 +112,7 @@ const Identifiers = {
 };
 
 // self registering services
-// TODO: Despite its location this doesn't seem to have any Electron dependencies.
-import 'vs/platform/opener/electron-browser/opener.contribution';
+import 'vs/platform/opener/browser/opener.contribution';
 
 /**
  * Services that we require for the Shell
@@ -119,20 +121,20 @@ export interface ICoreServices {
 	contextService: IWorkspaceContextService;
 	eventService: IEventService;
 	configurationService: IConfigurationService;
+	environmentService: IEnvironmentService;
 	githubService: IGithubService;
 }
-
 // Patch _updateEnablement to consider read only state.
 // Do this directly to prevent forking fileActions.ts which many other files import.
 var fileActionsReadOnly = false;
 var updateEnablementPrev = fileActions.BaseFileAction.prototype._updateEnablement;
-fileActions.BaseFileAction.prototype._updateEnablement = function() {
+fileActions.BaseFileAction.prototype._updateEnablement = function () {
 	if (fileActionsReadOnly) {
 		this.enabled = false;
 	} else {
-		updateEnablementPrev.call(this);
+		updateEnablementPrev.apply(this, arguments);
 	}
-}
+};
 
 function getKeyValue(key: string) {
 	let value = window.localStorage.getItem(key);
@@ -141,11 +143,11 @@ function getKeyValue(key: string) {
 		var ca = document.cookie.split(';');
 		for (var i = 0; i < ca.length; i++) {
 			var c = ca[i];
-			while (c.charAt(0)==' ') {
+			while (c.charAt(0) === ' ') {
 				c = c.substring(1);
 			}
-			if (c.indexOf(name) == 0) {
-				value = c.substring(name.length,c.length);
+			if (c.indexOf(name) === 0) {
+				value = c.substring(name.length, c.length);
 				break;
 			}
 		}
@@ -174,16 +176,16 @@ function showTip(key: string, message: string) {
 }
 
 var definitionActionRunPrev = goToDeclaration.DefinitionAction.prototype.run;
-goToDeclaration.DefinitionAction.prototype.run = function() {
+goToDeclaration.DefinitionAction.prototype.run = function () {
 	showTip('definitionActionTip', 'Note: Go To and Peek Definition only work within opened files in GHEdit.');
-	return definitionActionRunPrev.call(this);
-}
+	return definitionActionRunPrev.apply(this, arguments);
+};
 
 var referenceSearchRunPrev = referenceSearch.ReferenceAction.prototype.run;
-referenceSearch.ReferenceAction.prototype.run = function() {
+referenceSearch.ReferenceAction.prototype.run = function () {
 	showTip('referenceSearchTip', 'Note: Find All References only works within opened files in GHEdit.');
-	return referenceSearchRunPrev.call(this);
-}
+	return referenceSearchRunPrev.apply(this, arguments);
+};
 
 const CloseAction = new Action('welcome.close', nls.localize('close', "Close"), '', true, () => null);
 const ShowDocumentationAction = new Action(
@@ -300,6 +302,7 @@ export class WorkbenchShell {
 	private storageService: IStorageService;
 	private messageService: MessageService;
 	private eventService: IEventService;
+	private environmentService:IEnvironmentService;
 	private contextViewService: ContextViewService;
 	private windowService: IWindowService;
 	// TODO: private threadService: MainThreadService;
@@ -308,11 +311,6 @@ export class WorkbenchShell {
 	private contextService: IWorkspaceContextService;
 	private telemetryService: ITelemetryService;
 	private githubService: IGithubService;
-	private modeService: IModeService;
-
-	// DWM: These are dependency injected into various modules. Normally they would
-	// be provided by Electron-dependent modules.
-	private editorWorkerService: IEditorWorkerService;
 
 	private container: HTMLElement;
 	private toUnbind: IDisposable[];
@@ -321,25 +319,25 @@ export class WorkbenchShell {
 	private content: HTMLElement;
 	private contentsContainer: Builder;
 
-	private configuration: IConfiguration;
 	private workspace: IWorkspace;
 	private options: IOptions;
 	private workbench: Workbench;
 	private navbarPart: NavbarPart;
 	private welcomePart: WelcomePart;
 
-	constructor(container: HTMLElement, workspace: IWorkspace, services: ICoreServices, configuration: IConfiguration, options: IOptions) {
-		if (!container)
+	constructor(container: HTMLElement, workspace: IWorkspace, services: ICoreServices, options: IOptions) {
+		if (!container) {
 			throw 'WorkbenchShell container == null?!';
+		}
 		this.container = container;
 
 		this.workspace = workspace;
-		this.configuration = configuration;
 		this.options = options;
 
 		this.contextService = services.contextService;
 		this.eventService = services.eventService;
 		this.configurationService = services.configurationService;
+		this.environmentService = services.environmentService;
 		this.githubService = services.githubService;
 
 		this.toUnbind = [];
@@ -355,10 +353,10 @@ export class WorkbenchShell {
 		aria.setARIAContainer(document.body);
 
 		// Workbench Container
-		let workbenchContainer = $(parent).div();
+		const workbenchContainer = $(parent).div();
 
 		// Instantiation service with services
-		let [instantiationService, serviceCollection] = this.initServiceCollection();
+		const [instantiationService, serviceCollection] = this.initServiceCollection();
 
 		// Initialize the services expected by the standalone editor (Monaco). These are used
 		// by the monaco-json/css/typescript/languages contributions.
@@ -388,22 +386,19 @@ export class WorkbenchShell {
 			*/
 		});
 
+		/* DESKTOP:
 		//crash reporting
-		if (!!this.configuration.env.crashReporter) {
-// TODO: 			let crashReporter = instantiationService.createInstance(CrashReporter, this.configuration.env.version, this.configuration.env.commitHash);
-// TODO: 			crashReporter.start(this.configuration.env.crashReporter);
+		if (!!product.crashReporter) {
+			const crashReporter = instantiationService.createInstance(CrashReporter, pkg.version, product.commit);
+			crashReporter.start(product.crashReporter);
 		}
+		*/
 
 		// Workbench
-		this.workbench = instantiationService.createInstance(Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.configuration, this.options, this.isWelcomeMode(), serviceCollection);
+		this.workbench = instantiationService.createInstance(Workbench, workbenchContainer.getHTMLElement(), this.workspace, this.options, this.isWelcomeMode(), serviceCollection);
 		this.workbench.startup({
 			onWorkbenchStarted: (customKeybindingsCount) => {
 				this.onWorkbenchStarted(customKeybindingsCount);
-
-				// Asynchronously load settings
-				let settingsService = instantiationService.createInstance(UserSettings);
-				serviceCollection.set(settingsService, UserSettings);
-				settingsService.loadSettings();
 
 				// If authenticated but no repository, run ChooseRepositoryAction.
 				if (this.githubService.isAuthenticated() && !this.githubService.repoName) {
@@ -421,8 +416,9 @@ export class WorkbenchShell {
 				enableBrowserHack(BrowserHack.TAB_DRAGGING);
 
 				// Show a first timer welcome tip
-				if (!this.isWelcomeMode())
+				if (!this.isWelcomeMode()) {
 					showWelcomeTip();
+				}
 			},
 
 			onServicesCreated: () => {
@@ -454,7 +450,7 @@ export class WorkbenchShell {
 // TODO:		this.workbench.getInstantiationService().createInstance(Update);
 
 		// Handle case where workbench is not starting up properly
-		let timeoutHandle = setTimeout(() => {
+		const timeoutHandle = setTimeout(() => {
 			console.warn('Workbench did not finish loading in 10 seconds, that might be a problem that should be reported.');
 		}, 10000);
 
@@ -486,7 +482,7 @@ export class WorkbenchShell {
 		}
 
 		this.navbarPart.addEntry({
-			text: '$(beaker)' + (this.isWelcomeMode() ? ' GHEdit' : '') + (this.options.editor.readOnly ? ' (read only)' : ''),
+			text: '$(beaker)' + (this.isWelcomeMode() ? ' GHEdit' : '') + ((<IWindowConfiguration><any>this.environmentService).readOnly ? ' (read only)' : ''),
 			tooltip: AboutGHEditAction.LABEL,
 			command: AboutGHEditAction.ID,
 		}, NavbarAlignment.LEFT, 1000);
@@ -522,7 +518,7 @@ export class WorkbenchShell {
 
 	private onWorkbenchStarted(customKeybindingsCount: number): void {
 		// Log to telemetry service
-		let windowSize = {
+		const windowSize = {
 			innerHeight: window.innerHeight,
 			innerWidth: window.innerWidth,
 			outerHeight: window.outerHeight,
@@ -535,14 +531,14 @@ export class WorkbenchShell {
 				windowSize: windowSize,
 				emptyWorkbench: !this.contextService.getWorkspace(),
 				customKeybindingsCount,
-				theme: this.themeService.getTheme(),
+				theme: this.themeService.getColorTheme(),
 				language: platform.language
 			});
 
-		let workspaceStats: WorkspaceStats = <WorkspaceStats>this.workbench.getInstantiationService().createInstance(WorkspaceStats);
+		const workspaceStats: WorkspaceStats = <WorkspaceStats>this.workbench.getInstantiationService().createInstance(WorkspaceStats);
 		workspaceStats.reportWorkspaceTags();
 
-		/* DESKTOP: Not need when running in-browser.
+		/* DESKTOP: Not needed when running in-browser.
 		if ((platform.isLinux || platform.isMacintosh) && process.getuid() === 0) {
 			this.messageService.show(Severity.Warning, nls.localize('runningAsRoot', "It is recommended not to run Code as 'root'."));
 		}
@@ -559,7 +555,7 @@ export class WorkbenchShell {
 			let schemas = [];
 			for (var uri in MonacoEditorSchemas) {
 				let i = uri.lastIndexOf('/');
-        let pattern = uri.slice(i + 1) + '.json';
+				let pattern = uri.slice(i + 1) + '.json';
 				schemas.push({ uri: uri, fileMatch: [ pattern ], schema: MonacoEditorSchemas[uri] });
 			}
 			global.monaco.languages.json.jsonDefaults.setDiagnosticsOptions({ validate: true, schemas: schemas });
@@ -567,8 +563,9 @@ export class WorkbenchShell {
 	}
 
 	private initServiceCollection(): [InstantiationService, ServiceCollection] {
+		const disposables = new Disposables();
 		/* DESKTOP:
-		const sharedProcess = connect(process.env['VSCODE_SHARED_IPC_HOOK']);
+		const sharedProcess = connectNet(process.env['VSCODE_SHARED_IPC_HOOK']);
 		sharedProcess.done(service => {
 			service.onClose(() => {
 				this.messageService.show(Severity.Error, {
@@ -577,34 +574,39 @@ export class WorkbenchShell {
 				});
 			});
 		}, errors.onUnexpectedError);
+
+		const mainProcessClient = new ElectronIPCClient(ipcRenderer);
+		disposables.add(mainProcessClient);
 		*/
 
 		const serviceCollection = new ServiceCollection();
 		serviceCollection.set(IEventService, this.eventService);
 		serviceCollection.set(IWorkspaceContextService, this.contextService);
 		serviceCollection.set(IConfigurationService, this.configurationService);
+		serviceCollection.set(IEnvironmentService, this.environmentService);
+		// GHEdit: We've unified the env/ironmentService into a single data type and instance. Hopefully one will go away.
+		serviceCollection.set(IEnvService, <IEnvService><any>this.environmentService);
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
-		const disposables = new Disposables();
 
 		this.windowService = instantiationService.createInstance(WindowService);
 		serviceCollection.set(IWindowService, this.windowService);
 
 		// Storage
-		let disableWorkspaceStorage = this.configuration.env.extensionTestsPath || (!this.workspace && !this.configuration.env.extensionDevelopmentPath); // without workspace or in any extension test, we use inMemory storage unless we develop an extension where we want to preserve state
+		const disableWorkspaceStorage = this.environmentService.extensionTestsPath || (!this.workspace && !this.environmentService.extensionDevelopmentPath); // without workspace or in any extension test, we use inMemory storage unless we develop an extension where we want to preserve state
 		this.storageService = instantiationService.createInstance(Storage, window.localStorage, disableWorkspaceStorage ? inMemoryLocalStorageInstance : window.localStorage);
 		serviceCollection.set(IStorageService, this.storageService);
 
 		// Telemetry
-		if (this.configuration.env.isBuilt && !this.configuration.env.extensionDevelopmentPath && !!this.configuration.env.enableTelemetry) {
+		if (this.environmentService.isBuilt && !this.environmentService.extensionDevelopmentPath /* && !!product.enableTelemetry */) {
 			/* TODO:
-			const commit = this.contextService.getConfiguration().env.commitHash;
-			const version = this.contextService.getConfiguration().env.version;
+			const commit = product.commit;
+			const version = pkg.version;
 
 			const config: ITelemetryServiceConfig = {
 				appender: new TelemetryAppenderClient(channel),
 				commonProperties: resolveWorkbenchCommonProperties(this.storageService, commit, version),
-				piiPaths: [this.configuration.env.appRoot, this.configuration.env.userExtensionsHome]
+				piiPaths: [this.environmentService.appRoot, this.environmentService.extensionsPath]
 			};
 
 			const telemetryService = instantiationService.createInstance(TelemetryService, config);
@@ -631,6 +633,18 @@ export class WorkbenchShell {
 		serviceCollection.set(IMessageService, this.messageService);
 		g_messageService = this.messageService;
 
+		const fileService = disposables.add(instantiationService.createInstance(FileService));
+		fileService.updateOptions({
+			settingsNotificationPaths: [
+				this.environmentService.appSettingsPath,
+				this.environmentService.appKeybindingsPath,
+				'/.vscode/settings.json'
+			],
+			// The WindowConfiguration properties get merged into the EnvironmentService.
+			gistRegEx: (<IWindowConfiguration><any>this.environmentService).gistRegEx
+		});
+		serviceCollection.set(IFileService, fileService);
+
 		this.toUnbind.push(NullLifecycleService.onShutdown(() => disposables.dispose()));
 		serviceCollection.set(ILifecycleService, NullLifecycleService);
 
@@ -639,7 +653,7 @@ export class WorkbenchShell {
 		serviceCollection.set(IThreadService, this.threadService);
 		*/
 
-		let extensionService = instantiationService.createInstance(MainProcessExtensionService);
+		const extensionService = instantiationService.createInstance(MainProcessExtensionService);
 		serviceCollection.set(IExtensionService, extensionService);
 
 		serviceCollection.set(ICommandService, new CommandService(instantiationService, extensionService));
@@ -647,52 +661,45 @@ export class WorkbenchShell {
 		this.contextViewService = instantiationService.createInstance(ContextViewService, this.container);
 		serviceCollection.set(IContextViewService, this.contextViewService);
 
+		/* DESKTOP:
 		let requestService = new RequestService(this.contextService, this.telemetryService);
 		serviceCollection.set(IRequestService, requestService);
-
-		// FileService must be instantiated AFTER MessageService that it depends on (instantiated above).
-		let fileService = disposables.add(instantiationService.createInstance(FileService));
-		fileService.updateOptions({
-			settingsNotificationPaths: [
-				this.configuration.env.appSettingsPath,
-				this.configuration.env.appKeybindingsPath,
-				'/.vscode/settings.json'
-			],
-			gistRegEx: (<IMainEnvironment>this.configuration.env).gistRegEx
-		});
-		serviceCollection.set(IFileService, fileService);
+		*/
 
 		let markerService = instantiationService.createInstance(MarkerService);
 		serviceCollection.set(IMarkerService, markerService);
 
-		let modeService = instantiationService.createInstance(MainThreadModeServiceImpl);
+		const modeService = instantiationService.createInstance(MainThreadModeServiceImpl);
 		serviceCollection.set(IModeService, modeService);
 
-		let modelService = instantiationService.createInstance(ModelServiceImpl);
+		const modelService = instantiationService.createInstance(ModelServiceImpl);
 		serviceCollection.set(IModelService, modelService);
 
-		let compatWorkerService = instantiationService.createInstance(MainThreadCompatWorkerService);
+		const compatWorkerService = instantiationService.createInstance(MainThreadCompatWorkerService);
 		serviceCollection.set(ICompatWorkerService, compatWorkerService);
 
-		let editorWorkerService = instantiationService.createInstance(EditorWorkerServiceImpl);
+		const editorWorkerService = instantiationService.createInstance(EditorWorkerServiceImpl);
 		serviceCollection.set(IEditorWorkerService, editorWorkerService);
 
-		let untitledEditorService = instantiationService.createInstance(UntitledEditorService);
+		const untitledEditorService = instantiationService.createInstance(UntitledEditorService);
 		serviceCollection.set(IUntitledEditorService, untitledEditorService);
 
 		this.themeService = instantiationService.createInstance(ThemeService);
 		serviceCollection.set(IThemeService, this.themeService);
 
-		let searchService = instantiationService.createInstance(SearchService);
+		const searchService = instantiationService.createInstance(SearchService);
 		serviceCollection.set(ISearchService, searchService);
 
-		let codeEditorService = instantiationService.createInstance(CodeEditorServiceImpl);
+		const codeEditorService = instantiationService.createInstance(CodeEditorServiceImpl);
 		serviceCollection.set(ICodeEditorService, codeEditorService);
 
 		/* TODO:
 		const extensionManagementChannel = getDelayedChannel<IExtensionManagementChannel>(sharedProcess.then(c => c.getChannel('extensions')));
-		const extensionManagementChannelClient = instantiationService.createInstance(ExtensionManagementChannelClient, extensionManagementChannel);
+		const extensionManagementChannelClient = new ExtensionManagementChannelClient(extensionManagementChannel);
 		serviceCollection.set(IExtensionManagementService, extensionManagementChannelClient);
+		const urlChannel = mainProcessClient.getChannel('url');
+		const urlChannelClient = new URLChannelClient(urlChannel, this.windowService.getWindowId());
+		serviceCollection.set(IURLService, urlChannelClient);
 		*/
 
 		return [instantiationService, serviceCollection];
@@ -723,8 +730,9 @@ export class WorkbenchShell {
 		this.contentsContainer = this.createContents($(this.content));
 
 		// If the user isn't authenticated show a special welcome to help them get started.
-		if (!this.githubService.isAuthenticated())
+		if (!this.githubService.isAuthenticated()) {
 			this.createWelcomePart();
+		}
 
 		// Layout
 		this.layout();
@@ -745,20 +753,9 @@ export class WorkbenchShell {
 	}
 
 	private writeTimers(): void {
-		let timers = (<any>window).MonacoEnvironment.timers;
+		const timers = (<any>window).MonacoEnvironment.timers;
 		if (timers) {
-			let events: timer.IExistingTimerEvent[] = [];
-
-			// Program
-			if (timers.beforeProgram) {
-				events.push({
-					startTime: timers.beforeProgram,
-					stopTime: timers.afterProgram,
-					topic: 'Startup',
-					name: 'Program Start',
-					description: 'Time it takes to pass control to VSCodes main method'
-				});
-			}
+			const events: timer.IExistingTimerEvent[] = [];
 
 			// Window
 			if (timers.vscodeStart) {
@@ -795,12 +792,12 @@ export class WorkbenchShell {
 	}
 
 	public onUnexpectedError(error: any): void {
-		let errorMsg = errors.toErrorMessage(error, true);
+		const errorMsg = errors.toErrorMessage(error, true);
 		if (!errorMsg) {
 			return;
 		}
 
-		let now = Date.now();
+		const now = Date.now();
 		if (errorMsg === this.previousErrorValue && now - this.previousErrorTime <= 1000) {
 			return; // Return if error message identical to previous and shorter than 1 second
 		}
@@ -818,9 +815,9 @@ export class WorkbenchShell {
 	}
 
 	public layout(): void {
-		let clArea = $(this.container).getClientArea();
+		const clArea = $(this.container).getClientArea();
 
-		let contentsSize = new Dimension(clArea.width, clArea.height);
+		const contentsSize = new Dimension(clArea.width, clArea.height);
 
 		const navbarStyle = this.navbarPart.getContainer().getComputedStyle();
 		let navbarHeight = parseInt(navbarStyle.getPropertyValue('height'), 10) || 18;

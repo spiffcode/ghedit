@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
@@ -9,6 +10,7 @@ import {IHTMLContentElement} from 'vs/base/common/htmlContent';
 import {IJSONSchema} from 'vs/base/common/jsonSchema';
 import {Keybinding} from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
+import {toDisposable} from 'vs/base/common/lifecycle';
 import {IEventService} from 'vs/platform/event/common/event';
 import {IExtensionMessageCollector, ExtensionsRegistry} from 'vs/platform/extensions/common/extensionsRegistry';
 import {Extensions, IJSONContributionRegistry} from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
@@ -17,15 +19,16 @@ import {IStatusbarService} from 'vs/platform/statusbar/common/statusbar';
 import {IOSupport} from 'vs/platform/keybinding/common/keybindingResolver';
 import {ICommandService} from 'vs/platform/commands/common/commands';
 import {IKeybindingItem, IUserFriendlyKeybinding} from 'vs/platform/keybinding/common/keybinding';
-import {ICommandRule, KeybindingsRegistry} from 'vs/platform/keybinding/common/keybindingsRegistry';
+import {IContextKeyService} from 'vs/platform/contextkey/common/contextkey';
+import {IKeybindingRule, KeybindingsRegistry} from 'vs/platform/keybinding/common/keybindingsRegistry';
 import {Registry} from 'vs/platform/platform';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
-import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
-import {EventType, OptionsChangeEvent} from 'vs/workbench/common/events';
 import {getNativeLabelProvider, getNativeAriaLabelProvider} from 'vs/workbench/services/keybinding/electron-browser/nativeKeymap';
 import {IMessageService} from 'vs/platform/message/common/message';
-import {IDisposable} from 'vs/base/common/lifecycle';
+import {ConfigWatcher} from 'vs/base/node/config';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IGithubService} from 'ghedit/githubService';
 
 interface ContributedKeyBinding {
 	command: string;
@@ -115,26 +118,25 @@ let keybindingsExtPoint = ExtensionsRegistry.registerExtensionPoint<ContributedK
 });
 
 export class WorkbenchKeybindingService extends KeybindingService {
-	private contextService: IWorkspaceContextService;
-	private eventService: IEventService;
-	private telemetryService: ITelemetryService;
-	private toDispose: IDisposable;
+	private userKeybindings: ConfigWatcher<IUserFriendlyKeybinding[]>;
 
 	constructor(
 		domNode: HTMLElement,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@ICommandService commandService: ICommandService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService contextService: IWorkspaceContextService,
-		@IEventService eventService: IEventService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IEventService private eventService: IEventService,
+		@ITelemetryService private telemetryService: ITelemetryService,
 		@IMessageService messageService: IMessageService,
-		@IStatusbarService statusBarService: IStatusbarService
+		@IEnvironmentService private environmentService: IEnvironmentService,
+		@IStatusbarService statusBarService: IStatusbarService,
+		@IGithubService githubService: IGithubService
 	) {
-		super(commandService, configurationService, messageService, statusBarService);
-		this.contextService = contextService;
-		this.eventService = eventService;
-		this.telemetryService = telemetryService;
-		this.toDispose = this.eventService.addListener2(EventType.WORKBENCH_OPTIONS_CHANGED, (e) => this.onOptionsChanged(e));
+		super(contextKeyService, commandService, messageService, statusBarService);
+
+		this.userKeybindings = new ConfigWatcher(environmentService.appKeybindingsPath, { defaultConfig: [] }, eventService, githubService);
+		this.toDispose.push(toDisposable(() => this.userKeybindings.dispose()));
+
 		keybindingsExtPoint.setHandler((extensions) => {
 			let commandAdded = false;
 
@@ -147,45 +149,28 @@ export class WorkbenchKeybindingService extends KeybindingService {
 			}
 		});
 
+		this.toDispose.push(this.userKeybindings.onDidUpdateConfiguration(() => this.updateResolver()));
+
 		this._beginListening(domNode);
 	}
 
 	public customKeybindingsCount(): number {
-		let opts = this.contextService.getOptions();
-		if (opts.globalSettings && opts.globalSettings.keybindings && Array.isArray(opts.globalSettings.keybindings)) {
-			return opts.globalSettings.keybindings.length;
-		}
-		return 0;
+		let userKeybindings = this.userKeybindings.getConfig();
+
+		return userKeybindings.length;
 	}
 
 	protected _getExtraKeybindings(isFirstTime: boolean): IKeybindingItem[] {
-		let extras: IUserFriendlyKeybinding[] = [];
-		let opts = this.contextService.getOptions();
-		if (opts.globalSettings && opts.globalSettings.keybindings) {
-			if (!isFirstTime) {
-				let cnt = 0;
-				if (Array.isArray(opts.globalSettings.keybindings)) {
-					cnt = opts.globalSettings.keybindings.length;
-				}
-				this.telemetryService.publicLog('customKeybindingsChanged', {
-					keyCount: cnt
-				});
-			}
-			if (Array.isArray(opts.globalSettings.keybindings)) {
-				extras = opts.globalSettings.keybindings;
-			}
-		}
-		return extras.map((k, i) => IOSupport.readKeybindingItem(k, i));
-	}
+		let extraUserKeybindings: IUserFriendlyKeybinding[] = this.userKeybindings.getConfig();
+		if (!isFirstTime) {
+			let cnt = extraUserKeybindings.length;
 
-	private onOptionsChanged(e: OptionsChangeEvent): void {
-		if (e.key === 'globalSettings') {
-			this.updateResolver();
+			this.telemetryService.publicLog('customKeybindingsChanged', {
+				keyCount: cnt
+			});
 		}
-	}
 
-	public dispose(): void {
-		this.toDispose.dispose();
+		return extraUserKeybindings.map((k, i) => IOSupport.readKeybindingItem(k, i));
 	}
 
 	public getLabelFor(keybinding: Keybinding): string {
@@ -237,7 +222,7 @@ export class WorkbenchKeybindingService extends KeybindingService {
 		if (isValidContributedKeyBinding(keybindings, rejects)) {
 			let rule = this._asCommandRule(isBuiltin, idx++, keybindings);
 			if (rule) {
-				KeybindingsRegistry.registerCommandRule(rule);
+				KeybindingsRegistry.registerKeybindingRule(rule);
 				commandAdded = true;
 			}
 		}
@@ -254,7 +239,7 @@ export class WorkbenchKeybindingService extends KeybindingService {
 		return commandAdded;
 	}
 
-	private _asCommandRule(isBuiltin: boolean, idx: number, binding: ContributedKeyBinding): ICommandRule {
+	private _asCommandRule(isBuiltin: boolean, idx: number, binding: ContributedKeyBinding): IKeybindingRule {
 
 		let {command, when, key, mac, linux, win} = binding;
 

@@ -5,12 +5,11 @@
 
 'use strict';
 
-import URI from 'vs/base/common/uri';
 import Event, {Emitter} from 'vs/base/common/event';
 import {IDisposable, dispose} from 'vs/base/common/lifecycle';
 import {IAction} from 'vs/base/common/actions';
 import {values} from 'vs/base/common/collections';
-import {KbExpr, IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
+import {ContextKeyExpr, IContextKeyService} from 'vs/platform/contextkey/common/contextkey';
 import {MenuId, MenuRegistry, ICommandAction, MenuItemAction, IMenu, IMenuItem, IMenuService} from 'vs/platform/actions/common/actions';
 import {IExtensionService} from 'vs/platform/extensions/common/extensions';
 import {ICommandService} from 'vs/platform/commands/common/commands';
@@ -27,8 +26,8 @@ export class MenuService implements IMenuService {
 		//
 	}
 
-	createMenu(id: MenuId, keybindingService: IKeybindingService): IMenu {
-		return new Menu(id, this._commandService, keybindingService, this._extensionService);
+	createMenu(id: MenuId, contextKeyService: IContextKeyService): IMenu {
+		return new Menu(id, this._commandService, contextKeyService, this._extensionService);
 	}
 
 	getCommandActions(): ICommandAction[] {
@@ -47,7 +46,7 @@ class Menu implements IMenu {
 	constructor(
 		id: MenuId,
 		@ICommandService private _commandService: ICommandService,
-		@IKeybindingService private _keybindingService: IKeybindingService,
+		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IExtensionService private _extensionService: IExtensionService
 	) {
 		this._extensionService.onReady().then(_ => {
@@ -72,7 +71,7 @@ class Menu implements IMenu {
 			}
 
 			// subscribe to context changes
-			this._disposables.push(this._keybindingService.onDidChangeContext(keys => {
+			this._disposables.push(this._contextKeyService.onDidChangeContext(keys => {
 				for (let k of keys) {
 					if (keysFilter[k]) {
 						this._onDidChange.fire();
@@ -100,8 +99,8 @@ class Menu implements IMenu {
 			const [id, actions] = group;
 			const activeActions: MenuItemAction[] = [];
 			for (let action of actions) {
-				if (this._keybindingService.contextMatchesRules(action.item.when)) {
-					action.resource = this._keybindingService.getContextValue<URI>(ResourceContextKey.Resource);
+				if (this._contextKeyService.contextMatchesRules(action.item.when)) {
+					action.resource = ResourceContextKey.Resource.getValue(this._contextKeyService);
 					activeActions.push(action);
 				}
 			}
@@ -112,7 +111,7 @@ class Menu implements IMenu {
 		return result;
 	}
 
-	private static _fillInKbExprKeys(exp: KbExpr, set: { [k: string]: boolean }): void {
+	private static _fillInKbExprKeys(exp: ContextKeyExpr, set: { [k: string]: boolean }): void {
 		if (exp) {
 			for (let key of exp.keys()) {
 				set[key] = true;

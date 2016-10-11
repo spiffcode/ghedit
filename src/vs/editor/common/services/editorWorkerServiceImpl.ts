@@ -58,7 +58,7 @@ export class EditorWorkerServiceImpl implements IEditorWorkerService {
 		return this._workerManager.withWorker().then(client => client.computeDirtyDiff(original, modified, ignoreTrimWhitespace));
 	}
 
-	public textualSuggest(resource: URI, position: editorCommon.IPosition): TPromise<ISuggestResult[]> {
+	public textualSuggest(resource: URI, position: editorCommon.IPosition): TPromise<ISuggestResult> {
 		return this._workerManager.withWorker().then(client => client.textualSuggest(resource, position));
 	}
 
@@ -316,13 +316,13 @@ export class EditorWorkerClient extends Disposable {
 		});
 	}
 
-	public textualSuggest(resource: URI, position: editorCommon.IPosition): TPromise<ISuggestResult[]> {
+	public textualSuggest(resource: URI, position: editorCommon.IPosition): TPromise<ISuggestResult> {
 		return this._withSyncedResources([resource]).then(proxy => {
 			let model = this._modelService.getModel(resource);
 			if (!model) {
 				return null;
 			}
-			let wordDefRegExp = WordHelper.massageWordDefinitionOf(model.getMode());
+			let wordDefRegExp = WordHelper.massageWordDefinitionOf(model.getModeId());
 			let wordDef = wordDefRegExp.source;
 			let wordDefFlags = (wordDefRegExp.global ? 'g' : '') + (wordDefRegExp.ignoreCase ? 'i' : '') + (wordDefRegExp.multiline ? 'm' : '');
 			return proxy.textualSuggest(resource.toString(), position, wordDef, wordDefFlags);
@@ -335,7 +335,7 @@ export class EditorWorkerClient extends Disposable {
 			if (!model) {
 				return null;
 			}
-			let wordDefRegExp = WordHelper.massageWordDefinitionOf(model.getMode());
+			let wordDefRegExp = WordHelper.massageWordDefinitionOf(model.getModeId());
 			let wordDef = wordDefRegExp.source;
 			let wordDefFlags = (wordDefRegExp.global ? 'g' : '') + (wordDefRegExp.ignoreCase ? 'i' : '') + (wordDefRegExp.multiline ? 'm' : '');
 			return proxy.navigateValueSet(resource.toString(), range, up, wordDef, wordDefFlags);

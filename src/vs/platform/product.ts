@@ -1,9 +1,10 @@
 /*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
+// DESKTOP: import * as path from 'path';
 import uri from 'vs/base/common/uri';
 
 export interface IProductConfiguration {
@@ -13,6 +14,7 @@ export interface IProductConfiguration {
 	win32AppUserModelId: string;
 	win32MutexName: string;
 	darwinBundleIdentifier: string;
+	urlProtocol: string;
 	dataFolderName: string;
 	downloadUrl: string;
 	updateUrl?: string;
@@ -39,6 +41,7 @@ export interface IProductConfiguration {
 	documentationUrl: string;
 	releaseNotesUrl: string;
 	twitterUrl: string;
+	sendFeedbackUrl: string; // GHEdit: added this
 	requestFeatureUrl: string;
 	reportIssueUrl: string;
 	licenseUrl: string;
@@ -46,14 +49,19 @@ export interface IProductConfiguration {
 	npsSurveyUrl: string;
 }
 
+/* DESKTOP:
 const rootPath = path.dirname(uri.parse(require.toUrl('')).fsPath);
 const productJsonPath = path.join(rootPath, 'product.json');
 const product = require.__$__nodeRequire(productJsonPath) as IProductConfiguration;
+*/
+const product = <IProductConfiguration>{ nameShort: 'GCEdit', nameLong: 'GCEdit', dataFolderName: '' }
 
+/* DESKTOP:
 if (process.env['VSCODE_DEV']) {
 	product.nameShort += ' Dev';
 	product.nameLong += ' Dev';
 	product.dataFolderName += '-dev';
 }
+*/
 
 export default product;

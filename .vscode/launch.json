@@ -1,6 +1,22 @@
 {
 	"version": "0.1.0",
 	"configurations": [
+        {
+            "name": "Launch Chrome against localhost, with sourcemaps",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8000",
+            "sourceMaps": true,
+            "webRoot": "${workspaceRoot}/ghedit"
+        },
+        {
+            "name": "Attach to Chrome, with sourcemaps",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "sourceMaps": true,
+            "webRoot": "${workspaceRoot}"
+        },
 		{
 			"name": "Unit Tests",
 			"type": "node",
@@ -9,26 +25,8 @@
 			"stopOnEntry": false,
 			"args": [
 				"--timeout",
-				"999999"
-			],
-			"cwd": "${workspaceRoot}",
-			"runtimeArgs": [],
-			"env": {},
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out"
-		},
-		{
-			"name": "Stacks Tests",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-			"stopOnEntry": false,
-			"args": [
-				"--timeout",
 				"999999",
-				"--colors",
-				"-g",
-				"Stacks"
+				"Emmet"
 			],
 			"cwd": "${workspaceRoot}",
 			"runtimeArgs": [],
@@ -91,15 +89,16 @@
 			"name": "Launch VSCode",
 			"type": "chrome",
 			"request": "launch",
-			"runtimeExecutable": "${workspaceRoot}/scripts/code.bat",
+			"windows": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/code.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/code.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceRoot}/scripts/code.sh"
+			},
 			"sourceMaps": true
-		},
-		{
-			"name": "Convert css-schema to browser.js",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/vs/languages/css/common/buildscripts/generate_browserjs.js",
-			"stopOnEntry": false
 		},
 		{
 			"name": "Debug monaco",

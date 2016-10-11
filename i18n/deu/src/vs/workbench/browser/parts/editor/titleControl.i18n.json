@@ -10,6 +10,5 @@
 	"closeOthers": "Andere schließen",
 	"closeRight": "Rechts schließen",
 	"keepOpen": "Geöffnet lassen",
-	"moveLeft": "Nach links verschieben",
-	"moveRight": "Nach rechts verschieben"
+	"showOpenedEditors": "Geöffnete Editoren anzeigen"
 }

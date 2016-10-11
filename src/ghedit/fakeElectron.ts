@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Spiffcode, Inc. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import {EventEmitter} from 'vs/base/common/eventEmitter';
@@ -249,116 +253,6 @@ export class Menu extends EventEmitter {
 	 * @returns an array containing the menu’s items.
 	 */
 	public items: MenuItem[];
-}
-
-// From vs/code/electron-main/window.ts
-export interface IPath {
-
-	// the workspace spath for a VSCode instance which can be null
-	workspacePath?: string;
-
-	// the file path to open within a VSCode instance
-	filePath?: string;
-
-	// the line number in the file path to open
-	lineNumber?: number;
-
-	// the column number in the file path to open
-	columnNumber?: number;
-
-	// indicator to create the file path in the VSCode instance
-	createFilePath?: boolean;
-
-	// indicator to install the extension (path to .vsix) in the VSCode instance
-	installExtensionPath?: boolean;
-}
-
-// From vs/code/electron-main/env.ts
-export interface ICommandLineArguments {
-	verboseLogging: boolean;
-	debugExtensionHostPort: number;
-	debugBrkExtensionHost: boolean;
-	debugBrkFileWatcherPort: number;
-	logExtensionHostCommunication: boolean;
-	disableExtensions: boolean;
-	extensionsHomePath: string;
-	extensionDevelopmentPath: string;
-	extensionTestsPath: string;
-	programStart: number;
-	pathArguments?: string[];
-	enablePerformance?: boolean;
-	openNewWindow?: boolean;
-	openInSameWindow?: boolean;
-	gotoLineMode?: boolean;
-	diffMode?: boolean;
-	locale?: string;
-	waitForWindowClose?: boolean;
-}
-
-export interface IEnvironmentService {
-	_serviceBrand: any;
-	cliArgs: ICommandLineArguments;
-	userExtensionsHome: string;
-	isTestingFromCli: boolean;
-	isBuilt: boolean;
-	product: IProductConfiguration;
-	updateUrl: string;
-	quality: string;
-	userHome: string;
-	appRoot: string;
-	currentWorkingDirectory: string;
-	appHome: string;
-	appSettingsHome: string;
-	appSettingsPath: string;
-	appKeybindingsPath: string;
-	mainIPCHandle: string;
-	sharedIPCHandle: string;
-
-	// DESKTOP: createPaths(): TPromise<void>;
-}
-
-// From vs/platform/product.ts
-export interface IProductConfiguration {
-	nameShort: string;
-	nameLong: string;
-	/*
-	applicationName: string;
-	win32AppUserModelId: string;
-	win32MutexName: string;
-	darwinBundleIdentifier: string;
-	dataFolderName: string;
-	downloadUrl: string;
-	updateUrl?: string;
-	quality?: string;
-	commit: string;
-	date: string;
-	extensionsGallery: {
-		serviceUrl: string;
-		itemUrl: string;
-	};
-	extensionTips: { [id: string]: string; };
-	extensionImportantTips: { [id: string]: string; };
-	crashReporter: Electron.CrashReporterStartOptions;
-	welcomePage: string;
-	enableTelemetry: boolean;
-	aiConfig: {
-		key: string;
-		asimovKey: string;
-	};
-	sendASmile: {
-		reportIssueUrl: string,
-		requestFeatureUrl: string
-	};
-	*/
-	documentationUrl: string;
-	releaseNotesUrl: string;
-	twitterUrl: string;
-	sendFeedbackUrl: string;
-	requestFeatureUrl: string;
-	reportIssueUrl: string;
-	licenseUrl: string;
-	privacyStatementUrl: string;
-	npsSurveyUrl: string;
 }
 
 export interface IWindowsService {

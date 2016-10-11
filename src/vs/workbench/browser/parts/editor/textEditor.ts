@@ -8,13 +8,12 @@
 import {TPromise} from 'vs/base/common/winjs.base';
 import {Dimension, Builder} from 'vs/base/browser/builder';
 import objects = require('vs/base/common/objects');
-import {CodeEditorWidget} from 'vs/editor/browser/widget/codeEditorWidget';
-import {EventType as WorkbenchEventType} from 'vs/workbench/common/events';
+import {CodeEditor} from 'vs/editor/browser/codeEditor';
 import {EditorInput, EditorOptions} from 'vs/workbench/common/editor';
 import {BaseEditor} from 'vs/workbench/browser/parts/editor/baseEditor';
 import {EditorConfiguration} from 'vs/editor/common/config/commonEditorConfig';
-import {IEditor, EventType, IEditorOptions} from 'vs/editor/common/editorCommon';
-import {IWorkspaceContextService} from 'vs/workbench/services/workspace/common/contextService';
+import {IEditor, IEditorOptions} from 'vs/editor/common/editorCommon';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {IFilesConfiguration} from 'vs/platform/files/common/files';
 import {Position} from 'vs/platform/editor/common/editor';
 import {IStorageService} from 'vs/platform/storage/common/storage';
@@ -24,9 +23,10 @@ import {IInstantiationService} from 'vs/platform/instantiation/common/instantiat
 import {IMessageService} from 'vs/platform/message/common/message';
 import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
 import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
-import {IModeService} from 'vs/editor/common/services/modeService';
 import {IThemeService} from 'vs/workbench/services/themes/common/themeService';
 import {Selection} from 'vs/editor/common/core/selection';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
+import {IWindowConfiguration} from 'vs/workbench/electron-browser/main';
 
 /**
  * The base class of editors that leverage the text editor for the editing experience. This class is only intended to
@@ -35,7 +35,7 @@ import {Selection} from 'vs/editor/common/core/selection';
 export abstract class BaseTextEditor extends BaseEditor {
 	private editorControl: IEditor;
 	private _editorContainer: Builder;
-	private _hasPendingConfigurationChange = false;
+	private hasPendingConfigurationChange: boolean;
 
 	constructor(
 		id: string,
@@ -47,15 +47,13 @@ export abstract class BaseTextEditor extends BaseEditor {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IEventService private _eventService: IEventService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IModeService private _modeService: IModeService,
-		@IThemeService private _themeService: IThemeService
+		@IThemeService private themeService: IThemeService,
+		@IEnvironmentService private environmentService: IEnvironmentService
 	) {
 		super(id, telemetryService);
 
-		this.toUnbind.push(this._eventService.addListener2(WorkbenchEventType.WORKBENCH_OPTIONS_CHANGED, _ => this.handleConfigurationChangeEvent()));
 		this.toUnbind.push(this.configurationService.onDidUpdateConfiguration(e => this.handleConfigurationChangeEvent(e.config)));
-
-		this.toUnbind.push(_themeService.onDidThemeChange(_ => this.handleConfigurationChangeEvent()));
+		this.toUnbind.push(themeService.onDidColorThemeChange(_ => this.handleConfigurationChangeEvent()));
 	}
 
 	public get instantiationService(): IInstantiationService {
@@ -74,49 +72,6 @@ export abstract class BaseTextEditor extends BaseEditor {
 		return this._messageService;
 	}
 
-	private handleConfigurationChangeEvent(configuration?: any): void {
-		if (this.isVisible()) {
-			this.applyConfiguration(configuration);
-		} else {
-			this._hasPendingConfigurationChange = true;
-		}
-	}
-
-	private consumePendingConfigurationChangeEvent(): void {
-		if (this._hasPendingConfigurationChange) {
-			this.applyConfiguration(this.configurationService.getConfiguration());
-			this._hasPendingConfigurationChange = false;
-		}
-	}
-
-	protected applyConfiguration(configuration?: any): void {
-		if (!this.editorControl) {
-			return;
-		}
-		if (configuration) {
-			// Update Editor with configuration and editor settings
-			let specificEditorSettings = this.getCodeEditorOptions();
-			configuration = objects.clone(configuration); // dont modify original config
-			objects.assign(configuration[EditorConfiguration.EDITOR_SECTION], specificEditorSettings);
-			EditorConfiguration.apply(configuration, this.editorControl);
-
-		} else {
-			this.editorControl.updateOptions(this.getCodeEditorOptions());
-		}
-	}
-
-	protected getCodeEditorOptions(): IEditorOptions {
-		let baseOptions: IEditorOptions = {
-			overviewRulerLanes: 3,
-			glyphMargin: true,
-			lineNumbersMinChars: 3,
-			theme: this._themeService.getTheme()
-		};
-
-		// Always mixin editor options from the context into our set to allow for override
-		return objects.mixin(baseOptions, this.contextService.getOptions().editor);
-	}
-
 	public get eventService(): IEventService {
 		return this._eventService;
 	}
@@ -127,6 +82,50 @@ export abstract class BaseTextEditor extends BaseEditor {
 
 	public get editorContainer(): Builder {
 		return this._editorContainer;
+	}
+
+	private handleConfigurationChangeEvent(configuration?: any): void {
+		if (this.isVisible()) {
+			this.applyConfiguration(configuration);
+		} else {
+			this.hasPendingConfigurationChange = true;
+		}
+	}
+
+	private consumePendingConfigurationChangeEvent(): void {
+		if (this.hasPendingConfigurationChange) {
+			this.applyConfiguration(this.configurationService.getConfiguration());
+			this.hasPendingConfigurationChange = false;
+		}
+	}
+
+	protected applyConfiguration(configuration?: any): void {
+		if (!this.editorControl) {
+			return;
+		}
+
+		// Configuration & Options
+		if (configuration) {
+			const specificEditorSettings = this.getCodeEditorOptions();
+			configuration = objects.clone(configuration); // dont modify original config
+			objects.assign(configuration[EditorConfiguration.EDITOR_SECTION], specificEditorSettings);
+			EditorConfiguration.apply(configuration, this.editorControl);
+		}
+
+		// Just options
+		else {
+			this.editorControl.updateOptions(this.getCodeEditorOptions());
+		}
+	}
+
+	protected getCodeEditorOptions(): IEditorOptions {
+		return {
+			overviewRulerLanes: 3,
+			glyphMargin: true,
+			lineNumbersMinChars: 3,
+			theme: this.themeService.getColorTheme(),
+			readOnly: (<IWindowConfiguration><any>this.environmentService).readOnly
+		};
 	}
 
 	public createEditor(parent: Builder): void {
@@ -144,7 +143,7 @@ export abstract class BaseTextEditor extends BaseEditor {
 	 * provide their own editor control that should be used (e.g. a DiffEditor).
 	 */
 	public createEditorControl(parent: Builder): IEditor {
-		return this._instantiationService.createInstance(CodeEditorWidget, parent.getHTMLElement(), this.getCodeEditorOptions());
+		return this._instantiationService.createInstance(CodeEditor, parent.getHTMLElement(), this.getCodeEditorOptions());
 	}
 
 	public setInput(input: EditorInput, options: EditorOptions): TPromise<void> {

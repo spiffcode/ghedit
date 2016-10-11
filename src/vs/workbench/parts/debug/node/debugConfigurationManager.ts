@@ -5,32 +5,33 @@
 
 import path = require('path');
 import nls = require('vs/nls');
-import { sequence } from 'vs/base/common/async';
-import { TPromise } from 'vs/base/common/winjs.base';
+import {sequence} from 'vs/base/common/async';
+import {TPromise} from 'vs/base/common/winjs.base';
 import strings = require('vs/base/common/strings');
 import types = require('vs/base/common/types');
-import { isLinux, isMacintosh, isWindows } from 'vs/base/common/platform';
-import Event, { Emitter } from 'vs/base/common/event';
+import {isLinux, isMacintosh, isWindows} from 'vs/base/common/platform';
+import Event, {Emitter} from 'vs/base/common/event';
 import objects = require('vs/base/common/objects');
 import uri from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
+import {Schemas} from 'vs/base/common/network';
 import paths = require('vs/base/common/paths');
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import {IJSONSchema} from 'vs/base/common/jsonSchema';
 import editor = require('vs/editor/common/editorCommon');
 import extensionsRegistry = require('vs/platform/extensions/common/extensionsRegistry');
 import platform = require('vs/platform/platform');
 import jsonContributionRegistry = require('vs/platform/jsonschemas/common/jsonContributionRegistry');
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileService } from 'vs/platform/files/common/files';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { ICommandService } from 'vs/platform/commands/common/commands';
+import {IConfigurationService} from 'vs/platform/configuration/common/configuration';
+import {IFileService} from 'vs/platform/files/common/files';
+import {ITelemetryService} from 'vs/platform/telemetry/common/telemetry';
+import {ICommandService} from 'vs/platform/commands/common/commands';
 import debug = require('vs/workbench/parts/debug/common/debug');
-import { Adapter } from 'vs/workbench/parts/debug/node/debugAdapter';
-import { IWorkspaceContextService } from 'vs/workbench/services/workspace/common/contextService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQuickOpenService } from 'vs/workbench/services/quickopen/common/quickOpenService';
-import { ConfigVariables } from 'vs/workbench/parts/lib/node/configVariables';
-import { ISystemVariables } from 'vs/base/common/parsers';
+import {Adapter} from 'vs/workbench/parts/debug/node/debugAdapter';
+import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
+import {IWorkbenchEditorService} from 'vs/workbench/services/editor/common/editorService';
+import {IQuickOpenService} from 'vs/workbench/services/quickopen/common/quickOpenService';
+import {ConfigVariables} from 'vs/workbench/parts/lib/node/configVariables';
+import {ISystemVariables} from 'vs/base/common/parsers';
+import {IEnvironmentService} from 'vs/platform/environment/common/environment';
 
 // debuggers extension point
 export const debuggersExtPoint = extensionsRegistry.ExtensionsRegistry.registerExtensionPoint<debug.IRawAdapter[]>('debuggers', {
@@ -174,7 +175,7 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 	private systemVariables: ISystemVariables;
 	private adapters: Adapter[];
 	private allModeIdsForBreakpoints: { [key: string]: boolean };
-	private _onDidConfigurationChange: Emitter<string>;
+	private _onDidConfigurationChange: Emitter<debug.IConfig>;
 
 	constructor(
 		configName: string,
@@ -183,11 +184,12 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
 		@IConfigurationService private configurationService: IConfigurationService,
+		@IEnvironmentService private environmentService: IEnvironmentService,
 		@IQuickOpenService private quickOpenService: IQuickOpenService,
 		@ICommandService private commandService: ICommandService
 	) {
-		this.systemVariables = this.contextService.getWorkspace() ? new ConfigVariables(this.configurationService, this.editorService, this.contextService) : null;
-		this._onDidConfigurationChange = new Emitter<string>();
+		this.systemVariables = this.contextService.getWorkspace() ? new ConfigVariables(this.configurationService, this.editorService, this.contextService, this.environmentService) : null;
+		this._onDidConfigurationChange = new Emitter<debug.IConfig>();
 		this.setConfiguration(configName);
 		this.adapters = [];
 		this.registerListeners();
@@ -208,7 +210,7 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 					if (duplicate) {
 						Object.keys(adapter).forEach(attribute => {
 							if (adapter[attribute]) {
-								if (attribute === 'enableBreakpointsFor') {
+								if (attribute === 'enableBreakpointsFor' && duplicate[attribute]) {
 									Object.keys(adapter.enableBreakpointsFor).forEach(languageId => duplicate.enableBreakpointsFor[languageId] = true);
 								} else if (duplicate[attribute] && attribute !== 'type' && attribute !== 'extensionDescription') {
 									// give priority to the later registered extension.
@@ -250,7 +252,7 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 		});
 	}
 
-	public get onDidConfigurationChange(): Event<string> {
+	public get onDidConfigurationChange(): Event<debug.IConfig> {
 		return this._onDidConfigurationChange.event;
 	}
 
@@ -297,9 +299,12 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 
 		const factory: { (): TPromise<any> }[] = Object.keys(interactiveVariablesToSubstitutes).map(interactiveVariable => {
 			return () => {
-				const commandId = this.adapter.variables ? this.adapter.variables[interactiveVariable] : null;
+				let commandId = null;
+				if (this.adapter !== null) {
+					commandId = this.adapter.variables ? this.adapter.variables[interactiveVariable] : null;
+				}
 				if (!commandId) {
-					return TPromise.wrapError(nls.localize('interactiveVariableNotFound', "Adapter {0} does not contribute variable {1} that is specified in launch configuration.", this.adapter.type, interactiveVariable));
+					return TPromise.wrapError(nls.localize('interactiveVariableNotFound', "Adapter {0} does not contribute variable {1} that is specified in launch configuration.", this.adapter !== null ? this.adapter.type : null, interactiveVariable));
 				} else {
 					return this.commandService.executeCommand<string>(commandId, this.configuration).then(result => {
 						if (!result) {
@@ -359,7 +364,7 @@ export class ConfigurationManager implements debug.IConfigurationManager {
 					});
 				}
 			}
-		}).then(() => this._onDidConfigurationChange.fire(this.configurationName));
+		}).then(() => this._onDidConfigurationChange.fire(this.configuration));
 	}
 
 	public openConfigFile(sideBySide: boolean): TPromise<boolean> {

@@ -11,7 +11,8 @@ import xterm = require('xterm');
 import {Dimension} from 'vs/base/browser/builder';
 import {IContextMenuService} from 'vs/platform/contextview/browser/contextView';
 import {IInstantiationService} from 'vs/platform/instantiation/common/instantiation';
-import {IKeybindingService, IKeybindingContextKey} from 'vs/platform/keybinding/common/keybinding';
+import {IKeybindingService} from 'vs/platform/keybinding/common/keybinding';
+import {IContextKey} from 'vs/platform/contextkey/common/contextkey';
 import {IMessageService, Severity} from 'vs/platform/message/common/message';
 import {ITerminalFont} from 'vs/workbench/parts/terminal/electron-browser/terminalConfigHelper';
 import {ITerminalProcess, ITerminalService} from 'vs/workbench/parts/terminal/electron-browser/terminal';
@@ -19,20 +20,21 @@ import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {Keybinding} from 'vs/base/common/keyCodes';
 import {StandardKeyboardEvent} from 'vs/base/browser/keyboardEvent';
 import {TabFocus} from 'vs/editor/common/config/commonEditorConfig';
-import {ToggleTabFocusModeAction} from 'vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode';
 
 export class TerminalInstance {
+
+	public id: number;
 
 	private static eolRegex = /\r?\n/g;
 
 	private isExiting: boolean = false;
+	private skipTerminalKeybindings: Keybinding[] = [];
 
 	private toDispose: lifecycle.IDisposable[];
 	private xterm;
 	private terminalDomElement: HTMLDivElement;
 	private wrapperElement: HTMLDivElement;
 	private font: ITerminalFont;
-	private toggleTabFocusModeKeybindings: Keybinding[];
 
 	public constructor(
 		private terminalProcess: ITerminalProcess,
@@ -43,17 +45,16 @@ export class TerminalInstance {
 		private keybindingService: IKeybindingService,
 		private terminalService: ITerminalService,
 		private messageService: IMessageService,
-		private terminalFocusContextKey: IKeybindingContextKey<boolean>,
+		private terminalFocusContextKey: IContextKey<boolean>,
 		private onExitCallback: (TerminalInstance) => void
 	) {
-		let self = this;
 		this.toDispose = [];
-		this.toggleTabFocusModeKeybindings = self.keybindingService.lookupKeybindings(ToggleTabFocusModeAction.ID);
 		this.wrapperElement = document.createElement('div');
 		DOM.addClass(this.wrapperElement, 'terminal-wrapper');
 		this.terminalDomElement = document.createElement('div');
 		this.xterm = xterm();
 
+		this.id = this.terminalProcess.process.pid;
 		this.terminalProcess.process.on('message', (message) => {
 			if (message.type === 'data') {
 				this.xterm.write(message.content);
@@ -66,11 +67,11 @@ export class TerminalInstance {
 			});
 			return false;
 		});
-		this.xterm.attachCustomKeydownHandler(function (event: KeyboardEvent) {
+		this.xterm.attachCustomKeydownHandler((event: KeyboardEvent) => {
 			// Allow the toggle tab mode keybinding to pass through the terminal so that focus can
 			// be escaped
 			let standardKeyboardEvent = new StandardKeyboardEvent(event);
-			if (self.toggleTabFocusModeKeybindings.some((k) => standardKeyboardEvent.equals(k.value))) {
+			if (this.skipTerminalKeybindings.some((k) => standardKeyboardEvent.equals(k.value))) {
 				event.preventDefault();
 				return false;
 			}
@@ -110,16 +111,16 @@ export class TerminalInstance {
 		xtermHelper.insertBefore(focusTrap, this.xterm.textarea);
 
 		this.toDispose.push(DOM.addDisposableListener(this.xterm.textarea, 'focus', (event: KeyboardEvent) => {
-			self.terminalFocusContextKey.set(true);
+			this.terminalFocusContextKey.set(true);
 		}));
 		this.toDispose.push(DOM.addDisposableListener(this.xterm.textarea, 'blur', (event: KeyboardEvent) => {
-			self.terminalFocusContextKey.reset();
+			this.terminalFocusContextKey.reset();
 		}));
 		this.toDispose.push(DOM.addDisposableListener(this.xterm.element, 'focus', (event: KeyboardEvent) => {
-			self.terminalFocusContextKey.set(true);
+			this.terminalFocusContextKey.set(true);
 		}));
 		this.toDispose.push(DOM.addDisposableListener(this.xterm.element, 'blur', (event: KeyboardEvent) => {
-			self.terminalFocusContextKey.reset();
+			this.terminalFocusContextKey.reset();
 		}));
 
 		this.wrapperElement.appendChild(this.terminalDomElement);
@@ -137,10 +138,13 @@ export class TerminalInstance {
 		if (!dimension.height) { // Minimized
 			return;
 		}
-		let cols = Math.floor(dimension.width / this.font.charWidth);
+		let leftPadding = parseInt(getComputedStyle(document.querySelector('.terminal-outer-container')).paddingLeft.split('px')[0], 10);
+		let innerWidth = dimension.width - leftPadding;
+		let cols = Math.floor(innerWidth / this.font.charWidth);
 		let rows = Math.floor(dimension.height / this.font.charHeight);
 		if (this.xterm) {
 			this.xterm.resize(cols, rows);
+			this.xterm.element.style.width = innerWidth + 'px';
 		}
 		if (this.terminalProcess.process.connected) {
 			this.terminalProcess.process.send({
@@ -166,6 +170,24 @@ export class TerminalInstance {
 		}
 	}
 
+	public setCommandsToSkipShell(commands: string[]): void {
+		this.skipTerminalKeybindings = commands.map((c) => {
+			return this.keybindingService.lookupKeybindings(c);
+		}).reduce((prev, curr) => {
+			return prev.concat(curr);
+		});
+	}
+
+	public sendText(text: string, addNewLine: boolean): void {;
+		if (addNewLine && text.substr(text.length - os.EOL.length) !== os.EOL) {
+			text += os.EOL;
+		}
+		this.terminalProcess.process.send({
+			event: 'input',
+			data: text
+		});
+	}
+
 	public focus(force?: boolean): void {
 		if (!this.xterm) {
 			return;
@@ -174,6 +196,14 @@ export class TerminalInstance {
 		if (!text || force) {
 			this.xterm.focus();
 		}
+	}
+
+	public scrollDown(): void {
+		this.xterm.scrollDisp(1);
+	}
+
+	public scrollUp(): void {
+		this.xterm.scrollDisp(-1);
 	}
 
 	public dispose(): void {

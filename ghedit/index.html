@@ -97,6 +97,8 @@
 			var remote = electron.remote;
 			var ipc = electron.ipcRenderer;
 			var windowId = remote.getCurrentWindow().id;
+			window.setImmediate = window.setTimeout;
+			var global = window; // Node-ish
 
 			function onError(error, enableDeveloperTools) {
 				if (enableDeveloperTools) {
@@ -205,8 +207,8 @@
 		<script type="text/javascript">
 // TODO:			var webFrame = require('electron').webFrame;
 			var webFrame = {
-				setZoomLevelLimits: function (min, max) { console.log('webFrame.setZoomLevelLimits'); },
-				setZoomLevel: function (level) { console.log('webFrame.setZoomLevel'); }
+				setZoomLevelLimits: function (min, max) { /* console.log('webFrame.setZoomLevelLimits'); */ },
+				setZoomLevel: function (level) { /* console.log('webFrame.setZoomLevel'); */ }
 			};
 
 			var mainStarted = false;

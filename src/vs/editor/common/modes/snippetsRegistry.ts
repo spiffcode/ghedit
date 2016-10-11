@@ -20,8 +20,6 @@ export interface ISnippetsRegistry {
 	 */
 	registerSnippets(modeId: string, snippets: ISnippet[], owner?: string): void;
 
-
-
 	/**
 	 * Visit all snippets
 	 */
@@ -40,7 +38,7 @@ export interface ISnippet {
 	codeSnippet: string;
 }
 
-class SnippetsRegistry {
+class SnippetsRegistry implements ISnippetsRegistry {
 
 	private _snippets: { [modeId: string]: { [owner: string]: ISnippet[] } } = Object.create(null);
 
@@ -92,9 +90,10 @@ class SnippetsRegistry {
 			result.push({
 				type: 'snippet',
 				label: s.prefix,
-				documentationLabel: s.description,
-				codeSnippet: s.codeSnippet,
+				documentation: s.description,
+				insertText: s.codeSnippet,
 				noAutoAccept: true,
+				isTMSnippet: true,
 				overwriteBefore
 			});
 			return true;
@@ -102,15 +101,34 @@ class SnippetsRegistry {
 	}
 }
 
-export function getNonWhitespacePrefix(model: IReadOnlyModel, position: IPosition) : string {
+export interface ISimpleModel {
+	getLineContent(lineNumber): string;
+}
+
+export function getNonWhitespacePrefix(model: ISimpleModel, position: IPosition) : string {
+	/**
+	 * Do not analyze more characters
+	 */
+	const MAX_PREFIX_LENGTH = 100;
+
 	let line = model.getLineContent(position.lineNumber).substr(0, position.column - 1);
-	let match = line.match(/[^\s]+$/);
-	if (match) {
-		return match[0];
+
+	let minChIndex = Math.max(0, line.length - MAX_PREFIX_LENGTH);
+	for (let chIndex = line.length - 1; chIndex >= minChIndex; chIndex--) {
+		let ch = line.charAt(chIndex);
+
+		if (/\s/.test(ch)) {
+			return line.substr(chIndex + 1);
+		}
 	}
+
+	if (minChIndex === 0) {
+		return line;
+	}
+
 	return '';
 }
 
-const snippetsRegistry = new SnippetsRegistry();
+const snippetsRegistry: ISnippetsRegistry = new SnippetsRegistry();
 Registry.add(Extensions.Snippets, snippetsRegistry);
 

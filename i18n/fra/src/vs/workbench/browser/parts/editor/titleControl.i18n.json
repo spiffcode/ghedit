@@ -10,6 +10,5 @@
 	"closeOthers": "Fermer les autres",
 	"closeRight": "Fermer à droite",
 	"keepOpen": "Garder ouvert",
-	"moveLeft": "Déplacer vers la gauche",
-	"moveRight": "Déplacer vers la droite"
+	"showOpenedEditors": "Afficher les éditeurs ouverts"
 }

@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
+import {TPromise} from 'vs/base/common/winjs.base';
 import nls = require('vs/nls');
 import lifecycle = require('vs/base/common/lifecycle');
-import Event, { Emitter } from 'vs/base/common/event';
+import Event, {Emitter} from 'vs/base/common/event';
 import uuid = require('vs/base/common/uuid');
 import objects = require('vs/base/common/objects');
 import severity from 'vs/base/common/severity';
 import types = require('vs/base/common/types');
 import arrays = require('vs/base/common/arrays');
 import debug = require('vs/workbench/parts/debug/common/debug');
-import { Source } from 'vs/workbench/parts/debug/common/debugSource';
+import {Source} from 'vs/workbench/parts/debug/common/debugSource';
 
 const MAX_REPL_LENGTH = 10000;
 const UNKNOWN_SOURCE_LABEL = nls.localize('unknownSource', "Unknown Source");
@@ -36,7 +36,7 @@ export function evaluateExpression(session: debug.IRawDebugSession, stackFrame: 
 		context
 	}).then(response => {
 		expression.available = !!(response && response.body);
-		if (response.body) {
+		if (response && response.body) {
 			expression.value = response.body.result;
 			expression.reference = response.body.variablesReference;
 			expression.namedVariables = response.body.namedVariables;
@@ -225,7 +225,7 @@ export abstract class ExpressionContainer implements debug.IExpressionContainer 
 
 	public static allValues: { [id: string]: string } = {};
 	// Use chunks to support variable paging #9537
-	private static CHUNK_SIZE = 100;
+	private static BASE_CHUNK_SIZE = 100;
 
 	public valueChanged: boolean;
 	private children: TPromise<debug.IExpression[]>;
@@ -237,7 +237,7 @@ export abstract class ExpressionContainer implements debug.IExpressionContainer 
 		private cacheChildren: boolean,
 		public namedVariables: number,
 		public indexedVariables: number,
-		private chunkIndex = 0
+		private startOfVariables = 0
 	) {
 		// noop
 	}
@@ -252,19 +252,25 @@ export abstract class ExpressionContainer implements debug.IExpressionContainer 
 
 				// Check if object has named variables, fetch them independent from indexed variables #9670
 				this.children = (!!this.namedVariables ? this.fetchVariables(session, undefined, undefined, 'named') : TPromise.as([])).then(childrenArray => {
-					if (this.indexedVariables > ExpressionContainer.CHUNK_SIZE) {
+					// Use a dynamic chunk size based on the number of elements #9774
+					let chunkSize = ExpressionContainer.BASE_CHUNK_SIZE;
+					while (this.indexedVariables > chunkSize * ExpressionContainer.BASE_CHUNK_SIZE) {
+						chunkSize *= ExpressionContainer.BASE_CHUNK_SIZE;
+					}
+
+					if (this.indexedVariables > chunkSize) {
 						// There are a lot of children, create fake intermediate values that represent chunks #9537
-						const numberOfChunks = this.indexedVariables / ExpressionContainer.CHUNK_SIZE;
+						const numberOfChunks = Math.ceil(this.indexedVariables / chunkSize);
 						for (let i = 0; i < numberOfChunks; i++) {
-							const chunkSize = Math.min(ExpressionContainer.CHUNK_SIZE, this.indexedVariables - i * ExpressionContainer.CHUNK_SIZE);
-							const chunkName = `[${i * ExpressionContainer.CHUNK_SIZE}..${i * ExpressionContainer.CHUNK_SIZE + chunkSize - 1}]`;
-							childrenArray.push(new Variable(this, this.reference, chunkName, '', null, chunkSize, null, true, i));
+							const start = this.startOfVariables + i * chunkSize;
+							const count = Math.min(chunkSize, this.indexedVariables - i * chunkSize);
+							childrenArray.push(new Variable(this, this.reference, `[${start}..${start + count - 1}]`, '', null, count, null, true, start));
 						}
 
 						return childrenArray;
 					}
 
-					const start = this.getChildrenInChunks ? this.chunkIndex * ExpressionContainer.CHUNK_SIZE : undefined;
+					const start = this.getChildrenInChunks ? this.startOfVariables : undefined;
 					const count = this.getChildrenInChunks ? this.indexedVariables : undefined;
 					return this.fetchVariables(session, start, count, 'indexed').then(variables => childrenArray.concat(variables));
 				});
@@ -335,9 +341,9 @@ export class Variable extends ExpressionContainer implements debug.IExpression {
 		indexedVariables: number,
 		public type: string = null,
 		public available = true,
-		chunkIndex = 0
+		startOfVariables = 0
 	) {
-		super(reference, `variable:${ parent.getId() }:${ name }`, true, namedVariables, indexedVariables, chunkIndex);
+		super(reference, `variable:${ parent.getId() }:${ name }`, true, namedVariables, indexedVariables, startOfVariables);
 		this.value = massageValue(value);
 	}
 }
@@ -800,12 +806,6 @@ export class Model implements debug.IModel {
 	}
 
 	public dispose(): void {
-		this.threads = null;
-		this.breakpoints = null;
-		this.exceptionBreakpoints = null;
-		this.functionBreakpoints = null;
-		this.watchExpressions = null;
-		this.replElements = null;
 		this.toDispose = lifecycle.dispose(this.toDispose);
 	}
 }
