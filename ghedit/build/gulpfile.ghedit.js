@@ -32,20 +32,21 @@ var gheditResources = [
 	// '!out-build/vs/base/browser/ui/octiconLabel/**/*',
 	'out-build/vs/{base,editor,workbench}/**/*.{svg,png}',
 	'out-build/vs/{base,editor,workbench}/**/*.{woff,ttf}',
-	'out-build/themes/**/*.*',
+	'out-build/themes/**/*',
+	'out-build/icons/**/*',
 	'out-build/vs/base/worker/workerMainCompatibility.html',
 	'out-build/vs/base/worker/workerMain.{js,js.map}',
 	'out-build/vs/base/common/worker/*.js',
 	'out-build/vs/base/common/errors.js',
 	// '!out-build/vs/workbench/**',
-	'out-build/monaco-*/**/*.*',
-	'out-build/vs/workbench/parts/search/**/*.*',
+	'out-build/monaco-*/**/*',
+	'out-build/vs/workbench/parts/search/**/*',
 	'!**/test/**',
 
 	// SUPER-HACK: Do this until finding out why
 	// base:buildfile entry points aren't being packed.
-	'out-build/vs/base/common/**/*.*',
-	'out-build/vs/editor/common/**/*.*',
+	'out-build/vs/base/common/**/*',
+	'out-build/vs/editor/common/**/*',
 ];
 
 var gheditOtherSources = [
