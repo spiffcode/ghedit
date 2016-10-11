@@ -11,6 +11,7 @@ import {xhr} from 'vs/base/common/network';
 import nls = require('vs/nls');
 import Paths = require('vs/base/common/paths');
 import Json = require('vs/base/common/json');
+import 'ghedit/lib/css.escape'; // Polyfill for CSS.escape() which is Chrome/FF on at the moment.
 import {IThemeExtensionPoint} from 'vs/platform/theme/common/themeExtensionPoint';
 import {IExtensionService} from 'vs/platform/extensions/common/extensions';
 import {ExtensionsRegistry, IExtensionMessageCollector} from 'vs/platform/extensions/common/extensionsRegistry';
